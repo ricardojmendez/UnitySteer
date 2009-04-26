@@ -33,6 +33,8 @@
 using System;
 using System.Collections;
 using System.Text;
+using UnityEngine;
+
 
 namespace OpenSteerDotNet
 {
@@ -59,7 +61,7 @@ namespace OpenSteerDotNet
 
         public virtual AbstractVehicle getNearestVehicle(Vector3 position, float radius) { return null; }
 
-        public virtual Vector3 getMostPopulatedBinCenter() { return Vector3.ZERO; } 
+        public virtual Vector3 getMostPopulatedBinCenter() { return Vector3.zero; } 
 
     };
 
@@ -138,8 +140,8 @@ namespace OpenSteerDotNet
                 //for (tokenIterator i = bfpd->group.begin(); i != bfpd->group.end(); i++)
                 //{
                 Vector3 offset = center - tToken.position;
-                float d2 = offset.SquaredLength;
-
+                float d2 = offset.sqrMagnitude;
+                
                 // push onto result vector when within given radius
                 if (d2 < r2) results.Add(tToken.tParentObject);//.push_back ((**i).object);
             };

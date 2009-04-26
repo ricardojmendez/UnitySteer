@@ -32,13 +32,15 @@
 using System;
 using System.Collections;
 using System.Text;
+using UnityEngine;
+
 
 namespace OpenSteerDotNet
 {
     public class SteerLibrary : AbstractVehicle
     {
         // Randomiser
-        Random randomGenerator;
+        System.Random randomGenerator;
 
         // Wander behavior
         float WanderSide;
@@ -73,7 +75,7 @@ namespace OpenSteerDotNet
             // default to non-gaudyPursuitAnnotation
             gaudyPursuitAnnotation = false;
 
-            randomGenerator=new Random();
+            randomGenerator=new System.Random();
         }
 
         bool isAhead ( Vector3 target)  {return isAhead (target, 0.707f);}
@@ -83,21 +85,21 @@ namespace OpenSteerDotNet
         bool isAhead ( Vector3 target, float cosThreshold) 
         {
             Vector3 targetDirection = (target - Position);
-            targetDirection.Normalise ();
-            return (forward().DotProduct(targetDirection) > cosThreshold);
+            targetDirection.Normalize ();
+            return (Vector3.Dot(forward(), targetDirection) > cosThreshold);
         }
         bool isAside ( Vector3 target, float cosThreshold) 
         {
             Vector3 targetDirection = (target - Position);
-            targetDirection.Normalise ();
-             float dp = forward().DotProduct(targetDirection);
+            targetDirection.Normalize ();
+             float dp = Vector3.Dot(forward(), targetDirection);
             return (dp < cosThreshold) && (dp > -cosThreshold);
         }
         bool isBehind ( Vector3 target, float cosThreshold) 
         {
             Vector3 targetDirection = (target - Position);
-            targetDirection.Normalise ();
-            return forward().DotProduct(targetDirection) < cosThreshold;
+            targetDirection.Normalize ();
+            return Vector3.Dot(forward(), targetDirection) < cosThreshold;
         }
 
             // called when steerToAvoidObstacles decides steering is required
@@ -201,7 +203,7 @@ namespace OpenSteerDotNet
             {
                 // our predicted future position was in the path,
                 // return zero steering.
-                return Vector3.ZERO;
+                return Vector3.zero;
             }
             else
             {
@@ -248,7 +250,7 @@ namespace OpenSteerDotNet
              if ((tStruct.outside < 0) && rightway)
             {
                 // all is well, return zero steering
-                return Vector3.ZERO;
+                return Vector3.zero;
             }
             else
             {
@@ -293,7 +295,7 @@ namespace OpenSteerDotNet
              Vector3 avoidance = obstacle.steerToAvoid (this, minTimeToCollision);
 
             // XXX more annotation modularity problems (assumes spherical obstacle)
-            if (avoidance != Vector3.ZERO)
+            if (avoidance != Vector3.zero)
                 annotateAvoidObstacle (minTimeToCollision * speed());
 
             return avoidance;
@@ -353,7 +355,7 @@ namespace OpenSteerDotNet
                 //avoidance = offset.perpendicularComponent (forward());
                  avoidance =  OpenSteerUtility.perpendicularComponent( offset,forward());
 
-                avoidance.Normalise();//.normalize ();
+                avoidance.Normalize();//.normalize ();
                 avoidance *= maxForce ();
                 avoidance += forward() * maxForce () * 0.75f;
             }
@@ -375,7 +377,7 @@ namespace OpenSteerDotNet
         {
             // first priority is to prevent immediate interpenetration
              Vector3 separation = steerToAvoidCloseNeighbors (0, others);
-            if (separation != Vector3.ZERO) return separation;
+            if (separation != Vector3.zero) return separation;
 
             // otherwise, go on to consider potential future collisions
             float steer = 0;
@@ -428,7 +430,7 @@ namespace OpenSteerDotNet
             if (threat != null)
             {
                 // parallel: +1, perpendicular: 0, anti-parallel: -1
-                float parallelness = forward().DotProduct(threat.forward());
+                float parallelness = Vector3.Dot(forward(), threat.forward());
                 float angle = 0.707f;
 
                 if (parallelness < -angle)
@@ -436,7 +438,7 @@ namespace OpenSteerDotNet
                     // anti-parallel "head on" paths:
                     // steer away from future threat position
                     Vector3 offset = xxxThreatPositionAtNearestApproach - Position;
-                    float sideDot = offset.DotProduct(side());
+                    float sideDot = Vector3.Dot(offset, side());
                     steer = (sideDot > 0) ? -1.0f : 1.0f;
                 }
                 else
@@ -445,7 +447,7 @@ namespace OpenSteerDotNet
                     {
                         // parallel paths: steer away from threat
                         Vector3 offset = threat.Position - Position;
-                        float sideDot = offset.DotProduct(side());
+                        float sideDot = Vector3.Dot(offset, side());
                         steer = (sideDot > 0) ? -1.0f : 1.0f;
                     }
                     else
@@ -454,7 +456,7 @@ namespace OpenSteerDotNet
                         // (only the slower of the two does this)
                         if (threat.speed() <= speed())
                         {
-                            float sideDot = side().DotProduct(threat.velocity());
+                            float sideDot = Vector3.Dot(side(), threat.velocity());
                             steer = (sideDot > 0) ? -1.0f : 1.0f;
                         }
                     }
@@ -484,7 +486,7 @@ namespace OpenSteerDotNet
              Vector3 myVelocity = velocity();
              Vector3 otherVelocity = other.velocity();
              Vector3 relVelocity = otherVelocity - myVelocity;
-             float relSpeed = relVelocity.Length;
+             float relSpeed = relVelocity.magnitude;
 
             // for parallel paths, the vehicles will always be at the same distance,
             // so return 0 (aka "now") since "there is no time like the present"
@@ -501,7 +503,7 @@ namespace OpenSteerDotNet
             // find distance from its path to origin (compute offset from
             // other to us, find length of projection onto path)
              Vector3 relPosition = Position - other.Position;
-             float projection = relTangent.DotProduct(relPosition);
+             float projection = Vector3.Dot(relTangent, relPosition);
 
             return projection / relSpeed;
         }
@@ -525,7 +527,7 @@ namespace OpenSteerDotNet
             ourPositionAtNearestApproach = myFinal;
             hisPositionAtNearestApproach = otherFinal;
 
-            return (myFinal - otherFinal).Length;//Vector3::distance (myFinal, otherFinal);
+            return (myFinal - otherFinal).magnitude;//Vector3::distance (myFinal, otherFinal);
         }
 
 
@@ -551,7 +553,7 @@ namespace OpenSteerDotNet
                      float sumOfRadii = radius() + other.radius();
                      float minCenterToCenter = minSeparationDistance + sumOfRadii;
                      Vector3 offset = other.Position - Position;
-                     float currentDistance = offset.Length;
+                     float currentDistance = offset.magnitude;
 
                     if (currentDistance < minCenterToCenter)
                     {
@@ -562,7 +564,7 @@ namespace OpenSteerDotNet
             }
             
             // otherwise return zero
-            return Vector3.ZERO;
+            return Vector3.zero;
         }
 
 
@@ -580,7 +582,7 @@ namespace OpenSteerDotNet
             else
             {
                  Vector3 offset = other.Position - Position;
-                 float distanceSquared = offset.SquaredLength;
+                 float distanceSquared = offset.sqrMagnitude;
 
                 // definitely in neighborhood if inside minDistance sphere
                 if (distanceSquared < (minDistance * minDistance))
@@ -598,7 +600,7 @@ namespace OpenSteerDotNet
                     {
                         // otherwise, test angular offset from forward axis
                          Vector3 unitOffset = offset / (float) System.Math.Sqrt (distanceSquared);
-                         float forwardness = forward().DotProduct (unitOffset);
+                         float forwardness = Vector3.Dot(forward(), unitOffset);
                         return forwardness > cosMaxAngle;
                     }
                 }
@@ -614,7 +616,7 @@ namespace OpenSteerDotNet
         public Vector3 steerForSeparation ( float maxDistance, float cosMaxAngle, ArrayList flock)
         {
             // steering accumulator and count of neighbors, both initially zero
-            Vector3 steering=Vector3.ZERO;
+            Vector3 steering=Vector3.zero;
             int neighbors = 0;
 
             // for each of the other vehicles...
@@ -628,7 +630,7 @@ namespace OpenSteerDotNet
                     // (opposite of the offset direction, divided once by distance
                     // to normalize, divided another time to get 1/d falloff)
                      Vector3 offset = (other).Position - Position;
-                     float distanceSquared = offset.DotProduct(offset);
+                     float distanceSquared = Vector3.Dot(offset, offset);
                     steering += (offset / -distanceSquared);
 
                     // count neighbors
@@ -639,7 +641,7 @@ namespace OpenSteerDotNet
             // divide by neighbors, then normalize to pure direction
             if (neighbors > 0) {
                 steering = (steering / (float)neighbors);
-                steering.Normalise();
+                steering.Normalize();
             }
 
             return steering;
@@ -654,7 +656,7 @@ namespace OpenSteerDotNet
         public Vector3 steerForAlignment ( float maxDistance, float cosMaxAngle, ArrayList flock)
         {
             // steering accumulator and count of neighbors, both initially zero
-            Vector3 steering=Vector3.ZERO;
+            Vector3 steering=Vector3.zero;
             int neighbors = 0;
 
             // for each of the other vehicles...
@@ -678,7 +680,7 @@ namespace OpenSteerDotNet
             if (neighbors > 0)
             {
                 steering = ((steering / (float)neighbors) - forward());
-                steering.Normalise();
+                steering.Normalize();
             }
 
             return steering;
@@ -694,7 +696,7 @@ namespace OpenSteerDotNet
         public Vector3 steerForCohesion ( float maxDistance,  float cosMaxAngle, ArrayList flock)
         {
             // steering accumulator and count of neighbors, both initially zero
-            Vector3 steering=Vector3.ZERO;
+            Vector3 steering=Vector3.zero;
             int neighbors = 0;
 
             // for each of the other vehicles...
@@ -718,7 +720,7 @@ namespace OpenSteerDotNet
             if (neighbors > 0)
             {
                 steering = ((steering / (float)neighbors) - Position);
-                steering.Normalise();
+                steering.Normalize();
             }
 
             return steering;
@@ -741,16 +743,16 @@ namespace OpenSteerDotNet
         {
             // offset from this to quarry, that distance, unit vector toward quarry
              Vector3 offset = quarry.Position - Position;
-             float distance = offset.Length;
+             float distance = offset.magnitude;
              Vector3 unitOffset = offset / distance;
 
             // how parallel are the paths of "this" and the quarry
             // (1 means parallel, 0 is pependicular, -1 is anti-parallel)
-             float parallelness = forward().DotProduct (quarry.forward());
+             float parallelness = Vector3.Dot(forward(), quarry.forward());
 
             // how "forward" is the direction to the quarry
             // (1 means dead ahead, 0 is directly to the side, -1 is straight back)
-             float forwardness = forward().DotProduct (unitOffset);
+             float forwardness = Vector3.Dot(forward(), unitOffset);
 
              float directTravelTime = distance / speed ();
              int f = intervalComparison (forwardness,  -0.707f, 0.707f);
@@ -843,7 +845,7 @@ namespace OpenSteerDotNet
         {
             // offset from this to menace, that distance, unit vector toward menace
              Vector3 offset = menace.Position - Position;
-             float distance = offset.Length;
+             float distance = offset.magnitude;
 
              float roughTime = distance / menace.speed();
              float predictionTime = ((roughTime > maxPredictionTime) ?
@@ -943,11 +945,11 @@ namespace OpenSteerDotNet
 
         public Vector3 truncateLength(Vector3 tVector, float maxLength)
         {
-            float tLength = tVector.Length;
+            float tLength = tVector.magnitude;
             Vector3 returnVector = tVector;
             if (tLength > maxLength)
             {
-                returnVector.Normalise();// = tVector - tVector*(tLength - maxLength);
+                returnVector.Normalize();// = tVector - tVector*(tLength - maxLength);
                 returnVector *= maxLength;
             }
             return returnVector;

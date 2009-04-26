@@ -32,6 +32,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using UnityEngine;
 
 namespace OpenSteerDotNet
 {
@@ -51,12 +52,12 @@ namespace OpenSteerDotNet
         // this path.  Also returns, via output arguments, the path tangent at
         // P and a measure of how far A is outside the Pathway's "tube".  Note
         // that a negative distance indicates A is inside the Pathway.
-        public virtual Vector3 mapPointToPath(Vector3 point, mapReturnStruct tStruct) { return Vector3.ZERO; }
-        //public virtual Vector3 mapPointToPath(Vector3 point, Vector3 tangent, float outside) { return Vector3.ZERO; }
+        public virtual Vector3 mapPointToPath(Vector3 point, mapReturnStruct tStruct) { return Vector3.zero; }
+        //public virtual Vector3 mapPointToPath(Vector3 point, Vector3 tangent, float outside) { return Vector3.zero; }
 
 
         // given a distance along the path, convert it to a point on the path
-        public virtual Vector3 mapPathDistanceToPoint(float pathDistance) { return Vector3.ZERO; }
+        public virtual Vector3 mapPathDistanceToPoint(float pathDistance) { return Vector3.zero; }
 
         // Given an arbitrary point, convert it to a distance along the path.
         public virtual float mapPointToPathDistance(Vector3 point) { return 0; }
@@ -140,7 +141,7 @@ namespace OpenSteerDotNet
                 {
                     // compute the segment length
                     normals[i] = points[i] - points[i-1];
-                    lengths[i] = normals[i].Length;// ength();
+                    lengths[i] = normals[i].magnitude;// ength();
 
                     // find the normalized vector parallel to the segment
                     normals[i] *= 1 / lengths[i];
@@ -163,7 +164,7 @@ namespace OpenSteerDotNet
         {
             float d;
             float minDistance = float.MaxValue;// FLT_MAX;
-            Vector3 onPath=Vector3.ZERO;
+            Vector3 onPath=Vector3.zero;
 
             // loop over all segments, find the one nearest to the given point
             for (int i = 1; i < pointCount; i++)
@@ -180,7 +181,7 @@ namespace OpenSteerDotNet
             }
 
             // measure how far original point is outside the Pathway's "tube"
-            tStruct.outside = (onPath - point).Length - radius;//Vector3::distance (onPath, point) - radius;
+            tStruct.outside = (onPath - point).magnitude - radius;//Vector3::distance (onPath, point) - radius;
 
             // return point on path
             return onPath;
@@ -228,7 +229,7 @@ namespace OpenSteerDotNet
             // step through segments, subtracting off segment lengths until
             // locating the segment that contains the original pathDistance.
             // Interpolate along that segment to find 3d point value to return.
-            Vector3 result=Vector3.ZERO;
+            Vector3 result=Vector3.zero;
             for (int i = 1; i < pointCount; i++)
             {
                 segmentLength = lengths[i];
@@ -260,7 +261,7 @@ namespace OpenSteerDotNet
             local = point - ep0;
 
             // find the projection of "local" onto "segmentNormal"
-            segmentProjection = segmentNormal.DotProduct (local);
+            segmentProjection = Vector3.Dot(segmentNormal, local);
 
             // handle boundary cases: when projection is not on segment, the
             // nearest point is one of the endpoints of the segment
@@ -268,19 +269,19 @@ namespace OpenSteerDotNet
             {
                 chosen = ep0;
                 segmentProjection = 0;
-                return (point- ep0).Length;//Vector3::distance (point, ep0);
+                return (point- ep0).magnitude;//Vector3::distance (point, ep0);
             }
             if (segmentProjection > segmentLength)
             {
                 chosen = ep1;
                 segmentProjection = segmentLength;
-                return (point-ep1).Length;//Vector3::distance (point, ep1);
+                return (point-ep1).magnitude;//Vector3::distance (point, ep1);
             }
 
             // otherwise nearest point is projection point on segment
             chosen = segmentNormal * segmentProjection;
             chosen +=  ep0;
-            return (point-chosen).Length;//::distance (point, chosen);
+            return Vector3.Distance(point, chosen);//::distance (point, chosen);
         }
 
         

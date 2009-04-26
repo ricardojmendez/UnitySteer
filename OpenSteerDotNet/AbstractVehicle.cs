@@ -32,6 +32,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using UnityEngine;
 
 namespace OpenSteerDotNet
 {
@@ -46,7 +47,7 @@ namespace OpenSteerDotNet
         public virtual float setRadius(float radius) { return 0; }
 
         // velocity of vehicle
-        public virtual Vector3 velocity() { return Vector3.ZERO; }
+        public virtual Vector3 velocity() { return Vector3.zero; }
 
         // speed of vehicle  (may be faster than taking magnitude of velocity)
         public virtual float speed() { return 0; }
@@ -58,7 +59,7 @@ namespace OpenSteerDotNet
 
         // predict position of this vehicle at some time in the future
         // (assumes velocity remains constant)
-        public virtual Vector3 predictFuturePosition(float predictionTime) { return Vector3.ZERO; }
+        public virtual Vector3 predictFuturePosition(float predictionTime) { return Vector3.zero; }
 
         // ----------------------------------------------------------------------
         // XXX this vehicle-model-specific functionality functionality seems out

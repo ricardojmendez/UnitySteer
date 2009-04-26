@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using UnityEngine;
 
 namespace OpenSteerDotNet
 {
@@ -132,9 +133,9 @@ namespace OpenSteerDotNet
         public Vector3 localizeDirection(Vector3 globalDirection)
         {
             // dot offset with local basis vectors to obtain local coordiantes
-            return new Vector3 (globalDirection.DotProduct (_side),
-                         globalDirection.DotProduct (_up),
-                         globalDirection.DotProduct (_forward));
+            return new Vector3 (Vector3.Dot(globalDirection, _side),
+                         Vector3.Dot(globalDirection, _up),
+                         Vector3.Dot(globalDirection, _forward));
         }
 
 
@@ -183,12 +184,12 @@ namespace OpenSteerDotNet
             // derive new unit side basis vector from forward and up
             if (rightHanded())
                 //_side.cross (_forward, _up);
-                _side = _forward.CrossProduct(_up);
+                _side = Vector3.Cross(_forward, _up);
             else
                 //_side.cross(_up, _forward);
-                _side = _up.CrossProduct(_forward);
+                _side = Vector3.Cross(_up, _forward);
 
-            _side.Normalise ();
+            _side.Normalize ();
         }
 
 
@@ -209,10 +210,10 @@ namespace OpenSteerDotNet
             // perpendicular and unit length)
             if (rightHanded())
                 //_up.cross (_side, _forward);
-                _up=_side.CrossProduct( _forward);
+                _up = Vector3.Cross(_side, _forward);
             else
                 //_up.cross (_forward, _side);
-                _up = _forward.CrossProduct(_side);
+                _up = Vector3.Cross(_forward, _side);
 
         }
 
@@ -221,7 +222,7 @@ namespace OpenSteerDotNet
 
         public void regenerateOrthonormalBasis(Vector3 newForward)
         {
-            newForward.Normalise();
+            newForward.Normalize();
             regenerateOrthonormalBasisUF (newForward);
         }
 
@@ -232,7 +233,7 @@ namespace OpenSteerDotNet
                                           Vector3 newUp)
         {
             _up = newUp;
-            newForward.Normalise();
+            newForward.Normalize();
             regenerateOrthonormalBasis(newForward);
         }
 

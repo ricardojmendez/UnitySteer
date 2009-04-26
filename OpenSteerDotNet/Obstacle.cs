@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using UnityEngine;
 
 namespace OpenSteerDotNet
 {
@@ -19,9 +20,9 @@ namespace OpenSteerDotNet
 
         // XXX 4-23-03: Temporary work around (see comment above)
         // CHANGED FROM ABSTRACTVEHICLE. PROBLY SHOULD CHANGE BACK!
-        public virtual Vector3 steerToAvoid(Object v, float minTimeToCollision)
+        public virtual Vector3 steerToAvoid(System.Object v, float minTimeToCollision)
         {
-            return Vector3.ZERO;
+            return Vector3.zero;
         }
 
     }
@@ -44,7 +45,7 @@ namespace OpenSteerDotNet
         public SphericalObstacle()
         {
             radius = 1;
-            center = Vector3.ZERO;
+            center = Vector3.zero;
         }
 
         public override seenFromState seenFrom() { return _seenFrom; }
@@ -77,14 +78,14 @@ namespace OpenSteerDotNet
              Vector3 localOffset = center - v.Position;
 
             // distance along vehicle's forward axis to obstacle's center
-             float forwardComponent = localOffset.DotProduct(v.forward());
+             float forwardComponent = Vector3.Dot(localOffset, v.forward());
              Vector3 forwardOffset = forwardComponent * v.forward();
 
             // offset from forward axis to obstacle's center
              Vector3 offForwardOffset = localOffset - forwardOffset;
 
             // test to see if sphere overlaps with obstacle-free corridor
-             bool inCylinder = offForwardOffset.Length < totalRadius;
+             bool inCylinder = offForwardOffset.magnitude < totalRadius;
              bool nearby = forwardComponent < minDistanceToCenter;
              bool inFront = forwardComponent > 0;
 
@@ -95,7 +96,7 @@ namespace OpenSteerDotNet
             }
             else
             {
-                return Vector3.ZERO;
+                return Vector3.zero;
             }
         }
     }

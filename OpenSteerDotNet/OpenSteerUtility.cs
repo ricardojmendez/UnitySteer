@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using UnityEngine;
 
 namespace OpenSteerDotNet
 {
@@ -20,14 +21,14 @@ namespace OpenSteerDotNet
         {
             Vector3 tVector=RandomVectorInUnitRadiusSphere();
             tVector.y=0;
-            tVector.Normalise();
+            tVector.Normalize();
             return tVector;
             //return RandomVectorInUnitRadiusSphere().setYtoZero().normalize();
         }
 
         public static Vector3 RandomVectorInUnitRadiusSphere ()
         {
-            Vector3 v=Vector3.ZERO;
+            Vector3 v=Vector3.zero;
 
             do
             {
@@ -39,7 +40,7 @@ namespace OpenSteerDotNet
                         (RandomGenerator.Singleton.nextFloat() * 2) - 1,
                         (RandomGenerator.Singleton.nextFloat() * 2) - 1);
             }
-            while (v.Length >= 1);
+            while (v.magnitude >= 1);
 
             return v;
         }
@@ -54,12 +55,12 @@ namespace OpenSteerDotNet
         public static Vector3 vecLimitDeviationAngleUtility (bool insideOrOutside, Vector3 source, float cosineOfConeAngle, Vector3 basis)
         {
             // immediately return zero length input vectors
-            float sourceLength = source.Length;
+            float sourceLength = source.magnitude;
             if (sourceLength == 0) return source;
 
             // measure the angular diviation of "source" from "basis"
             Vector3 direction = source / sourceLength;
-            float cosineOfSourceAngle = direction.DotProduct (basis);
+            float cosineOfSourceAngle = Vector3.Dot(direction, basis);
 
             // Simply return "source" if it already meets the angle criteria.
             // (note: we hope this top "if" gets compiled out since the flag
@@ -82,7 +83,7 @@ namespace OpenSteerDotNet
             
                 
             Vector3 unitPerp = perp;//.normalize ();
-            unitPerp.Normalise();
+            unitPerp.Normalize();
 
             // construct a new vector whose length equals the source vector,
             // and lies on the intersection of a plane (formed the source and
@@ -96,7 +97,7 @@ namespace OpenSteerDotNet
 
         public static Vector3 parallelComponent (Vector3 source,Vector3 unitBasis)
         {
-            float projection = source.DotProduct(unitBasis);
+            float projection = Vector3.Dot(source, unitBasis);
             return unitBasis * projection;
         }
 
@@ -128,14 +129,14 @@ namespace OpenSteerDotNet
         public static Vector3 RandomUnitVector ()
         {
             Vector3 tVector = RandomVectorInUnitRadiusSphere();
-            tVector.Normalise();
+            tVector.Normalize();
             return tVector;
         }
 
         public static Vector3 sphericalWrapAround (Vector3 source, Vector3 center, float radius)
         {
             Vector3 offset = source - center;
-            float r = offset.Length;
+            float r = offset.magnitude;
 
             if (r > radius)
                 return source + ((offset / r) * radius * -2);

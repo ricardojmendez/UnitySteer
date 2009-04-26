@@ -32,6 +32,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using UnityEngine;
 
 namespace OpenSteerDotNet
 {
@@ -90,9 +91,9 @@ namespace OpenSteerDotNet
             setMaxSpeed (1.0f);   // velocity is clipped to this magnitude
 
             // reset bookkeeping to do running averages of these quanities
-            resetSmoothedPosition (Vector3.ZERO);
-            resetSmoothedCurvature(0);//Vector3.ZERO);
-            resetSmoothedAcceleration(Vector3.ZERO);
+            resetSmoothedPosition (Vector3.zero);
+            resetSmoothedCurvature(0);//Vector3.zero);
+            resetSmoothedAcceleration(Vector3.zero);
         }
 
         // get/set mass
@@ -127,8 +128,8 @@ namespace OpenSteerDotNet
         float smoothedCurvature () {return _smoothedCurvature;}
         float resetSmoothedCurvature (float value)
         {
-            _lastForward = Vector3.ZERO;
-            _lastPosition = Vector3.ZERO;;
+            _lastForward = Vector3.zero;
+            _lastPosition = Vector3.zero;;
             return _smoothedCurvature = _curvature = value;
         }
         Vector3 smoothedAcceleration () {return _smoothedAcceleration;}
@@ -144,7 +145,7 @@ namespace OpenSteerDotNet
 
         void randomizeHeadingOnXZPlane ()
         {
-            setUp (Vector3.UNIT_Y);
+            setUp (Vector3.up);
             setForward (OpenSteerUtility.RandomUnitVectorOnXZPlane ());
             setSide (localRotateForwardToSide (forward()));
         }
@@ -168,7 +169,7 @@ namespace OpenSteerDotNet
         {
             float maxAdjustedSpeed = 0.2f * maxSpeed ();
 
-            if ((speed () > maxAdjustedSpeed) || (force == Vector3.ZERO))
+            if ((speed () > maxAdjustedSpeed) || (force == Vector3.zero))
             {
                 return force;
             }
@@ -252,7 +253,7 @@ namespace OpenSteerDotNet
 
 
             // update Speed
-            setSpeed (newVelocity.Length);
+            setSpeed (newVelocity.magnitude);
 
            
             // Euler integrate (per frame) velocity into position
@@ -311,7 +312,7 @@ namespace OpenSteerDotNet
             float smoothRate = elapsedTime * 3;
             Vector3 tempUp = up();
             tempUp=OpenSteerUtility.blendIntoAccumulator(smoothRate, bankUp, tempUp);
-            tempUp.Normalise();
+            tempUp.Normalize();
             setUp (tempUp);
 
         //  annotationLine (position(), position() + (globalUp * 4), gWhite);  // XXX
@@ -333,13 +334,13 @@ namespace OpenSteerDotNet
             if (elapsedTime > 0)
             {
                 Vector3 dP = _lastPosition - Position;
-                Vector3 dF = (_lastForward - forward ()) / dP.Length;
+                Vector3 dF = (_lastForward - forward ()) / dP.magnitude;
                 //SI - BIT OF A WEIRD FIX HERE . NOT SURE IF ITS CORRECT
                 //Vector3 lateral = dF.perpendicularComponent (forward ());
                 Vector3 lateral = OpenSteerUtility.perpendicularComponent( dF,forward());
 
-                float sign = (lateral.DotProduct(side()) < 0) ? 1.0f : -1.0f;
-                _curvature = lateral.Length * sign;
+                float sign = (Vector3.Dot(lateral, side()) < 0) ? 1.0f : -1.0f;
+                _curvature = lateral.magnitude * sign;
                 //OpenSteerUtility.blendIntoAccumulator(elapsedTime * 4.0f, _curvature,_smoothedCurvature);
                 _smoothedCurvature=OpenSteerUtility.blendIntoAccumulator(elapsedTime * 4.0f, _curvature, _smoothedCurvature);
 

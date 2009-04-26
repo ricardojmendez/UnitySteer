@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using UnityEngine;
 
 namespace OpenSteerDotNet
 {
@@ -11,7 +12,7 @@ namespace OpenSteerDotNet
         public lqBin bin=null;
 
         // Pointer to client object
-        public Object clientObject;
+        public System.Object clientObject;
 
         //* The object's location ("key point") used for spatial sorting
         public float x;
@@ -20,7 +21,7 @@ namespace OpenSteerDotNet
 
        
 
-        public lqClientProxy(Object tClientObject)
+        public lqClientProxy(System.Object tClientObject)
         {
             
             clientObject = tClientObject;
@@ -110,7 +111,7 @@ namespace OpenSteerDotNet
                 bins[i]=new lqBin();
             }
             */
-            other = new lqBin(Vector3.ZERO);
+            other = new lqBin(Vector3.zero);
         }
 
 
@@ -389,7 +390,7 @@ namespace OpenSteerDotNet
         public lqClientProxy lqFindNearestNeighborWithinRadius ( 
 					         float x, float y, float z,
 					         float radius,
-					         Object ignoreObject)
+					         System.Object ignoreObject)
         {
 
 
@@ -479,7 +480,7 @@ namespace OpenSteerDotNet
             {
                 return mostPopulatedBin.center;
             }
-            else return Vector3.ZERO;
+            else return Vector3.zero;
         }
 
         public lqBin getMostPopulatedBin()

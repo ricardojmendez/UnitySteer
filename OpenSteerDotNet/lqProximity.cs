@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using UnityEngine;
 
 namespace OpenSteerDotNet
 {
@@ -37,7 +38,7 @@ namespace OpenSteerDotNet
             locationQueryDatabase lq;
 
             // constructor
-            public tokenType(Object parentObject, LQProximityDatabase lqsd)
+            public tokenType(System.Object parentObject, LQProximityDatabase lqsd)
             {
                 proxy = new lqClientProxy(parentObject);// lqInitClientProxy(proxy, parentObject);
                 lq = lqsd.lq;
