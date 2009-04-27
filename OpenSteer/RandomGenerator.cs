@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 //
-// OpenSteerDotNet - pure .net port
+// OpenSteer - pure .net port
 // Port by Simon Oliver - http://www.handcircus.com
 //
 // OpenSteer -- Steering Behaviors for Autonomous Characters
@@ -33,7 +33,7 @@ using System;
 using System.Collections;
 using System.Text;
 
-namespace OpenSteerDotNet
+namespace OpenSteer
 {
     class RandomGenerator
     {

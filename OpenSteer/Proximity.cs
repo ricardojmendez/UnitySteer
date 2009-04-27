@@ -1,6 +1,8 @@
 // ----------------------------------------------------------------------------
 //
-// OpenSteerDotNet - pure .net port
+// Ported to Unity by Ricardo J. Méndez http://www.arges-systems.com/
+//
+// OpenSteer - pure .net port
 // Port by Simon Oliver - http://www.handcircus.com
 //
 // OpenSteer -- Steering Behaviors for Autonomous Characters
@@ -36,7 +38,7 @@ using System.Text;
 using UnityEngine;
 
 
-namespace OpenSteerDotNet
+namespace OpenSteer
 {
     public class AbstractTokenForProximityDatabase
     {
@@ -66,7 +68,7 @@ namespace OpenSteerDotNet
     };
 
 
-   public class BruteForceProximityDatabase : AbstractProximityDatabase
+    public class BruteForceProximityDatabase : AbstractProximityDatabase
     {
    
         // STL vector containing all tokens in database
@@ -80,17 +82,14 @@ namespace OpenSteerDotNet
 
         // allocate a token to represent a given client object in this database
         //public override tokenType allocateToken (Object parentObject)
-       public override AbstractTokenForProximityDatabase allocateToken(AbstractVehicle parentObject)
-       {
-
-           tokenType tToken=new tokenType (parentObject, this);
-           return (AbstractTokenForProximityDatabase)tToken;
-       }
-
-       
+        public override AbstractTokenForProximityDatabase allocateToken(AbstractVehicle parentObject)
+        {
+            tokenType tToken=new tokenType (parentObject, this);
+            return (AbstractTokenForProximityDatabase)tToken;
+        }
 
         // return the number of tokens currently in the database
-       public override int getPopulation()
+        public override int getPopulation()
         {
             return group.Count;//.size();
         }

@@ -1,6 +1,8 @@
 // ----------------------------------------------------------------------------
 //
-// OpenSteerDotNet - pure .net port
+// Ported to Unity by Ricardo J. Méndez http://www.arges-systems.com/
+//
+// OpenSteer - pure .net port
 // Port by Simon Oliver - http://www.handcircus.com
 //
 // OpenSteer -- Steering Behaviors for Autonomous Characters
@@ -34,7 +36,7 @@ using System.Collections;
 using System.Text;
 using UnityEngine;
 
-namespace OpenSteerDotNet
+namespace OpenSteer
 {
     public class SimpleVehicle : SteerLibrary
     {
@@ -42,7 +44,7 @@ namespace OpenSteerDotNet
         float _mass;       // mass (defaults to unity so acceleration=force)
         float _radius;     // size of bounding sphere, for obstacle avoidance, etc.
         float _speed;      // speed along Forward direction.  Because local space
-            // is velocity-aligned, velocity = Forward * Speed
+                           // is velocity-aligned, velocity = Forward * Speed
 
         float _maxForce;   // the maximum steering force this vehicle can apply
             // (steering force is clipped to this magnitude)
@@ -121,7 +123,7 @@ namespace OpenSteerDotNet
 
         
 
-                // get instantaneous curvature (since last update)
+        // get instantaneous curvature (since last update)
         float curvature () {return _curvature;}
 
         // get/reset smoothedCurvature, smoothedAcceleration and smoothedPosition

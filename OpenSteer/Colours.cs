@@ -3,7 +3,7 @@ using System.Collections;
 using System.Text;
 using UnityEngine;
 
-namespace OpenSteerDotNet
+namespace OpenSteer
 {
     class OpenSteerColours
     {

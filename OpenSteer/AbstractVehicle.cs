@@ -1,6 +1,8 @@
 // ----------------------------------------------------------------------------
 //
-// OpenSteerDotNet - pure .net port
+// Ported to Unity by Ricardo J. Méndez - http://www.arges-systems.com/
+//
+// OpenSteer - pure .net port
 // Port by Simon Oliver - http://www.handcircus.com
 //
 // OpenSteer -- Steering Behaviors for Autonomous Characters
@@ -34,7 +36,7 @@ using System.Collections;
 using System.Text;
 using UnityEngine;
 
-namespace OpenSteerDotNet
+namespace OpenSteer
 {
     public class AbstractVehicle : LocalSpace
     {

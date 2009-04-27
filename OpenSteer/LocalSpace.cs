@@ -2,11 +2,13 @@ using System;
 using System.Text;
 using UnityEngine;
 
-namespace OpenSteerDotNet
+namespace OpenSteer
 {
     public class LocalSpace
     {
-        // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+//
+// Ported to Unity by Ricardo J. Méndez http://www.arges-systems.com/
 //
 //
 // OpenSteer -- Steering Behaviors for Autonomous Characters
@@ -71,10 +73,6 @@ namespace OpenSteerDotNet
 // ----------------------------------------------------------------------------
 
 
-
-
-    
-    
         Vector3 _side;     //    side-pointing unit basis vector
         Vector3 _up;       //  upward-pointing unit basis vector
         Vector3 _forward;  // forward-pointing unit basis vector
