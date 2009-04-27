@@ -46,6 +46,30 @@ namespace OpenSteer.Vehicles {
 
     public class Boid : SimpleVehicle
     {
+
+        // allocate one and share amoung instances just to save memory usage
+        // (change to per-instance allocation to be more MP-safe)
+        static ArrayList neighbors = new ArrayList();
+        static float worldRadius;
+        static int boundaryCondition;
+        
+        // a pointer to this boid's interface object for the proximity database
+        AbstractTokenForProximityDatabase   proximityToken;
+        AbstractProximityDatabase           proximity;
+        
+        public float separationRadius =  5.0f;
+        public float separationAngle  = -0.707f;
+        public float separationWeight =  12.0f;
+
+        public float alignmentRadius = 7.5f;
+        public float alignmentAngle  = 0.7f;
+        public float alignmentWeight = 8.0f;
+
+        public float cohesionRadius = 9.0f;
+        public float cohesionAngle  = -0.15f;
+        public float cohesionWeight = 8.0f;
+        
+        
         // constructor
         public Boid (AbstractProximityDatabase pd)
         {
@@ -62,8 +86,16 @@ namespace OpenSteer.Vehicles {
         ~Boid ()
         {
             // delete this boid's token in the proximity database
-            proximityToken = null; // TODO-CHECKs
+            proximity.RemoveToken(proximityToken);
         }
+        
+        // cycle through various boundary conditions
+        static void nextBoundaryCondition ()
+        {
+            const int max = 2;
+            boundaryCondition = (boundaryCondition + 1) % max;
+        }
+        
 
 
         // reset state
@@ -71,35 +103,19 @@ namespace OpenSteer.Vehicles {
         {
             // reset the vehicle
             base.reset();
-
             // steering force is clipped to this magnitude
             setMaxForce (27);
-
             // velocity is clipped to this magnitude
             setMaxSpeed (9);
-
             // initial slow speed
             setSpeed (maxSpeed() * 0.3f);
-
             // randomize initial orientation
             regenerateOrthonormalBasisUF (Random.insideUnitCircle);
-
             // randomize initial position
             setPosition (Random.insideUnitSphere * 20);
-
             // notify proximity database that our position has changed
             proximityToken.updateForNewPosition(Position);
         }
-
-
-        /* TODO-REMOVE
-        // draw this boid into the scene
-        void draw ()
-        {
-            drawBasic3dSphericalVehicle (*this, gGray70);
-            // drawTrail ();
-        }
-        */
 
 
         // per frame simulation update
@@ -107,7 +123,6 @@ namespace OpenSteer.Vehicles {
         {
             // steer to flock and perhaps to stay within the spherical boundary
             applySteeringForce (steerToFlock () + handleBoundary(), elapsedTime);
-
             // notify proximity database that our position has changed
             proximityToken.updateForNewPosition (Position);
         }
@@ -116,18 +131,6 @@ namespace OpenSteer.Vehicles {
         // basic flocking
         Vector3 steerToFlock ()
         {
-            float separationRadius =  5.0f;
-            float separationAngle  = -0.707f;
-            float separationWeight =  12.0f;
-
-            float alignmentRadius = 7.5f;
-            float alignmentAngle  = 0.7f;
-            float alignmentWeight = 8.0f;
-
-            float cohesionRadius = 9.0f;
-            float cohesionAngle  = -0.15f;
-            float cohesionWeight = 8.0f;
-
             float maxRadius = Mathf.Max(separationRadius,
                                         Mathf.Max(alignmentRadius,
                                                   cohesionRadius));
@@ -212,26 +215,10 @@ namespace OpenSteer.Vehicles {
         void newPD (AbstractProximityDatabase pd)
         {
             // allocate a token for this boid in the proximity database
+            proximity = pd;
             proximityToken = pd.allocateToken (this);
         }
 
-
-        // cycle through various boundary conditions
-        static void nextBoundaryCondition ()
-        {
-            const int max = 2;
-            boundaryCondition = (boundaryCondition + 1) % max;
-        }
-        static int boundaryCondition;
-
-        // a pointer to this boid's interface object for the proximity database
-        AbstractTokenForProximityDatabase proximityToken;
-
-        // allocate one and share amoung instances just to save memory usage
-        // (change to per-instance allocation to be more MP-safe)
-        static ArrayList neighbors = new ArrayList();
-
-        static float worldRadius;
     };
 }
 // ----------------------------------------------------------------------------

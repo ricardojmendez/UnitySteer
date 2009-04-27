@@ -50,11 +50,8 @@ namespace OpenSteer
 
     public class AbstractProximityDatabase
     {
-    
-
         // type for the "tokens" manipulated by this spatial database
         //typedef AbstractTokenForProximityDatabase<ContentType> tokenType;
-
         // allocate a token to represent a given client object in this database
         public virtual AbstractTokenForProximityDatabase allocateToken(AbstractVehicle parentObject) { return new AbstractTokenForProximityDatabase(); }
 
@@ -64,7 +61,8 @@ namespace OpenSteer
         public virtual AbstractVehicle getNearestVehicle(Vector3 position, float radius) { return null; }
 
         public virtual Vector3 getMostPopulatedBinCenter() { return Vector3.zero; } 
-
+        
+        public virtual void RemoveToken(AbstractTokenForProximityDatabase token) {}
     };
 
 
@@ -72,12 +70,12 @@ namespace OpenSteer
     {
    
         // STL vector containing all tokens in database
-       public ArrayList group;
+        public ArrayList group;
 
         // constructor
         public BruteForceProximityDatabase ()
         {
-            group=new ArrayList();
+            group = new ArrayList();
         }
 
         // allocate a token to represent a given client object in this database
@@ -86,6 +84,11 @@ namespace OpenSteer
         {
             tokenType tToken=new tokenType (parentObject, this);
             return (AbstractTokenForProximityDatabase)tToken;
+        }
+        
+        public override void RemoveToken(AbstractTokenForProximityDatabase token) 
+        {
+            group.Remove(token);
         }
 
         // return the number of tokens currently in the database
