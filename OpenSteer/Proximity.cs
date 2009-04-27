@@ -66,6 +66,7 @@ namespace OpenSteer
     };
 
 
+    // O(n^2) ftw!
     public class BruteForceProximityDatabase : AbstractProximityDatabase
     {
    

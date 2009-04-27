@@ -180,13 +180,7 @@ namespace OpenSteer.Vehicles {
                 {
                     // steer back when outside
                     Vector3 seek = xxxsteerForSeek (Vector3.zero);
-                    // Replacing ...
-                    // Vector3 lateral = seek.perpendicularComponent (forward ());
-                    // with ...
-                    float projection = Vector3.Dot(seek, forward());
-                    Vector3 parallel = forward() * projection;
-                    Vector3 lateral  =  seek - parallel;
-                    // End replace. See Vec3.h for details
+                    Vector3 lateral = OpenSteerUtility.perpendicularComponent(seek, forward());
                     return lateral;
                 }
                 case 1:

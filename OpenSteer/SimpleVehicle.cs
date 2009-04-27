@@ -145,7 +145,7 @@ namespace OpenSteer
             return _smoothedPosition = value;
         }
 
-        void randomizeHeadingOnXZPlane ()
+        protected void randomizeHeadingOnXZPlane ()
         {
             setUp (Vector3.up);
             setForward (OpenSteerUtility.RandomUnitVectorOnXZPlane ());
@@ -224,7 +224,7 @@ namespace OpenSteer
         {
 
             Vector3 adjustedForce = adjustRawSteeringForce (force);//, elapsedTime);
-
+            
             // enforce limit on magnitude of steering force
             //Vector3 clippedForce = adjustedForce.truncateLength (maxForce ());
             //Vector3 clippedForce = adjustedForce.truncateLength(maxForce());

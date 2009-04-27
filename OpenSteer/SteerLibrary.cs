@@ -131,7 +131,7 @@ namespace OpenSteer
         public Vector3 steerForWander (float dt)
         {
         // random walk WanderSide and WanderUp between -1 and +1
-             float speed = 12 * dt; // maybe this (12) should be an argument?
+            float speed = 12 * dt; // maybe this (12) should be an argument?
             WanderSide = scalarRandomWalk (WanderSide, speed, -1, +1);
             WanderUp   = scalarRandomWalk (WanderUp,   speed, -1, +1);
 
