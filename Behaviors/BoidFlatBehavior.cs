@@ -23,6 +23,6 @@ public class BoidFlatBehavior : MonoBehaviour {
 	    transform.position = boid.Position;
 	    Vector3 f = boid.forward();
 	    f.y = transform.forward.y;
-	    transform.forward = f;
+	    transform.right = f;
 	}
 }
