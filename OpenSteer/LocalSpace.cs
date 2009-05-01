@@ -78,10 +78,18 @@ namespace OpenSteer
         Vector3 _forward;  // forward-pointing unit basis vector
         Vector3 _position; // origin of local space
 
-
+        protected bool movesVertically = true;
+        
         public Vector3 side     ()  {return _side;}
         public Vector3 up() { return _up; }
         public Vector3 forward() { return _forward; }
+        public bool MovesVertically
+        {
+            get
+            {
+                return movesVertically;
+            }
+        }
         public Vector3 Position {
             get
             {
@@ -90,6 +98,8 @@ namespace OpenSteer
             set
             {
                 _position = value;
+                if (!movesVertically)
+                    _position.y = 0;
             }
         }
         public Vector3 setSide(Vector3 s) { return _side = s; }
@@ -124,8 +134,7 @@ namespace OpenSteer
             _up = new Vector3(0, 1, 0);
             _position = new Vector3(0, 0, 0);
         }
-
-
+        
         // ------------------------------------------------------------------------
         // transform a direction in global space to its equivalent in local space
 

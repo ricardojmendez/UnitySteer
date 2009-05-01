@@ -68,17 +68,21 @@ namespace OpenSteer.Vehicles {
         public float cohesionRadius = 9.0f;
         public float cohesionAngle  = -0.15f;
         public float cohesionWeight = 8.0f;
-        
-        
-        // constructor
-        public Boid (AbstractProximityDatabase pd)
+                
+        public Boid (AbstractProximityDatabase pd, bool movesVertically)
         {
+            this.movesVertically = movesVertically;
             // allocate a token for this boid in the proximity database
             proximityToken = null;
             newPD (pd);
 
             // reset all boid state
             reset ();
+        }
+        
+        // constructor
+        public Boid (AbstractProximityDatabase pd): this(pd, true)
+        {
         }
 
 
@@ -112,7 +116,7 @@ namespace OpenSteer.Vehicles {
             // randomize initial orientation
             regenerateOrthonormalBasisUF (Random.insideUnitCircle);
             // randomize initial position
-            Position =  Random.insideUnitSphere * 20;
+            Position = Random.insideUnitSphere * 20;
             // notify proximity database that our position has changed
             proximityToken.updateForNewPosition(Position);
         }

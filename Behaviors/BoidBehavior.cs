@@ -8,12 +8,14 @@ public class BoidBehavior : MonoBehaviour {
     
     
     Boid boid;
+    
+    public bool MovesVertically = true;
 
 	// Use this for initialization
 	void Start () {
 	    if (pd == null)
 	        pd = new BruteForceProximityDatabase();
-	    boid = new Boid(pd);
+	    boid = new Boid(pd, MovesVertically);
 	    // vehicle.randomizeHeadingOnXZPlane();
 	}
 	
@@ -21,6 +23,8 @@ public class BoidBehavior : MonoBehaviour {
 	void Update () {
 	    boid.update(Time.time, Time.deltaTime);
 	    transform.position = boid.Position;
-	    transform.forward = boid.forward();
+	    Vector3 f = boid.forward();
+	    f.y = transform.forward.y;
+	    transform.right = f;
 	}
 }
