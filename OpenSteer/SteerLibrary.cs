@@ -134,9 +134,12 @@ namespace OpenSteer
             float speed = 12 * dt; // maybe this (12) should be an argument?
             WanderSide = scalarRandomWalk (WanderSide, speed, -1, +1);
             WanderUp   = scalarRandomWalk (WanderUp,   speed, -1, +1);
-
+            
             // return a pure lateral steering vector: (+/-Side) + (+/-Up)
-            return (side() * WanderSide) + (up() * WanderUp);
+            Vector3  result = (side() * WanderSide) + (up() * WanderUp);
+            // result = result * 10;
+            //Debug.Log("Wander "+dt+" "+speed+" "+result);
+            return result;
         }
 
 
@@ -308,7 +311,6 @@ namespace OpenSteer
         //
         // XXX 9-12-03: note this does NOT use the Obstacle::steerToAvoid protocol
         // XXX like the older steerToAvoidObstacle does/did.  It needs to be fixed
-        
        
         public Vector3 steerToAvoidObstacles ( float minTimeToCollision, ArrayList obstacles)
         {
