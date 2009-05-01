@@ -21,5 +21,6 @@ public class BoidBehavior : MonoBehaviour {
 	void Update () {
 	    boid.update(Time.time, Time.deltaTime);
 	    transform.position = boid.Position;
+	    transform.forward = boid.forward();
 	}
 }

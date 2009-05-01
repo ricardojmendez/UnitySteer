@@ -112,7 +112,7 @@ namespace OpenSteer.Vehicles {
             // randomize initial orientation
             regenerateOrthonormalBasisUF (Random.insideUnitCircle);
             // randomize initial position
-            setPosition (Random.insideUnitSphere * 20);
+            Position =  Random.insideUnitSphere * 20;
             // notify proximity database that our position has changed
             proximityToken.updateForNewPosition(Position);
         }
@@ -190,7 +190,6 @@ namespace OpenSteer.Vehicles {
                     setPosition (Position.sphericalWrapAround (Vector3.zero,
                                                                  worldRadius));
                     */
-                    setPosition(Position);
                     return Vector3.zero;
                 }
             }

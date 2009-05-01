@@ -253,13 +253,11 @@ namespace OpenSteer
             //newVelocity = newVelocity.truncateLength (maxSpeed ());
             newVelocity = truncateLength(newVelocity,maxSpeed());
 
-
             // update Speed
             setSpeed (newVelocity.magnitude);
 
-           
             // Euler integrate (per frame) velocity into position
-            setPosition (Position + (newVelocity * elapsedTime));
+            Position += (newVelocity * elapsedTime);
 
             // regenerate local space (by default: align vehicle's forward axis with
             // new velocity, but this behavior may be overridden by derived classes.)

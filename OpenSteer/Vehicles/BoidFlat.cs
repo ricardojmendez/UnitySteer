@@ -114,7 +114,7 @@ namespace OpenSteer.Vehicles {
             // randomize initial position
             Vector3 rp = Random.insideUnitSphere;
             rp.y = 0;
-            setPosition (rp * 20);
+            Position = rp * 20;
             // notify proximity database that our position has changed
             proximityToken.updateForNewPosition(Position);
         }
@@ -128,7 +128,7 @@ namespace OpenSteer.Vehicles {
             // notify proximity database that our position has changed
             Vector3 p = Position;
             p.y = 0;
-            setPosition(p);
+            Position = p;
             proximityToken.updateForNewPosition (Position);
         }
 
@@ -191,11 +191,6 @@ namespace OpenSteer.Vehicles {
                 case 1:
                 {
                     // wrap around (teleport)
-                    /* TODO-CHECK
-                    setPosition (Position.sphericalWrapAround (Vector3.zero,
-                                                                 worldRadius));
-                    */
-                    setPosition(Position);
                     return Vector3.zero;
                 }
             }

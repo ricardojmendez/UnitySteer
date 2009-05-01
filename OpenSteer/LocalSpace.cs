@@ -87,15 +87,17 @@ namespace OpenSteer
             {
                 return _position; 
             }
+            set
+            {
+                _position = value;
+            }
         }
         public Vector3 setSide(Vector3 s) { return _side = s; }
         public Vector3 setUp(Vector3 u) { return _up = u; }
         public Vector3 setForward(Vector3 f) { return _forward = f; }
-        public Vector3 setPosition(Vector3 p) { return _position = p; }
         public Vector3 setSide(float x, float y, float z) { return _side = new Vector3(x, y, z); }
         public Vector3 setUp(float x, float y, float z) { return _up = new Vector3(x, y, z); }
         public Vector3 setForward(float x, float y, float z) { return _forward = new Vector3(x, y, z); }
-        public Vector3 setPosition(float x, float y, float z) { return _position = new Vector3(x, y, z); }
 
 
 

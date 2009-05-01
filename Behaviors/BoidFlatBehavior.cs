@@ -21,5 +21,8 @@ public class BoidFlatBehavior : MonoBehaviour {
 	void Update () {
 	    boid.update(Time.time, Time.deltaTime);
 	    transform.position = boid.Position;
+	    Vector3 f = boid.forward();
+	    f.y = transform.forward.y;
+	    transform.forward = f;
 	}
 }

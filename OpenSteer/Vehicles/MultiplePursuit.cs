@@ -141,7 +141,7 @@ namespace OpenSteer.Vehicles
             r.y = 0;
             
             Vector3 randomOnRing = r * radius;
-            setPosition (wanderer.Position + randomOnRing);
+            Position = wanderer.Position + randomOnRing;
 
             // randomize 2D heading
             randomizeHeadingOnXZPlane ();
