@@ -107,16 +107,12 @@ namespace OpenSteer.Vehicles {
         {
             // reset the vehicle
             base.reset();
-            // steering force is clipped to this magnitude
-            setMaxForce (27);
-            // velocity is clipped to this magnitude
-            setMaxSpeed (9);
             // initial slow speed
-            setSpeed (maxSpeed() * 0.3f);
+            setSpeed (MaxSpeed * 0.3f);
             // randomize initial orientation
             regenerateOrthonormalBasisUF (Random.insideUnitCircle);
             // randomize initial position
-            Position = Random.insideUnitSphere * 20;
+            Position = Random.insideUnitSphere * 10;
             // notify proximity database that our position has changed
             proximityToken.updateForNewPosition(Position);
         }

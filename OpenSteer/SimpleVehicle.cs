@@ -46,11 +46,11 @@ namespace OpenSteer
         float _speed;      // speed along Forward direction.  Because local space
                            // is velocity-aligned, velocity = Forward * Speed
 
-        float _maxForce;   // the maximum steering force this vehicle can apply
-            // (steering force is clipped to this magnitude)
+        float maxForce = 27f;   // the maximum steering force this vehicle can apply
+                                // (steering force is clipped to this magnitude)
 
-        float _maxSpeed;   // the maximum speed this vehicle is allowed to move
-            // (velocity is clipped to this magnitude)
+        float maxSpeed =  9f;   // the maximum speed this vehicle is allowed to move
+                                // (velocity is clipped to this magnitude)
 
         float _curvature;
         Vector3 _lastForward;
@@ -114,15 +114,32 @@ namespace OpenSteer
         public override float setRadius(float m) { return _radius = m; }
 
         // get/set maxForce
-        public override float maxForce() { return _maxForce; }
-        public override float setMaxForce(float mf) { return _maxForce = mf; }
+        public float MaxForce
+        {
+            get
+            {
+                return maxForce;
+            }
+            set
+            {
+                maxForce = value;
+            }
+        }
 
         // get/set maxSpeed
-        public override  float maxSpeed() { return _maxSpeed; }
-        public override float setMaxSpeed(float ms) { return _maxSpeed = ms; }
-
+        public float MaxSpeed
+        {
+            get
+            {
+                return maxSpeed;
+            }
+            set
+            {
+                maxSpeed = value;
+            }
+        }
         
-
+        
         // get instantaneous curvature (since last update)
         float curvature () {return _curvature;}
 
@@ -169,7 +186,7 @@ namespace OpenSteer
 
         public Vector3 adjustRawSteeringForce(Vector3 force)//, const float /* deltaTime */)
         {
-            float maxAdjustedSpeed = 0.2f * maxSpeed ();
+            float maxAdjustedSpeed = 0.2f * MaxSpeed;
 
             if ((speed () > maxAdjustedSpeed) || (force == Vector3.zero))
             {
@@ -207,9 +224,9 @@ namespace OpenSteer
         void applyBrakingForce (float rate, float deltaTime)
         {
             float rawBraking = speed () * rate;
-            float clipBraking = ((rawBraking < maxForce ()) ?
+            float clipBraking = ((rawBraking < MaxForce) ?
                                        rawBraking :
-                                       maxForce ());
+                                       MaxForce);
 
             setSpeed (speed () - (clipBraking * deltaTime));
         }
@@ -226,10 +243,7 @@ namespace OpenSteer
             Vector3 adjustedForce = adjustRawSteeringForce (force);//, elapsedTime);
             
             // enforce limit on magnitude of steering force
-            //Vector3 clippedForce = adjustedForce.truncateLength (maxForce ());
-            //Vector3 clippedForce = adjustedForce.truncateLength(maxForce());
-
-            Vector3 clippedForce = truncateLength(adjustedForce, maxForce());
+            Vector3 clippedForce = truncateLength(adjustedForce, MaxForce);
 
             // compute acceleration and velocity
             Vector3 newAcceleration = (clippedForce / mass());
@@ -250,8 +264,8 @@ namespace OpenSteer
 
             // enforce speed limit
             
-            //newVelocity = newVelocity.truncateLength (maxSpeed ());
-            newVelocity = truncateLength(newVelocity,maxSpeed());
+            //newVelocity = newVelocity.truncateLength (MaxSpeed);
+            newVelocity = truncateLength(newVelocity, MaxSpeed);
 
             // update Speed
             setSpeed (newVelocity.magnitude);
@@ -357,8 +371,8 @@ namespace OpenSteer
         void annotationVelocityAcceleration (float maxLengthA,  float maxLengthV)
         {
             float desat = 0.4f;
-            float aScale = maxLengthA / maxForce ();
-            float vScale = maxLengthV / maxSpeed ();
+            float aScale = maxLengthA / MaxForce;
+            float vScale = maxLengthV / MaxSpeed;
             Vector3 p = Position;
             Vector3 aColor = new Vector3(desat, desat, 1); // bluish
             Vector3 vColor = new Vector3 (1, desat, 1); // pinkish
