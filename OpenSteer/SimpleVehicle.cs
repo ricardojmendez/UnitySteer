@@ -41,6 +41,7 @@ namespace OpenSteer
     public class SimpleVehicle : SteerLibrary
     {
 
+        ArrayList obstacles;    // Obstacle list
         float _mass;       // mass (defaults to unity so acceleration=force)
         float _radius;     // size of bounding sphere, for obstacle avoidance, etc.
         float _speed;      // speed along Forward direction.  Because local space
@@ -138,6 +139,19 @@ namespace OpenSteer
                 maxSpeed = value;
             }
         }
+
+        
+        public ArrayList Obstacles
+        {
+            get
+            {
+                return obstacles;
+            }
+            set
+            {
+                obstacles = value;
+            }
+        }
         
         
         // get instantaneous curvature (since last update)
@@ -168,8 +182,8 @@ namespace OpenSteer
             setForward (OpenSteerUtility.RandomUnitVectorOnXZPlane ());
             setSide (localRotateForwardToSide (forward()));
         }
+        
     
-
     // From CPP
     
         // ----------------------------------------------------------------------------

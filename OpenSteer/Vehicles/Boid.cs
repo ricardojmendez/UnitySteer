@@ -68,7 +68,7 @@ namespace OpenSteer.Vehicles {
         public float cohesionRadius = 9.0f;
         public float cohesionAngle  = -0.15f;
         public float cohesionWeight = 8.0f;
-                
+        
         public Boid (AbstractProximityDatabase pd, bool movesVertically)
         {
             this.movesVertically = movesVertically;
@@ -116,13 +116,18 @@ namespace OpenSteer.Vehicles {
             // notify proximity database that our position has changed
             proximityToken.updateForNewPosition(Position);
         }
-
-
+        
+        
         // per frame simulation update
         public void update (float currentTime, float elapsedTime)
         {
             // steer to flock and perhaps to stay within the spherical boundary
-            applySteeringForce (steerToFlock () + handleBoundary(), elapsedTime);
+            Vector3 avoid = steerToAvoidObstacles(0.2f, Obstacles); // TODO-RJM: Change to a property
+            if (Obstacles.Count > 0)
+            {
+                Debug.Log("Avoiding "+avoid);
+            }
+            applySteeringForce (steerToFlock () + handleBoundary() + avoid, elapsedTime);
             // notify proximity database that our position has changed
             proximityToken.updateForNewPosition (Position);
         }
