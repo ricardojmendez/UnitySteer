@@ -12,6 +12,7 @@ public class WanderBehavior : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+	    wanderer.Position = transform.position;
 	    wanderer.update(Time.time, Time.deltaTime);
 	    transform.position = wanderer.Position;
 	}

@@ -49,6 +49,7 @@ public class BoidBehavior : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+	    boid.Position = transform.position;
 	    boid.update(Time.time, Time.deltaTime);
 	    transform.position = boid.Position;
 	    Vector3 f = boid.forward();
