@@ -261,9 +261,18 @@ namespace OpenSteer
 				radius = value;
 			}
 		}
-
-
-
+		
+		
+		protected Transform Transform
+		{
+		    get
+		    {
+	            Transform t = (rigidbody != null ) ? rigidbody.transform : transform;
+	            return t;
+    	    }
+		}
+		
+		
         public virtual Vector3 predictFuturePosition(float predictionTime) { return Vector3.zero; }
 
 
@@ -291,30 +300,11 @@ namespace OpenSteer
             Position = new Vector3(0, 0, 0);
         }
 
-
-		
-		// TODO: NOTE: Don't like *ANY* of these - no sir I don't:
-
-        public Vector3 LocalizeDirection(Vector3 globalDirection)
-        {
-            // dot offset with local basis vectors to obtain local coordiantes
-            return new Vector3 (Vector3.Dot(globalDirection, Side),
-                         Vector3.Dot(globalDirection, Up),
-                         Vector3.Dot(globalDirection, Forward));
-        }
-
-
         // ------------------------------------------------------------------------
         // transform a point in global space to its equivalent in local space
-
-
         public Vector3 LocalizePosition(Vector3 globalPosition)
         {
-            // global offset from local origin
-            Vector3 globalOffset = globalPosition - Position;
-
-            // dot offset with local basis vectors to obtain local coordiantes
-            return LocalizeDirection (globalOffset);
+            return Transform.InverseTransformPoint(globalPosition);
         }
 
     }
