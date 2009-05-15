@@ -116,35 +116,6 @@ namespace OpenSteer
 			}
 		}
 
-
-        // get/set mass
-//        public override float mass () {return _mass;}
-//        public override float setMass(float m) { return _mass = m; }
-
-        // get velocity of vehicle
-//        public override Vector3 velocity() { return Forward * _speed; }
-
-        // get/set speed of vehicle  (may be faster than taking mag of velocity)
-//        public override float speed() { return _speed; }
-//        public override float setSpeed(float s) { return _speed = s; }
-
-        // size of bounding sphere, for obstacle avoidance, etc.
-//        public override float radius() { return _radius; }
-//        public override float setRadius(float m) { return _radius = m; }
-
-        // get/set maxForce
-        /*public float MaxForce
-        {
-            get
-            {
-                return maxForce;
-            }
-            set
-            {
-                maxForce = value;
-            }
-        }*/
-
         
         public ArrayList Obstacles
         {

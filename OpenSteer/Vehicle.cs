@@ -295,8 +295,6 @@ namespace OpenSteer
 		
 		// TODO: NOTE: Don't like *ANY* of these - no sir I don't:
 
-
-
         public Vector3 LocalizeDirection(Vector3 globalDirection)
         {
             // dot offset with local basis vectors to obtain local coordiantes

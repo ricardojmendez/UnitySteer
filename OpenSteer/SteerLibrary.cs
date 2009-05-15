@@ -95,13 +95,15 @@ namespace OpenSteer
             targetDirection.Normalize ();
             return (Vector3.Dot(Forward, targetDirection) > cosThreshold);
         }
+        
         bool isAside ( Vector3 target, float cosThreshold) 
         {
             Vector3 targetDirection = (target - Position);
             targetDirection.Normalize ();
-             float dp = Vector3.Dot(Forward, targetDirection);
+            float dp = Vector3.Dot(Forward, targetDirection);
             return (dp < cosThreshold) && (dp > -cosThreshold);
         }
+        
         bool isBehind ( Vector3 target, float cosThreshold) 
         {
             Vector3 targetDirection = (target - Position);
@@ -150,7 +152,7 @@ namespace OpenSteer
 
         public Vector3 steerForSeek(Vector3 target)
         {
-             Vector3 desiredVelocity = target - Position;
+            Vector3 desiredVelocity = target - Position;
             return desiredVelocity - Velocity;
         }
 
@@ -175,8 +177,8 @@ namespace OpenSteer
         public Vector3 xxxsteerForFlee(Vector3 target)
         {
         //   Vector3 offset = position - target;
-             Vector3 offset = Position - target;
-             Vector3 desiredVelocity = truncateLength(offset, MaxSpeed);// offset.truncateLength(MaxSpeed); //xxxnew
+            Vector3 offset = Position - target;
+            Vector3 desiredVelocity = truncateLength(offset, MaxSpeed);// offset.truncateLength(MaxSpeed); //xxxnew
             return desiredVelocity - Velocity;
         }
 
@@ -184,9 +186,8 @@ namespace OpenSteer
        
         public Vector3 xxxsteerForSeek ( Vector3 target)
         {
-        //   Vector3 offset = target - position;
-             Vector3 offset = target - Position;
-             Vector3 desiredVelocity = truncateLength(offset, MaxSpeed);// offset.truncateLength(MaxSpeed); //xxxnew
+            Vector3 offset = target - Position;
+            Vector3 desiredVelocity = truncateLength(offset, MaxSpeed);// offset.truncateLength(MaxSpeed); //xxxnew
             return desiredVelocity - Velocity;
         }
 
@@ -199,7 +200,7 @@ namespace OpenSteer
         public Vector3 steerToStayOnPath(float predictionTime, Pathway path)
         {
             // predict our future position
-             Vector3 futurePosition = predictFuturePosition (predictionTime);
+            Vector3 futurePosition = predictFuturePosition (predictionTime);
 
             // find the point on the path nearest the predicted future position
             //Vector3 tangent;
@@ -226,23 +227,22 @@ namespace OpenSteer
         }
 
 
-
         public Vector3 steerToFollowPath(int direction, float predictionTime, Pathway path)
         {
             // our goal will be offset from our path distance by this amount
-             float pathDistanceOffset = direction * predictionTime * Speed;
+            float pathDistanceOffset = direction * predictionTime * Speed;
 
             // predict our future position
-             Vector3 futurePosition = predictFuturePosition (predictionTime);
+            Vector3 futurePosition = predictFuturePosition (predictionTime);
 
             // measure distance along path of our current and predicted positions
-             float nowPathDistance =
+            float nowPathDistance =
                 path.mapPointToPathDistance (Position);
-             float futurePathDistance =
+            float futurePathDistance =
                 path.mapPointToPathDistance (futurePosition);
 
             // are we facing in the correction direction?
-             bool rightway = ((pathDistanceOffset > 0) ?
+            bool rightway = ((pathDistanceOffset > 0) ?
                                    (nowPathDistance < futurePathDistance) :
                                    (nowPathDistance > futurePathDistance));
 
@@ -250,14 +250,14 @@ namespace OpenSteer
             // XXX need to improve calling sequence, maybe change to return a
             // XXX special path-defined object which includes two Vector3s and a 
             // XXX bool (onPath,tangent (ignored), withinPath)
-           // Vector3 tangent;
+            // Vector3 tangent;
             //float outside;
-             mapReturnStruct tStruct = new mapReturnStruct();
-             Vector3 onPath = path.mapPointToPath(futurePosition, tStruct);
+            mapReturnStruct tStruct = new mapReturnStruct();
+            Vector3 onPath = path.mapPointToPath(futurePosition, tStruct);
 
             // no steering is required if (a) our future position is inside
             // the path tube and (b) we are facing in the correct direction
-             if ((tStruct.outside < 0) && rightway)
+            if ((tStruct.outside < 0) && rightway)
             {
                 // all is well, return zero steering
                 return Vector3.zero;
@@ -302,7 +302,7 @@ namespace OpenSteer
        
         public Vector3 steerToAvoidObstacle ( float minTimeToCollision, Obstacle obstacle)
         {
-             Vector3 avoidance = obstacle.steerToAvoid (this, minTimeToCollision);
+            Vector3 avoidance = obstacle.steerToAvoid (this, minTimeToCollision);
 
             // XXX more annotation modularity problems (assumes spherical obstacle)
             if (avoidance != Vector3.zero)
@@ -385,7 +385,7 @@ namespace OpenSteer
         public Vector3 steerToAvoidNeighbors ( float minTimeToCollision, ArrayList others)
         {
             // first priority is to prevent immediate interpenetration
-             Vector3 separation = steerToAvoidCloseNeighbors (0, others);
+            Vector3 separation = steerToAvoidCloseNeighbors (0, others);
             if (separation != Vector3.zero) return separation;
 
             // otherwise, go on to consider potential future collisions
@@ -492,10 +492,10 @@ namespace OpenSteer
         {
             // imagine we are at the origin with no velocity,
             // compute the relative velocity of the other vehicle
-             Vector3 myVelocity = Velocity;
-             Vector3 otherVelocity = other.Velocity;
-             Vector3 relVelocity = otherVelocity - myVelocity;
-             float relSpeed = relVelocity.magnitude;
+            Vector3 myVelocity = Velocity;
+            Vector3 otherVelocity = other.Velocity;
+            Vector3 relVelocity = otherVelocity - myVelocity;
+            float relSpeed = relVelocity.magnitude;
 
             // for parallel paths, the vehicles will always be at the same distance,
             // so return 0 (aka "now") since "there is no time like the present"
@@ -507,12 +507,12 @@ namespace OpenSteer
             // the nearest approach.
 
             // Take the unit tangent along the other vehicle's path
-             Vector3 relTangent = relVelocity / relSpeed;
+            Vector3 relTangent = relVelocity / relSpeed;
 
             // find distance from its path to origin (compute offset from
             // other to us, find length of projection onto path)
-             Vector3 relPosition = Position - other.Position;
-             float projection = Vector3.Dot(relTangent, relPosition);
+            Vector3 relPosition = Position - other.Position;
+            float projection = Vector3.Dot(relTangent, relPosition);
 
             return projection / relSpeed;
         }
@@ -526,11 +526,11 @@ namespace OpenSteer
        
         float computeNearestApproachPositions (Vehicle other, float time)
         {
-             Vector3    myTravel =       Forward *       Speed * time;
-             Vector3 otherTravel = other.Forward * other.Speed * time;
+            Vector3    myTravel =       Forward *       Speed * time;
+            Vector3 otherTravel = other.Forward * other.Speed * time;
 
-             Vector3    myFinal =       Position  +    myTravel;
-             Vector3 otherFinal = other.Position  + otherTravel;
+            Vector3    myFinal =       Position  +    myTravel;
+            Vector3 otherFinal = other.Position  + otherTravel;
 
             // xxx for annotation
             ourPositionAtNearestApproach = myFinal;
@@ -590,8 +590,8 @@ namespace OpenSteer
             }
             else
             {
-                 Vector3 offset = other.Position - Position;
-                 float distanceSquared = offset.sqrMagnitude;
+                Vector3 offset = other.Position - Position;
+                float distanceSquared = offset.sqrMagnitude;
 
                 // definitely in neighborhood if inside minDistance sphere
                 if (distanceSquared < (minDistance * minDistance))
@@ -619,9 +619,6 @@ namespace OpenSteer
 
         // ----------------------------------------------------------------------------
         // Separation behavior: steer away from neighbors
-
-
-       
         public Vector3 steerForSeparation ( float maxDistance, float cosMaxAngle, ArrayList flock)
         {
             // steering accumulator and count of neighbors, both initially zero
@@ -751,21 +748,21 @@ namespace OpenSteer
         public Vector3 steerForPursuit ( Vehicle quarry, float maxPredictionTime)
         {
             // offset from this to quarry, that distance, unit vector toward quarry
-             Vector3 offset = quarry.Position - Position;
-             float distance = offset.magnitude;
-             Vector3 unitOffset = offset / distance;
+            Vector3 offset = quarry.Position - Position;
+            float distance = offset.magnitude;
+            Vector3 unitOffset = offset / distance;
 
             // how parallel are the paths of "this" and the quarry
             // (1 means parallel, 0 is pependicular, -1 is anti-parallel)
-             float parallelness = Vector3.Dot(Forward, quarry.Forward);
+            float parallelness = Vector3.Dot(Forward, quarry.Forward);
 
             // how "forward" is the direction to the quarry
             // (1 means dead ahead, 0 is directly to the side, -1 is straight back)
-             float forwardness = Vector3.Dot(Forward, unitOffset);
+            float forwardness = Vector3.Dot(Forward, unitOffset);
 
-             float directTravelTime = distance / Speed;
-             int f = intervalComparison (forwardness,  -0.707f, 0.707f);
-             int p = intervalComparison (parallelness, -0.707f, 0.707f);
+            float directTravelTime = distance / Speed;
+            int f = intervalComparison (forwardness,  -0.707f, 0.707f);
+            int p = intervalComparison (parallelness, -0.707f, 0.707f);
 
             float timeFactor = 0; // to be filled in below
             Color color = Color.black;           // to be filled in below (xxx just for debugging)
@@ -775,67 +772,67 @@ namespace OpenSteer
             // [parallel, perpendicular, or anti-parallel] to us.
             switch (f)
             {
-            case +1:
-                switch (p)
-                {
-                case +1:          // ahead, parallel
-                    timeFactor = 4;
-                    color = Color.black;
+                case +1:
+                    switch (p)
+                    {
+                    case +1:          // ahead, parallel
+                        timeFactor = 4;
+                        color = Color.black;
+                        break;
+                    case 0:           // ahead, perpendicular
+                        timeFactor = 1.8f;
+                        color = Color.gray;
+                        break;
+                    case -1:          // ahead, anti-parallel
+                        timeFactor = 0.85f;
+                        color = Color.white;
+                        break;
+                    }
                     break;
-                case 0:           // ahead, perpendicular
-                    timeFactor = 1.8f;
-                    color = Color.gray;
+                case 0:
+                    switch (p)
+                    {
+                    case +1:          // aside, parallel
+                        timeFactor = 1;
+                        color = Color.red;
+                        break;
+                    case 0:           // aside, perpendicular
+                        timeFactor = 0.8f;
+                        color = Color.yellow;
+                        break;
+                    case -1:          // aside, anti-parallel
+                        timeFactor = 4;
+                        color = Color.green;
+                        break;
+                    }
                     break;
-                case -1:          // ahead, anti-parallel
-                    timeFactor = 0.85f;
-                    color = Color.white;
+                case -1:
+                    switch (p)
+                    {
+                    case +1:          // behind, parallel
+                        timeFactor = 0.5f;
+                        color = Color.cyan;
+                        break;
+                    case 0:           // behind, perpendicular
+                        timeFactor = 2;
+                        color = Color.blue;
+                        break;
+                    case -1:          // behind, anti-parallel
+                        timeFactor = 2;
+                        color = Color.magenta;
+                        break;
+                    }
                     break;
-                }
-                break;
-            case 0:
-                switch (p)
-                {
-                case +1:          // aside, parallel
-                    timeFactor = 1;
-                    color = Color.red;
-                    break;
-                case 0:           // aside, perpendicular
-                    timeFactor = 0.8f;
-                    color = Color.yellow;
-                    break;
-                case -1:          // aside, anti-parallel
-                    timeFactor = 4;
-                    color = Color.green;
-                    break;
-                }
-                break;
-            case -1:
-                switch (p)
-                {
-                case +1:          // behind, parallel
-                    timeFactor = 0.5f;
-                    color = Color.cyan;
-                    break;
-                case 0:           // behind, perpendicular
-                    timeFactor = 2;
-                    color = Color.blue;
-                    break;
-                case -1:          // behind, anti-parallel
-                    timeFactor = 2;
-                    color = Color.magenta;
-                    break;
-                }
-                break;
             }
 
             // estimated time until intercept of quarry
-             float et = directTravelTime * timeFactor;
+            float et = directTravelTime * timeFactor;
 
             // xxx experiment, if kept, this limit should be an argument
-             float etl = (et > maxPredictionTime) ? maxPredictionTime : et;
+            float etl = (et > maxPredictionTime) ? maxPredictionTime : et;
 
             // estimated position of quarry at intercept
-             Vector3 target = quarry.predictFuturePosition (etl);
+            Vector3 target = quarry.predictFuturePosition (etl);
 
             // annotation
             annotationLine (Position,
@@ -853,15 +850,15 @@ namespace OpenSteer
         public Vector3 steerForEvasion ( Vehicle menace, float maxPredictionTime)
         {
             // offset from this to menace, that distance, unit vector toward menace
-             Vector3 offset = menace.Position - Position;
-             float distance = offset.magnitude;
+            Vector3 offset = menace.Position - Position;
+            float distance = offset.magnitude;
 
-             float roughTime = distance / menace.Speed;
-             float predictionTime = ((roughTime > maxPredictionTime) ?
+            float roughTime = distance / menace.Speed;
+            float predictionTime = ((roughTime > maxPredictionTime) ?
                                           maxPredictionTime :
                                           roughTime);
 
-             Vector3 target = menace.predictFuturePosition (predictionTime);
+            Vector3 target = menace.predictFuturePosition (predictionTime);
 
             return steerForFlee (target);
         }
@@ -970,8 +967,6 @@ namespace OpenSteer
             if (x > upperBound) return +1;
             return 0;
         }
-
-        
 
         public float square (float x)
         {
