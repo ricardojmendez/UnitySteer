@@ -41,6 +41,9 @@ namespace UnitySteer
 	// TODO: Alter use of this and SimpleVehicle to apply forces when using Rigidbody in stead of MovePosition
     public class Vehicle
     {
+        ArrayList neighbors = new ArrayList();
+
+        
 		private Transform transform;
 		private Rigidbody rigidbody;
 		private float transformMass, radius, speed, maxSpeed, maxForce;
@@ -61,7 +64,13 @@ namespace UnitySteer
 			this.rigidbody = rigidbody;
 		}
 		
-		
+		public ArrayList Neighbors
+        {
+            get
+            {
+                return neighbors;
+            }
+        }
 		
 		public Vector3 Position
 		{

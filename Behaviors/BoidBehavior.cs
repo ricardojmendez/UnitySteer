@@ -4,12 +4,9 @@ using UnitySteer;
 using UnitySteer.Vehicles;
 
 [RequireComponent(typeof(SphereCollider))]
-public class BoidBehavior : MonoBehaviour {
-    
-    static BruteForceProximityDatabase pd;
+public class BoidBehavior : MonoBehaviour, IAmVehicle {
     static Hashtable obstacles;
-    
-    
+
     Boid boid;
     
     public LayerMask ObstacleLayer;
@@ -30,24 +27,29 @@ public class BoidBehavior : MonoBehaviour {
     
     public float maxSpeed =  3f;
     public float maxForce = 15f;
-
+    
+    public Vehicle Vehicle
+    {
+        get
+        {
+            return boid;
+        }
+    }
+    
 	// Use this for initialization
 	void Start () {
-	    if (pd == null)
-	        pd = new BruteForceProximityDatabase();
-	        
 	    if (obstacles == null)
 	        obstacles = new Hashtable();
 	    
 		if( rigidbody == null )
 		{
-			Debug.Log( "Boid: Transform" );
-	    	boid = new Boid(transform,1.0f,pd, MovesVertically);
+			// Debug.Log( "Boid: Transform" );
+	    	boid = new Boid(transform, 1.0f, MovesVertically);
 		}
 		else
 		{
-			Debug.Log( "Boid: Rigidbody" );
-	    	boid = new Boid(rigidbody,pd, MovesVertically);
+			// Debug.Log( "Boid: Rigidbody" );
+	    	boid = new Boid(rigidbody, MovesVertically);
 		}
 	    // vehicle.randomizeHeadingOnXZPlane();
 	    
@@ -86,7 +88,7 @@ public class BoidBehavior : MonoBehaviour {
 	
 	void HandleVisibility(GameObject other, bool visible)
 	{
-	    Debug.Log(other.layer + " " + ObstacleLayer.value);
+	    //Debug.Log(other.layer + " " + ObstacleLayer.value);
         if ((1 << other.layer & ObstacleLayer) > 0)
         {
             SphericalObstacle o;
@@ -103,9 +105,7 @@ public class BoidBehavior : MonoBehaviour {
             else
                 boid.Obstacles.Remove(o);
         }
-	    
 	}
-	
 	
 	SphericalObstacle CreateObstacle(Transform obstacleTransform)
 	{

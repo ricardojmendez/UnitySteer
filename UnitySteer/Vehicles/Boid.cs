@@ -49,13 +49,8 @@ namespace UnitySteer.Vehicles {
 
         // allocate one and share amoung instances just to save memory usage
         // (change to per-instance allocation to be more MP-safe)
-        static ArrayList neighbors = new ArrayList();
         static float worldRadius;
         static int boundaryCondition;
-        
-        // a pointer to this boid's interface object for the proximity database
-        AbstractTokenForProximityDatabase   proximityToken;
-        AbstractProximityDatabase           proximity;
         
         public float separationRadius =  5.0f;
         public float separationAngle  = -0.707f;
@@ -69,40 +64,27 @@ namespace UnitySteer.Vehicles {
         public float cohesionAngle  = -0.15f;
         public float cohesionWeight = 8.0f;
         
-        public Boid ( Transform transform, float mass, AbstractProximityDatabase pd, bool movesVertically) : base( transform, mass )
+        public Boid (Transform transform, float mass, bool movesVertically) : base( transform, mass )
         {
             this.MovesVertically = movesVertically;
-            // allocate a token for this boid in the proximity database
-            proximityToken = null;
-            newPD (pd);
 
             // reset all boid state
             reset ();
         }
 
-        public Boid ( Rigidbody rigidbody, AbstractProximityDatabase pd, bool movesVertically) : base( rigidbody )
+        public Boid ( Rigidbody rigidbody, bool movesVertically) : base( rigidbody )
         {
             this.MovesVertically = movesVertically;
-            // allocate a token for this boid in the proximity database
-            proximityToken = null;
-            newPD (pd);
 
             // reset all boid state
             reset ();
         }
         
         // constructor
-        public Boid (Transform transform, float mass, AbstractProximityDatabase pd): this(transform, mass, pd, true){}
-        public Boid (Rigidbody rigidbody, AbstractProximityDatabase pd): this(rigidbody, pd, true){}
+        public Boid (Transform transform, float mass): this(transform, mass, true){}
+        public Boid (Rigidbody rigidbody): this(rigidbody, true){}
 
 
-        // destructor
-        ~Boid ()
-        {
-            // delete this boid's token in the proximity database
-            proximity.RemoveToken(proximityToken);
-        }
-        
         // cycle through various boundary conditions
         static void nextBoundaryCondition ()
         {
@@ -123,8 +105,6 @@ namespace UnitySteer.Vehicles {
 	        Forward = Random.insideUnitCircle;
             // randomize initial position
             Position = Random.insideUnitSphere * 10;
-            // notify proximity database that our position has changed
-            proximityToken.updateForNewPosition(Position);
         }
         
         
@@ -138,32 +118,22 @@ namespace UnitySteer.Vehicles {
                 Debug.Log("Avoiding "+avoid);
             }
             applySteeringForce (steerToFlock () + handleBoundary() + avoid, elapsedTime);
-            // notify proximity database that our position has changed
-            proximityToken.updateForNewPosition (Position);
         }
 
 
         // basic flocking
         Vector3 steerToFlock ()
         {
-            float maxRadius = Mathf.Max(separationRadius,
-                                        Mathf.Max(alignmentRadius,
-                                                  cohesionRadius));
-
-            // find all flockmates within maxRadius using proximity database
-            neighbors.Clear();
-            proximityToken.findNeighbors (Position, maxRadius, neighbors);
-
             // determine each of the three component behaviors of flocking
             Vector3 separation = steerForSeparation (separationRadius,
                                                      separationAngle,
-                                                     neighbors);
+                                                     Neighbors);
             Vector3 alignment  = steerForAlignment  (alignmentRadius,
                                                      alignmentAngle,
-                                                     neighbors);
+                                                     Neighbors);
             Vector3 cohesion   = steerForCohesion   (cohesionRadius,
                                                      cohesionAngle,
-                                                     neighbors);
+                                                     Neighbors);
 
             // apply weights to components (save in variables for annotation)
             Vector3 separationW = separation * separationWeight;
@@ -220,13 +190,6 @@ namespace UnitySteer.Vehicles {
 //            regenerateLocalSpaceForBanking (newVelocity, elapsedTime);
         }
 
-        // switch to new proximity database -- just for demo purposes
-        void newPD (AbstractProximityDatabase pd)
-        {
-            // allocate a token for this boid in the proximity database
-            proximity = pd;
-            proximityToken = pd.allocateToken (this);
-        }
 
     };
 }

@@ -619,7 +619,7 @@ namespace UnitySteer
 
         // ----------------------------------------------------------------------------
         // Separation behavior: steer away from neighbors
-        public Vector3 steerForSeparation ( float maxDistance, float cosMaxAngle, ArrayList flock)
+        public Vector3 steerForSeparation (float maxDistance, float cosMaxAngle, ArrayList flock)
         {
             // steering accumulator and count of neighbors, both initially zero
             Vector3 steering=Vector3.zero;
