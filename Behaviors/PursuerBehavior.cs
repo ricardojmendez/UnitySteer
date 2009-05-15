@@ -10,7 +10,7 @@ public class PursuerBehavior : MonoBehaviour {
     public WanderBehavior wanderer;
 
 	void Start () {
-	    pursuer = new MpPursuer(wanderer.wanderer);
+	    pursuer = new MpPursuer( transform, 1.0f, wanderer.wanderer);
 	}
 	
 	// Update is called once per frame

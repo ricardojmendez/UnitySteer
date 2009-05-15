@@ -39,7 +39,7 @@ using UnityEngine;
 
 namespace OpenSteer
 {
-    public class SteerLibrary : AbstractVehicle
+    public class SteerLibrary : Vehicle
     {
         // Randomiser
         System.Random randomGenerator;
@@ -65,6 +65,11 @@ namespace OpenSteer
             //public Vector3 surfaceNormal;
             public SphericalObstacle obstacle;
         };
+
+
+		public SteerLibrary( Transform transform, float mass ) : base( transform, mass ){}
+		public SteerLibrary( Rigidbody rigidbody ) : base( rigidbody ){}
+			// TODO: Consider doing a call to resetSteering() within these?
         
 
         // reset state
@@ -88,20 +93,20 @@ namespace OpenSteer
         {
             Vector3 targetDirection = (target - Position);
             targetDirection.Normalize ();
-            return (Vector3.Dot(forward(), targetDirection) > cosThreshold);
+            return (Vector3.Dot(Forward, targetDirection) > cosThreshold);
         }
         bool isAside ( Vector3 target, float cosThreshold) 
         {
             Vector3 targetDirection = (target - Position);
             targetDirection.Normalize ();
-             float dp = Vector3.Dot(forward(), targetDirection);
+             float dp = Vector3.Dot(Forward, targetDirection);
             return (dp < cosThreshold) && (dp > -cosThreshold);
         }
         bool isBehind ( Vector3 target, float cosThreshold) 
         {
             Vector3 targetDirection = (target - Position);
             targetDirection.Normalize ();
-            return Vector3.Dot(forward(), targetDirection) < cosThreshold;
+            return Vector3.Dot(Forward, targetDirection) < cosThreshold;
         }
 
             // called when steerToAvoidObstacles decides steering is required
@@ -118,13 +123,13 @@ namespace OpenSteer
 
         // called when steerToAvoidCloseNeighbors decides steering is required
         // (default action is to do nothing, layered classes can overload it)
-        public virtual void annotateAvoidCloseNeighbor(AbstractVehicle otherVehicle, float seperationDistance)
+        public virtual void annotateAvoidCloseNeighbor(Vehicle otherVehicle, float seperationDistance)
         {
         }
 
         // called when steerToAvoidNeighbors decides steering is required
         // (default action is to do nothing, layered classes can overload it)
-        public virtual void annotateAvoidNeighbor (  AbstractVehicle vehicle, float steer,Vector3 position, Vector3 threatPosition)
+        public virtual void annotateAvoidNeighbor (  Vehicle vehicle, float steer,Vector3 position, Vector3 threatPosition)
         {
         }
 
@@ -136,7 +141,7 @@ namespace OpenSteer
             WanderUp   = scalarRandomWalk (WanderUp,   speed, -1, +1);
             
             // return a pure lateral steering vector: (+/-Side) + (+/-Up)
-            Vector3  result = (side() * WanderSide) + (up() * WanderUp);
+            Vector3  result = (Side * WanderSide) + (Up * WanderUp);
             // result = result * 10;
             //Debug.Log("Wander "+dt+" "+speed+" "+result);
             return result;
@@ -146,7 +151,7 @@ namespace OpenSteer
         public Vector3 steerForSeek(Vector3 target)
         {
              Vector3 desiredVelocity = target - Position;
-            return desiredVelocity - velocity();
+            return desiredVelocity - Velocity;
         }
 
 
@@ -158,7 +163,7 @@ namespace OpenSteer
         public Vector3 steerForFlee(Vector3 target)
         {
             Vector3 desiredVelocity = Position- target;
-            return desiredVelocity - velocity();
+            return desiredVelocity - Velocity;
         }
 
 
@@ -171,8 +176,8 @@ namespace OpenSteer
         {
         //   Vector3 offset = position - target;
              Vector3 offset = Position - target;
-             Vector3 desiredVelocity = truncateLength(offset, maxSpeed());// offset.truncateLength(maxSpeed()); //xxxnew
-            return desiredVelocity - velocity();
+             Vector3 desiredVelocity = truncateLength(offset, MaxSpeed);// offset.truncateLength(MaxSpeed); //xxxnew
+            return desiredVelocity - Velocity;
         }
 
 
@@ -181,8 +186,8 @@ namespace OpenSteer
         {
         //   Vector3 offset = target - position;
              Vector3 offset = target - Position;
-             Vector3 desiredVelocity = truncateLength(offset, maxSpeed());// offset.truncateLength(maxSpeed()); //xxxnew
-            return desiredVelocity - velocity();
+             Vector3 desiredVelocity = truncateLength(offset, MaxSpeed);// offset.truncateLength(MaxSpeed); //xxxnew
+            return desiredVelocity - Velocity;
         }
 
 
@@ -225,7 +230,7 @@ namespace OpenSteer
         public Vector3 steerToFollowPath(int direction, float predictionTime, Pathway path)
         {
             // our goal will be offset from our path distance by this amount
-             float pathDistanceOffset = direction * predictionTime * speed();
+             float pathDistanceOffset = direction * predictionTime * Speed;
 
             // predict our future position
              Vector3 futurePosition = predictFuturePosition (predictionTime);
@@ -301,7 +306,7 @@ namespace OpenSteer
 
             // XXX more annotation modularity problems (assumes spherical obstacle)
             if (avoidance != Vector3.zero)
-                annotateAvoidObstacle (minTimeToCollision * speed());
+                annotateAvoidObstacle (minTimeToCollision * Speed);
 
             return avoidance;
         }
@@ -320,7 +325,7 @@ namespace OpenSteer
             nearest = new PathIntersection();
             next = new PathIntersection();
 
-             float minDistanceToCollision = minTimeToCollision * speed();
+             float minDistanceToCollision = minTimeToCollision * Speed;
 
              next.intersect = 0; // false;
              nearest.intersect = 0;// false;
@@ -356,12 +361,12 @@ namespace OpenSteer
                 // forward direction), set length to maxForce, add a bit of forward
                 // component (in capture the flag, we never want to slow down)
                  Vector3 offset = Position - nearest.obstacle.center;
-                //avoidance = offset.perpendicularComponent (forward());
-                 avoidance =  OpenSteerUtility.perpendicularComponent( offset,forward());
+                //avoidance = offset.perpendicularComponent (Forward);
+                 avoidance =  OpenSteerUtility.perpendicularComponent( offset,Forward);
 
                 avoidance.Normalize();//.normalize ();
-                avoidance *= maxForce ();
-                avoidance += forward() * maxForce () * 0.75f;
+                avoidance *= MaxForce;
+                avoidance += Forward * MaxForce * 0.75f;
             }
 
             return avoidance;
@@ -385,7 +390,7 @@ namespace OpenSteer
 
             // otherwise, go on to consider potential future collisions
             float steer = 0;
-            AbstractVehicle threat = null;
+            Vehicle threat = null;
 
             // Time (in seconds) until the most immediate collision threat found
             // so far.  Initial value is a threshold: don't look more than this
@@ -401,11 +406,11 @@ namespace OpenSteer
             //for (AVIterator i = others.begin(); i != others.end(); i++)
             for (int i=0;i<others.Count;i++)
             {
-                AbstractVehicle other = (AbstractVehicle) others[i];
+                Vehicle other = (Vehicle) others[i];
                 if (other != this)
                 {	
                     // avoid when future positions are this close (or less)
-                     float collisionDangerThreshold = radius() * 2;
+                     float collisionDangerThreshold = Radius * 2;
 
                     // predicted time until nearest approach of "this" and "other"
                      float time = predictNearestApproachTime (other);
@@ -434,7 +439,7 @@ namespace OpenSteer
             if (threat != null)
             {
                 // parallel: +1, perpendicular: 0, anti-parallel: -1
-                float parallelness = Vector3.Dot(forward(), threat.forward());
+                float parallelness = Vector3.Dot(Forward, threat.Forward);
                 float angle = 0.707f;
 
                 if (parallelness < -angle)
@@ -442,7 +447,7 @@ namespace OpenSteer
                     // anti-parallel "head on" paths:
                     // steer away from future threat position
                     Vector3 offset = xxxThreatPositionAtNearestApproach - Position;
-                    float sideDot = Vector3.Dot(offset, side());
+                    float sideDot = Vector3.Dot(offset, Side);
                     steer = (sideDot > 0) ? -1.0f : 1.0f;
                 }
                 else
@@ -451,16 +456,16 @@ namespace OpenSteer
                     {
                         // parallel paths: steer away from threat
                         Vector3 offset = threat.Position - Position;
-                        float sideDot = Vector3.Dot(offset, side());
+                        float sideDot = Vector3.Dot(offset, Side);
                         steer = (sideDot > 0) ? -1.0f : 1.0f;
                     }
                     else
                     {
                         // perpendicular paths: steer behind threat
                         // (only the slower of the two does this)
-                        if (threat.speed() <= speed())
+                        if (threat.Speed <= Speed)
                         {
-                            float sideDot = Vector3.Dot(side(), threat.velocity());
+                            float sideDot = Vector3.Dot(Side, threat.Velocity);
                             steer = (sideDot > 0) ? -1.0f : 1.0f;
                         }
                     }
@@ -472,7 +477,7 @@ namespace OpenSteer
                                        xxxThreatPositionAtNearestApproach);
             }
 
-            return side() * steer;
+            return Side * steer;
         }
 
 
@@ -483,12 +488,12 @@ namespace OpenSteer
         // XXX should this return zero if they are already in contact?
 
        
-        float predictNearestApproachTime (AbstractVehicle other)
+        float predictNearestApproachTime (Vehicle other)
         {
             // imagine we are at the origin with no velocity,
             // compute the relative velocity of the other vehicle
-             Vector3 myVelocity = velocity();
-             Vector3 otherVelocity = other.velocity();
+             Vector3 myVelocity = Velocity;
+             Vector3 otherVelocity = other.Velocity;
              Vector3 relVelocity = otherVelocity - myVelocity;
              float relSpeed = relVelocity.magnitude;
 
@@ -519,10 +524,10 @@ namespace OpenSteer
 
 
        
-        float computeNearestApproachPositions (AbstractVehicle other, float time)
+        float computeNearestApproachPositions (Vehicle other, float time)
         {
-             Vector3    myTravel =       forward () *       speed () * time;
-             Vector3 otherTravel = other.forward () * other.speed () * time;
+             Vector3    myTravel =       Forward *       Speed * time;
+             Vector3 otherTravel = other.Forward * other.Speed * time;
 
              Vector3    myFinal =       Position  +    myTravel;
              Vector3 otherFinal = other.Position  + otherTravel;
@@ -551,10 +556,10 @@ namespace OpenSteer
             //for (AVIterator i = others.begin(); i != others.end(); i++)    
             for (int i=0;i<others.Count;i++)
             {
-                AbstractVehicle other = (AbstractVehicle) others[i];
+                Vehicle other = (Vehicle) others[i];
                 if (other != this)
                 {
-                     float sumOfRadii = radius() + other.radius();
+                     float sumOfRadii = Radius + other.Radius;
                      float minCenterToCenter = minSeparationDistance + sumOfRadii;
                      Vector3 offset = other.Position - Position;
                      float currentDistance = offset.magnitude;
@@ -562,7 +567,7 @@ namespace OpenSteer
                     if (currentDistance < minCenterToCenter)
                     {
                         annotateAvoidCloseNeighbor (other, minSeparationDistance);
-                        return OpenSteerUtility.perpendicularComponent(-offset,forward());
+                        return OpenSteerUtility.perpendicularComponent(-offset,Forward);
                     }
                 }
             }
@@ -577,7 +582,7 @@ namespace OpenSteer
 
 
        
-        bool inBoidNeighborhood ( AbstractVehicle other, float minDistance, float maxDistance, float cosMaxAngle)
+        bool inBoidNeighborhood ( Vehicle other, float minDistance, float maxDistance, float cosMaxAngle)
         {
             if (other == this)
             {
@@ -604,7 +609,7 @@ namespace OpenSteer
                     {
                         // otherwise, test angular offset from forward axis
                          Vector3 unitOffset = offset / (float) System.Math.Sqrt (distanceSquared);
-                         float forwardness = Vector3.Dot(forward(), unitOffset);
+                         float forwardness = Vector3.Dot(Forward, unitOffset);
                         return forwardness > cosMaxAngle;
                     }
                 }
@@ -627,8 +632,8 @@ namespace OpenSteer
             //for (AVIterator other = flock.begin(); other != flock.end(); other++)
             for (int i = 0; i < flock.Count; i++)
             {
-                AbstractVehicle other = (AbstractVehicle)flock[i];
-                if (inBoidNeighborhood (other, radius()*3, maxDistance, cosMaxAngle))
+                Vehicle other = (Vehicle)flock[i];
+                if (inBoidNeighborhood (other, Radius*3, maxDistance, cosMaxAngle))
                 {
                     // add in steering contribution
                     // (opposite of the offset direction, divided once by distance
@@ -667,12 +672,12 @@ namespace OpenSteer
             //for (AVIterator other = flock.begin(); other != flock.end(); other++)
             for (int i=0;i<flock.Count;i++)
             {
-                AbstractVehicle other = (AbstractVehicle) flock[i];
+                Vehicle other = (Vehicle) flock[i];
 
-                if (inBoidNeighborhood (other, radius()*3, maxDistance, cosMaxAngle))
+                if (inBoidNeighborhood (other, Radius*3, maxDistance, cosMaxAngle))
                 {
                     // accumulate sum of neighbor's heading
-                    steering += other.forward();
+                    steering += other.Forward;
 
                     // count neighbors
                     neighbors++;
@@ -683,7 +688,7 @@ namespace OpenSteer
             // correcting direction, then normalize to pure direction
             if (neighbors > 0)
             {
-                steering = ((steering / (float)neighbors) - forward());
+                steering = ((steering / (float)neighbors) - Forward);
                 steering.Normalize();
             }
 
@@ -707,9 +712,9 @@ namespace OpenSteer
            // for (AVIterator other = flock.begin(); other != flock.end(); other++)
             for (int i = 0; i < flock.Count; i++)
             {
-                AbstractVehicle other = (AbstractVehicle)flock[i];
+                Vehicle other = (Vehicle)flock[i];
 
-                if (inBoidNeighborhood (other, radius()*3, maxDistance, cosMaxAngle))
+                if (inBoidNeighborhood (other, Radius*3, maxDistance, cosMaxAngle))
                 {
                     // accumulate sum of neighbor's positions
                     steering += other.Position;
@@ -736,14 +741,14 @@ namespace OpenSteer
 
 
        
-        public Vector3 steerForPursuit ( AbstractVehicle quarry)
+        public Vector3 steerForPursuit ( Vehicle quarry)
         {
             return steerForPursuit (quarry, float.MaxValue);
         }
 
 
        
-        public Vector3 steerForPursuit ( AbstractVehicle quarry, float maxPredictionTime)
+        public Vector3 steerForPursuit ( Vehicle quarry, float maxPredictionTime)
         {
             // offset from this to quarry, that distance, unit vector toward quarry
              Vector3 offset = quarry.Position - Position;
@@ -752,13 +757,13 @@ namespace OpenSteer
 
             // how parallel are the paths of "this" and the quarry
             // (1 means parallel, 0 is pependicular, -1 is anti-parallel)
-             float parallelness = Vector3.Dot(forward(), quarry.forward());
+             float parallelness = Vector3.Dot(Forward, quarry.Forward);
 
             // how "forward" is the direction to the quarry
             // (1 means dead ahead, 0 is directly to the side, -1 is straight back)
-             float forwardness = Vector3.Dot(forward(), unitOffset);
+             float forwardness = Vector3.Dot(Forward, unitOffset);
 
-             float directTravelTime = distance / speed ();
+             float directTravelTime = distance / Speed;
              int f = intervalComparison (forwardness,  -0.707f, 0.707f);
              int p = intervalComparison (parallelness, -0.707f, 0.707f);
 
@@ -845,13 +850,13 @@ namespace OpenSteer
 
 
        
-        public Vector3 steerForEvasion ( AbstractVehicle menace, float maxPredictionTime)
+        public Vector3 steerForEvasion ( Vehicle menace, float maxPredictionTime)
         {
             // offset from this to menace, that distance, unit vector toward menace
              Vector3 offset = menace.Position - Position;
              float distance = offset.magnitude;
 
-             float roughTime = distance / menace.speed();
+             float roughTime = distance / menace.Speed;
              float predictionTime = ((roughTime > maxPredictionTime) ?
                                           maxPredictionTime :
                                           roughTime);
@@ -870,9 +875,9 @@ namespace OpenSteer
        
         public Vector3 steerForTargetSpeed ( float targetSpeed)
         {
-             float mf = maxForce ();
-             float speedError = targetSpeed - speed ();
-             return forward () * OpenSteerUtility.clip (speedError, -mf, +mf);
+             float mf = MaxForce;
+             float speedError = targetSpeed - Speed;
+             return Forward * OpenSteerUtility.clip (speedError, -mf, +mf);
         }
 
 
@@ -899,12 +904,12 @@ namespace OpenSteer
             intersection.obstacle = obs;
 
             // find "local center" (lc) of sphere in boid's coordinate space
-            lc = localizePosition (obs.center);
+            lc = LocalizePosition (obs.center);
 
             // computer line-sphere intersection parameters
             b = -2 * lc.z;
             c = square (lc.x) + square (lc.y) + square (lc.z) - 
-                square (obs.radius + radius());
+                square (obs.radius + Radius);
             d = (b * b) - (4 * c);
 
             // when the path does not intersect the sphere

@@ -52,15 +52,16 @@ namespace OpenSteer.Vehicles
     public class MpBase : SimpleVehicle
     {
         // constructor
-        public MpBase () {reset ();}
+		public MpBase( Transform transform, float mass ) : base( transform, mass ){ reset(); }
+		public MpBase( Rigidbody rigidbody ) : base( rigidbody ){ reset(); }
 
         // reset state
-        void reset ()
+        new void reset ()
         {
             base.reset (); // reset the vehicle 
-            setSpeed (5);            // speed along Forward direction.
-            setMaxForce (55.0f);       // steering force is clipped to this magnitude
-            setMaxSpeed (13.0f);       // velocity is clipped to this magnitude
+            Speed = 5.0f;            // speed along Forward direction.
+            MaxForce = 55.0f;       // steering force is clipped to this magnitude
+            MaxSpeed = 13.0f;       // velocity is clipped to this magnitude
             // TODO-REMOVE
             // clearTrailHistory ();    // prevent long streaks due to teleportation 
             // gaudyPursuitAnnotation = true; // select use of 9-color annotation
@@ -71,11 +72,12 @@ namespace OpenSteer.Vehicles
     public class MpWanderer : MpBase
     {
         // constructor
-        public MpWanderer () {reset ();}
+		public MpWanderer( Transform transform, float mass ) : base( transform, mass ){ reset(); }
+		public MpWanderer( Rigidbody rigidbody ) : base( rigidbody ){ reset(); }
         
 
         // reset state
-        void reset ()
+        new void reset ()
         {
             base.reset ();
         }
@@ -85,7 +87,7 @@ namespace OpenSteer.Vehicles
         {
             Vector3 wander2d = steerForWander (elapsedTime);
             wander2d.y = 0;
-            Vector3 steer = forward() + (wander2d * 3);
+            Vector3 steer = Forward + (wander2d * 3);
             applySteeringForce (steer, elapsedTime);
 
             // for annotation
@@ -98,16 +100,21 @@ namespace OpenSteer.Vehicles
     public class MpPursuer : MpBase
     {
         MpWanderer wanderer;
-        
-        // constructor
-        public MpPursuer (MpWanderer w) 
-        {
+
+		public MpPursuer( Transform transform, float mass, MpWanderer w ) : base( transform, mass )
+		{
             wanderer = w; 
             reset ();
-        }
+		}
+		
+		public MpPursuer( Rigidbody rigidbody, MpWanderer w ) : base( rigidbody )
+		{
+            wanderer = w; 
+            reset ();
+		}
 
         // reset state
-        void reset ()
+        new void reset ()
         {
             base.reset ();
             randomizeStartingPositionAndHeading ();
@@ -118,7 +125,7 @@ namespace OpenSteer.Vehicles
         {
             // when pursuer touches quarry ("wanderer"), reset its position
             float d = Vector3.Distance(Position, wanderer.Position);
-            float r = radius() + wanderer.radius();
+            float r = Radius + wanderer.Radius;
             if (d < r) reset ();
 
             float maxTime = 20f; // xxx hard-to-justify value
@@ -144,7 +151,8 @@ namespace OpenSteer.Vehicles
             Position = wanderer.Position + randomOnRing;
 
             // randomize 2D heading
-            randomizeHeadingOnXZPlane ();
+//            randomizeHeadingOnXZPlane ();
+				// TODO: Check consequences. Figure something out, dude!
         }
     };
 

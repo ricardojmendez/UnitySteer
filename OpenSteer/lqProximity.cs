@@ -67,7 +67,7 @@ namespace OpenSteer
                     lqClientProxy tProxy = (lqClientProxy)tList[i];
                     //tList.ForEach(delegate(lqClientProxy tProxy)
                     //{
-                    results.Add((AbstractVehicle)tProxy.clientObject);
+                    results.Add((Vehicle)tProxy.clientObject);
                     //});
                 }
             }
@@ -94,7 +94,7 @@ namespace OpenSteer
 
 
         // allocate a token to represent a given client object in this database
-        public override AbstractTokenForProximityDatabase allocateToken(AbstractVehicle parentObject)
+        public override AbstractTokenForProximityDatabase allocateToken(Vehicle parentObject)
         {
             return new tokenType(parentObject, this);
         }
@@ -110,12 +110,12 @@ namespace OpenSteer
             return count;
         }
 
-        public override AbstractVehicle getNearestVehicle(Vector3 position,float radius) {
+        public override Vehicle getNearestVehicle(Vector3 position,float radius) {
             lqClientProxy tProxy= lq.lqFindNearestNeighborWithinRadius(position.x, position.y, position.z, radius, null);
-             AbstractVehicle tVehicle=null;
+             Vehicle tVehicle=null;
              if (tProxy != null)
              {
-                 tVehicle = (AbstractVehicle) tProxy.clientObject;
+                 tVehicle = (Vehicle) tProxy.clientObject;
              }
             return tVehicle;
         }

@@ -53,12 +53,12 @@ namespace OpenSteer
         // type for the "tokens" manipulated by this spatial database
         //typedef AbstractTokenForProximityDatabase<ContentType> tokenType;
         // allocate a token to represent a given client object in this database
-        public virtual AbstractTokenForProximityDatabase allocateToken(AbstractVehicle parentObject) { return new AbstractTokenForProximityDatabase(); }
+        public virtual AbstractTokenForProximityDatabase allocateToken(Vehicle parentObject) { return new AbstractTokenForProximityDatabase(); }
 
         // returns the number of tokens in the proximity database
         public virtual int getPopulation() { return 0; }
 
-        public virtual AbstractVehicle getNearestVehicle(Vector3 position, float radius) { return null; }
+        public virtual Vehicle getNearestVehicle(Vector3 position, float radius) { return null; }
 
         public virtual Vector3 getMostPopulatedBinCenter() { return Vector3.zero; } 
         
@@ -81,7 +81,7 @@ namespace OpenSteer
 
         // allocate a token to represent a given client object in this database
         //public override tokenType allocateToken (Object parentObject)
-        public override AbstractTokenForProximityDatabase allocateToken(AbstractVehicle parentObject)
+        public override AbstractTokenForProximityDatabase allocateToken(Vehicle parentObject)
         {
             tokenType tToken=new tokenType (parentObject, this);
             return (AbstractTokenForProximityDatabase)tToken;
@@ -103,11 +103,11 @@ namespace OpenSteer
     public class tokenType : AbstractTokenForProximityDatabase
     {
         BruteForceProximityDatabase bfpd;
-        AbstractVehicle tParentObject;
+        Vehicle tParentObject;
         Vector3 position;
 
         // constructor
-        public tokenType(AbstractVehicle parentObject, BruteForceProximityDatabase pd)
+        public tokenType(Vehicle parentObject, BruteForceProximityDatabase pd)
         {
             // store pointer to our associated database and the object this
             // token represents, and store this token on the database's vector

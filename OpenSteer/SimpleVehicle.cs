@@ -47,11 +47,8 @@ namespace OpenSteer
         float _speed;      // speed along Forward direction.  Because local space
                            // is velocity-aligned, velocity = Forward * Speed
 
-        float maxForce = 27f;   // the maximum steering force this vehicle can apply
+        //float maxForce = 27f;   // the maximum steering force this vehicle can apply
                                 // (steering force is clipped to this magnitude)
-
-        float maxSpeed =  9f;   // the maximum speed this vehicle is allowed to move
-                                // (velocity is clipped to this magnitude)
 
         float _curvature;
         Vector3 _lastForward;
@@ -65,33 +62,44 @@ namespace OpenSteer
         int serialNumber;
         // Constructor
 
-        public SimpleVehicle()
-        {
+		public SimpleVehicle( Transform transform, float mass ) : base( transform, mass )
+		{
             // set inital state
             reset();
 
             // maintain unique serial numbers
             serialNumber = serialNumberCounter++;
-        }
+		}
+		
+		
+		public SimpleVehicle( Rigidbody rigidbody ) : base( rigidbody )
+		{
+            // set inital state
+            reset();
+
+            // maintain unique serial numbers
+            serialNumber = serialNumberCounter++;
+		}
+
 
         // Reset vehicle state
         public virtual void reset ()
         {
             // reset LocalSpace state
-            resetLocalSpace ();
+            ResetLocalSpace ();
 
             // reset SteerLibraryMixin state
             // (XXX this seems really fragile, needs to be redesigned XXX)
             //SimpleVehicle_3.reset ();
             resetSteering();
 
-            setMass (1);          // mass (defaults to 1 so acceleration=force)
-            setSpeed (0);         // speed along Forward direction.
+            Mass = 1.0f;          // mass (defaults to 1 so acceleration=force)
+            Speed = 0.0f;         // speed along Forward direction.
 
-            setRadius (0.5f);     // size of bounding sphere
+            Radius = 0.5f;     // size of bounding sphere
 
-            setMaxForce (0.1f);   // steering force is clipped to this magnitude
-            setMaxSpeed (1.0f);   // velocity is clipped to this magnitude
+            MaxForce = 0.1f;   // steering force is clipped to this magnitude
+            MaxSpeed = 1.0f;   // velocity is clipped to this magnitude
 
             // reset bookkeeping to do running averages of these quanities
             resetSmoothedPosition (Vector3.zero);
@@ -99,23 +107,33 @@ namespace OpenSteer
             resetSmoothedAcceleration(Vector3.zero);
         }
 
+
+		public int SerialNumber
+		{
+			get
+			{
+				return serialNumber;
+			}
+		}
+
+
         // get/set mass
-        public override float mass () {return _mass;}
-        public override float setMass(float m) { return _mass = m; }
+//        public override float mass () {return _mass;}
+//        public override float setMass(float m) { return _mass = m; }
 
         // get velocity of vehicle
-        public override Vector3 velocity() { return forward() * _speed; }
+//        public override Vector3 velocity() { return Forward * _speed; }
 
         // get/set speed of vehicle  (may be faster than taking mag of velocity)
-        public override float speed() { return _speed; }
-        public override float setSpeed(float s) { return _speed = s; }
+//        public override float speed() { return _speed; }
+//        public override float setSpeed(float s) { return _speed = s; }
 
         // size of bounding sphere, for obstacle avoidance, etc.
-        public override float radius() { return _radius; }
-        public override float setRadius(float m) { return _radius = m; }
+//        public override float radius() { return _radius; }
+//        public override float setRadius(float m) { return _radius = m; }
 
         // get/set maxForce
-        public float MaxForce
+        /*public float MaxForce
         {
             get
             {
@@ -125,20 +143,7 @@ namespace OpenSteer
             {
                 maxForce = value;
             }
-        }
-
-        // get/set maxSpeed
-        public float MaxSpeed
-        {
-            get
-            {
-                return maxSpeed;
-            }
-            set
-            {
-                maxSpeed = value;
-            }
-        }
+        }*/
 
         
         public ArrayList Obstacles
@@ -176,12 +181,13 @@ namespace OpenSteer
             return _smoothedPosition = value;
         }
 
-        protected void randomizeHeadingOnXZPlane ()
+	// TODO: Put back in?
+        /*protected void randomizeHeadingOnXZPlane ()
         {
             setUp (Vector3.up);
             setForward (OpenSteerUtility.RandomUnitVectorOnXZPlane ());
-            setSide (localRotateForwardToSide (forward()));
-        }
+            setSide (localRotateForwardToSide (Forward));
+        }*/
         
     
     // From CPP
@@ -202,20 +208,20 @@ namespace OpenSteer
         {
             float maxAdjustedSpeed = 0.2f * MaxSpeed;
 
-            if ((speed () > maxAdjustedSpeed) || (force == Vector3.zero))
+            if ((Speed > maxAdjustedSpeed) || (force == Vector3.zero))
             {
                 return force;
             }
             else
             {
-                float range = speed() / maxAdjustedSpeed;
+                float range = Speed / maxAdjustedSpeed;
                 // const float cosine = interpolate (pow (range, 6), 1.0f, -1.0f);
                 // const float cosine = interpolate (pow (range, 10), 1.0f, -1.0f);
                 // const float cosine = interpolate (pow (range, 20), 1.0f, -1.0f);
                 // const float cosine = interpolate (pow (range, 100), 1.0f, -1.0f);
                 // const float cosine = interpolate (pow (range, 50), 1.0f, -1.0f);
                 float cosine = OpenSteerUtility.interpolate((float) System.Math.Pow(range, 20), 1.0f, -1.0f);
-                return OpenSteerUtility.limitMaxDeviationAngle(force, cosine, forward());
+                return OpenSteerUtility.limitMaxDeviationAngle(force, cosine, Forward);
             }
         }
 
@@ -237,12 +243,12 @@ namespace OpenSteer
 
         void applyBrakingForce (float rate, float deltaTime)
         {
-            float rawBraking = speed () * rate;
+            float rawBraking = Speed * rate;
             float clipBraking = ((rawBraking < MaxForce) ?
                                        rawBraking :
                                        MaxForce);
 
-            setSpeed (speed () - (clipBraking * deltaTime));
+            Speed = Speed - (clipBraking * deltaTime);
         }
 
 
@@ -260,8 +266,8 @@ namespace OpenSteer
             Vector3 clippedForce = truncateLength(adjustedForce, MaxForce);
 
             // compute acceleration and velocity
-            Vector3 newAcceleration = (clippedForce / mass());
-            Vector3 newVelocity = velocity();
+            Vector3 newAcceleration = (clippedForce / Mass);
+            Vector3 newVelocity = Velocity;
 
             // damp out abrupt changes and oscillations in steering acceleration
             // (rate is proportional to time step, then clipped into useful range)
@@ -282,13 +288,14 @@ namespace OpenSteer
             newVelocity = truncateLength(newVelocity, MaxSpeed);
 
             // update Speed
-            setSpeed (newVelocity.magnitude);
+            Speed = newVelocity.magnitude;
 
             // Euler integrate (per frame) velocity into position
             Position += (newVelocity * elapsedTime);
 
             // regenerate local space (by default: align vehicle's forward axis with
             // new velocity, but this behavior may be overridden by derived classes.)
+
             regenerateLocalSpace (newVelocity);//, elapsedTime);
 
             // maintain path curvature information
@@ -307,11 +314,10 @@ namespace OpenSteer
         //
         // parameter names commented out to prevent compiler warning from "-W"
 
-
         void regenerateLocalSpace (Vector3 newVelocity)
         {
             // adjust orthonormal basis vectors to be aligned with new velocity
-            if (speed() > 0) regenerateOrthonormalBasisUF (newVelocity / speed());
+            if (Speed > 0) regenerateOrthonormalBasisUF (newVelocity / Speed);
         }
 
 
@@ -321,7 +327,6 @@ namespace OpenSteer
         // airplanes do
 
         // XXX experimental cwr 6-5-03
-
 
         public void regenerateLocalSpaceForBanking (Vector3 newVelocity, float elapsedTime)
         {
@@ -338,10 +343,11 @@ namespace OpenSteer
 
             // blend bankUp into vehicle's UP basis vector
             float smoothRate = elapsedTime * 3;
-            Vector3 tempUp = up();
+            Vector3 tempUp = Up;
             tempUp=OpenSteerUtility.blendIntoAccumulator(smoothRate, bankUp, tempUp);
             tempUp.Normalize();
-            setUp (tempUp);
+//            setUp (tempUp);
+			Up = tempUp;
 
         //  annotationLine (position(), position() + (globalUp * 4), gWhite);  // XXX
         //  annotationLine (position(), position() + (bankUp   * 4), gOrange); // XXX
@@ -349,7 +355,7 @@ namespace OpenSteer
         //  annotationLine (position(), position() + (up ()    * 1), gYellow); // XXX
 
             // adjust orthonormal basis vectors to be aligned with new velocity
-            if (speed() > 0) regenerateOrthonormalBasisUF (newVelocity / speed());
+            if (Speed > 0) regenerateOrthonormalBasisUF (newVelocity / Speed);
         }
 
 
@@ -362,17 +368,17 @@ namespace OpenSteer
             if (elapsedTime > 0)
             {
                 Vector3 dP = _lastPosition - Position;
-                Vector3 dF = (_lastForward - forward ()) / dP.magnitude;
+                Vector3 dF = (_lastForward - Forward) / dP.magnitude;
                 //SI - BIT OF A WEIRD FIX HERE . NOT SURE IF ITS CORRECT
                 //Vector3 lateral = dF.perpendicularComponent (forward ());
-                Vector3 lateral = OpenSteerUtility.perpendicularComponent( dF,forward());
+                Vector3 lateral = OpenSteerUtility.perpendicularComponent( dF,Forward);
 
-                float sign = (Vector3.Dot(lateral, side()) < 0) ? 1.0f : -1.0f;
+                float sign = (Vector3.Dot(lateral, Side) < 0) ? 1.0f : -1.0f;
                 _curvature = lateral.magnitude * sign;
                 //OpenSteerUtility.blendIntoAccumulator(elapsedTime * 4.0f, _curvature,_smoothedCurvature);
                 _smoothedCurvature=OpenSteerUtility.blendIntoAccumulator(elapsedTime * 4.0f, _curvature, _smoothedCurvature);
 
-                _lastForward = forward ();
+                _lastForward = Forward;
                 _lastPosition = Position;
             }
         }
@@ -382,7 +388,7 @@ namespace OpenSteer
         // draw lines from vehicle's position showing its velocity and acceleration
 
 
-        void annotationVelocityAcceleration (float maxLengthA,  float maxLengthV)
+        /*void annotationVelocityAcceleration (float maxLengthA,  float maxLengthV)
         {
             float desat = 0.4f;
             float aScale = maxLengthA / MaxForce;
@@ -393,7 +399,7 @@ namespace OpenSteer
 
             //annotationLine (p, p + (velocity ()           * vScale), vColor);
             //annotationLine (p, p + (_smoothedAcceleration * aScale), aColor);
-        }
+        }*/
 
 
         // ----------------------------------------------------------------------------
@@ -408,7 +414,7 @@ namespace OpenSteer
 
         public override Vector3 predictFuturePosition(float predictionTime)
         {
-            return Position + (velocity() * predictionTime);
+            return Position + (Velocity * predictionTime);
         }
 
 

@@ -65,21 +65,21 @@ namespace OpenSteer
         //
         // xxx couldn't this be made more compact using localizePosition?
 
-        Vector3 steerToAvoid(AbstractVehicle v, float minTimeToCollision)
+        Vector3 steerToAvoid(Vehicle v, float minTimeToCollision)
         {
             // minimum distance to obstacle before avoidance is required
-            float minDistanceToCollision = minTimeToCollision * v.speed();
+            float minDistanceToCollision = minTimeToCollision * v.Speed;
             float minDistanceToCenter = minDistanceToCollision + radius;
 
             // contact distance: sum of radii of obstacle and vehicle
-             float totalRadius = radius + v.radius();
+             float totalRadius = radius + v.Radius;
 
             // obstacle center relative to vehicle position
              Vector3 localOffset = center - v.Position;
 
             // distance along vehicle's forward axis to obstacle's center
-             float forwardComponent = Vector3.Dot(localOffset, v.forward());
-             Vector3 forwardOffset = forwardComponent * v.forward();
+             float forwardComponent = Vector3.Dot(localOffset, v.Forward);
+             Vector3 forwardOffset = forwardComponent * v.Forward;
 
             // offset from forward axis to obstacle's center
              Vector3 offForwardOffset = localOffset - forwardOffset;

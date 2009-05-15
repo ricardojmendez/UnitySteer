@@ -5,9 +5,11 @@ using OpenSteer.Vehicles;
 
 public class WanderBehavior : MonoBehaviour {
 
-    public MpWanderer wanderer = new MpWanderer();
+    public MpWanderer wanderer;
 
-	void Start () {
+	void Start()
+	{
+		wanderer = new MpWanderer( transform, 1.0f );
 	}
 	
 	// Update is called once per frame

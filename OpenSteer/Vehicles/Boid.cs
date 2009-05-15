@@ -69,9 +69,20 @@ namespace OpenSteer.Vehicles {
         public float cohesionAngle  = -0.15f;
         public float cohesionWeight = 8.0f;
         
-        public Boid (AbstractProximityDatabase pd, bool movesVertically)
+        public Boid ( Transform transform, float mass, AbstractProximityDatabase pd, bool movesVertically) : base( transform, mass )
         {
-            this.movesVertically = movesVertically;
+            this.MovesVertically = movesVertically;
+            // allocate a token for this boid in the proximity database
+            proximityToken = null;
+            newPD (pd);
+
+            // reset all boid state
+            reset ();
+        }
+
+        public Boid ( Rigidbody rigidbody, AbstractProximityDatabase pd, bool movesVertically) : base( rigidbody )
+        {
+            this.MovesVertically = movesVertically;
             // allocate a token for this boid in the proximity database
             proximityToken = null;
             newPD (pd);
@@ -81,9 +92,8 @@ namespace OpenSteer.Vehicles {
         }
         
         // constructor
-        public Boid (AbstractProximityDatabase pd): this(pd, true)
-        {
-        }
+        public Boid (Transform transform, float mass, AbstractProximityDatabase pd): this(transform, mass, pd, true){}
+        public Boid (Rigidbody rigidbody, AbstractProximityDatabase pd): this(rigidbody, pd, true){}
 
 
         // destructor
@@ -103,14 +113,15 @@ namespace OpenSteer.Vehicles {
 
 
         // reset state
-        void reset ()
+        new void reset ()
         {
             // reset the vehicle
             base.reset();
             // initial slow speed
-            setSpeed (MaxSpeed * 0.3f);
+            Speed = MaxSpeed * 0.3f;
             // randomize initial orientation
-            regenerateOrthonormalBasisUF (Random.insideUnitCircle);
+	// TODO: Put back in?
+//            regenerateOrthonormalBasisUF (Random.insideUnitCircle);
             // randomize initial position
             Position = Random.insideUnitSphere * 10;
             // notify proximity database that our position has changed
@@ -185,7 +196,7 @@ namespace OpenSteer.Vehicles {
                 {
                     // steer back when outside
                     Vector3 seek = xxxsteerForSeek (Vector3.zero);
-                    Vector3 lateral = OpenSteerUtility.perpendicularComponent(seek, forward());
+                    Vector3 lateral = OpenSteerUtility.perpendicularComponent(seek, Forward);
                     return lateral;
                 }
                 case 1:
@@ -206,7 +217,8 @@ namespace OpenSteer.Vehicles {
         void regenerateLocalSpace (Vector3 newVelocity,
                                    float elapsedTime)
         {
-            regenerateLocalSpaceForBanking (newVelocity, elapsedTime);
+	// TODO: Put back in?
+//            regenerateLocalSpaceForBanking (newVelocity, elapsedTime);
         }
 
         // switch to new proximity database -- just for demo purposes

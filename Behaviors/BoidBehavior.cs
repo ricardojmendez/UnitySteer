@@ -39,7 +39,16 @@ public class BoidBehavior : MonoBehaviour {
 	    if (obstacles == null)
 	        obstacles = new Hashtable();
 	    
-	    boid = new Boid(pd, MovesVertically);
+		if( rigidbody == null )
+		{
+			Debug.Log( "Boid: Transform" );
+	    	boid = new Boid(transform,1.0f,pd, MovesVertically);
+		}
+		else
+		{
+			Debug.Log( "Boid: Rigidbody" );
+	    	boid = new Boid(rigidbody,pd, MovesVertically);
+		}
 	    // vehicle.randomizeHeadingOnXZPlane();
 	    
 	    boid.separationRadius = separationRadius;
@@ -62,12 +71,7 @@ public class BoidBehavior : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    boid.Position = transform.position;
 	    boid.update(Time.time, Time.deltaTime);
-	    transform.position = boid.Position;
-	    Vector3 f = boid.forward();
-	    f.y = transform.forward.y;
-	    transform.forward = f;
 	}
 	
 	void OnTriggerEnter(Collider collider)
