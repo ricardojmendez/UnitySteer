@@ -36,7 +36,7 @@ using System.Collections;
 using System.Text;
 using UnityEngine;
 
-namespace OpenSteer
+namespace UnitySteer
 {
 	// TODO: Alter use of this and SimpleVehicle to apply forces when using Rigidbody in stead of MovePosition
     public class Vehicle

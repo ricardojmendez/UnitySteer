@@ -40,9 +40,9 @@
 
 using UnityEngine;
 using System.Collections;
-using OpenSteer;
+using UnitySteer;
 
-namespace OpenSteer.Vehicles {
+namespace UnitySteer.Vehicles {
 
     public class Boid : SimpleVehicle
     {

@@ -1,4 +1,4 @@
-using OpenSteer;
+using UnitySteer;
 using UnityEngine;
 using System.Collections;
 
@@ -41,7 +41,7 @@ using System.Collections;
 // ----------------------------------------------------------------------------
 
 
-namespace OpenSteer.Vehicles
+namespace UnitySteer.Vehicles
 {
 
     // ----------------------------------------------------------------------------

@@ -33,7 +33,7 @@ using System;
 using System.Collections;
 using System.Text;
 
-namespace OpenSteer
+namespace UnitySteer
 {
     class RandomGenerator
     {

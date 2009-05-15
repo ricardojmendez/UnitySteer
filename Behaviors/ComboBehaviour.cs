@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
-using OpenSteer;
-using OpenSteer.Vehicles;
+using UnitySteer;
+using UnitySteer.Vehicles;
 
 public class ComboBehaviour : MonoBehaviour
 {
