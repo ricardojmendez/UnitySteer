@@ -75,6 +75,11 @@ namespace OpenSteer
 			}
 			set
 			{
+				if( !MovesVertically )
+				{
+					value = new Vector3( value.x, Position.y, value.z );
+				}
+				
 				if( rigidbody != null )
 				{
 					rigidbody.MovePosition( value );
@@ -99,6 +104,11 @@ namespace OpenSteer
 			}
 			set
 			{
+				if( !MovesVertically )
+				{
+					value = new Vector3( value.x, Forward.y, value.z );
+				}
+				
 				if( rigidbody != null )
 				{
 					rigidbody.transform.forward = value;
