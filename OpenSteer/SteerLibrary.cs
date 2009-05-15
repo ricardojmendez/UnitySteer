@@ -768,7 +768,7 @@ namespace OpenSteer
              int p = intervalComparison (parallelness, -0.707f, 0.707f);
 
             float timeFactor = 0; // to be filled in below
-            Vector3 color=OpenSteerColours.gBlack;           // to be filled in below (xxx just for debugging)
+            Color color = Color.black;           // to be filled in below (xxx just for debugging)
 
             // Break the pursuit into nine cases, the cross product of the
             // quarry being [ahead, aside, or behind] us and heading
@@ -780,15 +780,15 @@ namespace OpenSteer
                 {
                 case +1:          // ahead, parallel
                     timeFactor = 4;
-                    color = OpenSteerColours.gBlack;
+                    color = Color.black;
                     break;
                 case 0:           // ahead, perpendicular
                     timeFactor = 1.8f;
-                    color = OpenSteerColours.gGray50;
+                    color = Color.gray;
                     break;
                 case -1:          // ahead, anti-parallel
                     timeFactor = 0.85f;
-                    color = OpenSteerColours.gWhite;
+                    color = Color.white;
                     break;
                 }
                 break;
@@ -797,15 +797,15 @@ namespace OpenSteer
                 {
                 case +1:          // aside, parallel
                     timeFactor = 1;
-                    color = OpenSteerColours.gRed;
+                    color = Color.red;
                     break;
                 case 0:           // aside, perpendicular
                     timeFactor = 0.8f;
-                    color = OpenSteerColours.gYellow;
+                    color = Color.yellow;
                     break;
                 case -1:          // aside, anti-parallel
                     timeFactor = 4;
-                    color = OpenSteerColours.gGreen;
+                    color = Color.green;
                     break;
                 }
                 break;
@@ -814,15 +814,15 @@ namespace OpenSteer
                 {
                 case +1:          // behind, parallel
                     timeFactor = 0.5f;
-                    color = OpenSteerColours.gCyan;
+                    color = Color.cyan;
                     break;
                 case 0:           // behind, perpendicular
                     timeFactor = 2;
-                    color = OpenSteerColours.gBlue;
+                    color = Color.blue;
                     break;
                 case -1:          // behind, anti-parallel
                     timeFactor = 2;
-                    color = OpenSteerColours.gMagenta;
+                    color = Color.magenta;
                     break;
                 }
                 break;
@@ -840,7 +840,7 @@ namespace OpenSteer
             // annotation
             annotationLine (Position,
                             target,
-                            gaudyPursuitAnnotation ? color : OpenSteerColours.gGray40);
+                            gaudyPursuitAnnotation ? color : Color.gray);
 
             return steerForSeek (target);
         }
@@ -978,8 +978,9 @@ namespace OpenSteer
             return x * x;
         }
 
-        public virtual void annotationLine(Vector3 startPoint, Vector3 endPoint, Vector3 color)
+        public virtual void annotationLine(Vector3 startPoint, Vector3 endPoint, Color color)
         {
+            Debug.DrawLine(startPoint, endPoint, color);
         }
     }
 }
