@@ -317,7 +317,8 @@ namespace OpenSteer
         void regenerateLocalSpace (Vector3 newVelocity)
         {
             // adjust orthonormal basis vectors to be aligned with new velocity
-            if (Speed > 0) regenerateOrthonormalBasisUF (newVelocity / Speed);
+            if (Speed > 0) 
+                Forward = newVelocity / Speed;
         }
 
 
@@ -355,7 +356,8 @@ namespace OpenSteer
         //  annotationLine (position(), position() + (up ()    * 1), gYellow); // XXX
 
             // adjust orthonormal basis vectors to be aligned with new velocity
-            if (Speed > 0) regenerateOrthonormalBasisUF (newVelocity / Speed);
+            if (Speed > 0) 
+                Forward = (newVelocity / Speed);
         }
 
 

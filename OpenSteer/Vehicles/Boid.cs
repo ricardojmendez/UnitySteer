@@ -120,8 +120,7 @@ namespace OpenSteer.Vehicles {
             // initial slow speed
             Speed = MaxSpeed * 0.3f;
             // randomize initial orientation
-	// TODO: Put back in?
-//            regenerateOrthonormalBasisUF (Random.insideUnitCircle);
+	        Forward = Random.insideUnitCircle;
             // randomize initial position
             Position = Random.insideUnitSphere * 10;
             // notify proximity database that our position has changed

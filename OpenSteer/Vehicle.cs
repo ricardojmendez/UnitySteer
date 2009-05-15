@@ -309,45 +309,5 @@ namespace OpenSteer
             return LocalizeDirection (globalOffset);
         }
 
-
-
-        // ------------------------------------------------------------------------
-        // regenerate the orthonormal basis vectors given a new forward
-        // (which is expected to have unit length)
-
-
-        public void regenerateOrthonormalBasisUF(Vector3 newUnitForward)
-        {
-			Forward = newUnitForward;
-/*            _forward = newUnitForward;
-
-            // derive new side basis vector from NEW forward and OLD up
-            setUnitSideFromForwardAndUp ();
-
-            // derive new Up basis vector from new Side and new Forward
-            // (should have unit length since Side and Forward are
-            // perpendicular and unit length)
-            if (rightHanded())
-                //_up.cross (_side, _forward);
-                _up = Vector3.Cross(_side, _forward);
-            else
-                //_up.cross (_forward, _side);
-                _up = Vector3.Cross(_forward, _side);
-*/
-        }
-
-
-        // ----------------------------------------------------------------------
-        // XXX this vehicle-model-specific functionality functionality seems out
-        // XXX of place on the abstract base class, but for now it is expedient
-
-        // the maximum steering force this vehicle can apply
-        /*public virtual float maxForce() { return 0; }
-        public virtual float setMaxForce(float max) { return 0; }
-
-        // the maximum speed this vehicle is allowed to move
-        public virtual float maxSpeed() { return 0; }
-        public virtual float setMaxSpeed(float max) { return 0; }*/
-        //public virtual void newPD(AbstractProximityDatabase pd) { }
     }
 }
