@@ -30,8 +30,11 @@ public class Radar : MonoBehaviour
 				target = transform.parent.gameObject;
 			}
 		}
-		
-		receiver = target.GetComponent( typeof( IRadarReceiver ) ) as IRadarReceiver;
+
+		if( receiver == null )
+		{		
+			receiver = target.GetComponent( typeof( IRadarReceiver ) ) as IRadarReceiver;
+		}
 		
 		if( receiver == null )
 		{

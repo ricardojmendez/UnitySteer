@@ -3,7 +3,7 @@ using System.Collections;
 using UnitySteer;
 using UnitySteer.Vehicles;
 
-public class ComboBehaviour : MonoBehaviour
+public class ComboBehaviour : MonoBehaviour, IVehicleBehaviour, IRadarReceiver
 {
 	
 	public float steerToAvoidNeighbours, steerToAvoidObstacles, steerToStayOnPath, steerForTargetSpeed;
@@ -22,6 +22,59 @@ public class ComboBehaviour : MonoBehaviour
 		SteerToAvoidObstacles = steerToAvoidObstacles;
 		SteerToStayOnPath = steerToStayOnPath;
 		SteerForTargetSpeed = steerForTargetSpeed;
+	}
+	
+	
+	
+	public Vehicle Vehicle
+	{
+		get
+		{
+			return vehicle;
+		}
+	}
+	
+	
+	
+	public void OnRadarEnter( Collider other, Radar sender )
+	{
+		IVehicleBehaviour vehicleBehaviour;
+		
+		if( steerToAvoidNeighbours == 0.0f )
+		{
+			return;
+		}
+		
+		vehicleBehaviour = other.GetComponent( typeof( IVehicleBehaviour ) ) as IVehicleBehaviour;
+		if( vehicleBehaviour != null )
+		{
+        	vehicle.Neighbors.Add( vehicleBehaviour.Vehicle );
+		}
+	}
+	
+	
+	
+	public void OnRadarExit( Collider other, Radar sender )
+	{
+		IVehicleBehaviour vehicleBehaviour;
+		
+		if( steerToAvoidNeighbours == 0.0f )
+		{
+			return;
+		}
+		
+		vehicleBehaviour = other.GetComponent( typeof( IVehicleBehaviour ) ) as IVehicleBehaviour;
+		if( vehicleBehaviour != null )
+		{
+        	vehicle.Neighbors.Remove( vehicleBehaviour.Vehicle );
+		}
+	}
+	
+	
+	
+	public void OnRadarStay( Collider other, Radar sender )
+	{
+		
 	}
 	
 	

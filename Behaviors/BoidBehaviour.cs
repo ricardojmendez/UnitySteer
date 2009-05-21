@@ -4,7 +4,7 @@ using UnitySteer;
 using UnitySteer.Vehicles;
 
 [RequireComponent(typeof(SphereCollider))]
-public class BoidBehavior : MonoBehaviour, IVehicleBehaviour, IRadarReceiver {
+public class BoidBehaviour : MonoBehaviour, IVehicleBehaviour, IRadarReceiver {
     static Hashtable obstacles;
 
     Boid boid;
@@ -29,7 +29,8 @@ public class BoidBehavior : MonoBehaviour, IVehicleBehaviour, IRadarReceiver {
     public float maxForce = 15f;
     
 	// Use this for initialization
-	void Start () {
+	void Start()
+	{
 	    if (obstacles == null)
 	        obstacles = new Hashtable();
 	    
@@ -63,6 +64,8 @@ public class BoidBehavior : MonoBehaviour, IVehicleBehaviour, IRadarReceiver {
         boid.Obstacles = new ArrayList();
 	}
 	
+	
+	
 	public Vehicle Vehicle
 	{
 		get
@@ -71,70 +74,109 @@ public class BoidBehavior : MonoBehaviour, IVehicleBehaviour, IRadarReceiver {
 		}
 	}
 	
+	
+	
 	// Update is called once per frame
 	void Update () {
 	    boid.update(Time.time, Time.deltaTime);
 	}
-	
-	void OnTriggerEnter(Collider collider)
-	{
-	    HandleVisibility(collider.gameObject, true);
-	}
 
-	void OnTriggerExit(Collider collider)
+
+
+	public Obstacle GetObstacle( GameObject gameObject )
 	{
-	    HandleVisibility(collider.gameObject, false);
+		Obstacle obstacle;
+		int id = gameObject.GetInstanceID();
+		Component[] colliders;
+		float radius = 0.0f, currentRadius;
+		
+		if( !obstacles.ContainsKey( id ) )
+		{
+			colliders = gameObject.GetComponentsInChildren( typeof( Collider ) );
+			
+			if( colliders == null )
+			{
+				Debug.LogError( "Obstacle '" + gameObject.name + "' has no colliders" );
+				return null;
+			}
+			
+			foreach( Collider collider in colliders )
+			{
+				if( collider.isTrigger )
+				{
+					continue;
+				}
+				
+				currentRadius = Mathf.Abs( ( gameObject.transform.position - ( collider.transform.position + collider.bounds.center ) ).x ) + collider.bounds.extents.x;
+				currentRadius *= gameObject.transform.localScale.x;
+				//currentRadius = gameObject.transform.localScale.x / 2.0f;
+				
+				if( currentRadius > radius )
+				{
+					radius = currentRadius;
+				}
+			}
+			obstacle = new SphericalObstacle( radius, gameObject.transform.position );
+		}
+		else
+		{
+			obstacle = obstacles[ id ] as Obstacle;
+		}
+		
+		return obstacle;
 	}
 	
-	void HandleVisibility(GameObject other, bool visible)
-	{
-	    //Debug.Log(other.layer + " " + ObstacleLayer.value);
-        if ((1 << other.layer & ObstacleLayer) > 0)
-        {
-            SphericalObstacle o;
-            int id = other.GetInstanceID();
-            if (!obstacles.ContainsKey(id))
-            {
-                o = CreateObstacle(other.transform);
-                obstacles[id] = o;
-            }
-            else
-                o = obstacles[id] as SphericalObstacle;
-            if (visible)
-                boid.Obstacles.Add(o);
-            else
-                boid.Obstacles.Remove(o);
-        }
-	}
 	
-	SphericalObstacle CreateObstacle(Transform obstacleTransform)
-	{
-	    SphericalObstacle obstacle = new SphericalObstacle(obstacleTransform.localScale.x / 2,
-	        obstacleTransform.position);
-	    return obstacle;
-	}
 	
 	public void OnRadarEnter( Collider other, Radar sender )
 	{
-		IVehicleBehaviour vehicleBehaviour;
-		
-		vehicleBehaviour = other.GetComponent( typeof( IVehicleBehaviour ) ) as IVehicleBehaviour;
-		if( vehicleBehaviour != null )
+		BoidBehaviour boidBehaviour;
+		Obstacle obstacle;
+
+		if( ( 1 << other.gameObject.layer & ObstacleLayer ) > 0 )
 		{
-        	boid.Neighbors.Add( vehicleBehaviour.Vehicle );
+			obstacle = GetObstacle( other.gameObject );
+			if( obstacle != null )
+			{
+				boid.Obstacles.Add( obstacle );
+			}
+		}
+		else
+		{		
+			boidBehaviour = other.GetComponent( typeof( BoidBehaviour ) ) as BoidBehaviour;
+			if( boidBehaviour != null )
+			{
+        		boid.Neighbors.Add( boidBehaviour.Vehicle );
+			}
 		}
 	}
 	
+	
+	
 	public void OnRadarExit( Collider other, Radar sender )
 	{
-		IVehicleBehaviour vehicleBehaviour;
+		BoidBehaviour boidBehaviour;
+		Obstacle obstacle;
 		
-		vehicleBehaviour = other.GetComponent( typeof( IVehicleBehaviour ) ) as IVehicleBehaviour;
-		if( vehicleBehaviour != null )
+		if( ( 1 << other.gameObject.layer & ObstacleLayer ) > 0 )
 		{
-        	boid.Neighbors.Remove( vehicleBehaviour.Vehicle );
+			obstacle = GetObstacle( other.gameObject );
+			if( obstacle != null )
+			{
+				boid.Obstacles.Remove( obstacle );
+			}
+		}
+		else
+		{
+			boidBehaviour = other.GetComponent( typeof( BoidBehaviour ) ) as BoidBehaviour;
+			if( boidBehaviour != null )
+			{
+        		boid.Neighbors.Remove( boidBehaviour.Vehicle );
+			}
 		}
 	}
+	
+	
 	
 	public void OnRadarStay( Collider other, Radar sender )
 	{
