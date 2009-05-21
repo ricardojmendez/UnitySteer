@@ -113,7 +113,7 @@ namespace UnitySteer.Vehicles {
         {
             // steer to flock and perhaps to stay within the spherical boundary
             Vector3 avoid = steerToAvoidObstacles(0.2f, Obstacles); // TODO-RJM: Change to a property
-            if (Obstacles.Count > 0)
+            if (Obstacles.Count > 0 && avoid != Vector3.zero)
             {
                 Debug.Log("Avoiding "+avoid);
             }

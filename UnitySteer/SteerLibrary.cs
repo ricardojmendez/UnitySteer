@@ -56,14 +56,21 @@ namespace UnitySteer
 
         public struct PathIntersection
         {
-            public int intersect;
-            public  float distance;
+            public bool intersect;
+            public float distance;
 
             // The two below are not used??
 
             //public Vector3 surfacePoint;
             //public Vector3 surfaceNormal;
             public SphericalObstacle obstacle;
+            
+            public PathIntersection(SphericalObstacle obstacle)
+            {
+                this.obstacle = obstacle;
+                intersect = false;
+                distance = float.MaxValue;
+            }
         };
 
 
@@ -320,15 +327,11 @@ namespace UnitySteer
         public Vector3 steerToAvoidObstacles ( float minTimeToCollision, ArrayList obstacles)
         {
             Vector3 avoidance = new Vector3() ;
-            PathIntersection nearest, next;
+            PathIntersection nearest;
 
-            nearest = new PathIntersection();
-            next = new PathIntersection();
+            nearest = new PathIntersection(null);
 
-             float minDistanceToCollision = minTimeToCollision * Speed;
-
-             next.intersect = 0; // false;
-             nearest.intersect = 0;// false;
+            float minDistanceToCollision = minTimeToCollision * Speed;
 
             // test all obstacles for intersection with my forward axis,
             // select the one whose point of intersection is nearest
@@ -341,17 +344,16 @@ namespace UnitySteer
                 SphericalObstacle o=(SphericalObstacle) obstacles[i];
                 // xxx this should be a generic call on Obstacle, rather than
                 // xxx this code which presumes the obstacle is spherical
-                findNextIntersectionWithSphere (o, next);
-
-                if ((nearest.intersect == 0) ||
-                    ((next.intersect != 0) &&
-                     (next.distance < nearest.distance)))
+                PathIntersection next = findNextIntersectionWithSphere (o);
+                if (!nearest.intersect ||
+                    (next.intersect &&
+                     next.distance < nearest.distance))
                     nearest = next;
             }
 
             // when a nearest intersection was found
-            if ((nearest.intersect != 0) &&
-                (nearest.distance < minDistanceToCollision))
+            if (nearest.intersect &&
+                nearest.distance < minDistanceToCollision)
             {
                 // show the corridor that was checked for collisions
                 annotateAvoidObstacle (minDistanceToCollision);
@@ -883,7 +885,7 @@ namespace UnitySteer
 
 
        
-        public void findNextIntersectionWithSphere (SphericalObstacle obs, PathIntersection intersection)
+        public PathIntersection findNextIntersectionWithSphere (SphericalObstacle obs)
         {
             // xxx"SphericalObstacle& obs" should be "const SphericalObstacle&
             // obs" but then it won't let me store a pointer to in inside the
@@ -897,8 +899,7 @@ namespace UnitySteer
             Vector3 lc;
 
             // initialize pathIntersection object
-            intersection.intersect = 0;
-            intersection.obstacle = obs;
+            PathIntersection intersection = new PathIntersection(obs);
 
             // find "local center" (lc) of sphere in boid's coordinate space
             lc = LocalizePosition (obs.center);
@@ -910,7 +911,7 @@ namespace UnitySteer
             d = (b * b) - (4 * c);
 
             // when the path does not intersect the sphere
-            if (d < 0) return;
+            if (d < 0) return intersection;
 
             // otherwise, the path intersects the sphere in two points with
             // parametric coordinates of "p" and "q".
@@ -920,17 +921,17 @@ namespace UnitySteer
             q = (-b - s) / 2;
 
             // both intersections are behind us, so no potential collisions
-            if ((p < 0) && (q < 0)) return; 
+            if ((p < 0) && (q < 0)) return intersection; 
 
             // at least one intersection is in front of us
-            intersection.intersect = 0;
+            intersection.intersect = true;
             intersection.distance =
                 ((p > 0) && (q > 0)) ?
                 // both intersections are in front of us, find nearest one
                 ((p < q) ? p : q) :
                 // otherwise only one intersections is in front, select it
                 ((p > 0) ? p : q);
-            return;
+            return intersection;
         }
 
         public float scalarRandomWalk ( float initial, float walkspeed, float min, float max)
