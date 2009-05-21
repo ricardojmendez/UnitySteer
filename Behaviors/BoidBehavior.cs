@@ -4,7 +4,7 @@ using UnitySteer;
 using UnitySteer.Vehicles;
 
 [RequireComponent(typeof(SphereCollider))]
-public class BoidBehavior : MonoBehaviour, IAmVehicle {
+public class BoidBehavior : MonoBehaviour, IVehicleBehaviour, IRadarReceiver {
     static Hashtable obstacles;
 
     Boid boid;
@@ -27,14 +27,6 @@ public class BoidBehavior : MonoBehaviour, IAmVehicle {
     
     public float maxSpeed =  3f;
     public float maxForce = 15f;
-    
-    public Vehicle Vehicle
-    {
-        get
-        {
-            return boid;
-        }
-    }
     
 	// Use this for initialization
 	void Start () {
@@ -69,6 +61,14 @@ public class BoidBehavior : MonoBehaviour, IAmVehicle {
         boid.MaxForce = maxForce;
         
         boid.Obstacles = new ArrayList();
+	}
+	
+	public Vehicle Vehicle
+	{
+		get
+		{
+			return boid;
+		}
 	}
 	
 	// Update is called once per frame
@@ -112,5 +112,32 @@ public class BoidBehavior : MonoBehaviour, IAmVehicle {
 	    SphericalObstacle obstacle = new SphericalObstacle(obstacleTransform.localScale.x / 2,
 	        obstacleTransform.position);
 	    return obstacle;
+	}
+	
+	public void OnRadarEnter( Collider other, Radar sender )
+	{
+		IVehicleBehaviour vehicleBehaviour;
+		
+		vehicleBehaviour = other.GetComponent( typeof( IVehicleBehaviour ) ) as IVehicleBehaviour;
+		if( vehicleBehaviour != null )
+		{
+        	boid.Neighbors.Add( vehicleBehaviour.Vehicle );
+		}
+	}
+	
+	public void OnRadarExit( Collider other, Radar sender )
+	{
+		IVehicleBehaviour vehicleBehaviour;
+		
+		vehicleBehaviour = other.GetComponent( typeof( IVehicleBehaviour ) ) as IVehicleBehaviour;
+		if( vehicleBehaviour != null )
+		{
+        	boid.Neighbors.Remove( vehicleBehaviour.Vehicle );
+		}
+	}
+	
+	public void OnRadarStay( Collider other, Radar sender )
+	{
+		
 	}
 }
