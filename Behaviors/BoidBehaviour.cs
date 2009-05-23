@@ -4,7 +4,7 @@ using UnitySteer;
 using UnitySteer.Vehicles;
 
 [RequireComponent(typeof(SphereCollider))]
-public class BoidBehaviour : MonoBehaviour, IVehicleBehaviour, IRadarReceiver {
+public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
     static Hashtable obstacles;
 
     Boid boid;
@@ -66,7 +66,7 @@ public class BoidBehaviour : MonoBehaviour, IVehicleBehaviour, IRadarReceiver {
 	
 	
 	
-	public Vehicle Vehicle
+	public override Vehicle Vehicle
 	{
 		get
 		{

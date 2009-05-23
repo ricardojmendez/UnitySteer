@@ -6,25 +6,48 @@ namespace UnitySteer.Vehicles
 {
     public class ComboVehicle : SimpleVehicle
     {
-		private float steerToAvoidNeighboursWeight, steerToAvoidObstaclesWeight, steerToStayOnPathWeight, steerForPursuitWeight, steerForTargetSpeedWeight;
+		private float steerToAvoidNeighborsWeight, steerToAvoidObstaclesWeight, steerToStayOnPathWeight, steerForPursuitWeight, steerForTargetSpeedWeight;
 		private Pathway path;
 		
-		
-		
-		public ComboVehicle( Transform transform, float mass ) : base( transform, mass ){}
-		public ComboVehicle( Rigidbody rigidbody ) : base( rigidbody ){}
+		// TODO: Debug! Move back in Update
+		public Vector3 avoidNeighbors, avoidObstacles, stayOnPath, pursuit, targetSpeed;		
 		
 		
 		
-		public float SteerToAvoidNeighboursWeight
+		public ComboVehicle( Transform transform, float mass ) : base( transform, mass )
+		{
+			reset();
+		}
+		
+		
+		
+		public ComboVehicle( Rigidbody rigidbody ) : base( rigidbody )
+		{
+			reset();
+		}
+		
+		
+		
+        // reset state
+        new void reset()
+        {
+            // reset the vehicle
+            base.reset();
+            // initial slow speed
+            Speed = MaxSpeed * 0.3f;
+        }
+
+		
+		
+		public float SteerToAvoidNeighborsWeight
 		{
 			get
 			{
-				return steerToAvoidNeighboursWeight;
+				return steerToAvoidNeighborsWeight;
 			}
 			set
 			{
-				steerToAvoidNeighboursWeight = value;
+				steerToAvoidNeighborsWeight = value;
 			}
 		}
 		
@@ -110,19 +133,17 @@ namespace UnitySteer.Vehicles
 
         public void Update( float currentTime, float elapsedTime )
         {
-			// TODO: Continue work here once we're shiny
-            Vector3 avoidNeighbours, avoidObstacles, stayOnPath, pursuit, targetSpeed;
+			avoidNeighbors = avoidObstacles = stayOnPath = pursuit = targetSpeed = Vector3.zero;
 
-			avoidNeighbours = avoidObstacles = stayOnPath = pursuit = targetSpeed = Vector3.zero;
-
-			if( steerToAvoidNeighboursWeight != 0.0f )
+			if( steerToAvoidNeighborsWeight != 0.0f )
 			{
-//				avoidNeighbours = steerToAvoidNeighbours( float minTimeToCollision, ArrayList others ) * steerToAvoidNeighboursWeight;
+				avoidNeighbors = steerToAvoidNeighbors( 0.2f, Neighbors ) * steerToAvoidNeighborsWeight;
+					// TODO: Expose time as a variable
 			}
 			
 			if( steerToAvoidObstaclesWeight != 0.0f )
 			{
-//				avoidObstacles = steerToAvoidObstacles( float minTimeToCollision, ArrayList obstacles ) * steerToAvoidObstaclesWeight;
+				avoidObstacles = steerToAvoidObstacles( 0.2f, Obstacles ) * steerToAvoidObstaclesWeight;
 			}
 			
 			if( steerToStayOnPathWeight != 0.0f )
@@ -137,10 +158,11 @@ namespace UnitySteer.Vehicles
 			
 			if( steerForTargetSpeedWeight != 0.0f )
 			{
-//				targetSpeed = steerForTargetSpeed( float targetSpeed ) * steerForTargetSpeedWeight;
+				targetSpeed = steerForTargetSpeed( MaxSpeed ) * steerForTargetSpeedWeight;
+					// TODO: Expose target speed variable - dont use max speed
 			}
 
-            applySteeringForce( avoidNeighbours + avoidObstacles + stayOnPath + pursuit + targetSpeed, elapsedTime );
+            applySteeringForce( avoidNeighbors + avoidObstacles + stayOnPath + pursuit + targetSpeed, elapsedTime );
         }
 	}
 }

@@ -3,30 +3,49 @@ using System.Collections;
 using UnitySteer;
 using UnitySteer.Vehicles;
 
-public class ComboBehaviour : MonoBehaviour, IVehicleBehaviour, IRadarReceiver
+public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 {
-	
-	public float steerToAvoidNeighbours, steerToAvoidObstacles, steerToStayOnPath, steerForTargetSpeed;
+	public float maxSpeed, maxForce;
+	public LayerMask obstacleLayers;
+	public float steerToAvoidNeighbors, steerToAvoidObstacles, steerToStayOnPath, steerForTargetSpeed;
 	private float steerForPursuit;
 	
 	private ComboVehicle vehicle;
 	private Vehicle target;
+    private static Hashtable obstacles;
+		// TODO: Need a better system for this
 	
 	
 	
 	public void Awake()
 	{
-		vehicle = new ComboVehicle( transform, 1.0f );
+		if( rigidbody == null )
+		{
+			vehicle = new ComboVehicle( transform, 1.0f );
+		}
+		else
+		{
+			vehicle = new ComboVehicle( rigidbody );
+		}
 		
-		SteerToAvoidNeighbours = steerToAvoidNeighbours;
+		if( obstacles == null )
+		{
+			obstacles = new Hashtable();	
+		}
+		
+		MaxSpeed = maxSpeed;
+		SteerToAvoidNeighbors = steerToAvoidNeighbors;
 		SteerToAvoidObstacles = steerToAvoidObstacles;
 		SteerToStayOnPath = steerToStayOnPath;
 		SteerForTargetSpeed = steerForTargetSpeed;
+		
+        vehicle.Obstacles = new ArrayList();
+			// TODO: Should happen in vehicle constructor and should be a property
 	}
 	
 	
 	
-	public Vehicle Vehicle
+	public override Vehicle Vehicle
 	{
 		get
 		{
@@ -36,59 +55,46 @@ public class ComboBehaviour : MonoBehaviour, IVehicleBehaviour, IRadarReceiver
 	
 	
 	
-	public void OnRadarEnter( Collider other, Radar sender )
-	{
-		IVehicleBehaviour vehicleBehaviour;
-		
-		if( steerToAvoidNeighbours == 0.0f )
-		{
-			return;
-		}
-		
-		vehicleBehaviour = other.GetComponent( typeof( IVehicleBehaviour ) ) as IVehicleBehaviour;
-		if( vehicleBehaviour != null )
-		{
-        	vehicle.Neighbors.Add( vehicleBehaviour.Vehicle );
-		}
-	}
-	
-	
-	
-	public void OnRadarExit( Collider other, Radar sender )
-	{
-		IVehicleBehaviour vehicleBehaviour;
-		
-		if( steerToAvoidNeighbours == 0.0f )
-		{
-			return;
-		}
-		
-		vehicleBehaviour = other.GetComponent( typeof( IVehicleBehaviour ) ) as IVehicleBehaviour;
-		if( vehicleBehaviour != null )
-		{
-        	vehicle.Neighbors.Remove( vehicleBehaviour.Vehicle );
-		}
-	}
-	
-	
-	
-	public void OnRadarStay( Collider other, Radar sender )
-	{
-		
-	}
-	
-	
-	
-	public float SteerToAvoidNeighbours
+	public float MaxSpeed
 	{
 		get
 		{
-			return steerToAvoidNeighbours;
+			return maxSpeed;
 		}
 		set
 		{
-			steerToAvoidNeighbours = value;
-			vehicle.SteerToAvoidNeighboursWeight = steerToAvoidNeighbours;
+			maxSpeed = value;
+			vehicle.MaxSpeed = maxSpeed;
+		}
+	}
+	
+	
+	
+	public float MaxForce
+	{
+		get
+		{
+			return maxForce;
+		}
+		set
+		{
+			maxForce = value;
+			vehicle.MaxForce = maxForce;
+		}
+	}
+	
+	
+	
+	public float SteerToAvoidNeighbors
+	{
+		get
+		{
+			return steerToAvoidNeighbors;
+		}
+		set
+		{
+			steerToAvoidNeighbors = value;
+			vehicle.SteerToAvoidNeighborsWeight = steerToAvoidNeighbors;
 		}
 	}
 	
@@ -182,5 +188,121 @@ public class ComboBehaviour : MonoBehaviour, IVehicleBehaviour, IRadarReceiver
 	public void Update()
 	{
 	    vehicle.Update( Time.time, Time.deltaTime );
+	}
+	
+	
+	
+	public Obstacle GetObstacle( GameObject gameObject )
+	{
+		Obstacle obstacle;
+		int id = gameObject.GetInstanceID();
+		Component[] colliders;
+		float radius = 0.0f, currentRadius;
+		
+		if( !obstacles.ContainsKey( id ) )
+		{
+			colliders = gameObject.GetComponentsInChildren( typeof( Collider ) );
+			
+			if( colliders == null )
+			{
+				Debug.LogError( "Obstacle '" + gameObject.name + "' has no colliders" );
+				return null;
+			}
+			
+			foreach( Collider collider in colliders )
+			{
+				if( collider.isTrigger )
+				{
+					continue;
+				}
+				
+				currentRadius = Mathf.Abs( ( gameObject.transform.position - ( collider.transform.position + collider.bounds.center ) ).x ) + collider.bounds.extents.x;
+				currentRadius *= gameObject.transform.localScale.x;
+				//currentRadius = gameObject.transform.localScale.x / 2.0f;
+				
+				if( currentRadius > radius )
+				{
+					radius = currentRadius;
+				}
+			}
+			obstacle = new SphericalObstacle( radius, gameObject.transform.position );
+		}
+		else
+		{
+			obstacle = obstacles[ id ] as Obstacle;
+		}
+		
+		return obstacle;
+	}
+	
+	
+	
+	public void OnRadarEnter( Collider other, Radar sender )
+	{
+		VehicleBehaviour vehicleBehaviour;
+		Obstacle obstacle;
+
+		if( ( 1 << other.gameObject.layer & obstacleLayers ) > 0 )
+		{
+			obstacle = GetObstacle( other.gameObject );
+			if( obstacle != null )
+			{
+				vehicle.Obstacles.Add( obstacle );
+			}
+		}
+		else
+		{		
+			vehicleBehaviour = other.GetComponent( typeof( VehicleBehaviour ) ) as VehicleBehaviour;
+			if( vehicleBehaviour != null )
+			{
+        		vehicle.Neighbors.Add( vehicleBehaviour.Vehicle );
+			}
+		}
+	}
+	
+	
+	
+	public void OnRadarExit( Collider other, Radar sender )
+	{
+		VehicleBehaviour vehicleBehaviour;
+		Obstacle obstacle;
+		
+		if( ( 1 << other.gameObject.layer & obstacleLayers ) > 0 )
+		{
+			obstacle = GetObstacle( other.gameObject );
+			if( obstacle != null )
+			{
+				vehicle.Obstacles.Remove( obstacle );
+			}
+		}
+		else
+		{
+			vehicleBehaviour = other.GetComponent( typeof( VehicleBehaviour ) ) as VehicleBehaviour;
+			if( vehicleBehaviour != null )
+			{
+        		vehicle.Neighbors.Remove( vehicleBehaviour.Vehicle );
+			}
+		}
+	}
+	
+	
+	
+	public void OnRadarStay( Collider other, Radar sender )
+	{
+		
+	}
+	
+	
+	
+	public void OnGUI()
+	{
+		GUILayout.Label( "vehicle.Obstacles.Count: " + vehicle.Obstacles.Count );
+		GUILayout.Label( "vehicle.Neighbors.Count: " + vehicle.Neighbors.Count );
+		GUILayout.Label( "" );
+		GUILayout.Label( "vehicle.avoidNeighbors: " + vehicle.avoidNeighbors );
+		GUILayout.Label( "vehicle.avoidObstacles: " + vehicle.avoidObstacles );
+		GUILayout.Label( "vehicle.stayOnPath: " + vehicle.stayOnPath );
+		GUILayout.Label( "vehicle.pursuit: " + vehicle.pursuit );
+		GUILayout.Label( "vehicle.targetSpeed: " + vehicle.targetSpeed );
 	}
 }

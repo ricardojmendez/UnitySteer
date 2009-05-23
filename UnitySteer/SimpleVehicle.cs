@@ -42,9 +42,9 @@ namespace UnitySteer
     {
 
         ArrayList obstacles;    // Obstacle list
-        float _mass;       // mass (defaults to unity so acceleration=force)
-        float _radius;     // size of bounding sphere, for obstacle avoidance, etc.
-        float _speed;      // speed along Forward direction.  Because local space
+//        float _mass;       // mass (defaults to unity so acceleration=force)
+//        float _radius;     // size of bounding sphere, for obstacle avoidance, etc.
+//        float _speed;      // speed along Forward direction.  Because local space
                            // is velocity-aligned, velocity = Forward * Speed
 
         //float maxForce = 27f;   // the maximum steering force this vehicle can apply
