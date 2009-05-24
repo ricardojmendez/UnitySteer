@@ -28,6 +28,8 @@ public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
     public float maxSpeed =  3f;
     public float maxForce = 15f;
     
+    public float randomizeStart = 15f;
+    
 	// Use this for initialization
 	void Start()
 	{
@@ -62,6 +64,9 @@ public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
         boid.MaxForce = maxForce;
         
         boid.Obstacles = new ArrayList();
+        
+        if (randomizeStart > 0)
+            boid.Randomize(randomizeStart);
 	}
 	
 	

@@ -101,11 +101,17 @@ namespace UnitySteer.Vehicles {
             base.reset();
             // initial slow speed
             Speed = MaxSpeed * 0.3f;
+        }
+        
+        
+        public void Randomize(float distance)
+        {
             // randomize initial orientation
 	        Forward = Random.insideUnitCircle;
             // randomize initial position
-            Position = Random.insideUnitSphere * 10;
+            Position = Random.insideUnitSphere * distance;
         }
+        
         
         
         // per frame simulation update
