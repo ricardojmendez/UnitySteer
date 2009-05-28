@@ -7,16 +7,6 @@ namespace UnitySteer
 {
     public class OpenSteerUtility
     {
-        public static Vector3 interpolate(float alpha, Vector3 x0, Vector3 x1)
-        {
-            return x0 + ((x1 - x0) * alpha);
-        }
-
-        public static float interpolate(float alpha, float x0, float x1)
-        {
-            return x0 + ((x1 - x0) * alpha);
-        }
-
         public static Vector3 RandomUnitVectorOnXZPlane ()
         {
             Vector3 tVector=RandomVectorInUnitRadiusSphere();
@@ -111,12 +101,13 @@ namespace UnitySteer
 
         public static Vector3 blendIntoAccumulator(float smoothRate, Vector3 newValue, Vector3 smoothedAccumulator)
         {
-            return interpolate(clip(smoothRate, 0, 1),smoothedAccumulator,newValue);
+            return Vector3.Lerp(smoothedAccumulator, newValue, Mathf.Clamp(smoothRate, 0, 1));
         }
 
         public static float blendIntoAccumulator(float smoothRate, float newValue, float smoothedAccumulator)
         {
-            return interpolate(clip(smoothRate, 0, 1), smoothedAccumulator, newValue);
+            return Mathf.Lerp(smoothedAccumulator, newValue, Mathf.Clamp(smoothRate, 0, 1));
+            
         }
 
         public static float clip(float x, float min, float max)

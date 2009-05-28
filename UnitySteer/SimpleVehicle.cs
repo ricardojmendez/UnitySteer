@@ -30,7 +30,7 @@
 //
 //
 // ----------------------------------------------------------------------------
-
+#define DEBUG
 using System;
 using System.Collections;
 using System.Text;
@@ -186,13 +186,12 @@ namespace UnitySteer
             else
             {
                 float range = Speed / maxAdjustedSpeed;
-                // const float cosine = interpolate (pow (range, 6), 1.0f, -1.0f);
-                // const float cosine = interpolate (pow (range, 10), 1.0f, -1.0f);
-                // const float cosine = interpolate (pow (range, 20), 1.0f, -1.0f);
-                // const float cosine = interpolate (pow (range, 100), 1.0f, -1.0f);
-                // const float cosine = interpolate (pow (range, 50), 1.0f, -1.0f);
-                float cosine = OpenSteerUtility.interpolate((float) System.Math.Pow(range, 20), 1.0f, -1.0f);
-                return OpenSteerUtility.limitMaxDeviationAngle(force, cosine, Forward);
+                float cosine = Mathf.Lerp(1.0f, -1.0f, Mathf.Pow(range, 20));
+                Vector3 angle = OpenSteerUtility.limitMaxDeviationAngle(force, cosine, Forward);
+                #if DEBUG
+                Debug.Log("Steer "+cosine+" "+angle);
+                #endif
+                return angle;
             }
         }
 

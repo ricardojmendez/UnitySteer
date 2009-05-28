@@ -243,7 +243,7 @@ namespace UnitySteer
                 else
                 {
                     float ratio = remaining / segmentLength;
-                    result = OpenSteerUtility.interpolate(ratio, points[i - 1], points[i]);
+                    result = Vector3.Lerp(points[i - 1], points[i], ratio);
                     break;
                 }
             }
