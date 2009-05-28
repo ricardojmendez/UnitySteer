@@ -57,18 +57,12 @@ namespace UnitySteer
         float _smoothedCurvature;
         Vector3 _smoothedAcceleration;
 
-        static int serialNumberCounter = 0;
-
-        int serialNumber;
         // Constructor
 
 		public SimpleVehicle( Transform transform, float mass ) : base( transform, mass )
 		{
             // set inital state
             reset();
-
-            // maintain unique serial numbers
-            serialNumber = serialNumberCounter++;
 		}
 		
 		
@@ -76,9 +70,6 @@ namespace UnitySteer
 		{
             // set inital state
             reset();
-
-            // maintain unique serial numbers
-            serialNumber = serialNumberCounter++;
 		}
 
 
@@ -112,7 +103,7 @@ namespace UnitySteer
 		{
 			get
 			{
-				return serialNumber;
+			    return GameObject.GetInstanceID();
 			}
 		}
 
@@ -152,17 +143,7 @@ namespace UnitySteer
             return _smoothedPosition = value;
         }
 
-	// TODO: Put back in?
-        /*protected void randomizeHeadingOnXZPlane ()
-        {
-            setUp (Vector3.up);
-            setForward (OpenSteerUtility.RandomUnitVectorOnXZPlane ());
-            setSide (localRotateForwardToSide (Forward));
-        }*/
-        
-    
-    // From CPP
-    
+
         // ----------------------------------------------------------------------------
         // adjust the steering force passed to applySteeringForce.
         //
@@ -189,7 +170,7 @@ namespace UnitySteer
                 float cosine = Mathf.Lerp(1.0f, -1.0f, Mathf.Pow(range, 20));
                 Vector3 angle = OpenSteerUtility.limitMaxDeviationAngle(force, cosine, Forward);
                 #if DEBUG
-                Debug.Log("Steer "+cosine+" "+angle);
+                // Debug.Log("Steer "+cosine+" "+angle+" "+range+" "+Mathf.Pow(range, 20));
                 #endif
                 return angle;
             }

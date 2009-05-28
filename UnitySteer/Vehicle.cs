@@ -281,6 +281,15 @@ namespace UnitySteer
     	    }
 		}
 		
+		protected GameObject GameObject
+		{
+		    get
+		    {
+	            GameObject go = (rigidbody != null ) ? rigidbody.gameObject : transform.gameObject;
+	            return go;
+    	    }
+		}
+		
 		
         public virtual Vector3 predictFuturePosition(float predictionTime) { return Vector3.zero; }
 
