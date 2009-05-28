@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Text;
 using UnityEngine;
@@ -9,30 +8,11 @@ namespace UnitySteer
     {
         public static Vector3 RandomUnitVectorOnXZPlane ()
         {
-            Vector3 tVector=RandomVectorInUnitRadiusSphere();
+            Vector3 tVector = Random.insideUnitSphere;
             tVector.y=0;
             tVector.Normalize();
             return tVector;
             //return RandomVectorInUnitRadiusSphere().setYtoZero().normalize();
-        }
-
-        public static Vector3 RandomVectorInUnitRadiusSphere ()
-        {
-            Vector3 v=Vector3.zero;
-
-            do
-            {
-//                v=new Vector3((frandom01()*2) - 1,
-//                       (frandom01()*2) - 1,
-//                       (frandom01()*2) - 1);
-
-                v = new Vector3((RandomGenerator.Singleton.nextFloat() * 2) - 1,
-                        (RandomGenerator.Singleton.nextFloat() * 2) - 1,
-                        (RandomGenerator.Singleton.nextFloat() * 2) - 1);
-            }
-            while (v.magnitude >= 1);
-
-            return v;
         }
 
          public static Vector3 limitMaxDeviationAngle (Vector3 source, float cosineOfConeAngle, Vector3 basis)
@@ -110,16 +90,9 @@ namespace UnitySteer
             
         }
 
-        public static float clip(float x, float min, float max)
-        {
-            if (x < min) return min;
-            if (x > max) return max;
-            return x;
-        }
-
         public static Vector3 RandomUnitVector ()
         {
-            Vector3 tVector = RandomVectorInUnitRadiusSphere();
+            Vector3 tVector = Random.insideUnitSphere;
             tVector.Normalize();
             return tVector;
         }

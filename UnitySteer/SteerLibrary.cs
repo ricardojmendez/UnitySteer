@@ -876,7 +876,7 @@ namespace UnitySteer
         {
              float mf = MaxForce;
              float speedError = targetSpeed - Speed;
-             return Forward * OpenSteerUtility.clip (speedError, -mf, +mf);
+             return Forward * Mathf.Clamp (speedError, -mf, +mf);
         }
 
 

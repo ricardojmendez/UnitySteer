@@ -243,7 +243,7 @@ namespace UnitySteer
             // (rate is proportional to time step, then clipped into useful range)
             if (elapsedTime > 0)
             {
-                float smoothRate = OpenSteerUtility.clip(9 * elapsedTime, 0.15f, 0.4f);
+                float smoothRate = Mathf.Clamp(9 * elapsedTime, 0.15f, 0.4f);
                 _smoothedAcceleration=OpenSteerUtility.blendIntoAccumulator(smoothRate,
                                       newAcceleration,
                                       _smoothedAcceleration);
