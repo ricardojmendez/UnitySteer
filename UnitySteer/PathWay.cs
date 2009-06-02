@@ -47,10 +47,6 @@ namespace UnitySteer
 
     public class Pathway
     {
-
-        
-
-
         // Given an arbitrary point ("A"), returns the nearest point ("P") on
         // this path.  Also returns, via output arguments, the path tangent at
         // P and a measure of how far A is outside the Pathway's "tube".  Note
