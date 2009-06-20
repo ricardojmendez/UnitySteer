@@ -64,6 +64,14 @@ namespace UnitySteer.Vehicles {
         public float cohesionAngle  = -0.15f;
         public float cohesionWeight = 8.0f;
         
+        public Boid (Vector3 position, float mass, bool movesVertically) : base( position, mass )
+        {
+            this.MovesVertically = movesVertically;
+
+            // reset all boid state
+            reset ();
+        }
+        
         public Boid (Transform transform, float mass, bool movesVertically) : base( transform, mass )
         {
             this.MovesVertically = movesVertically;
@@ -130,7 +138,13 @@ namespace UnitySteer.Vehicles {
         // per frame simulation update
         public void Update (float currentTime, float elapsedTime)
         {
-            applySteeringForce (CalculateForces(), elapsedTime);
+            Vector3 forces = CalculateForces();
+            
+            /*
+            if (forces != Vector3.zero)
+                Debug.Log("Forces "+forces+ " "+ elapsedTime);
+            */
+            applySteeringForce (forces, elapsedTime);
         }
 
 

@@ -73,7 +73,7 @@ namespace UnitySteer
             }
         };
 
-
+        public SteerLibrary( Vector3 position, float mass ) : base( position, mass ){}
 		public SteerLibrary( Transform transform, float mass ) : base( transform, mass ){}
 		public SteerLibrary( Rigidbody rigidbody ) : base( rigidbody ){}
 			// TODO: Consider doing a call to resetSteering() within these?

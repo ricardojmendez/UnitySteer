@@ -43,20 +43,29 @@ namespace UnitySteer
     {
         ArrayList neighbors = new ArrayList();
 
-        
+        /*
+            Meh. This whole thing could be solved if we just replace it with an
+            object and then figure out if it supports the "position" property
+            or if it has a mass.
+         */
 		private Transform transform;
 		private Rigidbody rigidbody;
-		private float transformMass, radius, speed, maxSpeed, maxForce;
+		private float internalMass, radius, speed, maxSpeed, maxForce;
 		private bool movesVertically;
+		private Vector3 internalPosition;
 		
-		
+
+		public Vehicle( Vector3 position, float mass )
+		{
+			this.Position = position;
+			internalMass = mass;
+		}		
 		
 		public Vehicle( Transform transform, float mass )
 		{
 			this.transform = transform;
-			transformMass = mass;
+			internalMass = mass;
 		}
-		
 		
 		
 		public Vehicle( Rigidbody rigidbody )
@@ -82,21 +91,28 @@ namespace UnitySteer
 				{
 					return rigidbody.position;
 				}
-				return transform.position;
+				if (transform != null)
+				{
+				    return transform.position;
+				}
+				return internalPosition;
 			}
 			set
 			{
 				if( !MovesVertically )
 				{
 					value = new Vector3( value.x, Position.y, value.z );
-				}
-				
+				}	
 				if( rigidbody != null )
 				{
 					rigidbody.MovePosition( value );
 					return;
 				}
-				transform.position = value;
+				if (transform != null)
+				{
+				    transform.position = value;
+				}
+				internalPosition = value;
 			}
 		}
 		
@@ -110,8 +126,11 @@ namespace UnitySteer
 				{
 					return rigidbody.transform.forward;
 				}
-				
-				return transform.forward;
+				if (transform != null)
+				{
+				    return transform.forward;
+				}
+				return Vector3.forward;
 			}
 			set
 			{
@@ -125,8 +144,10 @@ namespace UnitySteer
 					rigidbody.transform.forward = value;
 					return;
 				}
-				
-				transform.forward = value;
+				if (transform != null)
+				{
+				    transform.forward = value;
+				}
 			}
 		}
 		
@@ -139,8 +160,11 @@ namespace UnitySteer
 				{
 					return rigidbody.transform.right;
 				}
-				
-				return transform.right;
+				if (transform != null)
+				{
+				    return transform.right;
+				}
+				return Vector3.right;
 			}
 		}
 		
@@ -153,18 +177,22 @@ namespace UnitySteer
 				{
 					return rigidbody.transform.up;
 				}
-				
-				return transform.up;
+				if (transform != null)
+				{
+				    return transform.up;
+				}
+				return Vector3.up;
 			}
 			set
 			{
 				if( rigidbody != null )
 				{
 					rigidbody.transform.up = value;
-					return;
 				}
-				
-				transform.up = value;
+				else if (transform != null)
+				{
+				    transform.up = value;
+				}
 			}
 		}
 		
@@ -178,7 +206,7 @@ namespace UnitySteer
 				{
 					return rigidbody.mass;
 				}
-				return transformMass;
+				return internalMass;
 			}
 			set
 			{
@@ -187,7 +215,7 @@ namespace UnitySteer
 					rigidbody.mass = value;
 					return;
 				}
-				transformMass = value;
+				internalMass = value;
 			}
 		}
 
@@ -281,7 +309,6 @@ namespace UnitySteer
     	    }
 		}
 		
-		
         public virtual Vector3 predictFuturePosition(float predictionTime) { return Vector3.zero; }
 
 
@@ -292,7 +319,7 @@ namespace UnitySteer
 			{
 				rigidbody.transform.up = new Vector3(0, 1, 0);
 			}
-			else
+			else if (transform != null)
 			{
 				transform.up = new Vector3(0, 1, 0);
 			}
@@ -301,7 +328,7 @@ namespace UnitySteer
 			{
 				rigidbody.transform.forward = new Vector3(0, 0, 1);
 			}
-			else
+			else if (transform != null)
 			{
 				transform.forward = new Vector3(0, 0, 1);
 			}

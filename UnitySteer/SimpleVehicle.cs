@@ -56,19 +56,17 @@ namespace UnitySteer
         Vector3 _smoothedPosition;
         float _smoothedCurvature;
         Vector3 _smoothedAcceleration;
-
-        static int serialNumberCounter = 0;
-
-        int serialNumber;
-        // Constructor
-
+        
+        public SimpleVehicle( Vector3 position, float mass ) : base( position, mass )
+		{
+            // set inital state
+            reset();
+		}
+		
 		public SimpleVehicle( Transform transform, float mass ) : base( transform, mass )
 		{
             // set inital state
             reset();
-
-            // maintain unique serial numbers
-            serialNumber = serialNumberCounter++;
 		}
 		
 		
@@ -76,14 +74,11 @@ namespace UnitySteer
 		{
             // set inital state
             reset();
-
-            // maintain unique serial numbers
-            serialNumber = serialNumberCounter++;
 		}
 
 
         // Reset vehicle state
-        public virtual void reset ()
+        public virtual void reset()
         {
             // reset LocalSpace state
             ResetLocalSpace ();
@@ -107,14 +102,6 @@ namespace UnitySteer
             resetSmoothedAcceleration(Vector3.zero);
         }
 
-
-		public int SerialNumber
-		{
-			get
-			{
-				return serialNumber;
-			}
-		}
 
         
         public ArrayList Obstacles
@@ -239,7 +226,7 @@ namespace UnitySteer
             // compute acceleration and velocity
             Vector3 newAcceleration = (clippedForce / Mass);
             Vector3 newVelocity = Velocity;
-
+            
             // damp out abrupt changes and oscillations in steering acceleration
             // (rate is proportional to time step, then clipped into useful range)
             if (elapsedTime > 0)
@@ -257,13 +244,13 @@ namespace UnitySteer
             
             //newVelocity = newVelocity.truncateLength (MaxSpeed);
             newVelocity = truncateLength(newVelocity, MaxSpeed);
-
+            
             // update Speed
             Speed = newVelocity.magnitude;
 
             // Euler integrate (per frame) velocity into position
             Position += (newVelocity * elapsedTime);
-
+            
             // regenerate local space (by default: align vehicle's forward axis with
             // new velocity, but this behavior may be overridden by derived classes.)
 
