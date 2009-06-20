@@ -7,6 +7,7 @@ namespace UnitySteer.Vehicles
     public class ComboVehicle : SimpleVehicle
     {
 		private float steerToAvoidNeighborsWeight, steerToAvoidObstaclesWeight, steerToStayOnPathWeight, steerForPursuitWeight, steerForTargetSpeedWeight;
+		private float minCollisionTime = 0.2f;
 		private Pathway path;
 		private Vector3 avoidNeighbors, avoidObstacles, stayOnPath, pursuit, targetSpeed;
 		
@@ -43,6 +44,12 @@ namespace UnitySteer.Vehicles
         public Vector3 AvoidObstacles
         {
             get { return avoidObstacles; }
+        }
+        
+        public float MinCollisionTime
+        {
+            get { return minCollisionTime; }
+            set { minCollisionTime = value; }
         }
         
         public Vector3 StayOnPath
@@ -158,13 +165,13 @@ namespace UnitySteer.Vehicles
 
 			if( steerToAvoidNeighborsWeight != 0.0f )
 			{
-				avoidNeighbors = steerToAvoidNeighbors( 0.2f, Neighbors ) * steerToAvoidNeighborsWeight;
+				avoidNeighbors = steerToAvoidNeighbors( MinCollisionTime, Neighbors ) * steerToAvoidNeighborsWeight;
 				// TODO: Expose time as a variable
 			}
 			
 			if( steerToAvoidObstaclesWeight != 0.0f )
 			{
-				avoidObstacles = steerToAvoidObstacles( 0.2f, Obstacles ) * steerToAvoidObstaclesWeight;
+				avoidObstacles = steerToAvoidObstacles( MinCollisionTime, Obstacles ) * steerToAvoidObstaclesWeight;
 			}
 			
 			if( steerToStayOnPathWeight != 0.0f )

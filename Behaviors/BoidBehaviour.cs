@@ -80,10 +80,9 @@ public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
 	}
 	
 	
-	
 	// Update is called once per frame
 	void Update () {
-	    boid.update(Time.time, Time.deltaTime);
+	    boid.Update(Time.time, Time.deltaTime);
 	}
 
 

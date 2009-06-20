@@ -113,17 +113,24 @@ namespace UnitySteer.Vehicles {
         }
         
         
-        
-        // per frame simulation update
-        public void update (float currentTime, float elapsedTime)
+        protected virtual Vector3 CalculateForces()
         {
             // steer to flock and perhaps to stay within the spherical boundary
             Vector3 avoid = steerToAvoidObstacles(0.2f, Obstacles); // TODO-RJM: Change to a property
+            #if DEBUG
             if (Obstacles.Count > 0 && avoid != Vector3.zero)
             {
                 Debug.Log("Avoiding "+avoid);
             }
-            applySteeringForce (steerToFlock () + handleBoundary() + avoid, elapsedTime);
+            #endif
+            Vector3 result = steerToFlock () + handleBoundary() + avoid;
+            return result;
+        }
+        
+        // per frame simulation update
+        public void Update (float currentTime, float elapsedTime)
+        {
+            applySteeringForce (CalculateForces(), elapsedTime);
         }
 
 

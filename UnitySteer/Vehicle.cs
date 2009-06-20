@@ -64,6 +64,8 @@ namespace UnitySteer
 			this.rigidbody = rigidbody;
 		}
 		
+		
+		// ArrayList containing the Vehicle objects that are near this one
 		public ArrayList Neighbors
         {
             get
@@ -129,7 +131,6 @@ namespace UnitySteer
 		}
 		
 		
-		
 		public Vector3 Side
 		{
 			get
@@ -142,7 +143,6 @@ namespace UnitySteer
 				return transform.right;
 			}
 		}
-		
 		
 		
 		public Vector3 Up
