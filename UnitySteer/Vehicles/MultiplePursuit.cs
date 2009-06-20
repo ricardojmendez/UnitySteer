@@ -107,17 +107,17 @@ namespace UnitySteer.Vehicles
 
     public class MpPursuer : MpBase
     {
-        MpWanderer wanderer;
+        SimpleVehicle targetVehicle;
 
-		public MpPursuer( Transform transform, float mass, MpWanderer w ) : base( transform, mass )
+		public MpPursuer( Transform transform, float mass, SimpleVehicle w ) : base( transform, mass )
 		{
-            wanderer = w; 
+            targetVehicle = w; 
             reset ();
 		}
-		
-		public MpPursuer( Rigidbody rigidbody, MpWanderer w ) : base( rigidbody )
+
+		public MpPursuer( Rigidbody rigidbody, SimpleVehicle w ) : base( rigidbody )
 		{
-            wanderer = w; 
+            targetVehicle = w; 
             reset ();
 		}
 
@@ -131,13 +131,13 @@ namespace UnitySteer.Vehicles
         // one simulation step
         public void update (float currentTime, float elapsedTime)
         {
-            // when pursuer touches quarry ("wanderer"), reset its position
-            float d = Vector3.Distance(Position, wanderer.Position);
-            float r = Radius + wanderer.Radius;
+            // when pursuer touches quarry ("targetVehicle"), reset its position
+            float d = Vector3.Distance(Position, targetVehicle.Position);
+            float r = Radius + targetVehicle.Radius;
             if (d < r) reset ();
 
             float maxTime = 20f; // xxx hard-to-justify value
-            applySteeringForce (steerForPursuit (wanderer, maxTime), elapsedTime);
+            applySteeringForce (steerForPursuit (targetVehicle, maxTime), elapsedTime);
 
             // for annotation TODO-REMOVE
             // recordTrailVertex (currentTime, Position);
@@ -151,16 +151,12 @@ namespace UnitySteer.Vehicles
             float inner = 20;
             float outer = 30;
             float radius = Random.Range(inner, outer);
-            
+
             Vector3 r  = Random.insideUnitSphere;
             r.y = 0;
-            
-            Vector3 randomOnRing = r * radius;
-            Position = wanderer.Position + randomOnRing;
 
-            // randomize 2D heading
-//            randomizeHeadingOnXZPlane ();
-				// TODO: Check consequences. Figure something out, dude!
+            Vector3 randomOnRing = r * radius;
+            Position = targetVehicle.Position + randomOnRing;
         }
     };
 
