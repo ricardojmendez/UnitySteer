@@ -52,6 +52,10 @@ namespace UnitySteer.Vehicles
     public class MpBase : SimpleVehicle
     {
         // constructor
+        public MpBase( Vector3 position, float mass ) : base( position, mass )
+		{
+            reset ();
+		}
 		public MpBase( Transform transform, float mass ) : base( transform, mass ){ reset(); }
 		public MpBase( Rigidbody rigidbody ) : base( rigidbody ){ reset(); }
 
@@ -108,6 +112,28 @@ namespace UnitySteer.Vehicles
     public class MpPursuer : MpBase
     {
         SimpleVehicle targetVehicle;
+        
+        
+        public SimpleVehicle TargetVehicle
+        {
+            get
+            {
+                return targetVehicle;
+            }
+            
+            set
+            {
+                targetVehicle = value;
+            }
+        }
+        
+
+		public MpPursuer( Vector3 position, float mass, SimpleVehicle w ) : base( position, mass )
+		{
+            targetVehicle = w; 
+            reset ();
+		}
+
 
 		public MpPursuer( Transform transform, float mass, SimpleVehicle w ) : base( transform, mass )
 		{
@@ -121,30 +147,30 @@ namespace UnitySteer.Vehicles
             reset ();
 		}
 
-        // reset state
-        new void reset ()
-        {
-            base.reset ();
-            randomizeStartingPositionAndHeading ();
-        }
-
         // one simulation step
         public void update (float currentTime, float elapsedTime)
         {
+            if (targetVehicle == null)
+            {
+                return;
+            }
             // when pursuer touches quarry ("targetVehicle"), reset its position
             float d = Vector3.Distance(Position, targetVehicle.Position);
             float r = Radius + targetVehicle.Radius;
+
+            #if RESET_ON_FIND
             if (d < r) reset ();
+            #endif
 
-            float maxTime = 20f; // xxx hard-to-justify value
-            applySteeringForce (steerForPursuit (targetVehicle, maxTime), elapsedTime);
-
-            // for annotation TODO-REMOVE
-            // recordTrailVertex (currentTime, Position);
+            if (d >= r)
+            {
+                float maxTime = 20f; // xxx hard-to-justify value
+                applySteeringForce (steerForPursuit (targetVehicle, maxTime), elapsedTime);
+            }
         }
 
         // reset position
-        void randomizeStartingPositionAndHeading ()
+        public void randomizeStartingPositionAndHeading ()
         {
             // randomize position on a ring between inner and outer radii
             // centered around the home base

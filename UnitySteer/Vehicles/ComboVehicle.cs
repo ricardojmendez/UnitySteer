@@ -18,8 +18,6 @@ namespace UnitySteer.Vehicles
 			reset();
 		}
 		
-		
-		
 		public ComboVehicle( Rigidbody rigidbody ) : base( rigidbody )
 		{
 			reset();
