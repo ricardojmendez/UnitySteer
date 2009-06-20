@@ -293,16 +293,16 @@ public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 	}
 	
 	
-	
 	public void OnGUI()
 	{
 		GUILayout.Label( "vehicle.Obstacles.Count: " + vehicle.Obstacles.Count );
 		GUILayout.Label( "vehicle.Neighbors.Count: " + vehicle.Neighbors.Count );
 		GUILayout.Label( "" );
-		GUILayout.Label( "vehicle.avoidNeighbors: " + vehicle.avoidNeighbors );
-		GUILayout.Label( "vehicle.avoidObstacles: " + vehicle.avoidObstacles );
-		GUILayout.Label( "vehicle.stayOnPath: " + vehicle.stayOnPath );
-		GUILayout.Label( "vehicle.pursuit: " + vehicle.pursuit );
-		GUILayout.Label( "vehicle.targetSpeed: " + vehicle.targetSpeed );
+		GUILayout.Label( "vehicle.avoidNeighbors: " + vehicle.AvoidNeighbors );
+		GUILayout.Label( "vehicle.avoidObstacles: " + vehicle.AvoidObstacles );
+		GUILayout.Label( "vehicle.stayOnPath: " + vehicle.StayOnPath );
+		GUILayout.Label( "vehicle.pursuit: " + vehicle.Pursuit );
+		GUILayout.Label( "vehicle.targetSpeed: " + vehicle.TargetSpeed );
 	}
+
 }

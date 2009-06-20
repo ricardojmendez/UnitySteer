@@ -8,9 +8,7 @@ namespace UnitySteer.Vehicles
     {
 		private float steerToAvoidNeighborsWeight, steerToAvoidObstaclesWeight, steerToStayOnPathWeight, steerForPursuitWeight, steerForTargetSpeedWeight;
 		private Pathway path;
-		
-		// TODO: Debug! Move back in Update
-		public Vector3 avoidNeighbors, avoidObstacles, stayOnPath, pursuit, targetSpeed;		
+		private Vector3 avoidNeighbors, avoidObstacles, stayOnPath, pursuit, targetSpeed;
 		
 		
 		
@@ -37,7 +35,30 @@ namespace UnitySteer.Vehicles
             Speed = MaxSpeed * 0.3f;
         }
 
-		
+        public Vector3 AvoidNeighbors
+        {
+            get { return avoidNeighbors; }
+        }
+        
+        public Vector3 AvoidObstacles
+        {
+            get { return avoidObstacles; }
+        }
+        
+        public Vector3 StayOnPath
+        {
+            get { return stayOnPath; }
+        }
+        
+        public Vector3 Pursuit
+        {
+            get { return pursuit; }
+        }
+        
+        public Vector3 TargetSpeed
+        {
+            get { return targetSpeed; }
+        }
 		
 		public float SteerToAvoidNeighborsWeight
 		{
@@ -138,7 +159,7 @@ namespace UnitySteer.Vehicles
 			if( steerToAvoidNeighborsWeight != 0.0f )
 			{
 				avoidNeighbors = steerToAvoidNeighbors( 0.2f, Neighbors ) * steerToAvoidNeighborsWeight;
-					// TODO: Expose time as a variable
+				// TODO: Expose time as a variable
 			}
 			
 			if( steerToAvoidObstaclesWeight != 0.0f )
