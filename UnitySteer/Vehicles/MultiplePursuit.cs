@@ -72,8 +72,17 @@ namespace UnitySteer.Vehicles
     public class MpWanderer : MpBase
     {
         // constructor
-		public MpWanderer( Transform transform, float mass ) : base( transform, mass ){ reset(); }
-		public MpWanderer( Rigidbody rigidbody ) : base( rigidbody ){ reset(); }
+		public MpWanderer( Transform transform, float mass, bool movesVertically ) : base( transform, mass )
+		{
+		    this.MovesVertically = movesVertically;
+		    reset(); 
+		}
+		
+		public MpWanderer( Rigidbody rigidbody, bool movesVertically ) : base( rigidbody )
+		{
+		    this.MovesVertically = movesVertically;
+		    reset(); 
+		}
         
 
         // reset state
@@ -83,11 +92,10 @@ namespace UnitySteer.Vehicles
         }
 
         // one simulation step
-        public void update (float currentTime, float elapsedTime)
+        public void Update (float currentTime, float elapsedTime)
         {
-            Vector3 wander2d = steerForWander (elapsedTime);
-            wander2d.y = 0;
-            Vector3 steer = Forward + (wander2d * 3);
+            Vector3 wander = steerForWander (elapsedTime);
+            Vector3 steer = Forward + (wander * 3);
             applySteeringForce (steer, elapsedTime);
 
             // for annotation
