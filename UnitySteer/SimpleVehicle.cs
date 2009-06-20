@@ -30,7 +30,7 @@
 //
 //
 // ----------------------------------------------------------------------------
-
+#define DEBUG
 using System;
 using System.Collections;
 using System.Text;
@@ -57,11 +57,20 @@ namespace UnitySteer
         float _smoothedCurvature;
         Vector3 _smoothedAcceleration;
         
+        public int SerialNumber
+        {
+            get
+            {
+                return GameObject.GetInstanceID();
+            }
+        }
+
+        
         public SimpleVehicle( Vector3 position, float mass ) : base( position, mass )
-		{
+        {
             // set inital state
             reset();
-		}
+        }
 		
 		public SimpleVehicle( Transform transform, float mass ) : base( transform, mass )
 		{
@@ -101,8 +110,6 @@ namespace UnitySteer
             resetSmoothedCurvature(0);//Vector3.zero);
             resetSmoothedAcceleration(Vector3.zero);
         }
-
-
         
         public ArrayList Obstacles
         {
@@ -139,17 +146,7 @@ namespace UnitySteer
             return _smoothedPosition = value;
         }
 
-	// TODO: Put back in?
-        /*protected void randomizeHeadingOnXZPlane ()
-        {
-            setUp (Vector3.up);
-            setForward (OpenSteerUtility.RandomUnitVectorOnXZPlane ());
-            setSide (localRotateForwardToSide (Forward));
-        }*/
-        
-    
-    // From CPP
-    
+
         // ----------------------------------------------------------------------------
         // adjust the steering force passed to applySteeringForce.
         //
@@ -173,13 +170,12 @@ namespace UnitySteer
             else
             {
                 float range = Speed / maxAdjustedSpeed;
-                // const float cosine = interpolate (pow (range, 6), 1.0f, -1.0f);
-                // const float cosine = interpolate (pow (range, 10), 1.0f, -1.0f);
-                // const float cosine = interpolate (pow (range, 20), 1.0f, -1.0f);
-                // const float cosine = interpolate (pow (range, 100), 1.0f, -1.0f);
-                // const float cosine = interpolate (pow (range, 50), 1.0f, -1.0f);
-                float cosine = OpenSteerUtility.interpolate((float) System.Math.Pow(range, 20), 1.0f, -1.0f);
-                return OpenSteerUtility.limitMaxDeviationAngle(force, cosine, Forward);
+                float cosine = Mathf.Lerp(1.0f, -1.0f, Mathf.Pow(range, 20));
+                Vector3 angle = OpenSteerUtility.limitMaxDeviationAngle(force, cosine, Forward);
+                #if DEBUG
+                // Debug.Log("Steer "+cosine+" "+angle+" "+range+" "+Mathf.Pow(range, 20));
+                #endif
+                return angle;
             }
         }
 
@@ -231,7 +227,7 @@ namespace UnitySteer
             // (rate is proportional to time step, then clipped into useful range)
             if (elapsedTime > 0)
             {
-                float smoothRate = OpenSteerUtility.clip(9 * elapsedTime, 0.15f, 0.4f);
+                float smoothRate = Mathf.Clamp(9 * elapsedTime, 0.15f, 0.4f);
                 _smoothedAcceleration=OpenSteerUtility.blendIntoAccumulator(smoothRate,
                                       newAcceleration,
                                       _smoothedAcceleration);

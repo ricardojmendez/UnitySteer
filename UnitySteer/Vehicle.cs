@@ -39,15 +39,15 @@ using UnityEngine;
 namespace UnitySteer
 {
 	// TODO: Alter use of this and SimpleVehicle to apply forces when using Rigidbody in stead of MovePosition
-    public class Vehicle
-    {
-        ArrayList neighbors = new ArrayList();
+	public class Vehicle
+	{
+		ArrayList neighbors = new ArrayList();
 
-        /*
-            Meh. This whole thing could be solved if we just replace it with an
-            object and then figure out if it supports the "position" property
-            or if it has a mass.
-         */
+		/*
+			Meh. This whole thing could be solved if we just replace it with an
+			object and then figure out if it supports the "position" property
+			or if it has a mass.
+		 */
 		private Transform transform;
 		private Rigidbody rigidbody;
 		private float internalMass, radius, speed, maxSpeed, maxForce;
@@ -76,12 +76,12 @@ namespace UnitySteer
 		
 		// ArrayList containing the Vehicle objects that are near this one
 		public ArrayList Neighbors
-        {
-            get
-            {
-                return neighbors;
-            }
-        }
+		{
+			get
+			{
+				return neighbors;
+			}
+		}
 		
 		public Vector3 Position
 		{
@@ -93,7 +93,7 @@ namespace UnitySteer
 				}
 				if (transform != null)
 				{
-				    return transform.position;
+					return transform.position;
 				}
 				return internalPosition;
 			}
@@ -110,7 +110,7 @@ namespace UnitySteer
 				}
 				if (transform != null)
 				{
-				    transform.position = value;
+					transform.position = value;
 				}
 				internalPosition = value;
 			}
@@ -128,7 +128,7 @@ namespace UnitySteer
 				}
 				if (transform != null)
 				{
-				    return transform.forward;
+					return transform.forward;
 				}
 				return Vector3.forward;
 			}
@@ -146,7 +146,7 @@ namespace UnitySteer
 				}
 				if (transform != null)
 				{
-				    transform.forward = value;
+					transform.forward = value;
 				}
 			}
 		}
@@ -162,7 +162,7 @@ namespace UnitySteer
 				}
 				if (transform != null)
 				{
-				    return transform.right;
+					return transform.right;
 				}
 				return Vector3.right;
 			}
@@ -179,7 +179,7 @@ namespace UnitySteer
 				}
 				if (transform != null)
 				{
-				    return transform.up;
+					return transform.up;
 				}
 				return Vector3.up;
 			}
@@ -191,7 +191,7 @@ namespace UnitySteer
 				}
 				else if (transform != null)
 				{
-				    transform.up = value;
+					transform.up = value;
 				}
 			}
 		}
@@ -302,19 +302,28 @@ namespace UnitySteer
 		
 		protected Transform Transform
 		{
-		    get
-		    {
-	            Transform t = (rigidbody != null ) ? rigidbody.transform : transform;
-	            return t;
-    	    }
+			get
+			{
+				Transform t = (rigidbody != null ) ? rigidbody.transform : transform;
+				return t;
+			}
 		}
 		
-        public virtual Vector3 predictFuturePosition(float predictionTime) { return Vector3.zero; }
+		protected GameObject GameObject
+		{
+			get
+			{
+				GameObject go = (rigidbody != null ) ? rigidbody.gameObject : transform.gameObject;
+				return go;
+			}
+		}
+		
+		public virtual Vector3 predictFuturePosition(float predictionTime) { return Vector3.zero; }
 
 
 		// TODO: NOTE: What the heck is the point of this? We wants?
-        public void ResetLocalSpace()
-        {
+		public void ResetLocalSpace()
+		{
 			if( rigidbody != null )
 			{
 				rigidbody.transform.up = new Vector3(0, 1, 0);
@@ -333,15 +342,15 @@ namespace UnitySteer
 				transform.forward = new Vector3(0, 0, 1);
 			}
 
-            Position = new Vector3(0, 0, 0);
-        }
+			Position = new Vector3(0, 0, 0);
+		}
 
-        // ------------------------------------------------------------------------
-        // transform a point in global space to its equivalent in local space
-        public Vector3 LocalizePosition(Vector3 globalPosition)
-        {
-            return Transform.InverseTransformPoint(globalPosition);
-        }
+		// ------------------------------------------------------------------------
+		// transform a point in global space to its equivalent in local space
+		public Vector3 LocalizePosition(Vector3 globalPosition)
+		{
+			return Transform.InverseTransformPoint(globalPosition);
+		}
 
-    }
+	}
 }

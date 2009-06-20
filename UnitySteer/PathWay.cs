@@ -47,10 +47,6 @@ namespace UnitySteer
 
     public class Pathway
     {
-
-        
-
-
         // Given an arbitrary point ("A"), returns the nearest point ("P") on
         // this path.  Also returns, via output arguments, the path tangent at
         // P and a measure of how far A is outside the Pathway's "tube".  Note
@@ -243,7 +239,7 @@ namespace UnitySteer
                 else
                 {
                     float ratio = remaining / segmentLength;
-                    result = OpenSteerUtility.interpolate(ratio, points[i - 1], points[i]);
+                    result = Vector3.Lerp(points[i - 1], points[i], ratio);
                     break;
                 }
             }
