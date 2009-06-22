@@ -52,7 +52,7 @@ namespace UnitySteer
 		private Rigidbody rigidbody;
 		private float internalMass, radius, speed, maxSpeed, maxForce;
 		private bool movesVertically;
-		private Vector3 internalPosition;
+		private Vector3 internalPosition, internalSide, internalForward, internalUp;
 		
 
 		public Vehicle( Vector3 position, float mass )
@@ -130,7 +130,7 @@ namespace UnitySteer
 				{
 					return transform.forward;
 				}
-				return Vector3.forward;
+				return internalForward;
 			}
 			set
 			{
@@ -142,11 +142,15 @@ namespace UnitySteer
 				if( rigidbody != null )
 				{
 					rigidbody.transform.forward = value;
-					return;
 				}
-				if (transform != null)
+				else if (transform != null)
 				{
 					transform.forward = value;
+				}
+				else 
+				{
+					internalForward = value;
+					RecalculateSide();
 				}
 			}
 		}
@@ -160,11 +164,12 @@ namespace UnitySteer
 				{
 					return rigidbody.transform.right;
 				}
-				if (transform != null)
+				else if (transform != null)
 				{
 					return transform.right;
 				}
-				return Vector3.right;
+				else
+					return internalSide;
 			}
 		}
 		
@@ -181,7 +186,7 @@ namespace UnitySteer
 				{
 					return transform.up;
 				}
-				return Vector3.up;
+				return internalUp;
 			}
 			set
 			{
@@ -192,6 +197,11 @@ namespace UnitySteer
 				else if (transform != null)
 				{
 					transform.up = value;
+				}
+				else
+				{
+					internalUp = value;
+					RecalculateSide();
 				}
 			}
 		}
@@ -351,6 +361,13 @@ namespace UnitySteer
 		{
 			return Transform.InverseTransformPoint(globalPosition);
 		}
+		
+		private void RecalculateSide()
+		{
+			internalSide = Vector3.Cross(internalForward, internalUp);
+			internalSide.Normalize();
+		}
 
 	}
 }
+ 
