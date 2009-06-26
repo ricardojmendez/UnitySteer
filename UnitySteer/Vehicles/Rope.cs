@@ -74,7 +74,16 @@ namespace UnitySteer.Vehicles
             if (d >= r)
             {
                 float maxTime = 20f; // xxx hard-to-justify value
-                applySteeringForce (steerForPursuit (next, maxTime), elapsedTime);
+                
+                Vector3 pursuit = steerForPursuit (next, maxTime);
+                Vector3 pull = Vector3.zero;
+                
+                if (previous != null)
+                {
+                    pull = steerForPursuit(previous, maxTime);
+                    pull *= 0.5f;
+                }
+                applySteeringForce (pursuit + pull, elapsedTime);
             }
         }
         
