@@ -51,7 +51,7 @@ namespace UnitySteer
 		private Transform transform;
 		private Rigidbody rigidbody;
 		private float internalMass, radius, speed, maxSpeed, maxForce;
-		private bool movesVertically;
+		private bool movesVertically = true;
 		private Vector3 internalPosition, internalSide, internalForward, internalUp;
 		
 
