@@ -5,11 +5,24 @@ using UnitySteer.Vehicles;
 
 public class WanderBehavior : MonoBehaviour {
 
-    public MpWanderer   wanderer;
+    private MpWanderer  wanderer;
+    
+    
     public bool         MovesVertically;
     public float        MaxSpeed;
     public float        MaxForce;
     public float        Mass;
+    public Transform    Tether;
+    public float        MaxDistance;
+    
+    public MpWanderer Wanderer
+    {
+        get
+        {
+            return wanderer;
+        }
+    }
+    
 
 	void Start()
 	{
@@ -23,5 +36,7 @@ public class WanderBehavior : MonoBehaviour {
 	    transform.position = wanderer.Position;
 	    wanderer.MaxSpeed = MaxSpeed;
 	    wanderer.MaxForce = MaxForce;
+	    wanderer.MaxDistance = MaxDistance;
+	    wanderer.Tether = Tether;
 	}
 }

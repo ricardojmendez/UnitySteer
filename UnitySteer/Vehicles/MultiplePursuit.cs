@@ -99,7 +99,8 @@ namespace UnitySteer.Vehicles
         public void Update (float currentTime, float elapsedTime)
         {
             Vector3 wander = steerForWander (elapsedTime);
-            Vector3 steer = Forward + (wander * 3);
+            // Vector3 steer = Forward + (wander * 3);
+            Vector3 steer = wander;
             applySteeringForce (steer, elapsedTime);
 
             // for annotation

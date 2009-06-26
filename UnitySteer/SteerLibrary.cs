@@ -30,6 +30,7 @@
 //
 //
 // ----------------------------------------------------------------------------
+//#define DEBUG
 
 using System;
 using System.Collections;
@@ -45,15 +46,45 @@ namespace UnitySteer
         System.Random randomGenerator;
 
         // Wander behavior
-        float WanderSide;
-        float WanderUp;
+        private float WanderSide;
+        private float WanderUp;
 
         /// XXX globals only for the sake of graphical annotation
         Vector3 hisPositionAtNearestApproach;
         Vector3 ourPositionAtNearestApproach;
 
         bool gaudyPursuitAnnotation;
+        
+        private Transform tether;
+        private float     maxDistance;
+        private float     maxDistanceSquared;
 
+        public float MaxDistance
+        {
+            get
+            {
+                return maxDistance;
+            }
+            set
+            {
+                maxDistance = value;
+                maxDistanceSquared = maxDistance * maxDistance;
+            }
+        }
+        
+        public Transform Tether
+        {
+            get
+            {
+                return tether;
+            }
+            set
+            {
+                tether = value;
+            }
+        }
+        
+        
         public struct PathIntersection
         {
             public bool intersect;
@@ -144,8 +175,23 @@ namespace UnitySteer
 
         public Vector3 steerForWander (float dt)
         {
-        // random walk WanderSide and WanderUp between -1 and +1
+            // random walk WanderSide and WanderUp between -1 and +1
             float speed = 12 * dt; // maybe this (12) should be an argument?
+            
+            if (Tether != null)
+            {
+                Vector3 future  = predictFuturePosition(dt);
+                Vector3 diff    = future - Tether.position;
+                float   sqrDist = diff.sqrMagnitude;
+
+                if (sqrDist > maxDistanceSquared)
+                {
+                    //Debug.Log("We're getting far... "+sqrDist);
+                    // When we're getting too far away, head back to base
+                    return xxxsteerForSeek(Tether.position);
+                }
+            }
+
             WanderSide = scalarRandomWalk (WanderSide, speed, -1, +1);
             WanderUp   = scalarRandomWalk (WanderUp,   speed, -1, +1);
             
@@ -837,9 +883,11 @@ namespace UnitySteer
             Vector3 target = quarry.predictFuturePosition (etl);
 
             // annotation
+            #if DEBUG
             annotationLine (Position,
                             target,
                             gaudyPursuitAnnotation ? color : Color.gray);
+            #endif
 
             return steerForSeek (target);
         }

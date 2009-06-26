@@ -81,7 +81,6 @@ namespace UnitySteer.Vehicles
                 if (previous != null)
                 {
                     pull = steerForPursuit(previous, maxTime);
-                    pull *= 0.5f;
                 }
                 applySteeringForce (pursuit + pull, elapsedTime);
             }

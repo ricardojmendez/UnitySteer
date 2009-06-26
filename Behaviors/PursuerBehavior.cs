@@ -11,7 +11,7 @@ public class PursuerBehavior : MonoBehaviour {
     public bool randomize;
 
 	void Start () {
-	    pursuer = new MpPursuer( transform, 1.0f, wanderer.wanderer);
+	    pursuer = new MpPursuer( transform, 1.0f, wanderer.Wanderer);
 	    if (randomize)
 	    {
 	        pursuer.randomizeStartingPositionAndHeading();
