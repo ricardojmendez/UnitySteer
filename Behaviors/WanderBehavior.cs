@@ -5,8 +5,9 @@ using UnitySteer.Vehicles;
 
 public class WanderBehavior : MonoBehaviour {
 
-    public MpWanderer wanderer;
-    public bool MovesVertically;
+    public MpWanderer   wanderer;
+    public bool         MovesVertically;
+    public float        Speed;
 
 	void Start()
 	{
@@ -18,5 +19,6 @@ public class WanderBehavior : MonoBehaviour {
 	    wanderer.Position = transform.position;
 	    wanderer.Update(Time.time, Time.deltaTime);
 	    transform.position = wanderer.Position;
+	    wanderer.MaxSpeed = Speed;
 	}
 }

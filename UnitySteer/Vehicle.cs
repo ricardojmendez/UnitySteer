@@ -226,9 +226,11 @@ namespace UnitySteer
 				if( rigidbody != null )
 				{
 					rigidbody.mass = value;
-					return;
 				}
-				internalMass = value;
+				else
+				{
+				    internalMass = value;
+				}
 			}
 		}
 
@@ -353,7 +355,6 @@ namespace UnitySteer
 			internalSide = Vector3.Cross(internalForward, internalUp);
 			internalSide.Normalize();
 		}
-
 	}
 }
  
