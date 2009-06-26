@@ -89,9 +89,6 @@ namespace UnitySteer
         // Reset vehicle state
         public virtual void reset()
         {
-            // reset LocalSpace state
-            ResetLocalSpace ();
-
             // reset SteerLibraryMixin state
             // (XXX this seems really fragile, needs to be redesigned XXX)
             //SimpleVehicle_3.reset ();

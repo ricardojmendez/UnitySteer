@@ -102,17 +102,20 @@ namespace UnitySteer
 				if( !MovesVertically )
 				{
 					value = new Vector3( value.x, Position.y, value.z );
-				}	
+				}
 				if( rigidbody != null )
 				{
 					rigidbody.MovePosition( value );
 					return;
 				}
-				if (transform != null)
+				else if (transform != null)
 				{
 					transform.position = value;
 				}
-				internalPosition = value;
+				else
+				{
+				    internalPosition = value;
+				}
 			}
 		}
 		
@@ -331,28 +334,11 @@ namespace UnitySteer
 		public virtual Vector3 predictFuturePosition(float predictionTime) { return Vector3.zero; }
 
 
-		// TODO: NOTE: What the heck is the point of this? We wants?
 		public void ResetLocalSpace()
 		{
-			if( rigidbody != null )
-			{
-				rigidbody.transform.up = new Vector3(0, 1, 0);
-			}
-			else if (transform != null)
-			{
-				transform.up = new Vector3(0, 1, 0);
-			}
-	
-			if( rigidbody != null )
-			{
-				rigidbody.transform.forward = new Vector3(0, 0, 1);
-			}
-			else if (transform != null)
-			{
-				transform.forward = new Vector3(0, 0, 1);
-			}
-
-			Position = new Vector3(0, 0, 0);
+		    this.Up = Vector3.up;
+		    this.Forward = Vector3.forward;
+			Position = Vector3.zero;
 		}
 
 		// ------------------------------------------------------------------------
