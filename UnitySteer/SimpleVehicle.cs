@@ -157,7 +157,7 @@ namespace UnitySteer
         // parameter names commented out to prevent compiler warning from "-W"
 
 
-        public Vector3 adjustRawSteeringForce(Vector3 force)//, const float /* deltaTime */)
+        public Vector3 adjustRawSteeringForce(Vector3 force)
         {
             float maxAdjustedSpeed = 0.2f * MaxSpeed;
 
@@ -170,9 +170,6 @@ namespace UnitySteer
                 float range = Speed / maxAdjustedSpeed;
                 float cosine = Mathf.Lerp(1.0f, -1.0f, Mathf.Pow(range, 20));
                 Vector3 angle = OpenSteerUtility.limitMaxDeviationAngle(force, cosine, Forward);
-                #if DEBUG
-                // Debug.Log("Steer "+cosine+" "+angle+" "+range+" "+Mathf.Pow(range, 20));
-                #endif
                 return angle;
             }
         }
@@ -193,14 +190,14 @@ namespace UnitySteer
         // used by both applySteeringForce and applyBrakingForce?
 
 
-        void applyBrakingForce (float rate, float deltaTime)
+        void applyBrakingForce (float rate, float elapsedTime)
         {
             float rawBraking = Speed * rate;
             float clipBraking = ((rawBraking < MaxForce) ?
                                        rawBraking :
                                        MaxForce);
 
-            Speed = Speed - (clipBraking * deltaTime);
+            Speed = Speed - (clipBraking * elapsedTime);
         }
 
 
@@ -223,13 +220,28 @@ namespace UnitySteer
             
             // damp out abrupt changes and oscillations in steering acceleration
             // (rate is proportional to time step, then clipped into useful range)
+            #if CLIPPING_ELAPSEDTIME
+            /* 
+                The lower the smoothRate parameter, the more noise there is
+                likely to be in the movement.
+             */
             if (elapsedTime > 0)
             {
+                /*
+                    RJM: The clipping of smoothRate is framerate-dependent, which
+                    is bad when we're trying to get consistent behavior across a
+                    variety of processor usages.
+                 */
                 float smoothRate = Mathf.Clamp(9 * elapsedTime, 0.15f, 0.4f);
-                _smoothedAcceleration=OpenSteerUtility.blendIntoAccumulator(smoothRate,
-                                      newAcceleration,
-                                      _smoothedAcceleration);
+                _smoothedAcceleration = OpenSteerUtility.blendIntoAccumulator(smoothRate,
+                                            newAcceleration,
+                                            _smoothedAcceleration);
             }
+            #else
+            _smoothedAcceleration = OpenSteerUtility.blendIntoAccumulator(0.4f,
+                                        newAcceleration,
+                                        _smoothedAcceleration);
+            #endif
 
             // Euler integrate (per frame) acceleration into velocity
             newVelocity += _smoothedAcceleration * elapsedTime;
@@ -254,9 +266,9 @@ namespace UnitySteer
             measurePathCurvature (elapsedTime);
 
             // running average of recent positions
-            _smoothedPosition=OpenSteerUtility.blendIntoAccumulator(elapsedTime * 0.06f, // QQQ
-                                  Position ,
-                                  _smoothedPosition);
+            _smoothedPosition = OpenSteerUtility.blendIntoAccumulator(elapsedTime * 0.06f, // QQQ
+                                    Position ,
+                                    _smoothedPosition);
         }
 
 
@@ -295,17 +307,19 @@ namespace UnitySteer
             Vector3 bankUp = accelUp + globalUp;
 
             // blend bankUp into vehicle's UP basis vector
-            float smoothRate = elapsedTime * 3;
+            // RJM: framerate-dependent, hopefuly we're getting more than 3 frames per second :-)
+            float smoothRate = elapsedTime * 3; 
             Vector3 tempUp = Up;
             tempUp=OpenSteerUtility.blendIntoAccumulator(smoothRate, bankUp, tempUp);
             tempUp.Normalize();
-//            setUp (tempUp);
 			Up = tempUp;
 
-        //  annotationLine (position(), position() + (globalUp * 4), gWhite);  // XXX
-        //  annotationLine (position(), position() + (bankUp   * 4), gOrange); // XXX
-        //  annotationLine (position(), position() + (accelUp  * 4), gRed);    // XXX
-        //  annotationLine (position(), position() + (up ()    * 1), gYellow); // XXX
+            #if ANNOTATE_LOCALSPACE
+            annotationLine (position(), position() + (globalUp * 4), gWhite);  // XXX
+            annotationLine (position(), position() + (bankUp   * 4), gOrange); // XXX
+            annotationLine (position(), position() + (accelUp  * 4), gRed);    // XXX
+            annotationLine (position(), position() + (up ()    * 1), gYellow); // XXX
+            #endif
 
             // adjust orthonormal basis vectors to be aligned with new velocity
             if (Speed > 0) 
@@ -329,8 +343,16 @@ namespace UnitySteer
 
                 float sign = (Vector3.Dot(lateral, Side) < 0) ? 1.0f : -1.0f;
                 _curvature = lateral.magnitude * sign;
-                //OpenSteerUtility.blendIntoAccumulator(elapsedTime * 4.0f, _curvature,_smoothedCurvature);
-                _smoothedCurvature=OpenSteerUtility.blendIntoAccumulator(elapsedTime * 4.0f, _curvature, _smoothedCurvature);
+                /*
+                    If elapsedTime is greater than 0.25, that means that blendIntoAccumulator
+                    will end up clipping the first parameter to (0,1), and we'll lose information,
+                    making this call framerate-dependent.
+                    
+                    No idea where that 4.0f value comes from, probably out of a hat.
+                 */
+                _smoothedCurvature = OpenSteerUtility.blendIntoAccumulator(elapsedTime * 4.0f, 
+                                        _curvature, 
+                                        _smoothedCurvature);
 
                 _lastForward = Forward;
                 _lastPosition = Position;
