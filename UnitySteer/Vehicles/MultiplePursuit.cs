@@ -96,7 +96,7 @@ namespace UnitySteer.Vehicles
         }
 
         // one simulation step
-        public void Update (float currentTime, float elapsedTime)
+        public void Update (float elapsedTime)
         {
             Vector3 wander = steerForWander (elapsedTime);
             // Vector3 steer = Forward + (wander * 3);
@@ -149,7 +149,7 @@ namespace UnitySteer.Vehicles
 		}
 
         // one simulation step
-        public void update (float currentTime, float elapsedTime)
+        public void Update (float elapsedTime)
         {
             if (targetVehicle == null)
             {

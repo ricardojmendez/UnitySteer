@@ -32,7 +32,7 @@ public class WanderBehavior : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	    wanderer.Position = transform.position;
-	    wanderer.Update(Time.time, Time.deltaTime);
+	    wanderer.Update(Time.deltaTime);
 	    transform.position = wanderer.Position;
 	    wanderer.MaxSpeed = MaxSpeed;
 	    wanderer.MaxForce = MaxForce;

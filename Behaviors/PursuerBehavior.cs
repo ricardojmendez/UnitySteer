@@ -22,7 +22,7 @@ public class PursuerBehavior : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	    pursuer.Position = transform.position;
-	    pursuer.update(Time.time, Time.deltaTime);
+	    pursuer.Update(Time.deltaTime);
 	    transform.position = pursuer.Position;
 	}
 }

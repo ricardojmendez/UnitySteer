@@ -57,7 +57,7 @@ namespace UnitySteer.Vehicles
 
 
         // one simulation step
-        public void update (float currentTime, float elapsedTime)
+        public void Update (float elapsedTime)
         {
             if (next == null)
             {
