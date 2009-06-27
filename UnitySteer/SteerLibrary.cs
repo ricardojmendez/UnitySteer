@@ -118,7 +118,7 @@ namespace UnitySteer
             WanderUp = 0;
 
             // default to non-gaudyPursuitAnnotation
-            gaudyPursuitAnnotation = false;
+            gaudyPursuitAnnotation = true;
 
             randomGenerator=new System.Random();
         }
@@ -188,7 +188,7 @@ namespace UnitySteer
                 {
                     //Debug.Log("We're getting far... "+sqrDist);
                     // When we're getting too far away, head back to base
-                    return xxxsteerForSeek(Tether.position);
+                    return steerForSeekTruncated(Tether.position);
                 }
             }
 
@@ -227,7 +227,7 @@ namespace UnitySteer
 
 
 
-        public Vector3 xxxsteerForFlee(Vector3 target)
+        public Vector3 steerForFleeTruncated(Vector3 target)
         {
         //   Vector3 offset = position - target;
             Vector3 offset = Position - target;
@@ -237,7 +237,7 @@ namespace UnitySteer
 
 
        
-        public Vector3 xxxsteerForSeek ( Vector3 target)
+        public Vector3 steerForSeekTruncated ( Vector3 target)
         {
             Vector3 offset = target - Position;
             Vector3 desiredVelocity = truncateLength(offset, MaxSpeed);// offset.truncateLength(MaxSpeed); //xxxnew
@@ -394,7 +394,9 @@ namespace UnitySteer
                 if (!nearest.intersect ||
                     (next.intersect &&
                      next.distance < nearest.distance))
+                {
                     nearest = next;
+                }
             }
 
             // when a nearest intersection was found
@@ -786,14 +788,14 @@ namespace UnitySteer
 
 
        
-        public Vector3 steerForPursuit ( Vehicle quarry)
+        public Vector3 steerForPursuit (Vehicle quarry)
         {
             return steerForPursuit (quarry, float.MaxValue);
         }
 
 
        
-        public Vector3 steerForPursuit ( Vehicle quarry, float maxPredictionTime)
+        public Vector3 steerForPursuit (Vehicle quarry, float maxPredictionTime)
         {
             // offset from this to quarry, that distance, unit vector toward quarry
             Vector3 offset = quarry.Position - Position;
@@ -812,8 +814,8 @@ namespace UnitySteer
             int f = intervalComparison (forwardness,  -0.707f, 0.707f);
             int p = intervalComparison (parallelness, -0.707f, 0.707f);
 
-            float timeFactor = 0; // to be filled in below
-            Color color = Color.black;           // to be filled in below (xxx just for debugging)
+            float timeFactor = 0;       // to be filled in below
+            Color color = Color.black;  // to be filled in below (xxx just for debugging)
 
             // Break the pursuit into nine cases, the cross product of the
             // quarry being [ahead, aside, or behind] us and heading

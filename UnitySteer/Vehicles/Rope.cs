@@ -21,7 +21,9 @@ namespace UnitySteer.Vehicles
 
     public class Rope : SimpleVehicle
     {
-        SimpleVehicle previous, next;
+        private SimpleVehicle previous, next;
+        private float previousStrength = 1f;
+        private float nextStrength     = 1f;
         
         public SimpleVehicle Previous
         {
@@ -47,6 +49,32 @@ namespace UnitySteer.Vehicles
                 next = value;
             }
         }
+        
+        
+        public float PreviousStrength
+        {
+            get
+            {
+                return previousStrength;
+            }
+            set
+            {
+                previousStrength = value;
+            }
+        }
+        
+        public float NextStrength
+        {
+            get
+            {
+                return nextStrength;
+            }
+            set
+            {
+                nextStrength = value;
+            }
+        }
+        
         
         public Rope (Vector3 position, float mass, SimpleVehicle previous, SimpleVehicle next) : base(position, mass)
         {
@@ -80,9 +108,12 @@ namespace UnitySteer.Vehicles
                 
                 if (previous != null)
                 {
-                    pull = steerForPursuit(previous, maxTime);
+                    pull =  steerForPursuit(previous, maxTime);
+                    pull *= PreviousStrength;
                 }
-                applySteeringForce (pursuit + pull, elapsedTime);
+                pursuit *= NextStrength;
+                
+                applySteeringForce ( pursuit + pull, elapsedTime);
             }
         }
         
