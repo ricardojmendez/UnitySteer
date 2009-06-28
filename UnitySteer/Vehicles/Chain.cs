@@ -19,7 +19,7 @@ namespace UnitySteer.Vehicles
     // a common base class, MpBase, which is a specialization of SimpleVehicle.
 
 
-    public class Rope : SimpleVehicle
+    public class Chain : SimpleVehicle
     {
         private SimpleVehicle previous, next;
         private float previousStrength = 1f;
@@ -76,7 +76,7 @@ namespace UnitySteer.Vehicles
         }
         
         
-        public Rope (Vector3 position, float mass, SimpleVehicle previous, SimpleVehicle next) : base(position, mass)
+        public Chain (Vector3 position, float mass, SimpleVehicle previous, SimpleVehicle next) : base(position, mass)
         {
             this.previous = previous;
             this.next = next;
