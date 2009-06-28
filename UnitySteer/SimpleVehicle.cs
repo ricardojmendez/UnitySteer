@@ -208,6 +208,10 @@ namespace UnitySteer
 
         public void applySteeringForce(Vector3 force, float elapsedTime)
         {
+            if (MaxForce == 0 || MaxSpeed == 0)
+            {
+                return;
+            }
 
             Vector3 adjustedForce = adjustRawSteeringForce (force);//, elapsedTime);
             
