@@ -22,8 +22,23 @@ namespace UnitySteer.Vehicles
     public class Chain : SimpleVehicle
     {
         private SimpleVehicle previous, next;
-        private float previousStrength = 1f;
-        private float nextStrength     = 1f;
+        private float previousStrength  = 1;
+        private float nextStrength      = 1;
+        private float maxDistance       = 1;
+        private float maxDistanceSqr    = 1;
+        
+        public float MaxDistance
+        {
+            get
+            {
+                return maxDistance;
+            }
+            set
+            {
+                maxDistance = value;
+                maxDistanceSqr = value*value;
+            }
+        }
         
         public SimpleVehicle Previous
         {
@@ -98,7 +113,11 @@ namespace UnitySteer.Vehicles
             #if RESET_ON_FIND
             if (d < r) reset ();
             #endif
-
+            
+            // Temporary values since we may need to alter them
+            float nextStr = NextStrength;
+            float prevStr = PreviousStrength;
+            
             if (d >= r)
             {
                 float maxTime = 20f; // xxx hard-to-justify value
@@ -108,10 +127,21 @@ namespace UnitySteer.Vehicles
                 
                 if (previous != null)
                 {
+                    Vector3 diff = Position - previous.Position;
+                    float   dist = diff.sqrMagnitude;
+                    if (dist >= maxDistanceSqr)
+                    {
+                        // If we're further away from the previous link than
+                        // we should, change our priorities so that we snap
+                        // right back to it.
+                        prevStr = 1.9f;
+                        nextStr = 0.1f;
+                    }
+                    
                     pull =  steerForPursuit(previous, maxTime);
-                    pull *= PreviousStrength;
+                    pull *= prevStr;
                 }
-                pursuit *= NextStrength;
+                pursuit *= nextStr;
                 
                 applySteeringForce ( pursuit + pull, elapsedTime);
             }
