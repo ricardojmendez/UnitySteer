@@ -191,7 +191,7 @@ namespace UnitySteer.Vehicles {
                 case 0:
                 {
                     // steer back when outside
-                    Vector3 seek = steerForSeekTruncated(Vector3.zero);
+                    Vector3 seek = steerForSeek(Vector3.zero);
                     Vector3 lateral = OpenSteerUtility.perpendicularComponent(seek, Forward);
                     return lateral;
                 }

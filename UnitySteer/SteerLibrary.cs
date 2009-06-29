@@ -188,7 +188,7 @@ namespace UnitySteer
                 {
                     //Debug.Log("We're getting far... "+sqrDist);
                     // When we're getting too far away, head back to base
-                    return steerForSeekTruncated(Tether.position);
+                    return steerForSeek(Tether.position);
                 }
             }
 
