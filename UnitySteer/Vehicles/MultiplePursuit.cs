@@ -99,8 +99,9 @@ namespace UnitySteer.Vehicles
         public void Update (float elapsedTime)
         {
             Vector3 wander = steerForWander (elapsedTime);
+            Vector3 avoid = steerToAvoidObstacles(0.2f, Obstacles); // TODO-RJM: Change to a property
             // Vector3 steer = Forward + (wander * 3);
-            Vector3 steer = wander;
+            Vector3 steer = wander + avoid;
             applySteeringForce (steer, elapsedTime);
 
             // for annotation

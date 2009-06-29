@@ -31,6 +31,7 @@
 //
 // ----------------------------------------------------------------------------
 //#define DEBUG
+#define ANNOTATE_AVOIDOBSTACLES
 
 using System;
 using System.Collections;
@@ -403,6 +404,10 @@ namespace UnitySteer
             if (nearest.intersect &&
                 nearest.distance < minDistanceToCollision)
             {
+                #if ANNOTATE_AVOIDOBSTACLES
+                Debug.DrawLine(Position, nearest.obstacle.center, Color.red);
+                Debug.Log("Avoiding obstacle at "+nearest.distance);
+                #endif
                 // show the corridor that was checked for collisions
                 annotateAvoidObstacle (minDistanceToCollision);
 
@@ -410,9 +415,9 @@ namespace UnitySteer
                 // take the component of that which is lateral (perpendicular to my
                 // forward direction), set length to maxForce, add a bit of forward
                 // component (in capture the flag, we never want to slow down)
-                 Vector3 offset = Position - nearest.obstacle.center;
+                Vector3 offset = Position - nearest.obstacle.center;
                 //avoidance = offset.perpendicularComponent (Forward);
-                 avoidance =  OpenSteerUtility.perpendicularComponent( offset,Forward);
+                avoidance =  OpenSteerUtility.perpendicularComponent( offset,Forward);
 
                 avoidance.Normalize();//.normalize ();
                 avoidance *= MaxForce;

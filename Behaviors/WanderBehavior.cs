@@ -24,13 +24,13 @@ public class WanderBehavior : MonoBehaviour {
     }
     
 
-	void Start()
+	protected void Start()
 	{
 		wanderer = new MpWanderer( transform, Mass, MovesVertically );
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	protected void Update () {
 	    wanderer.Position = transform.position;
 	    wanderer.Update(Time.deltaTime);
 	    transform.position = wanderer.Position;
