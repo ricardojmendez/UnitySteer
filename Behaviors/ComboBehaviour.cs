@@ -187,7 +187,7 @@ public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 
 	public void Update()
 	{
-	    vehicle.Update( Time.time, Time.deltaTime );
+	    vehicle.Update(Time.deltaTime);
 	}
 	
 	

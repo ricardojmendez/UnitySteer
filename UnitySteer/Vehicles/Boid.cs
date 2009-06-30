@@ -136,7 +136,7 @@ namespace UnitySteer.Vehicles {
         }
         
         // per frame simulation update
-        public void Update (float currentTime, float elapsedTime)
+        public void Update (float elapsedTime)
         {
             Vector3 forces = CalculateForces();
             

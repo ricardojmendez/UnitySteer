@@ -157,7 +157,7 @@ namespace UnitySteer.Vehicles
 
 
 
-        public void Update( float currentTime, float elapsedTime )
+        public void Update(float elapsedTime)
         {
 			avoidNeighbors = avoidObstacles = stayOnPath = pursuit = targetSpeed = Vector3.zero;
 
