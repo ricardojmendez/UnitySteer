@@ -374,6 +374,12 @@ namespace UnitySteer
         public Vector3 steerToAvoidObstacles ( float minTimeToCollision, ArrayList obstacles)
         {
             Vector3 avoidance = new Vector3() ;
+
+            if (obstacles == null)
+            {
+                return avoidance;
+            }
+
             PathIntersection nearest;
 
             nearest = new PathIntersection(null);
