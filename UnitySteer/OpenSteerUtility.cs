@@ -37,23 +37,17 @@ namespace UnitySteer
             // is a constant when the function is inlined into its caller)
             if (insideOrOutside)
             {
-	        // source vector is already inside the cone, just return it
-	        if (cosineOfSourceAngle >= cosineOfConeAngle) return source;
+    	        // source vector is already inside the cone, just return it
+    	        if (cosineOfSourceAngle >= cosineOfConeAngle) return source;
             }
             else
             {
-	        // source vector is already outside the cone, just return it
-	        if (cosineOfSourceAngle <= cosineOfConeAngle) return source;
+    	        // source vector is already outside the cone, just return it
+    	        if (cosineOfSourceAngle <= cosineOfConeAngle) return source;
             }
 
             // find the portion of "source" that is perpendicular to "basis"
             Vector3 perp = perpendicularComponent(source,basis);
-
-            // normalize that perpendicular
-            
-                
-            Vector3 unitPerp = perp;//.normalize ();
-            unitPerp.Normalize();
 
             // construct a new vector whose length equals the source vector,
             // and lies on the intersection of a plane (formed the source and
@@ -61,7 +55,7 @@ namespace UnitySteer
             // angle corresponds to cosineOfConeAngle)
             float perpDist = (float) System.Math.Sqrt (1 - (cosineOfConeAngle * cosineOfConeAngle));
             Vector3 c0 = basis * cosineOfConeAngle;
-            Vector3 c1 = unitPerp * perpDist;
+            Vector3 c1 = perp.normalized * perpDist;
             return (c0 + c1) * sourceLength;
         }
 
@@ -73,7 +67,6 @@ namespace UnitySteer
 
         // return component of vector perpendicular to a unit basis vector
         // (IMPORTANT NOTE: assumes "basis" has unit magnitude (length==1))
-
         public static Vector3 perpendicularComponent (Vector3 source, Vector3 unitBasis)
         {
             return source - parallelComponent(source,unitBasis);
@@ -87,14 +80,6 @@ namespace UnitySteer
         public static float blendIntoAccumulator(float smoothRate, float newValue, float smoothedAccumulator)
         {
             return Mathf.Lerp(smoothedAccumulator, newValue, Mathf.Clamp(smoothRate, 0, 1));
-            
-        }
-
-        public static Vector3 RandomUnitVector ()
-        {
-            Vector3 tVector = Random.insideUnitSphere;
-            tVector.Normalize();
-            return tVector;
         }
 
         public static Vector3 sphericalWrapAround (Vector3 source, Vector3 center, float radius)

@@ -4,6 +4,7 @@ using UnitySteer;
 
 namespace UnitySteer.Vehicles
 {
+    // Work in progress
     public class ComboVehicle : SimpleVehicle
     {
 		private float steerToAvoidNeighborsWeight, steerToAvoidObstaclesWeight, steerToStayOnPathWeight, steerForPursuitWeight, steerForTargetSpeedWeight;

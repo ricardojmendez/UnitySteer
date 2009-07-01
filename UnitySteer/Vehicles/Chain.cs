@@ -110,40 +110,35 @@ namespace UnitySteer.Vehicles
             float d = Vector3.Distance(Position, next.Position);
             float r = Radius + next.Radius;
 
-            #if RESET_ON_FIND
-            if (d < r) reset ();
-            #endif
-            
             // Temporary values since we may need to alter them
             float nextStr = NextStrength;
             float prevStr = PreviousStrength;
             
             if (d >= r)
             {
-                float maxTime = 20f; // xxx hard-to-justify value
-                
-                Vector3 pursuit = steerForPursuit (next, maxTime);
+                Vector3 pursuit = steerForPursuit (next);
                 Vector3 pull = Vector3.zero;
                 
                 if (previous != null)
                 {
                     Vector3 diff = Position - previous.Position;
                     float   dist = diff.sqrMagnitude;
-                    if (dist >= maxDistanceSqr)
+                    if (dist > maxDistanceSqr)
                     {
                         // If we're further away from the previous link than
                         // we should, change our priorities so that we snap
                         // right back to it.
-                        prevStr = 1.9f;
-                        nextStr = 0.1f;
+                        prevStr = 1.95f;
+                        nextStr = 0.05f;
+                        pull = steerForSeek(previous.Position);
                     }
-                    
-                    pull =  steerForPursuit(previous, maxTime);
+                    else
+                        pull =  steerForPursuit (previous);
                     pull *= prevStr;
                 }
                 pursuit *= nextStr;
                 
-                applySteeringForce ( pursuit + pull, elapsedTime);
+                applySteeringForce (pursuit + pull, elapsedTime);
             }
         }
         

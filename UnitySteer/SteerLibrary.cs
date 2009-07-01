@@ -371,7 +371,7 @@ namespace UnitySteer
         // XXX 9-12-03: note this does NOT use the Obstacle::steerToAvoid protocol
         // XXX like the older steerToAvoidObstacle does/did.  It needs to be fixed
        
-        public Vector3 steerToAvoidObstacles ( float minTimeToCollision, ArrayList obstacles)
+        public Vector3 steerToAvoidObstacles (float minTimeToCollision, ArrayList obstacles)
         {
             Vector3 avoidance = new Vector3() ;
 

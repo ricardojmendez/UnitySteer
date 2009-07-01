@@ -62,13 +62,10 @@ namespace UnitySteer.Vehicles
         // reset state
         new void reset ()
         {
-            base.reset (); // reset the vehicle 
-            Speed = 5.0f;            // speed along Forward direction.
-            MaxForce = 55.0f;       // steering force is clipped to this magnitude
-            MaxSpeed = 13.0f;       // velocity is clipped to this magnitude
-            // TODO-REMOVE
-            // clearTrailHistory ();    // prevent long streaks due to teleportation 
-            // gaudyPursuitAnnotation = true; // select use of 9-color annotation
+            base.reset ();      // reset the vehicle 
+            Speed = 5.0f;       // speed along Forward direction.
+            MaxForce = 55.0f;   // steering force is clipped to this magnitude
+            MaxSpeed = 13.0f;   // velocity is clipped to this magnitude
         }
     };
 
@@ -87,13 +84,6 @@ namespace UnitySteer.Vehicles
 		    this.MovesVertically = movesVertically;
 		    reset(); 
 		}
-        
-
-        // reset state
-        new void reset ()
-        {
-            base.reset ();
-        }
 
         // one simulation step
         public void Update (float elapsedTime)

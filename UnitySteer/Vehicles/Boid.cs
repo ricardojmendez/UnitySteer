@@ -52,6 +52,7 @@ namespace UnitySteer.Vehicles {
         static float worldRadius;
         static int boundaryCondition;
         
+        public float minTimeToCollision = 0.2f;
         public float separationRadius =  5.0f;
         public float separationAngle  = -0.707f;
         public float separationWeight =  12.0f;
@@ -75,7 +76,6 @@ namespace UnitySteer.Vehicles {
         public Boid (Transform transform, float mass, bool movesVertically) : base( transform, mass )
         {
             this.MovesVertically = movesVertically;
-
             // reset all boid state
             reset ();
         }
@@ -83,7 +83,6 @@ namespace UnitySteer.Vehicles {
         public Boid ( Rigidbody rigidbody, bool movesVertically) : base( rigidbody )
         {
             this.MovesVertically = movesVertically;
-
             // reset all boid state
             reset ();
         }
@@ -124,7 +123,7 @@ namespace UnitySteer.Vehicles {
         protected virtual Vector3 CalculateForces()
         {
             // steer to flock and perhaps to stay within the spherical boundary
-            Vector3 avoid = steerToAvoidObstacles(0.2f, Obstacles); // TODO-RJM: Change to a property
+            Vector3 avoid = steerToAvoidObstacles(minTimeToCollision, Obstacles);
             #if DEBUG
             if (Obstacles.Count > 0 && avoid != Vector3.zero)
             {
@@ -139,11 +138,6 @@ namespace UnitySteer.Vehicles {
         public void Update (float elapsedTime)
         {
             Vector3 forces = CalculateForces();
-            
-            /*
-            if (forces != Vector3.zero)
-                Debug.Log("Forces "+forces+ " "+ elapsedTime);
-            */
             applySteeringForce (forces, elapsedTime);
         }
 
