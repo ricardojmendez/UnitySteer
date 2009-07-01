@@ -262,7 +262,7 @@ namespace UnitySteer
 
             mapReturnStruct tStruct = new mapReturnStruct();
 
-            Vector3 onPath = path.mapPointToPath(futurePosition, tStruct);
+            Vector3 onPath = path.mapPointToPath(futurePosition, ref tStruct);
 
             if (tStruct.outside < 0)
             {
@@ -307,7 +307,7 @@ namespace UnitySteer
             // Vector3 tangent;
             //float outside;
             mapReturnStruct tStruct = new mapReturnStruct();
-            Vector3 onPath = path.mapPointToPath(futurePosition, tStruct);
+            Vector3 onPath = path.mapPointToPath(futurePosition, ref tStruct);
 
             // no steering is required if (a) our future position is inside
             // the path tube and (b) we are facing in the correct direction

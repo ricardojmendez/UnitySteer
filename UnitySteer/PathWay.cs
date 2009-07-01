@@ -51,9 +51,7 @@ namespace UnitySteer
         // this path.  Also returns, via output arguments, the path tangent at
         // P and a measure of how far A is outside the Pathway's "tube".  Note
         // that a negative distance indicates A is inside the Pathway.
-        public virtual Vector3 mapPointToPath(Vector3 point, mapReturnStruct tStruct) { return Vector3.zero; }
-        //public virtual Vector3 mapPointToPath(Vector3 point, Vector3 tangent, float outside) { return Vector3.zero; }
-
+        public virtual Vector3 mapPointToPath(Vector3 point, ref mapReturnStruct tStruct) { return Vector3.zero; }
 
         // given a distance along the path, convert it to a point on the path
         public virtual Vector3 mapPathDistanceToPoint(float pathDistance) { return Vector3.zero; }
@@ -69,7 +67,7 @@ namespace UnitySteer
             //Vector3 tangent;
             mapReturnStruct tStruct = new mapReturnStruct();
 
-            mapPointToPath(point, tStruct);//tangent, outside);
+            mapPointToPath(point, ref tStruct);
             return tStruct.outside < 0;
         }
 
@@ -80,7 +78,7 @@ namespace UnitySteer
             //Vector3 tangent;
             mapReturnStruct tStruct = new mapReturnStruct();
 
-            mapPointToPath(point, tStruct);//tangent, outside);
+            mapPointToPath(point, ref tStruct);
             return tStruct.outside;
         }
     }
@@ -109,26 +107,29 @@ namespace UnitySteer
 
         // construct a PolylinePathway given the number of points (vertices),
         // an array of points, and a path radius.
-        PolylinePathway (int _pointCount, Vector3[] _points, float _radius, bool _cyclic)
+        PolylinePathway (Vector3[] _points, float _radius, bool _cyclic)
         {
-            initialize (_pointCount, _points, _radius, _cyclic);
+            initialize (_points, _radius, _cyclic);
         }
 
         // utility for constructors in derived classes
-        void initialize (int _pointCount, Vector3[] _points, float _radius, bool _cyclic)
+        void initialize (Vector3[] _points, float _radius, bool _cyclic)
         {
             // set data members, allocate arrays
             radius = _radius;
             cyclic = _cyclic;
-            pointCount = _pointCount;
+            pointCount = _points.Length;
             totalPathLength = 0;
-            if (cyclic) pointCount++;
+            if (cyclic) 
+            {
+                pointCount++;
+            }
             lengths = new float [pointCount];
             points  = new Vector3 [pointCount];
             normals = new Vector3 [pointCount];
 
             // loop over all points
-            for (int i = 0; i < pointCount; i++)
+            for (int i = 0; i < _points.Length; i++)
             {
                 // copy in point locations, closing cycle when appropriate
                 bool closeCycle = cyclic && (i == pointCount-1);
@@ -140,7 +141,7 @@ namespace UnitySteer
                 {
                     // compute the segment length
                     normals[i] = points[i] - points[i-1];
-                    lengths[i] = normals[i].magnitude;// ength();
+                    lengths[i] = normals[i].magnitude;
 
                     // find the normalized vector parallel to the segment
                     normals[i] *= 1 / lengths[i];
@@ -159,7 +160,7 @@ namespace UnitySteer
         float getTotalPathLength () {return totalPathLength;}
 
 
-        public override Vector3 mapPointToPath(Vector3 point, mapReturnStruct tStruct)//Vector3 tangent, float outside)
+        public override Vector3 mapPointToPath(Vector3 point, ref mapReturnStruct tStruct)//Vector3 tangent, float outside)
         {
             float d;
             float minDistance = float.MaxValue;// FLT_MAX;
