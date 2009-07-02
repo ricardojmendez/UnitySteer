@@ -55,9 +55,8 @@ namespace UnitySteer.Vehicles
         {
             base.reset (); // reset the vehicle 
             moving = true;
-            Speed = 5.0f;            // speed along Forward direction.
-            MaxForce = 55.0f;       // steering force is clipped to this magnitude
-            MaxSpeed = 13.0f;       // velocity is clipped to this magnitude
+            MaxForce =  2.0f;   // steering force is clipped to this magnitude
+            MaxSpeed = 13.0f;   // velocity is clipped to this magnitude
         }
         
         // one simulation step
@@ -65,7 +64,7 @@ namespace UnitySteer.Vehicles
         {
             if (!moving)
                 return;
-            // when pursuer touches quarry ("wanderer"), reset its position
+
             float d = Vector3.Distance(Position, target);
             float r = Radius;
             if (d < r) 
