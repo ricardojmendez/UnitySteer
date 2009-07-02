@@ -47,6 +47,33 @@ namespace UnitySteer
 
     public class Pathway
     {
+        protected bool isCyclic;
+        
+        public bool IsCyclic
+        {
+            get
+            {
+                return isCyclic;
+            }
+        }
+        
+        
+        public float TotalPathLength
+        {
+            get
+            {
+                return GetTotalPathLength();
+            }
+        }
+        
+        
+        // Returns the total path length. It's expected to be overriden by the 
+        // actual implementations.
+        protected virtual float GetTotalPathLength()
+        {
+            return 0;
+        }
+        
         // Given an arbitrary point ("A"), returns the nearest point ("P") on
         // this path.  Also returns, via output arguments, the path tangent at
         // P and a measure of how far A is outside the Pathway's "tube".  Note
@@ -82,18 +109,15 @@ namespace UnitySteer
             return tStruct.outside;
         }
     }
-
+    
     public class PolylinePathway : Pathway
     {
-    
         int pointCount;
         Vector3[] points;
         float radius;
-        bool cyclic;
 
         float segmentLength;
         float segmentProjection;
-        Vector3 local;
         Vector3 chosen;
         Vector3 segmentNormal;
 
@@ -117,10 +141,10 @@ namespace UnitySteer
         {
             // set data members, allocate arrays
             radius = _radius;
-            cyclic = _cyclic;
+            isCyclic = _cyclic;
             pointCount = _points.Length;
             totalPathLength = 0;
-            if (cyclic) 
+            if (isCyclic) 
             {
                 pointCount++;
             }
@@ -132,7 +156,7 @@ namespace UnitySteer
             for (int i = 0; i < _points.Length; i++)
             {
                 // copy in point locations, closing cycle when appropriate
-                bool closeCycle = cyclic && (i == pointCount-1);
+                bool closeCycle = isCyclic && (i == pointCount-1);
                 int j = closeCycle ? 0 : i;
                 points[i] = _points[j];
 
@@ -157,7 +181,10 @@ namespace UnitySteer
 
 
         // assessor for total path length;
-        float getTotalPathLength () {return totalPathLength;}
+        protected override float GetTotalPathLength() 
+        {
+            return totalPathLength;
+        }
 
 
         public override Vector3 mapPointToPath(Vector3 point, ref mapReturnStruct tStruct)//Vector3 tangent, float outside)
@@ -215,7 +242,7 @@ namespace UnitySteer
         {
             // clip or wrap given path distance according to cyclic flag
             float remaining = pathDistance;
-            if (cyclic)
+            if (isCyclic)
             {
                 remaining = (float)System.Math.IEEERemainder(pathDistance, totalPathLength);
                 //remaining = (float) fmod (pathDistance, totalPathLength);
@@ -258,7 +285,7 @@ namespace UnitySteer
         float pointToSegmentDistance (Vector3 point, Vector3 ep0, Vector3 ep1)
         {
             // convert the test point to be "local" to ep0
-            local = point - ep0;
+            Vector3 local = point - ep0;
 
             // find the projection of "local" onto "segmentNormal"
             segmentProjection = Vector3.Dot(segmentNormal, local);
@@ -269,19 +296,19 @@ namespace UnitySteer
             {
                 chosen = ep0;
                 segmentProjection = 0;
-                return (point- ep0).magnitude;//Vector3::distance (point, ep0);
+                return (point- ep0).magnitude;
             }
             if (segmentProjection > segmentLength)
             {
                 chosen = ep1;
                 segmentProjection = segmentLength;
-                return (point-ep1).magnitude;//Vector3::distance (point, ep1);
+                return (point-ep1).magnitude;
             }
 
             // otherwise nearest point is projection point on segment
             chosen = segmentNormal * segmentProjection;
             chosen +=  ep0;
-            return Vector3.Distance(point, chosen);//::distance (point, chosen);
+            return Vector3.Distance(point, chosen);
         }
 
         
