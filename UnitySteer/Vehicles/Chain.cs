@@ -24,21 +24,6 @@ namespace UnitySteer.Vehicles
         private SimpleVehicle previous, next;
         private float previousStrength  = 1;
         private float nextStrength      = 1;
-        private float maxDistance       = 1;
-        private float maxDistanceSqr    = 1;
-        
-        public float MaxDistance
-        {
-            get
-            {
-                return maxDistance;
-            }
-            set
-            {
-                maxDistance = value;
-                maxDistanceSqr = value*value;
-            }
-        }
         
         public SimpleVehicle Previous
         {
@@ -93,6 +78,7 @@ namespace UnitySteer.Vehicles
         
         public Chain (Vector3 position, float mass, SimpleVehicle previous, SimpleVehicle next) : base(position, mass)
         {
+            this.MaxDistance = 1;
             this.previous = previous;
             this.next = next;
             reset ();
@@ -123,7 +109,7 @@ namespace UnitySteer.Vehicles
                 {
                     Vector3 diff = Position - previous.Position;
                     float   dist = diff.sqrMagnitude;
-                    if (dist > maxDistanceSqr)
+                    if (dist > MaxDistanceSquared)
                     {
                         // If we're further away from the previous link than
                         // we should, change our priorities so that we snap

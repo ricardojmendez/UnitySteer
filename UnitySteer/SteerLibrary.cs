@@ -73,6 +73,15 @@ namespace UnitySteer
             }
         }
         
+        public float MaxDistanceSquared
+        {
+            get
+            {
+                return maxDistanceSquared;
+            }
+        }
+        
+        
         public Transform Tether
         {
             get
