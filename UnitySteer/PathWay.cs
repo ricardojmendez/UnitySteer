@@ -110,6 +110,9 @@ namespace UnitySteer
         }
     }
     
+    // NOTE RJM: This class keeps a whole lot of global state in lieu of 
+    // passing parameters. I recommend comparing it against AngryAntPathway
+    // and OpenSteerUtility as an example of how to disentangle the state.
     public class PolylinePathway : Pathway
     {
         int pointCount;
@@ -278,10 +281,12 @@ namespace UnitySteer
         // ----------------------------------------------------------------------------
         // computes distance from a point to a line segment 
         //
-        // (I considered moving this to the vector library, but its too
+        // cwr: (I considered moving this to the vector library, but its too
         // tangled up with the internal state of the PolylinePathway instance)
-
-
+        // 
+        // RJM: Look into OpenSteerUtility for a version  of this method without
+        // the entangled local state
+        // 
         float pointToSegmentDistance (Vector3 point, Vector3 ep0, Vector3 ep1)
         {
             // convert the test point to be "local" to ep0

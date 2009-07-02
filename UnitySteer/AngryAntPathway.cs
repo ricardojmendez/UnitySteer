@@ -117,8 +117,9 @@ namespace UnitySteer
                 float   segmentLength = lengths[i];
                 Vector3 segmentNormal = normals[i];
                 Vector3 chosenPoint = Vector3.zero;
-                d = pointToSegmentDistance (point, points[i-1], points[i], 
-                        segmentNormal, segmentLength,  ref chosenPoint);
+                d = OpenSteerUtility.PointToSegmentDistance(point, points[i-1], points[i], 
+                                                            segmentNormal, segmentLength,  
+                                                            ref chosenPoint);
                 if (d < minDistance)
                 {
                     minDistance = d;
@@ -146,8 +147,9 @@ namespace UnitySteer
                 float   segmentProjection = 0;
                 float   segmentLength = lengths[i];
                 Vector3 segmentNormal = normals[i];
-                d = pointToSegmentDistance (point, points[i-1], points[i], 
-                        segmentNormal, segmentLength, ref segmentProjection);
+                d = OpenSteerUtility.PointToSegmentDistance(point, points[i-1], points[i], 
+                                                            segmentNormal, segmentLength, 
+                                                            ref segmentProjection);
                 if (d < minDistance)
                 {
                     minDistance = d;
@@ -193,87 +195,6 @@ namespace UnitySteer
                 }
             }
             return result;
-        }
-
-
-        // ----------------------------------------------------------------------------
-        // computes distance from a point to a line segment 
-        //
-        // Whenever possible the segment's normal and length should be calculated 
-        // in advance for performance reasons, if we're dealing with a known point 
-        // sequence in a path, but we provide for the case where the values aren't
-        // sent.
-        //
-        float pointToSegmentDistance(Vector3 point, Vector3 ep0, Vector3 ep1, ref float segmentProjection)
-        {
-            Vector3 cp = Vector3.zero;
-            return pointToSegmentDistance(point, ep0, ep1, ref cp, ref segmentProjection);
-        }
-
-        float pointToSegmentDistance(Vector3 point, Vector3 ep0, Vector3 ep1, ref Vector3 chosenPoint)
-        {
-            float sp = 0;
-            return pointToSegmentDistance(point, ep0, ep1, ref chosenPoint, ref sp);
-        }
-        
-        float pointToSegmentDistance(Vector3 point, Vector3 ep0, Vector3 ep1, 
-                                     ref Vector3 chosenPoint, ref float segmentProjection)
-        {
-            Vector3 normal = ep1-ep0;
-            float   length = normal.magnitude;
-            normal *= 1/length;
-            
-            return pointToSegmentDistance(point, ep0, ep1, normal, length, 
-                                          ref chosenPoint, ref segmentProjection);
-        }        
-        
-        float pointToSegmentDistance(Vector3 point, Vector3 ep0, Vector3 ep1, 
-                                     Vector3 segmentNormal, float segmentLength,
-                                     ref float segmentProjection)
-        {
-            Vector3 cp = Vector3.zero;
-            return pointToSegmentDistance(point, ep0, ep1, ref cp, ref segmentProjection);
-        }
-
-        float pointToSegmentDistance(Vector3 point, Vector3 ep0, Vector3 ep1, 
-                                     Vector3 segmentNormal, float segmentLength,
-                                     ref Vector3 chosenPoint)
-        {
-            float sp = 0;
-            return pointToSegmentDistance(point, ep0, ep1, segmentNormal, 
-                                          segmentLength, ref chosenPoint, ref sp);
-        }
-        
-
-        float pointToSegmentDistance(Vector3 point, Vector3 ep0, Vector3 ep1, 
-                                     Vector3 segmentNormal, float segmentLength,
-                                     ref Vector3 chosenPoint, ref float segmentProjection)
-        {
-            // convert the test point to be "local" to ep0
-            Vector3 local = point - ep0;
-
-            // find the projection of "local" onto "segmentNormal"
-            segmentProjection = Vector3.Dot(segmentNormal, local);
-
-            // handle boundary cases: when projection is not on segment, the
-            // nearest point is one of the endpoints of the segment
-            if (segmentProjection < 0)
-            {
-                chosenPoint = ep0;
-                segmentProjection = 0;
-                return (point- ep0).magnitude;
-            }
-            if (segmentProjection > segmentLength)
-            {
-                chosenPoint = ep1;
-                segmentProjection = segmentLength;
-                return (point-ep1).magnitude;
-            }
-
-            // otherwise nearest point is projection point on segment
-            chosenPoint = segmentNormal * segmentProjection;
-            chosenPoint +=  ep0;
-            return Vector3.Distance(point, chosenPoint);
         }
     }
 }
