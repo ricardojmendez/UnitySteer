@@ -3,6 +3,13 @@ using System.Collections;
 using System.Text;
 using UnityEngine;
 
+/*
+ * NOTE RJM: I've barely reviewed this file, which comes straight from OpenSteer
+ * and the .Net port.  There are swaths of commented-out code that I am unclear
+ * if they are that way intentionally.
+ *
+ * Use at your own risk.
+ */
 namespace UnitySteer
 {
     public class lqClientProxy
@@ -23,7 +30,6 @@ namespace UnitySteer
 
         public lqClientProxy(System.Object tClientObject)
         {
-            
             clientObject = tClientObject;
             x = 0f;
             y = 0f;
@@ -64,9 +70,9 @@ namespace UnitySteer
 
         int bincount;
 
-        public locationQueryDatabase (float _originx, float _originy, float _originz,
-				        float _sizex, float _sizey, float _sizez,
-				        int _divx, int _divy, int _divz)
+        public locationQueryDatabase(float _originx, float _originy, float _originz,
+            				         float _sizex, float _sizey, float _sizez,
+            				         int _divx, int _divy, int _divz)
         {
             originx = _originx;
             originy = _originy;

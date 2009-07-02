@@ -3,6 +3,13 @@ using System.Collections;
 using System.Text;
 using UnityEngine;
 
+/*
+ * NOTE RJM: I've barely reviewed this file, which comes straight from OpenSteer
+ * and the .Net port.  There are swaths of commented-out code that I am unclear
+ * if they are that way intentionally.
+ *
+ * Use at your own risk.
+ */
 namespace UnitySteer
 {
     public class LQProximityDatabase : AbstractProximityDatabase
@@ -18,10 +25,10 @@ namespace UnitySteer
             
 
             lq = new locationQueryDatabase(origin.x, origin.y, origin.z,
-                                   dimensions.x, dimensions.y, dimensions.z,
-                                   (int)System.Math.Round(divisions.x),
-                                   (int)System.Math.Round(divisions.y),
-                                   (int)System.Math.Round(divisions.z));
+                                           dimensions.x, dimensions.y, dimensions.z,
+                                           (int)System.Math.Round(divisions.x),
+                                           (int)System.Math.Round(divisions.y),
+                                           (int)System.Math.Round(divisions.z));
         }
 
         // destructor

@@ -12,7 +12,6 @@ namespace UnitySteer
             tVector.y=0;
             tVector.Normalize();
             return tVector;
-            //return RandomVectorInUnitRadiusSphere().setYtoZero().normalize();
         }
 
         public static Vector3 limitMaxDeviationAngle (Vector3 source, float cosineOfConeAngle, Vector3 basis)
