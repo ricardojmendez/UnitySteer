@@ -48,7 +48,6 @@ namespace UnitySteer
         private float       radius; 
         
         float segmentLength;
-        float segmentProjection;
         Vector3 segmentNormal;
         
         AngryAntPathway () {
@@ -146,9 +145,10 @@ namespace UnitySteer
 
             for (int i = 1; i < points.Length; i++)
             {
+                float segmentProjection = 0;
                 segmentLength = lengths[i];
                 segmentNormal = normals[i];
-                d = pointToSegmentDistance (point, points[i-1], points[i]);
+                d = pointToSegmentDistance (point, points[i-1], points[i], ref segmentProjection);
                 if (d < minDistance)
                 {
                     minDistance = d;
@@ -200,14 +200,20 @@ namespace UnitySteer
         // ----------------------------------------------------------------------------
         // computes distance from a point to a line segment 
         //
-        float pointToSegmentDistance (Vector3 point, Vector3 ep0, Vector3 ep1)
+        float pointToSegmentDistance (Vector3 point, Vector3 ep0, Vector3 ep1, ref float segmentProjection)
         {
-            Vector3 chosenPoint = Vector3.zero;
-            return pointToSegmentDistance(point, ep0, ep1, ref chosenPoint);
+            Vector3 cp = Vector3.zero;
+            return pointToSegmentDistance(point, ep0, ep1, ref cp, ref segmentProjection);
         }
 
-
         float pointToSegmentDistance (Vector3 point, Vector3 ep0, Vector3 ep1, ref Vector3 chosenPoint)
+        {
+            float sp = 0;
+            return pointToSegmentDistance(point, ep0, ep1, ref chosenPoint, ref sp);
+        }
+
+        float pointToSegmentDistance (Vector3 point, Vector3 ep0, Vector3 ep1, 
+            ref Vector3 chosenPoint, ref float segmentProjection)
         {
             // convert the test point to be "local" to ep0
             Vector3 local = point - ep0;
