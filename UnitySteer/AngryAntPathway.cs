@@ -47,13 +47,13 @@ namespace UnitySteer
         // NetworkAssets.
         private float       radius; 
         
-        AngryAntPathway () {
+        public AngryAntPathway () {
             
         }
 
         // construct a PolylinePathway given the number of points (vertices),
         // an array of points, and a path radius.
-        AngryAntPathway (ArrayList path, float radius, bool cyclic)
+        public AngryAntPathway (ArrayList path, float radius, bool cyclic)
         {
             initialize(path, radius, cyclic);
         }
