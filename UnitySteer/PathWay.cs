@@ -118,7 +118,6 @@ namespace UnitySteer
 
         float segmentLength;
         float segmentProjection;
-        Vector3 local;
         Vector3 chosen;
         Vector3 segmentNormal;
 
@@ -286,7 +285,7 @@ namespace UnitySteer
         float pointToSegmentDistance (Vector3 point, Vector3 ep0, Vector3 ep1)
         {
             // convert the test point to be "local" to ep0
-            local = point - ep0;
+            Vector3 local = point - ep0;
 
             // find the projection of "local" onto "segmentNormal"
             segmentProjection = Vector3.Dot(segmentNormal, local);
