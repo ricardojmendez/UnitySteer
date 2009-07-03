@@ -15,8 +15,23 @@ namespace UnitySteer.Vehicles
         private bool    stopOnArrival = true;
         private Vector3 target;
         private float   heightDifference;
+        private float   minCollisionTime;
+        
+        private float   NeighborAvoidanceWeight = 3;
+        private float   ObstacleAvoidanceWeight = 3;
+        private float   PathFollowWeight        = 1;
+        
+        private ArrayList neighbors;
         
         public event VehicleArrivalHandler VehicleArrived;
+        
+        public ArrayList Neighbors
+        {
+            get
+            {
+                return neighbors;
+            }
+        }
 
         public Pathway Pathway
         {
@@ -44,6 +59,19 @@ namespace UnitySteer.Vehicles
                 reset();
             }
         }
+        
+        public float MinCollisionTime
+        {
+            get
+            {
+                return minCollisionTime;
+            }
+            set
+            {
+                minCollisionTime = Mathf.Clamp(value, 0, float.MaxValue);
+            }
+        }
+        
         
         public bool Moving
         {
@@ -89,6 +117,7 @@ namespace UnitySteer.Vehicles
         new void reset ()
         {
             base.reset (); // reset the vehicle 
+            neighbors = new ArrayList();
             moving = true;
             MaxForce =  2.0f;   // steering force is clipped to this magnitude
             MaxSpeed =  5.0f;   // velocity is clipped to this magnitude
@@ -99,9 +128,45 @@ namespace UnitySteer.Vehicles
         {
             if (!moving || Pathway == null)
                 return;
+                
+            Vector3 steer = Vector3.zero;
+            float   total = 0;
 
-            Vector3 follow = steerToFollowPath(+1, 1, Pathway);
-            applySteeringForce(follow, elapsedTime);
+            // Damn I could use a lambda right here
+            if (PathFollowWeight != 0)
+            {
+                Vector3 force = steerToFollowPath(+1, 1, Pathway);
+                if (force != Vector3.zero)
+                {
+                    steer += force;
+                }
+                total += PathFollowWeight;
+            }
+            if (ObstacleAvoidanceWeight != 0)
+            {
+                Vector3 force = steerToAvoidObstacles(MinCollisionTime, Obstacles);
+                if (force != Vector3.zero)
+                {
+                    steer += force;
+                    total += ObstacleAvoidanceWeight;
+                }
+            }
+            if (NeighborAvoidanceWeight != 0)
+            {
+                Vector3 force = Neighbors.Count > 0 ?
+                                    steerToAvoidNeighbors(MinCollisionTime, Neighbors) :
+                                    Vector3.zero;
+                if (force != Vector3.zero)
+                {
+                    steer += force;
+                    total += NeighborAvoidanceWeight;
+                }
+            }
+
+            if (total == 0)
+                return;
+            steer /= total;
+            applySteeringForce(steer, elapsedTime);
             
             bool arrived = Vector3.Distance(Position, Pathway.LastPoint) <= Radius + heightDifference;
             

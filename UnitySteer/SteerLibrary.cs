@@ -187,7 +187,7 @@ namespace UnitySteer
 		public virtual void annotateAvoidNeighbor (	 Vehicle vehicle, float steer, Vector3 position, Vector3 threatPosition)
 		{
             Debug.DrawLine(Position, vehicle.Position, Color.red);
-            Debug.DrawLine(Position, position, Color.white);
+            Debug.DrawLine(Position, position, Color.green);
 		}
 
 		public Vector3 steerForWander (float dt)
@@ -483,7 +483,7 @@ namespace UnitySteer
 			// for each of the other vehicles, determine which (if any)
 			// pose the most immediate threat of collision.
 			//for (AVIterator i = others.begin(); i != others.end(); i++)
-			for (int i=0;i<others.Count;i++)
+			for (int i=0; i<others.Count; i++)
 			{
 				Vehicle other = (Vehicle) others[i];
 				if (other != this)
@@ -549,7 +549,7 @@ namespace UnitySteer
 						}
 					}
 				}
-			   
+				
                 #if ANNOTATE_AVOIDNEIGHBORS
 				annotateAvoidNeighbor (threat,
 									   steer,
