@@ -57,6 +57,16 @@ namespace UnitySteer
         {
             initialize(path, radius, cyclic);
         }
+
+        protected override Vector3 GetFirstPoint()
+        {
+            return points[0];
+        }
+        
+        protected override Vector3 GetLastPoint()
+        {
+            return points[points.Length-1];
+        }
         
         protected override float GetTotalPathLength()
         {

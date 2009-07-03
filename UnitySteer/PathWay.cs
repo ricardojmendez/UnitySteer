@@ -66,12 +66,51 @@ namespace UnitySteer
             }
         }
         
+        public Vector3 FirstPoint
+        {
+            get
+            {
+                return GetFirstPoint();
+            }
+        }
+        
+        
+        public Vector3 LastPoint
+        {
+            get
+            {
+                return GetLastPoint();
+            }
+        }
+        
         
         // Returns the total path length. It's expected to be overriden by the 
         // actual implementations.
         protected virtual float GetTotalPathLength()
         {
             return 0;
+        }
+
+        /// <summary>
+        /// Returns the first point along the path
+        /// </summary>
+        /// <remarks>
+        /// Descendents are expected to override this method
+        /// </remarks>
+        protected virtual Vector3 GetFirstPoint()
+        {
+            return Vector3.zero;
+        }
+                
+        /// <summary>
+        /// Returns the last point along the path
+        /// </summary>
+        /// <remarks>
+        /// Descendents are expected to override this method
+        /// </remarks>
+        protected virtual Vector3 GetLastPoint()
+        {
+            return Vector3.zero;
         }
         
         // Given an arbitrary point ("A"), returns the nearest point ("P") on

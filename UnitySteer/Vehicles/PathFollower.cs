@@ -6,10 +6,16 @@ using System.Collections;
 
 namespace UnitySteer.Vehicles
 {
+    public delegate void VehicleArrivalHandler(SimpleVehicle vehicle, Vector3 point);
+    
     public class PathFollower : SimpleVehicle
     {
         private Pathway pathway;
-        private bool    moving = false;
+        private bool    moving        = false;
+        private bool    stopOnArrival = true;
+        private Vector3 target;
+        
+        public event VehicleArrivalHandler VehicleArrived;
 
         public Pathway Pathway
         {
@@ -37,6 +43,18 @@ namespace UnitySteer.Vehicles
             }
         }
         
+        public bool StopOnArrival
+        {
+            get
+            {
+                return stopOnArrival;
+            }
+            set
+            {
+                stopOnArrival = value;
+            }
+        }
+        
         
         
         // constructor
@@ -59,7 +77,7 @@ namespace UnitySteer.Vehicles
             base.reset (); // reset the vehicle 
             moving = true;
             MaxForce =  2.0f;   // steering force is clipped to this magnitude
-            MaxSpeed =  8.0f;   // velocity is clipped to this magnitude
+            MaxSpeed =  5.0f;   // velocity is clipped to this magnitude
         }
                 
         // one simulation step
@@ -70,6 +88,17 @@ namespace UnitySteer.Vehicles
 
             Vector3 follow = steerToFollowPath(+1, 1, Pathway);
             applySteeringForce(follow, elapsedTime);
+            
+            
+            bool arrived = Vector3.Distance(Position, Pathway.LastPoint) <= Radius;
+            
+            if (arrived)
+            {
+                moving = !StopOnArrival;
+                if (VehicleArrived != null)
+                    VehicleArrived(this, target);
+            }
+            
         }
     };
 }
