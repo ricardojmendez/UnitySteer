@@ -32,6 +32,7 @@
 // ----------------------------------------------------------------------------
 //#define DEBUG
 #define ANNOTATE_AVOIDOBSTACLES
+#define ANNOTATE_PATH
 
 using System;
 using System.Collections;
@@ -169,6 +170,9 @@ namespace UnitySteer
         // (default action is to do nothing, layered classes can overload it)
         public virtual void annotatePathFollowing (Vector3 future, Vector3 onPath, Vector3 target, float outside)
         {
+            Debug.DrawLine(Position, future, Color.white);
+            Debug.DrawLine(Position, onPath, Color.yellow);
+            Debug.DrawLine(Position, target, Color.magenta);
         }
 
         // called when steerToAvoidCloseNeighbors decides steering is required
@@ -284,7 +288,9 @@ namespace UnitySteer
                 // our predicted future position was outside the path, need to
                 // steer towards it.  Use onPath projection of futurePosition
                 // as seek target
+                #if ANNOTATE_PATH
                 annotatePathFollowing (futurePosition, onPath, onPath,tStruct.outside);
+                #endif
                 return steerForSeek (onPath);
             }
         }
@@ -297,7 +303,7 @@ namespace UnitySteer
 
             // predict our future position
             Vector3 futurePosition = predictFuturePosition (predictionTime);
-
+            
             // measure distance along path of our current and predicted positions
             float nowPathDistance =
                 path.mapPointToPathDistance (Position);
@@ -333,7 +339,10 @@ namespace UnitySteer
                 float targetPathDistance = nowPathDistance + pathDistanceOffset;
                 Vector3 target = path.mapPathDistanceToPoint (targetPathDistance);
 
+                #if ANNOTATE_PATH
                 annotatePathFollowing(futurePosition, onPath, target, tStruct.outside);
+                //Debug.DrawLine(Position, path.LastPoint, Color.green);
+                #endif
 
                 // return steering to seek target on path
                 return steerForSeek (target);

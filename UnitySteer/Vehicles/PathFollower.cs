@@ -14,6 +14,7 @@ namespace UnitySteer.Vehicles
         private bool    moving        = false;
         private bool    stopOnArrival = true;
         private Vector3 target;
+        private float   heightDifference;
         
         public event VehicleArrivalHandler VehicleArrived;
 
@@ -27,6 +28,19 @@ namespace UnitySteer.Vehicles
             {
                 pathway = value;
                 moving  = pathway != null;
+                if (!MovesVertically && pathway != null)
+                {
+                    /*
+                     * Compensate for the fact that since the vehicle won't 
+                     * move vertically, then there will be a certain distance
+                     * between the target and how close it can actually get.
+                     */
+                    heightDifference = Mathf.Abs(Pathway.LastPoint.y - Position.y);
+                }
+                else
+                {
+                    heightDifference = 0;
+                }
                 reset();
             }
         }
@@ -89,8 +103,7 @@ namespace UnitySteer.Vehicles
             Vector3 follow = steerToFollowPath(+1, 1, Pathway);
             applySteeringForce(follow, elapsedTime);
             
-            
-            bool arrived = Vector3.Distance(Position, Pathway.LastPoint) <= Radius;
+            bool arrived = Vector3.Distance(Position, Pathway.LastPoint) <= Radius + heightDifference;
             
             if (arrived)
             {
