@@ -42,13 +42,6 @@ namespace UnitySteer
     {
 
         ArrayList obstacles;    // Obstacle list
-//        float _mass;       // mass (defaults to unity so acceleration=force)
-//        float _radius;     // size of bounding sphere, for obstacle avoidance, etc.
-//        float _speed;      // speed along Forward direction.  Because local space
-                           // is velocity-aligned, velocity = Forward * Speed
-
-        //float maxForce = 27f;   // the maximum steering force this vehicle can apply
-                                // (steering force is clipped to this magnitude)
 
         float _curvature;
         Vector3 _lastForward;
@@ -93,6 +86,9 @@ namespace UnitySteer
             // (XXX this seems really fragile, needs to be redesigned XXX)
             //SimpleVehicle_3.reset ();
             resetSteering();
+            
+            // Create a default list for obstacles
+            obstacles = new ArrayList();
 
             // TODO-RJM: This reset thing sucks
             Mass = 1.0f;        // mass (defaults to 1 so acceleration=force)

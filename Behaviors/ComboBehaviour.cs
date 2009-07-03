@@ -38,9 +38,6 @@ public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 		SteerToAvoidObstacles = steerToAvoidObstacles;
 		SteerToStayOnPath = steerToStayOnPath;
 		SteerForTargetSpeed = steerForTargetSpeed;
-		
-        vehicle.Obstacles = new ArrayList();
-			// TODO: Should happen in vehicle constructor and should be a property
 	}
 	
 	

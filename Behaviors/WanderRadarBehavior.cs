@@ -16,7 +16,6 @@ public class WanderRadarBehavior : WanderBehavior, IRadarReceiver {
         {
 	        obstacles = new Hashtable();
         }
-        Wanderer.Obstacles = new ArrayList();
     }
     
     protected void Update()

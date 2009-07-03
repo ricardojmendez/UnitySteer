@@ -63,8 +63,6 @@ public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
         boid.MaxSpeed = maxSpeed;
         boid.MaxForce = maxForce;
         
-        boid.Obstacles = new ArrayList();
-        
         if (randomizeStart > 0)
             boid.Randomize(randomizeStart);
 	}
