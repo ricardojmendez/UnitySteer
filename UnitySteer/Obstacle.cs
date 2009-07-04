@@ -79,11 +79,19 @@ namespace UnitySteer
     				{
     					continue;
     				}
-
-    				currentRadius = Mathf.Abs( ( gameObject.transform.position - ( collider.transform.position + collider.bounds.center ) ).x ) + collider.bounds.extents.x;
-    				currentRadius *= gameObject.transform.localScale.x;
-    				//currentRadius = gameObject.transform.localScale.x / 2.0f;
-
+    				// Get the maximum extent to create a sphere that encompasses the whole obstacle
+    				float maxExtents = Mathf.Max(Mathf.Max(collider.bounds.extents.x, collider.bounds.extents.y),
+    				                             collider.bounds.extents.z);
+    				
+				    /*
+				     * Calculate the displacement from the object center to the 
+				     * collider, and add in the maximum extents of the bounds.
+				     * Notice that we don't need to multiply by the object's 
+				     * local scale, since that is already considered in the 
+				     * bounding rectangle.
+				     */
+				    float distanceToCollider = Vector3.Distance(gameObject.transform.position, collider.bounds.center);
+                    currentRadius = distanceToCollider + maxExtents;
     				if( currentRadius > radius )
     				{
     					radius = currentRadius;
@@ -147,7 +155,20 @@ namespace UnitySteer
                 return Vector3.zero;
             }
         }
+
+        public void annotatePosition()
+        {
+            annotatePosition(Color.grey);
+        }
         
+        public void annotatePosition(Color color)
+        {
+			// Primitive sphere position indicator, since Unity lacks a 
+			// Debug.DrawSphere
+			Debug.DrawRay(center, Vector3.up * radius, color);
+			Debug.DrawRay(center, Vector3.forward * radius, color);
+			Debug.DrawRay(center, Vector3.right * radius, color);
+        }
     }
 }
 
