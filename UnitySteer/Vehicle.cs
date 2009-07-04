@@ -342,13 +342,6 @@ namespace UnitySteer
 		    this.Forward = Vector3.forward;
 			Position = Vector3.zero;
 		}
-
-		// ------------------------------------------------------------------------
-		// transform a point in global space to its equivalent in local space
-		public Vector3 LocalizePosition(Vector3 globalPosition)
-		{
-			return Transform.InverseTransformPoint(globalPosition);
-		}
 		
 		private void RecalculateSide()
 		{

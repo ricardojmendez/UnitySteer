@@ -394,26 +394,21 @@ namespace UnitySteer
 	   
 		public Vector3 steerToAvoidObstacles (float minTimeToCollision, ArrayList obstacles)
 		{
-			Vector3 avoidance = new Vector3() ;
+			Vector3 avoidance = Vector3.zero;
 
-			if (obstacles == null)
+			if (obstacles == null || obstacles.Count == 0)
 			{
 				return avoidance;
 			}
 
-			PathIntersection nearest;
-
-			nearest = new PathIntersection(null);
+			PathIntersection nearest = new PathIntersection(null);
 
 			float minDistanceToCollision = minTimeToCollision * Speed;
 
 			// test all obstacles for intersection with my forward axis,
 			// select the one whose point of intersection is nearest
 
-
-			
-			//for (ObstacleIterator o = obstacles.begin(); o != obstacles.end(); o++)
-			for (int i=0;i<obstacles.Count;i++)
+			for (int i=0; i < obstacles.Count; i++)
 			{
 				SphericalObstacle o=(SphericalObstacle) obstacles[i];
 				// xxx this should be a generic call on Obstacle, rather than
@@ -427,13 +422,13 @@ namespace UnitySteer
 				}
 			}
 
+
 			// when a nearest intersection was found
 			if (nearest.intersect &&
 				nearest.distance < minDistanceToCollision)
 			{
 				#if ANNOTATE_AVOIDOBSTACLES
 				Debug.DrawLine(Position, nearest.obstacle.center, Color.red);
-				Debug.Log("Avoiding obstacle at "+nearest.distance);
 				#endif
 				// show the corridor that was checked for collisions
 				annotateAvoidObstacle (minDistanceToCollision);
@@ -978,10 +973,13 @@ namespace UnitySteer
 
 			// initialize pathIntersection object
 			PathIntersection intersection = new PathIntersection(obs);
-
 			// find "local center" (lc) of sphere in boid's coordinate space
-			lc = LocalizePosition (obs.center);
-
+			lc = Transform.InverseTransformPoint(obs.center);
+			
+			#if ANNOTATE_AVOIDOBSTACLES
+			obs.annotatePosition();
+			#endif
+			
 			// computer line-sphere intersection parameters
 			b = -2 * lc.z;
 			c = square (lc.x) + square (lc.y) + square (lc.z) - 
@@ -1009,6 +1007,7 @@ namespace UnitySteer
 				((p < q) ? p : q) :
 				// otherwise only one intersections is in front, select it
 				((p > 0) ? p : q);
+			
 			return intersection;
 		}
 
@@ -1050,11 +1049,6 @@ namespace UnitySteer
 		public float square (float x)
 		{
 			return x * x;
-		}
-
-		public virtual void annotationLine(Vector3 startPoint, Vector3 endPoint, Color color)
-		{
-			Debug.DrawLine(startPoint, endPoint, color);
 		}
 	}
 }
