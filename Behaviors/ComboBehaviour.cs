@@ -12,10 +12,6 @@ public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 	
 	private ComboVehicle vehicle;
 	private Vehicle target;
-    private static Hashtable obstacles;
-		// TODO: Need a better system for this
-	
-	
 	
 	public void Awake()
 	{
@@ -26,11 +22,6 @@ public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 		else
 		{
 			vehicle = new ComboVehicle( rigidbody );
-		}
-		
-		if( obstacles == null )
-		{
-			obstacles = new Hashtable();	
 		}
 		
 		MaxSpeed = maxSpeed;
@@ -188,49 +179,6 @@ public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 	}
 	
 	
-	
-	public Obstacle GetObstacle( GameObject gameObject )
-	{
-		Obstacle obstacle;
-		int id = gameObject.GetInstanceID();
-		Component[] colliders;
-		float radius = 0.0f, currentRadius;
-		
-		if( !obstacles.ContainsKey( id ) )
-		{
-			colliders = gameObject.GetComponentsInChildren( typeof( Collider ) );
-			
-			if( colliders == null )
-			{
-				Debug.LogError( "Obstacle '" + gameObject.name + "' has no colliders" );
-				return null;
-			}
-			
-			foreach( Collider collider in colliders )
-			{
-				if( collider.isTrigger )
-				{
-					continue;
-				}
-				
-				currentRadius = Mathf.Abs( ( gameObject.transform.position - ( collider.transform.position + collider.bounds.center ) ).x ) + collider.bounds.extents.x;
-				currentRadius *= gameObject.transform.localScale.x;
-				//currentRadius = gameObject.transform.localScale.x / 2.0f;
-				
-				if( currentRadius > radius )
-				{
-					radius = currentRadius;
-				}
-			}
-			obstacles[id] = new SphericalObstacle( radius, gameObject.transform.position );
-		}
-		obstacle = obstacles[ id ] as Obstacle;
-	
-		return obstacle;
-	}
-	
-	
-	
 	public void OnRadarEnter( Collider other, Radar sender )
 	{
 		VehicleBehaviour vehicleBehaviour;
@@ -238,7 +186,7 @@ public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 
 		if( ( 1 << other.gameObject.layer & obstacleLayers ) > 0 )
 		{
-			obstacle = GetObstacle( other.gameObject );
+			obstacle = SphericalObstacle.GetObstacle( other.gameObject );
 			if( obstacle != null )
 			{
 				vehicle.Obstacles.Add( obstacle );
@@ -263,7 +211,7 @@ public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 		
 		if( ( 1 << other.gameObject.layer & obstacleLayers ) > 0 )
 		{
-			obstacle = GetObstacle( other.gameObject );
+			obstacle = SphericalObstacle.GetObstacle( other.gameObject );
 			if( obstacle != null )
 			{
 				vehicle.Obstacles.Remove( obstacle );

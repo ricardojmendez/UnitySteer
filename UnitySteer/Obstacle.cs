@@ -29,11 +29,18 @@ namespace UnitySteer
 
     public class SphericalObstacle : Obstacle
     {
+        
+        private static Hashtable obstacleCache;
 
         public float radius;
         public Vector3 center;
 
-        seenFromState _seenFrom;
+        private seenFromState _seenFrom;
+        
+        static SphericalObstacle()
+        {
+            obstacleCache = new Hashtable();
+        }
 
         // constructors
         public SphericalObstacle(float r, Vector3 c)
@@ -47,6 +54,48 @@ namespace UnitySteer
             radius = 1;
             center = Vector3.zero;
         }
+        
+        
+        public static SphericalObstacle GetObstacle( GameObject gameObject )
+    	{
+    		SphericalObstacle obstacle;
+    		int id = gameObject.GetInstanceID();
+    		Component[] colliders;
+    		float radius = 0.0f, currentRadius;
+
+    		if( !obstacleCache.ContainsKey( id ) )
+    		{
+    			colliders = gameObject.GetComponentsInChildren( typeof( Collider ) );
+
+    			if( colliders == null )
+    			{
+    				Debug.LogError( "Obstacle '" + gameObject.name + "' has no colliders" );
+    				return null;
+    			}
+
+    			foreach( Collider collider in colliders )
+    			{
+    				if( collider.isTrigger )
+    				{
+    					continue;
+    				}
+
+    				currentRadius = Mathf.Abs( ( gameObject.transform.position - ( collider.transform.position + collider.bounds.center ) ).x ) + collider.bounds.extents.x;
+    				currentRadius *= gameObject.transform.localScale.x;
+    				//currentRadius = gameObject.transform.localScale.x / 2.0f;
+
+    				if( currentRadius > radius )
+    				{
+    					radius = currentRadius;
+    				}
+    			}
+    			obstacleCache[id] = new SphericalObstacle( radius, gameObject.transform.position );
+    		}
+    		obstacle = obstacleCache[ id ] as SphericalObstacle;
+
+    		return obstacle;
+    	}
+        
 
         public override seenFromState seenFrom() { return _seenFrom; }
         public override void setSeenFrom(seenFromState s) { _seenFrom = s; }
@@ -98,6 +147,7 @@ namespace UnitySteer
                 return Vector3.zero;
             }
         }
+        
     }
 }
 

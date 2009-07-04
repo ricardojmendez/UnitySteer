@@ -5,8 +5,6 @@ using UnitySteer.Vehicles;
 
 [RequireComponent(typeof(SphereCollider))]
 public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
-    static Hashtable obstacles;
-
     Boid boid;
     
     public LayerMask ObstacleLayer;
@@ -33,9 +31,6 @@ public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
 	// Use this for initialization
 	void Start()
 	{
-	    if (obstacles == null)
-	        obstacles = new Hashtable();
-	    
 		if( rigidbody == null )
 		{
 			// Debug.Log( "Boid: Transform" );
@@ -83,50 +78,6 @@ public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
 	    boid.Update(Time.deltaTime);
 	}
 
-
-
-	public Obstacle GetObstacle( GameObject gameObject )
-	{
-		Obstacle obstacle;
-		int id = gameObject.GetInstanceID();
-		Component[] colliders;
-		float radius = 0.0f, currentRadius;
-		
-		if( !obstacles.ContainsKey( id ) )
-		{
-			colliders = gameObject.GetComponentsInChildren( typeof( Collider ) );
-			
-			if( colliders == null )
-			{
-				Debug.LogError( "Obstacle '" + gameObject.name + "' has no colliders" );
-				return null;
-			}
-			
-			foreach( Collider collider in colliders )
-			{
-				if( collider.isTrigger )
-				{
-					continue;
-				}
-				
-				currentRadius = Mathf.Abs( ( gameObject.transform.position - ( collider.transform.position + collider.bounds.center ) ).x ) + collider.bounds.extents.x;
-				currentRadius *= gameObject.transform.localScale.x;
-				//currentRadius = gameObject.transform.localScale.x / 2.0f;
-				
-				if( currentRadius > radius )
-				{
-					radius = currentRadius;
-				}
-			}
-			obstacles[id] = new SphericalObstacle( radius, gameObject.transform.position );
-		}
-		obstacle = obstacles[ id ] as Obstacle;
-		
-		return obstacle;
-	}
-	
-	
-	
 	public void OnRadarEnter( Collider other, Radar sender )
 	{
 		BoidBehaviour boidBehaviour;
@@ -134,7 +85,7 @@ public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
 
 		if( ( 1 << other.gameObject.layer & ObstacleLayer ) > 0 )
 		{
-			obstacle = GetObstacle( other.gameObject );
+			obstacle = SphericalObstacle.GetObstacle( other.gameObject );
 			if( obstacle != null )
 			{
 				boid.Obstacles.Add( obstacle );
@@ -159,7 +110,7 @@ public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
 		
 		if( ( 1 << other.gameObject.layer & ObstacleLayer ) > 0 )
 		{
-			obstacle = GetObstacle( other.gameObject );
+			obstacle = SphericalObstacle.GetObstacle( other.gameObject );
 			if( obstacle != null )
 			{
 				boid.Obstacles.Remove( obstacle );
