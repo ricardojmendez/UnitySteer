@@ -118,12 +118,9 @@ public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
 					radius = currentRadius;
 				}
 			}
-			obstacle = new SphericalObstacle( radius, gameObject.transform.position );
+			obstacles[id] = new SphericalObstacle( radius, gameObject.transform.position );
 		}
-		else
-		{
-			obstacle = obstacles[ id ] as Obstacle;
-		}
+		obstacle = obstacles[ id ] as Obstacle;
 		
 		return obstacle;
 	}
