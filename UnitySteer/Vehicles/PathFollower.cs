@@ -17,9 +17,9 @@ namespace UnitySteer.Vehicles
         private float   heightDifference;
         private float   minCollisionTime;
         
-        private float   NeighborAvoidanceWeight = 3;
-        private float   ObstacleAvoidanceWeight = 3;
-        private float   PathFollowWeight        = 1;
+        private float   neighborAvoidanceWeight = 1;
+        private float   obstacleAvoidanceWeight = 0;
+        private float   pathFollowWeight        = 2;
         
         private ArrayList neighbors;
         
@@ -56,7 +56,6 @@ namespace UnitySteer.Vehicles
                 {
                     heightDifference = 0;
                 }
-                reset();
             }
         }
         
@@ -71,6 +70,45 @@ namespace UnitySteer.Vehicles
                 minCollisionTime = Mathf.Clamp(value, 0, float.MaxValue);
             }
         }
+        
+        public float NeighborAvoidanceWeight
+        {
+            get
+            {
+                return neighborAvoidanceWeight;
+            }
+            set
+            {
+                neighborAvoidanceWeight = Mathf.Clamp(value, 0, float.MaxValue);
+            }
+        }
+        
+        public float ObstacleAvoidanceWeight
+        {
+            get
+            {
+                return obstacleAvoidanceWeight;
+            }
+            set
+            {
+                obstacleAvoidanceWeight = Mathf.Clamp(value, 0, float.MaxValue);;
+            }
+        }
+        
+        public float PathFollowWeight
+        {
+            get
+            {
+                return pathFollowWeight;
+            }
+            set
+            {
+                pathFollowWeight = Mathf.Clamp(value, 0, float.MaxValue);;
+            }
+        }
+        
+        
+        
         
         
         public bool Moving
@@ -119,8 +157,6 @@ namespace UnitySteer.Vehicles
             base.reset (); // reset the vehicle 
             neighbors = new ArrayList();
             moving = true;
-            MaxForce =  2.0f;   // steering force is clipped to this magnitude
-            MaxSpeed =  5.0f;   // velocity is clipped to this magnitude
         }
                 
         // one simulation step

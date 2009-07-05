@@ -247,10 +247,8 @@ namespace UnitySteer
             newVelocity += _smoothedAcceleration * elapsedTime;
 
             // enforce speed limit
-            
-            //newVelocity = newVelocity.truncateLength (MaxSpeed);
             newVelocity = truncateLength(newVelocity, MaxSpeed);
-            
+
             // update Speed
             Speed = newVelocity.magnitude;
 
@@ -260,7 +258,7 @@ namespace UnitySteer
             // regenerate local space (by default: align vehicle's forward axis with
             // new velocity, but this behavior may be overridden by derived classes.)
 
-            regenerateLocalSpace (newVelocity);//, elapsedTime);
+            regenerateLocalSpace (newVelocity);
 
             // maintain path curvature information
             measurePathCurvature (elapsedTime);
