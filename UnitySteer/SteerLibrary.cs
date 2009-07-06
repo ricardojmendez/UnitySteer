@@ -52,18 +52,6 @@ namespace UnitySteer
 		private float WanderSide;
 		private float WanderUp;
 
-		/// XXX globals only for the sake of graphical annotation
-		/*
-		 * NOTE RJM: These globals supposedly for annotations are actually 
-		 * used beyond annotations, since at one point a variable named 
-		 * threatPositionAtNearestApproach gets assigned from 
-		 * hisPositionAtNearestApproach, and then used to calculate an
-		 * avoidance vector.  Must refactor.
-		 *
-		 * TODO-REFACTOR
-		 */ 
-		Vector3 hisPositionAtNearestApproach;
-		Vector3 ourPositionAtNearestApproach;
 
 		bool gaudyPursuitAnnotation;
 		
@@ -472,9 +460,8 @@ namespace UnitySteer
 			// many frames into the future.
 			float minTime = minTimeToCollision;
 
-            // TODO-REFACTOR
-			Vector3 xxxThreatPositionAtNearestApproach = Vector3.zero;
-			Vector3 xxxOurPositionAtNearestApproach = Vector3.zero;
+			Vector3 threatPositionAtNearestApproach = Vector3.zero;
+			Vector3 ourPositionAtNearestApproach = Vector3.zero;
 
 			// for each of the other vehicles, determine which (if any)
 			// pose the most immediate threat of collision.
@@ -495,15 +482,15 @@ namespace UnitySteer
 					{
 						// if the two will be close enough to collide,
 						// make a note of it
-						if (computeNearestApproachPositions (other, time)
+						Vector3 ourPos = Vector3.zero;
+						Vector3 hisPos = Vector3.zero;
+						if (computeNearestApproachPositions (other, time, ref ourPos, ref hisPos)
 							< collisionDangerThreshold)
 						{
 							minTime = time;
 							threat = other;
-							xxxThreatPositionAtNearestApproach
-								= hisPositionAtNearestApproach;
-							xxxOurPositionAtNearestApproach
-								= ourPositionAtNearestApproach;
+							threatPositionAtNearestApproach = hisPos;
+							ourPositionAtNearestApproach = ourPos;
 						}
 					}
 				}
@@ -520,7 +507,7 @@ namespace UnitySteer
 				{
 					// anti-parallel "head on" paths:
 					// steer away from future threat position
-					Vector3 offset = xxxThreatPositionAtNearestApproach - Position;
+					Vector3 offset = threatPositionAtNearestApproach - Position;
 					float sideDot = Vector3.Dot(offset, Side);
 					steer = (sideDot > 0) ? -1.0f : 1.0f;
 				}
@@ -548,8 +535,8 @@ namespace UnitySteer
                 #if ANNOTATE_AVOIDNEIGHBORS
 				annotateAvoidNeighbor (threat,
 									   steer,
-									   xxxOurPositionAtNearestApproach,
-									   xxxThreatPositionAtNearestApproach);
+									   ourPositionAtNearestApproach,
+									   threatPositionAtNearestApproach);
                 #endif
 			}
 
@@ -600,19 +587,17 @@ namespace UnitySteer
 
 
 	   
-		float computeNearestApproachPositions (Vehicle other, float time)
+		float computeNearestApproachPositions(Vehicle other, float time, 
+		                                      ref Vector3 ourPosition, 
+		                                      ref Vector3 hisPosition)
 		{
 			Vector3	   myTravel =		Forward *		Speed * time;
 			Vector3 otherTravel = other.Forward * other.Speed * time;
 
-			Vector3	   myFinal =	   Position	 +	  myTravel;
-			Vector3 otherFinal = other.Position	 + otherTravel;
+			ourPosition =       Position + myTravel;
+			hisPosition = other.Position + otherTravel;
 
-			// xxx for annotation
-			ourPositionAtNearestApproach = myFinal;
-			hisPositionAtNearestApproach = otherFinal;
-
-			return (myFinal - otherFinal).magnitude;//Vector3::distance (myFinal, otherFinal);
+			return Vector3.Distance(ourPosition, hisPosition);
 		}
 
 
@@ -626,7 +611,6 @@ namespace UnitySteer
 		public Vector3 steerToAvoidCloseNeighbors ( float minSeparationDistance, ArrayList others)
 		{
 			// for each of the other vehicles...
-			//for (AVIterator i = others.begin(); i != others.end(); i++)	 
 			for (int i=0;i<others.Count;i++)
 			{
 				Vehicle other = (Vehicle) others[i];
