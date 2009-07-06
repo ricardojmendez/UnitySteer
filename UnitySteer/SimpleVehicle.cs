@@ -90,18 +90,11 @@ namespace UnitySteer
             // Create a default list for obstacles
             obstacles = new ArrayList();
 
-            // TODO-RJM: This reset thing sucks
-            Mass = 1.0f;        // mass (defaults to 1 so acceleration=force)
             Speed = 0.0f;       // speed along Forward direction.
-
-            Radius = 0.5f;      // size of bounding sphere
-
-            MaxForce = 0.1f;    // steering force is clipped to this magnitude
-            MaxSpeed = 1.0f;    // velocity is clipped to this magnitude
 
             // reset bookkeeping to do running averages of these quanities
             resetSmoothedPosition (Vector3.zero);
-            resetSmoothedCurvature(0);//Vector3.zero);
+            resetSmoothedCurvature(0);
             resetSmoothedAcceleration(Vector3.zero);
         }
         
@@ -356,24 +349,6 @@ namespace UnitySteer
                 _lastPosition = Position;
             }
         }
-
-
-        // ----------------------------------------------------------------------------
-        // draw lines from vehicle's position showing its velocity and acceleration
-
-
-        /*void annotationVelocityAcceleration (float maxLengthA,  float maxLengthV)
-        {
-            float desat = 0.4f;
-            float aScale = maxLengthA / MaxForce;
-            float vScale = maxLengthV / MaxSpeed;
-            Vector3 p = Position;
-            Vector3 aColor = new Vector3(desat, desat, 1); // bluish
-            Vector3 vColor = new Vector3 (1, desat, 1); // pinkish
-
-            //annotationLine (p, p + (velocity ()           * vScale), vColor);
-            //annotationLine (p, p + (_smoothedAcceleration * aScale), aColor);
-        }*/
 
 
         // ----------------------------------------------------------------------------
