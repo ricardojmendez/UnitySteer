@@ -4,7 +4,7 @@ using System.Collections;
 
 // ----------------------------------------------------------------------------
 //
-// Ported to Unity and .Net by Ricardo J. Méndez http://www.arges-systems.com/
+// Ported to Unity and .Net by Ricardo J. Mendez http://www.arges-systems.com/
 //
 // OpenSteer -- Steering Behaviors for Autonomous Characters
 //
