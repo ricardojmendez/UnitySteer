@@ -53,6 +53,15 @@ namespace UnitySteer
 		private float WanderUp;
 
 		/// XXX globals only for the sake of graphical annotation
+		/*
+		 * NOTE RJM: These globals supposedly for annotations are actually 
+		 * used beyond annotations, since at one point a variable named 
+		 * threatPositionAtNearestApproach gets assigned from 
+		 * hisPositionAtNearestApproach, and then used to calculate an
+		 * avoidance vector.  Must refactor.
+		 *
+		 * TODO-REFACTOR
+		 */ 
 		Vector3 hisPositionAtNearestApproach;
 		Vector3 ourPositionAtNearestApproach;
 
@@ -119,7 +128,7 @@ namespace UnitySteer
 		public SteerLibrary( Vector3 position, float mass ) : base( position, mass ){}
 		public SteerLibrary( Transform transform, float mass ) : base( transform, mass ){}
 		public SteerLibrary( Rigidbody rigidbody ) : base( rigidbody ){}
-			// TODO: Consider doing a call to resetSteering() within these?
+		// TODO: Consider doing a call to resetSteering() within these?
 		
 
 		// reset state
@@ -214,8 +223,6 @@ namespace UnitySteer
 			
 			// return a pure lateral steering vector: (+/-Side) + (+/-Up)
 			Vector3	 result = (Side * WanderSide) + (Up * WanderUp);
-			// result = result * 10;
-			//Debug.Log("Wander "+dt+" "+speed+" "+result);
 			return result;
 		}
 
@@ -246,9 +253,8 @@ namespace UnitySteer
 
 		public Vector3 steerForFleeTruncated(Vector3 target)
 		{
-		//	 Vector3 offset = position - target;
 			Vector3 offset = Position - target;
-			Vector3 desiredVelocity = truncateLength(offset, MaxSpeed);// offset.truncateLength(MaxSpeed); //xxxnew
+			Vector3 desiredVelocity = truncateLength(offset, MaxSpeed);
 			return desiredVelocity - Velocity;
 		}
 
@@ -257,7 +263,7 @@ namespace UnitySteer
 		public Vector3 steerForSeekTruncated ( Vector3 target)
 		{
 			Vector3 offset = target - Position;
-			Vector3 desiredVelocity = truncateLength(offset, MaxSpeed);// offset.truncateLength(MaxSpeed); //xxxnew
+			Vector3 desiredVelocity = truncateLength(offset, MaxSpeed);
 			return desiredVelocity - Velocity;
 		}
 
@@ -273,9 +279,6 @@ namespace UnitySteer
 			Vector3 futurePosition = predictFuturePosition (predictionTime);
 
 			// find the point on the path nearest the predicted future position
-			//Vector3 tangent;
-			//float outside;
-
 			mapReturnStruct tStruct = new mapReturnStruct();
 
 			Vector3 onPath = path.mapPointToPath(futurePosition, ref tStruct);
@@ -322,8 +325,6 @@ namespace UnitySteer
 			// XXX need to improve calling sequence, maybe change to return a
 			// XXX special path-defined object which includes two Vector3s and a 
 			// XXX bool (onPath,tangent (ignored), withinPath)
-			// Vector3 tangent;
-			//float outside;
 			mapReturnStruct tStruct = new mapReturnStruct();
 			Vector3 onPath = path.mapPointToPath(futurePosition, ref tStruct);
 
@@ -441,7 +442,7 @@ namespace UnitySteer
 				//avoidance = offset.perpendicularComponent (Forward);
 				avoidance =	 OpenSteerUtility.perpendicularComponent( offset,Forward);
 
-				avoidance.Normalize();//.normalize ();
+				avoidance.Normalize();
 				avoidance *= MaxForce;
 				avoidance += Forward * MaxForce * 0.75f;
 			}
@@ -471,13 +472,12 @@ namespace UnitySteer
 			// many frames into the future.
 			float minTime = minTimeToCollision;
 
-			// xxx solely for annotation
-			Vector3 xxxThreatPositionAtNearestApproach=new Vector3();
-			Vector3 xxxOurPositionAtNearestApproach = new Vector3();
+            // TODO-REFACTOR
+			Vector3 xxxThreatPositionAtNearestApproach = Vector3.zero;
+			Vector3 xxxOurPositionAtNearestApproach = Vector3.zero;
 
 			// for each of the other vehicles, determine which (if any)
 			// pose the most immediate threat of collision.
-			//for (AVIterator i = others.begin(); i != others.end(); i++)
 			for (int i=0; i<others.Count; i++)
 			{
 				Vehicle other = (Vehicle) others[i];
@@ -699,7 +699,6 @@ namespace UnitySteer
 			int neighbors = 0;
 
 			// for each of the other vehicles...
-			//for (AVIterator other = flock.begin(); other != flock.end(); other++)
 			for (int i = 0; i < flock.Count; i++)
 			{
 				Vehicle other = (Vehicle)flock[i];
@@ -708,8 +707,8 @@ namespace UnitySteer
 					// add in steering contribution
 					// (opposite of the offset direction, divided once by distance
 					// to normalize, divided another time to get 1/d falloff)
-					 Vector3 offset = (other).Position - Position;
-					 float distanceSquared = Vector3.Dot(offset, offset);
+					Vector3 offset = (other).Position - Position;
+					float distanceSquared = Vector3.Dot(offset, offset);
 					steering += (offset / -distanceSquared);
 
 					// count neighbors
@@ -739,7 +738,6 @@ namespace UnitySteer
 			int neighbors = 0;
 
 			// for each of the other vehicles...
-			//for (AVIterator other = flock.begin(); other != flock.end(); other++)
 			for (int i=0;i<flock.Count;i++)
 			{
 				Vehicle other = (Vehicle) flock[i];
@@ -1024,7 +1022,7 @@ namespace UnitySteer
 
 		public float frandom01 ()
 		{
-			return ((float) randomGenerator.NextDouble());//((float) rand ()) / ((float) RAND_MAX));
+			return ((float) randomGenerator.NextDouble());
 		}
 
 		public Vector3 truncateLength(Vector3 tVector, float maxLength)
@@ -1033,7 +1031,7 @@ namespace UnitySteer
 			Vector3 returnVector = tVector;
 			if (tLength > maxLength)
 			{
-				returnVector.Normalize();// = tVector - tVector*(tLength - maxLength);
+				returnVector.Normalize();
 				returnVector *= maxLength;
 			}
 			return returnVector;

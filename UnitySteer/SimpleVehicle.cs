@@ -313,10 +313,10 @@ namespace UnitySteer
 			Up = tempUp;
 
             #if ANNOTATE_LOCALSPACE
-            annotationLine (position(), position() + (globalUp * 4), gWhite);  // XXX
-            annotationLine (position(), position() + (bankUp   * 4), gOrange); // XXX
-            annotationLine (position(), position() + (accelUp  * 4), gRed);    // XXX
-            annotationLine (position(), position() + (up ()    * 1), gYellow); // XXX
+            annotationLine (position(), position() + (globalUp * 4), gWhite); 
+            annotationLine (position(), position() + (bankUp   * 4), gOrange);
+            annotationLine (position(), position() + (accelUp  * 4), gRed);
+            annotationLine (position(), position() + (up ()    * 1), gYellow);
             #endif
 
             // adjust orthonormal basis vectors to be aligned with new velocity
