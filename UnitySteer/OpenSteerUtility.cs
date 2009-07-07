@@ -176,6 +176,19 @@ namespace UnitySteer
             chosenPoint = segmentNormal * segmentProjection;
             chosenPoint +=  ep0;
             return Vector3.Distance(point, chosenPoint);
-        }        
+        }
+        
+
+        public static float CosFromDegrees(float angle)
+        {
+            return Mathf.Cos(angle * Mathf.Deg2Rad);
+        }
+        
+        public static float DegreesFromCos(float cos)
+        {
+            return Mathf.Rad2Deg * Mathf.Acos(cos);
+        }
+        
+        
     }
 }

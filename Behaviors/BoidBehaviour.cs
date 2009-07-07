@@ -10,17 +10,17 @@ public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
     
     public bool MovesVertically = true;
     
-    public float separationRadius =  5.0f;
-    public float separationAngle  = -0.707f;
-    public float separationWeight =  12.0f;
+    public float separationRadius =   5;
+    public float separationAngle  = 135;
+    public float separationWeight =  12;
 
-    public float alignmentRadius = 7.5f;
-    public float alignmentAngle  = 0.7f;
-    public float alignmentWeight = 8.0f;
+    public float alignmentRadius =    7.5f;
+    public float alignmentAngle  =   45;
+    public float alignmentWeight =    8;
 
-    public float cohesionRadius = 9.0f;
-    public float cohesionAngle  = -0.15f;
-    public float cohesionWeight = 8.0f;    
+    public float cohesionRadius  =    9;
+    public float cohesionAngle   =   99;
+    public float cohesionWeight  =    8;    
     
     public float maxSpeed =  3f;
     public float maxForce = 15f;
@@ -45,15 +45,15 @@ public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
 	    // vehicle.randomizeHeadingOnXZPlane();
 	    
 	    boid.separationRadius = separationRadius;
-        boid.separationAngle  = separationAngle;
+        boid.SeparationDeg    = separationAngle;
         boid.separationWeight = separationWeight;
 
         boid.alignmentRadius = alignmentRadius;
-        boid.alignmentAngle  = alignmentAngle;
+        boid.AlignmentDeg    = alignmentAngle;
         boid.alignmentWeight = alignmentWeight;
 
         boid.cohesionRadius = cohesionRadius;
-        boid.cohesionAngle  = cohesionAngle;
+        boid.CohesionDeg    = cohesionAngle;
         boid.cohesionWeight = cohesionWeight;
         
         boid.MaxSpeed = maxSpeed;

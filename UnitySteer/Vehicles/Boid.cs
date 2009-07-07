@@ -49,23 +49,68 @@ namespace UnitySteer.Vehicles {
 
         static int boundaryCondition;
         
-        public float minTimeToCollision = 0.2f;
-        public float separationRadius =  5.0f;
-        public float separationAngle  = -0.707f;
-        public float separationWeight =  12.0f;
+        public float minTimeToCollision =  0.2f;
+        public float separationRadius   =  5.0f;
+        public float separationAngleCos = -0.707f;
+        public float separationWeight   = 12.0f;
 
-        public float alignmentRadius = 7.5f;
-        public float alignmentAngle  = 0.7f;
-        public float alignmentWeight = 8.0f;
+        public float alignmentRadius    =  7.5f;
+        public float alignmentAngleCos  =  0.7f;
+        public float alignmentWeight    =  8.0f;
 
-        public float cohesionRadius = 9.0f;
-        public float cohesionAngle  = -0.15f;
-        public float cohesionWeight = 8.0f;
+        public float cohesionRadius     =  9.0f;
+        public float cohesionAngleCos   = -0.15f;
+        public float cohesionWeight     =  8.0f;
 
         // worldRadius comes from the old OpenSteer code, but we should
         // replace it with vehicle tethering, since that's the way we're
         // doing it on other classes
         public float worldRadius = 30;
+        
+        
+        // Angle accessor for cohesion angle, the cosine is used on
+        // calculations for performance reasons
+        public float CohesionDeg
+        {
+            get
+            {
+                return OpenSteerUtility.DegreesFromCos(cohesionAngleCos);
+            }
+            set
+            {
+                cohesionAngleCos = OpenSteerUtility.CosFromDegrees(value);
+            }
+        }
+        
+        // Angle accessor for alignment angle, the cosine is used on
+        // calculations for performance reasons
+        public float AlignmentDeg
+        {
+            get
+            {
+                return OpenSteerUtility.DegreesFromCos(alignmentAngleCos);
+            }
+            set
+            {
+                alignmentAngleCos = OpenSteerUtility.CosFromDegrees(value);
+            }
+        }
+        
+        // Angle accessor for separation angle, the cosine is used on
+        // calculations for performance reasons
+        public float SeparationDeg
+        {
+            get
+            {
+                return OpenSteerUtility.DegreesFromCos(separationAngleCos);;
+            }
+            set
+            {
+                separationAngleCos = OpenSteerUtility.CosFromDegrees(value);
+            }
+        }
+        
+        
         
         public Boid (Vector3 position, float mass, bool movesVertically) : base( position, mass )
         {
@@ -140,13 +185,13 @@ namespace UnitySteer.Vehicles {
         {
             // determine each of the three component behaviors of flocking
             Vector3 separation = steerForSeparation (separationRadius,
-                                                     separationAngle,
+                                                     separationAngleCos,
                                                      Neighbors);
             Vector3 alignment  = steerForAlignment  (alignmentRadius,
-                                                     alignmentAngle,
+                                                     alignmentAngleCos,
                                                      Neighbors);
             Vector3 cohesion   = steerForCohesion   (cohesionRadius,
-                                                     cohesionAngle,
+                                                     cohesionAngleCos,
                                                      Neighbors);
 
             // apply weights to components (save in variables for annotation)
