@@ -132,8 +132,6 @@ namespace UnitySteer.Vehicles
         {
             base.reset ();      // reset the vehicle 
             Speed = 5.0f;       // speed along Forward direction.
-            MaxForce = 15.0f;   // steering force is clipped to this magnitude
-            MaxSpeed = 13.0f;   // velocity is clipped to this magnitude
         }
         
         
