@@ -3,7 +3,6 @@ using System.Collections;
 using UnitySteer;
 using UnitySteer.Vehicles;
 
-[RequireComponent(typeof(SphereCollider))]
 public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
     Boid boid;
     

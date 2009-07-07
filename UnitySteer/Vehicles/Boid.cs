@@ -123,14 +123,7 @@ namespace UnitySteer.Vehicles {
         protected virtual Vector3 CalculateForces()
         {
             // steer to flock and perhaps to stay within the spherical boundary
-            Vector3 avoid = steerToAvoidObstacles(minTimeToCollision, Obstacles);
-            #if DEBUG
-            if (Obstacles.Count > 0 && avoid != Vector3.zero)
-            {
-                Debug.Log("Avoiding "+avoid);
-            }
-            #endif
-            Vector3 result = steerToFlock () + handleBoundary() + avoid;
+            Vector3 result = steerToFlock () + handleBoundary();
             return result;
         }
         
