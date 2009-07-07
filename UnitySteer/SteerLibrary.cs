@@ -58,6 +58,23 @@ namespace UnitySteer
 		private Transform tether;
 		private float	  maxDistance;
 		private float	  maxDistanceSquared;
+		
+		private float     avoidAngleCos = 0.707f;
+		
+		
+		// Angle accessor for avoidance angle, the cosine is used on
+        // calculations for performance reasons
+        public float AvoidDeg
+        {
+            get
+            {
+                return OpenSteerUtility.DegreesFromCos(avoidAngleCos);
+            }
+            set
+            {
+                avoidAngleCos = OpenSteerUtility.CosFromDegrees(value);
+            }
+        }
 
 		public float MaxDistance
 		{
@@ -501,9 +518,8 @@ namespace UnitySteer
 			{
 				// parallel: +1, perpendicular: 0, anti-parallel: -1
 				float parallelness = Vector3.Dot(Forward, threat.Forward);
-				float angle = 0.707f;
 
-				if (parallelness < -angle)
+				if (parallelness < -avoidAngleCos)
 				{
 					// anti-parallel "head on" paths:
 					// steer away from future threat position
@@ -513,7 +529,7 @@ namespace UnitySteer
 				}
 				else
 				{
-					if (parallelness > angle)
+					if (parallelness > avoidAngleCos)
 					{
 						// parallel paths: steer away from threat
 						Vector3 offset = threat.Position - Position;
