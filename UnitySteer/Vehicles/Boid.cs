@@ -47,9 +47,6 @@ namespace UnitySteer.Vehicles {
     public class Boid : SimpleVehicle
     {
 
-        // allocate one and share amoung instances just to save memory usage
-        // (change to per-instance allocation to be more MP-safe)
-        static float worldRadius;
         static int boundaryCondition;
         
         public float minTimeToCollision = 0.2f;
@@ -64,6 +61,11 @@ namespace UnitySteer.Vehicles {
         public float cohesionRadius = 9.0f;
         public float cohesionAngle  = -0.15f;
         public float cohesionWeight = 8.0f;
+
+        // worldRadius comes from the old OpenSteer code, but we should
+        // replace it with vehicle tethering, since that's the way we're
+        // doing it on other classes
+        public float worldRadius = 30;
         
         public Boid (Vector3 position, float mass, bool movesVertically) : base( position, mass )
         {
@@ -98,8 +100,6 @@ namespace UnitySteer.Vehicles {
             const int max = 2;
             boundaryCondition = (boundaryCondition + 1) % max;
         }
-        
-
 
         // reset state
         new void reset ()

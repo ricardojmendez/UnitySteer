@@ -665,8 +665,8 @@ namespace UnitySteer
 					else
 					{
 						// otherwise, test angular offset from forward axis
-						 Vector3 unitOffset = offset / (float) System.Math.Sqrt (distanceSquared);
-						 float forwardness = Vector3.Dot(Forward, unitOffset);
+						Vector3 unitOffset = offset / (float) System.Math.Sqrt (distanceSquared);
+						float forwardness = Vector3.Dot(Forward, unitOffset);
 						return forwardness > cosMaxAngle;
 					}
 				}
@@ -676,6 +676,7 @@ namespace UnitySteer
 
 		// ----------------------------------------------------------------------------
 		// Separation behavior: steer away from neighbors
+		
 		public Vector3 steerForSeparation (float maxDistance, float cosMaxAngle, ArrayList flock)
 		{
 			// steering accumulator and count of neighbors, both initially zero
@@ -713,8 +714,6 @@ namespace UnitySteer
 		// ----------------------------------------------------------------------------
 		// Alignment behavior: steer to head in same direction as neighbors
 
-
-	   
 		public Vector3 steerForAlignment ( float maxDistance, float cosMaxAngle, ArrayList flock)
 		{
 			// steering accumulator and count of neighbors, both initially zero
@@ -750,10 +749,7 @@ namespace UnitySteer
 
 		// ----------------------------------------------------------------------------
 		// Cohesion behavior: to to move toward center of neighbors
-
-
-
-	   
+		
 		public Vector3 steerForCohesion ( float maxDistance,  float cosMaxAngle, ArrayList flock)
 		{
 			// steering accumulator and count of neighbors, both initially zero
