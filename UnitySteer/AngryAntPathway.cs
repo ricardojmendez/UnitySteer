@@ -92,7 +92,7 @@ namespace UnitySteer
             normals = new Vector3[pointCount];
 
             // loop over all points
-            for (int i = 0; i < path.Count; i++)
+            for (int i = 0; i < pointCount; i++)
             {
                 // copy in point locations, closing cycle when appropriate
                 bool closeCycle = cyclic && (i == pointCount-1);
@@ -179,7 +179,7 @@ namespace UnitySteer
             float remaining = pathDistance;
             if (IsCyclic)
             {
-                remaining = (float)System.Math.IEEERemainder(pathDistance, totalPathLength);
+                remaining = pathDistance - (totalPathLength * Mathf.Floor(pathDistance / totalPathLength));
             }
             else
             {

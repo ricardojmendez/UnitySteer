@@ -166,42 +166,26 @@ namespace UnitySteer.Vehicles
                 return;
                 
             Vector3 steer = Vector3.zero;
-            float   total = 0;
 
             // Damn I could use a lambda right here
             if (PathFollowWeight != 0)
             {
                 Vector3 force = steerToFollowPath(+1, 1, Pathway);
-                if (force != Vector3.zero)
-                {
-                    steer += force;
-                }
-                total += PathFollowWeight;
+                steer += force  * PathFollowWeight;
             }
             if (ObstacleAvoidanceWeight != 0)
             {
                 Vector3 force = steerToAvoidObstacles(MinCollisionTime, Obstacles);
-                if (force != Vector3.zero)
-                {
-                    steer += force;
-                    total += ObstacleAvoidanceWeight;
-                }
+                steer += force * ObstacleAvoidanceWeight;
             }
             if (NeighborAvoidanceWeight != 0)
             {
                 Vector3 force = Neighbors.Count > 0 ?
                                     steerToAvoidNeighbors(MinCollisionTime, Neighbors) :
                                     Vector3.zero;
-                if (force != Vector3.zero)
-                {
-                    steer += force;
-                    total += NeighborAvoidanceWeight;
-                }
+                steer += force * NeighborAvoidanceWeight;
             }
 
-            if (total == 0)
-                return;
-            steer /= total;
             applySteeringForce(steer, elapsedTime);
             
             bool arrived = Vector3.Distance(Position, Pathway.LastPoint) <= Radius + heightDifference;
