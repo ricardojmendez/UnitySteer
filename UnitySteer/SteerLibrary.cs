@@ -45,9 +45,6 @@ namespace UnitySteer
 {
 	public class SteerLibrary : Vehicle
 	{
-		// Randomiser
-		System.Random randomGenerator;
-
 		// Wander behavior
 		private float WanderSide;
 		private float WanderUp;
@@ -145,8 +142,6 @@ namespace UnitySteer
 
 			// default to non-gaudyPursuitAnnotation
 			gaudyPursuitAnnotation = true;
-
-			randomGenerator=new System.Random();
 		}
 
 		bool isAhead ( Vector3 target)	{return isAhead (target, 0.707f);}
@@ -1007,18 +1002,9 @@ namespace UnitySteer
 
 		public float scalarRandomWalk ( float initial, float walkspeed, float min, float max)
 		{
-			float next = initial + (((frandom01() * 2) - 1) * walkspeed);
-			if (next < min) return min;
-			if (next > max) return max;
+			float next = initial + ((UnityEngine.Random.value * 2 - 1) * walkspeed);
+			next = Mathf.Clamp(next, min, max);
 			return next;
-		}
-
-
-		// From utility
-
-		public float frandom01 ()
-		{
-			return ((float) randomGenerator.NextDouble());
 		}
 
 		public Vector3 truncateLength(Vector3 tVector, float maxLength)
