@@ -483,10 +483,10 @@ namespace UnitySteer
 				if (other != this)
 				{	
 					// avoid when future positions are this close (or less)
-					 float collisionDangerThreshold = Radius * 2 + other.Radius;
+				    float collisionDangerThreshold = Radius + other.Radius;
 
 					// predicted time until nearest approach of "this" and "other"
-					 float time = predictNearestApproachTime (other);
+					float time = predictNearestApproachTime (other);
 
 					// If the time is in the future, sooner than any other
 					// threatened collision...
@@ -496,8 +496,11 @@ namespace UnitySteer
 						// make a note of it
 						Vector3 ourPos = Vector3.zero;
 						Vector3 hisPos = Vector3.zero;
-						if (computeNearestApproachPositions (other, time, ref ourPos, ref hisPos)
-							< collisionDangerThreshold)
+						float   dist   = computeNearestApproachPositions (other, time, ref ourPos, ref hisPos);
+
+						Debug.Log(dist+" "+collisionDangerThreshold);
+						
+						if (dist < collisionDangerThreshold)
 						{
 							minTime = time;
 							threat = other;
@@ -513,6 +516,8 @@ namespace UnitySteer
 			{
 				// parallel: +1, perpendicular: 0, anti-parallel: -1
 				float parallelness = Vector3.Dot(Forward, threat.Forward);
+				
+				Debug.Log("Parallel "+parallelness + " "+avoidAngleCos);
 
 				if (parallelness < -avoidAngleCos)
 				{
@@ -522,27 +527,39 @@ namespace UnitySteer
 					float sideDot = Vector3.Dot(offset, Side);
 					steer = (sideDot > 0) ? -1.0f : 1.0f;
 				}
-				else
+				else if (parallelness > avoidAngleCos)
 				{
-					if (parallelness > avoidAngleCos)
+					// parallel paths: steer away from threat
+					Vector3 offset = threat.Position - Position;
+					float sideDot = Vector3.Dot(offset, Side);
+					steer = (sideDot > 0) ? -1.0f : 1.0f;
+				}
+				else 
+				{
+					/* 
+					    Perpendicular paths: steer behind threat
+					    
+					    Only the slower vehicle attempts this, unless that 
+					    slower vehicle is static.  If both have the same
+					    speed, then roll the dice.
+					 */
+				    if (Speed < threat.Speed
+				        || threat.Speed == 0
+				        || UnityEngine.Random.value <= 0.25f) 
 					{
-						// parallel paths: steer away from threat
-						Vector3 offset = threat.Position - Position;
-						float sideDot = Vector3.Dot(offset, Side);
+						float sideDot = Vector3.Dot(Side, threat.Velocity);
 						steer = (sideDot > 0) ? -1.0f : 1.0f;
-					}
-					else
-					{
-						// perpendicular paths: steer behind threat
-						// (only the slower of the two does this)
-						if (threat.Speed <= Speed)
-						{
-							float sideDot = Vector3.Dot(Side, threat.Velocity);
-							steer = (sideDot > 0) ? -1.0f : 1.0f;
-						}
 					}
 				}
 				
+				/* Steer will end up being applied as a multiplier to the
+				   vehicle's side vector. If we simply apply te -1/+1 being
+				   assigned above, then we'll end up with a unit displacement
+				   from the other object's position. We should account for
+				   both its radius and our own.
+				 */
+				steer *= Radius + threat.Radius;
+
                 #if ANNOTATE_AVOIDNEIGHBORS
 				annotateAvoidNeighbor (threat,
 									   steer,
