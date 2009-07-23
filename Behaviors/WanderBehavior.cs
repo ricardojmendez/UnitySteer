@@ -3,7 +3,7 @@ using System.Collections;
 using UnitySteer;
 using UnitySteer.Vehicles;
 
-public class WanderBehavior : MonoBehaviour {
+public class WanderBehavior : VehicleBehaviour {
 
 	private MpWanderer	wanderer;
 	
@@ -14,6 +14,7 @@ public class WanderBehavior : MonoBehaviour {
 	public float		Mass;
 	public Transform	Tether;
 	public float		MaxDistance;
+	public float		Radius = 1;
 	
 	public MpWanderer Wanderer
 	{
@@ -21,6 +22,11 @@ public class WanderBehavior : MonoBehaviour {
 		{
 			return wanderer;
 		}
+	}
+	
+	public override Vehicle Vehicle 
+	{
+		get { return wanderer; }
 	}
 	
 
@@ -31,6 +37,7 @@ public class WanderBehavior : MonoBehaviour {
 		wanderer.MaxForce = MaxForce;
 		wanderer.MaxDistance = MaxDistance;
 		wanderer.Tether = Tether;
+		wanderer.Radius = Radius;
 	}
 	
 	// Update is called once per frame

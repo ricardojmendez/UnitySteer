@@ -195,8 +195,8 @@ namespace UnitySteer
 		// (default action is to do nothing, layered classes can overload it)
 		public virtual void annotateAvoidNeighbor (	 Vehicle vehicle, float steer, Vector3 position, Vector3 threatPosition)
 		{
-            Debug.DrawLine(Position, vehicle.Position, Color.red);
-            Debug.DrawLine(Position, position, Color.green);
+            Debug.DrawLine(Position, vehicle.Position, Color.red); // Neighbor position
+            Debug.DrawLine(Position, position, Color.green);       // Position we're aiming for
 		}
 
 		public Vector3 steerForWander (float dt)
@@ -483,7 +483,7 @@ namespace UnitySteer
 				if (other != this)
 				{	
 					// avoid when future positions are this close (or less)
-					 float collisionDangerThreshold = Radius * 2;
+					 float collisionDangerThreshold = Radius * 2 + other.Radius;
 
 					// predicted time until nearest approach of "this" and "other"
 					 float time = predictNearestApproachTime (other);
@@ -595,9 +595,6 @@ namespace UnitySteer
 		// Given the time until nearest approach (predictNearestApproachTime)
 		// determine position of each vehicle at that time, and the distance
 		// between them
-
-
-	   
 		float computeNearestApproachPositions(Vehicle other, float time, 
 		                                      ref Vector3 ourPosition, 
 		                                      ref Vector3 hisPosition)

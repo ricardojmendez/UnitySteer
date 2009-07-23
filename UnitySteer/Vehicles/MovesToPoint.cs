@@ -6,7 +6,8 @@ using System.Collections;
 // ----------------------------------------------------------------------------
 //
 // Very simple vehicle that moves to whatever point it was told to reach and,
-// once there, says at that point.
+// once there, says at that point.  Added neighbor avoidance for testing 
+// purposes.
 //
 // ----------------------------------------------------------------------------
 
@@ -18,6 +19,9 @@ namespace UnitySteer.Vehicles
     {
         private Vector3 target;
         private bool moving = false;
+        
+        public float MinCollisionTime = 3;
+        public float NeighborAvoidanceWeight = 2;
         
         public Vector3 Target
         {
@@ -60,7 +64,7 @@ namespace UnitySteer.Vehicles
         }
         
         // one simulation step
-        public void update (float elapsedTime)
+        public void Update (float elapsedTime)
         {
             if (!moving)
                 return;
@@ -71,6 +75,15 @@ namespace UnitySteer.Vehicles
                 this.moving = false;
             
             Vector3 seeking = steerForSeek (target);
+            
+            if (NeighborAvoidanceWeight != 0)
+            {
+                Vector3 force = Neighbors.Count > 0 ?
+                                    steerToAvoidNeighbors(MinCollisionTime, Neighbors) :
+                                    Vector3.zero;
+                seeking += force * NeighborAvoidanceWeight;
+            }
+
             applySteeringForce (seeking, elapsedTime);
 
             #if DEBUG
