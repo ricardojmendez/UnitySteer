@@ -1,4 +1,4 @@
-#define DEBUG
+//#define DEBUG
 using UnityEngine;
 using System.Collections;
 using UnitySteer;
@@ -17,6 +17,7 @@ public class TestMoveToPointObstacles : VehicleBehaviour, IRadarReceiver {
     public float     maxSpeed =  3;
     public float     maxForce = 15;
     public float     radius   =  2;
+    public float     avoidDegrees = 45;
     
     
     public override Vehicle Vehicle
@@ -30,6 +31,7 @@ public class TestMoveToPointObstacles : VehicleBehaviour, IRadarReceiver {
 	    vehicle = new MovesToPoint(this.rigidbody, target.position, radius);
 	    vehicle.MaxSpeed = maxSpeed;
 	    vehicle.MaxForce = maxForce;
+	    vehicle.AvoidDeg = avoidDegrees;
 	}
 	
 	// Update is called once per frame

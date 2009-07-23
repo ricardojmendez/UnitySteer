@@ -56,22 +56,22 @@ namespace UnitySteer
 		private float	  maxDistance;
 		private float	  maxDistanceSquared;
 		
-		private float     avoidAngleCos = 0.707f;
+		private float	  avoidAngleCos = 0.707f;
 		
 		
 		// Angle accessor for avoidance angle, the cosine is used on
-        // calculations for performance reasons
-        public float AvoidDeg
-        {
-            get
-            {
-                return OpenSteerUtility.DegreesFromCos(avoidAngleCos);
-            }
-            set
-            {
-                avoidAngleCos = OpenSteerUtility.CosFromDegrees(value);
-            }
-        }
+		// calculations for performance reasons
+		public float AvoidDeg
+		{
+			get
+			{
+				return OpenSteerUtility.DegreesFromCos(avoidAngleCos);
+			}
+			set
+			{
+				avoidAngleCos = OpenSteerUtility.CosFromDegrees(value);
+			}
+		}
 
 		public float MaxDistance
 		{
@@ -187,16 +187,18 @@ namespace UnitySteer
 
 		// called when steerToAvoidCloseNeighbors decides steering is required
 		// (default action is to do nothing, layered classes can overload it)
-		public virtual void annotateAvoidCloseNeighbor(Vehicle otherVehicle, float seperationDistance)
+		public virtual void annotateAvoidCloseNeighbor(Vehicle otherVehicle, Vector3 component)
 		{
+			Debug.DrawLine(Position, otherVehicle.Position, Color.red);
+			Debug.DrawRay (Position, component*3, Color.yellow);
 		}
 
 		// called when steerToAvoidNeighbors decides steering is required
 		// (default action is to do nothing, layered classes can overload it)
 		public virtual void annotateAvoidNeighbor (	 Vehicle vehicle, float steer, Vector3 position, Vector3 threatPosition)
 		{
-            Debug.DrawLine(Position, vehicle.Position, Color.red); // Neighbor position
-            Debug.DrawLine(Position, position, Color.green);       // Position we're aiming for
+			Debug.DrawLine(Position, vehicle.Position, Color.red); // Neighbor position
+			Debug.DrawLine(Position, position, Color.green);	   // Position we're aiming for
 		}
 
 		public Vector3 steerForWander (float dt)
@@ -457,11 +459,16 @@ namespace UnitySteer
 		// other other vehicle we would collide with first, then steers to avoid the
 		// site of that potential collision.  Returns a steering force vector, which
 		// is zero length if there is no impending collision.
-		public Vector3 steerToAvoidNeighbors ( float minTimeToCollision, ArrayList others)
+		public Vector3 steerToAvoidNeighbors(float minTimeToCollision, ArrayList others)
 		{
+			/*
 			// first priority is to prevent immediate interpenetration
 			Vector3 separation = steerToAvoidCloseNeighbors (0, others);
-			if (separation != Vector3.zero) return separation;
+			if (separation != Vector3.zero) 
+			{
+				return separation;
+			}
+			*/
 
 			// otherwise, go on to consider potential future collisions
 			float steer = 0;
@@ -483,11 +490,11 @@ namespace UnitySteer
 				if (other != this)
 				{	
 					// avoid when future positions are this close (or less)
-				    float collisionDangerThreshold = Radius + other.Radius;
+					float collisionDangerThreshold = Radius + other.Radius;
 
 					// predicted time until nearest approach of "this" and "other"
 					float time = predictNearestApproachTime (other);
-
+					
 					// If the time is in the future, sooner than any other
 					// threatened collision...
 					if ((time >= 0) && (time < minTime))
@@ -496,9 +503,7 @@ namespace UnitySteer
 						// make a note of it
 						Vector3 ourPos = Vector3.zero;
 						Vector3 hisPos = Vector3.zero;
-						float   dist   = computeNearestApproachPositions (other, time, ref ourPos, ref hisPos);
-
-						Debug.Log(dist+" "+collisionDangerThreshold);
+						float	dist   = computeNearestApproachPositions (other, time, ref ourPos, ref hisPos);
 						
 						if (dist < collisionDangerThreshold)
 						{
@@ -516,8 +521,7 @@ namespace UnitySteer
 			{
 				// parallel: +1, perpendicular: 0, anti-parallel: -1
 				float parallelness = Vector3.Dot(Forward, threat.Forward);
-				
-				Debug.Log("Parallel "+parallelness + " "+avoidAngleCos);
+				// Debug.Log("Parallel "+parallelness + " "+avoidAngleCos+" "+threatPositionAtNearestApproach);
 
 				if (parallelness < -avoidAngleCos)
 				{
@@ -537,15 +541,18 @@ namespace UnitySteer
 				else 
 				{
 					/* 
-					    Perpendicular paths: steer behind threat
-					    
-					    Only the slower vehicle attempts this, unless that 
-					    slower vehicle is static.  If both have the same
-					    speed, then roll the dice.
+						Perpendicular paths: steer behind threat
+
+						Only the slower vehicle attempts this, unless that 
+						slower vehicle is static.  If both have the same
+						speed, then roll the dice.						
+						
+						Something to test is making a slower vehicle fall
+						behind, while a faster vehicle cuts ahead.
 					 */
-				    if (Speed < threat.Speed
-				        || threat.Speed == 0
-				        || UnityEngine.Random.value <= 0.25f) 
+					if (Speed < threat.Speed
+							 || threat.Speed == 0
+							 || UnityEngine.Random.value <= 0.25f) 
 					{
 						float sideDot = Vector3.Dot(Side, threat.Velocity);
 						steer = (sideDot > 0) ? -1.0f : 1.0f;
@@ -560,12 +567,12 @@ namespace UnitySteer
 				 */
 				steer *= Radius + threat.Radius;
 
-                #if ANNOTATE_AVOIDNEIGHBORS
+				#if ANNOTATE_AVOIDNEIGHBORS
 				annotateAvoidNeighbor (threat,
 									   steer,
 									   ourPositionAtNearestApproach,
 									   threatPositionAtNearestApproach);
-                #endif
+				#endif
 			}
 
 			return Side * steer;
@@ -613,13 +620,13 @@ namespace UnitySteer
 		// determine position of each vehicle at that time, and the distance
 		// between them
 		float computeNearestApproachPositions(Vehicle other, float time, 
-		                                      ref Vector3 ourPosition, 
-		                                      ref Vector3 hisPosition)
+											  ref Vector3 ourPosition, 
+											  ref Vector3 hisPosition)
 		{
 			Vector3	   myTravel =		Forward *		Speed * time;
 			Vector3 otherTravel = other.Forward * other.Speed * time;
 
-			ourPosition =       Position + myTravel;
+			ourPosition =		Position + myTravel;
 			hisPosition = other.Position + otherTravel;
 
 			return Vector3.Distance(ourPosition, hisPosition);
@@ -633,9 +640,10 @@ namespace UnitySteer
 		// XXX	Does a hard steer away from any other agent who comes withing a
 		// XXX	critical distance.	Ideally this should be replaced with a call
 		// XXX	to steerForSeparation.
-		public Vector3 steerToAvoidCloseNeighbors ( float minSeparationDistance, ArrayList others)
+		public Vector3 steerToAvoidCloseNeighbors (float minSeparationDistance, ArrayList others)
 		{
 			// for each of the other vehicles...
+			Vector3 result = Vector3.zero;
 			for (int i=0;i<others.Count;i++)
 			{
 				Vehicle other = (Vehicle) others[i];
@@ -648,14 +656,15 @@ namespace UnitySteer
 
 					if (currentDistance < minCenterToCenter)
 					{
-						annotateAvoidCloseNeighbor (other, minSeparationDistance);
-						return OpenSteerUtility.perpendicularComponent(-offset,Forward);
+						result = OpenSteerUtility.perpendicularComponent(-offset,Forward);
+						
+						#if ANNOTATE_AVOIDNEIGHBORS
+						annotateAvoidCloseNeighbor (other, result);
+						#endif
 					}
 				}
 			}
-			
-			// otherwise return zero
-			return Vector3.zero;
+			return result;;
 		}
 
 
