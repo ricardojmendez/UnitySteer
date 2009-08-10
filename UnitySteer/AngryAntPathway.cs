@@ -35,6 +35,11 @@ using UnityEngine;
 
 namespace UnitySteer
 {
+	/// <summary>
+	/// Represents a Pathway created from an AngryAnt Path result
+	/// </summary>
+	/// <remarks>It requires the Path library for obvious reasons. In a future
+	/// release it will likely be spun off to an independent library.</remarks>
     public class AngryAntPathway : Pathway
     {
         private ArrayList   path;
@@ -44,16 +49,33 @@ namespace UnitySteer
         private Vector3[]   normals;
         private Vector3[]   points;
         
-        // Minimum radius along the path. It could be gleaned from the
-        // NetworkAssets.
+		/// <summary>
+		/// Minimum radius along the path.
+		/// </summary>
+		/// <remarks>It could be gleaned from the NetworkAssets.</remarks>
         private float       radius; 
         
         public AngryAntPathway () {
             
         }
 
-        // construct a PolylinePathway given the number of points (vertices),
-        // an array of points, and a path radius.
+		
+		/// <summary>
+		/// Constructs a PolylinePathway given an array of points and a path radius
+		/// </summary>
+		/// <param name="path">
+		/// List of ConnectionAsset returned from Path <see cref="ConnectionAsset"/>
+		/// </param>
+		/// <param name="radius">
+		/// Radius to use for the connections <see cref="System.Single"/>
+		/// </param>
+		/// <param name="cyclic">
+		/// Is the path cyclic? <see cref="System.Boolean"/>
+		/// </param>
+		/// <remarks>The current implementation assumes that all pathways will 
+		/// have the same radius.  The connection radius could be taken from the 
+		/// NetworkAssets in Path, which should be what we do in future implementations.
+		/// </remarks>
         public AngryAntPathway (ArrayList path, float radius, bool cyclic)
         {
             initialize(path, radius, cyclic);
@@ -74,6 +96,18 @@ namespace UnitySteer
             return totalPathLength;
         }
         
+		/// <summary>
+		/// Constructs the Pathway from a list of ConnectionAssets
+		/// </summary>
+		/// <param name="path">
+		/// A list of ConnectionAssets as returned by Path <see cref="ConnectionAsset"/>
+		/// </param>
+		/// <param name="radius">
+		/// Radius to use for the connections<see cref="System.Single"/>
+		/// </param>
+		/// <param name="cyclic">
+		/// Is the path cyclic?
+		/// </param>
         void initialize (ArrayList path, float radius, bool cyclic)
         {
             this.path = path;

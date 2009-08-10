@@ -39,9 +39,16 @@ using UnityEngine;
 
 namespace UnitySteer
 {
-    // NOTE RJM: This class keeps a whole lot of global state in lieu of 
-    // passing parameters. I recommend comparing it against AngryAntPathway
-    // and OpenSteerUtility as an example of how to disentangle the state.
+	
+	/// <summary>
+	/// Represents a pathway as a series of points
+	/// </summary>
+	/// <remarks>
+    /// NOTE RJM: This class keeps a whole lot of global state in lieu of 
+    /// passing parameters. I recommend comparing it against AngryAntPathway
+    /// and OpenSteerUtility as an example of how to disentangle the state. I
+	/// have barely modified it from the original class file.
+	/// </remarks>
     public class PolylinePathway : Pathway
     {
         int pointCount;

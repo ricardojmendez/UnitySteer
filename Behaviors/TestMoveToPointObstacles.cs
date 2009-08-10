@@ -78,7 +78,7 @@ public class TestMoveToPointObstacles : VehicleBehaviour, IRadarReceiver {
 		}
 		else if ((layerMask & NeighborLayer) != 0)
 		{
-		    // Neighbors are expected to have a ship component
+		    // Objects considered neighbors are expected to have a VehicleBehavior component
 		    VehicleBehaviour s = other.gameObject.GetComponent(typeof(VehicleBehaviour)) as VehicleBehaviour;
 		    if (s != null)
 		    {

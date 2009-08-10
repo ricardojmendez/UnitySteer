@@ -8,10 +8,20 @@ namespace UnitySteer.Vehicles
 {
     public delegate void VehicleArrivalHandler(SimpleVehicle vehicle, Vector3 point);
     
+	
+	/// <summary>
+	/// Path following vehicle. Can be used with any of the Pathway descendent
+	/// classes, but has been recently tested mostly with AngryAntPathway.
+	/// </summary>
+	/// <remarks>
+	/// Since this class is not a MonoBehaviour, it will need to be initialized
+	/// and updated from one.  For an example of how to do this, see the simple
+	/// implementations on BoidBehaviour or PursuierBehavior.
+	/// </remarks>
     public class PathFollower : SimpleVehicle
     {
         private Pathway pathway;
-        private bool    moving        = false;
+        private bool    isMoving      = false;
         private bool    stopOnArrival = true;
         private Vector3 target;
         private float   heightDifference;
@@ -42,7 +52,7 @@ namespace UnitySteer.Vehicles
             set
             {
                 pathway = value;
-                moving  = pathway != null;
+                isMoving  = pathway != null;
                 if (!MovesVertically && pathway != null)
                 {
                     /*
@@ -108,18 +118,15 @@ namespace UnitySteer.Vehicles
         }
         
         
-        
-        
-        
-        public bool Moving
+        public bool IsMoving
         {
             get
             {
-                return moving;
+                return isMoving;
             }
             set
             {
-                moving = value;
+                isMoving = value;
             }
         }
         
@@ -137,7 +144,21 @@ namespace UnitySteer.Vehicles
         
         
         
-        // constructor
+        /// <summary>
+        /// Builds a PathFollower from a transform
+        /// </summary>
+        /// <param name="transform">
+        /// Transform that the vehicle will update <see cref="Transform"/>
+        /// </param>
+        /// <param name="mass">
+        /// Vehicle mass, for acceleration calculations <see cref="System.Single"/>
+        /// </param>
+        /// <param name="pathway">
+        /// Pathway to follow <see cref="Pathway"/>
+        /// </param>
+        /// <param name="radius">
+        /// Vehicle radius <see cref="System.Single"/>
+        /// </param>
 		public PathFollower(Transform transform, float mass, Pathway pathway, float radius) : base( transform, mass )
 		{ 
 		    reset(); 
@@ -145,6 +166,18 @@ namespace UnitySteer.Vehicles
 		    this.Radius   = radius;
 		}
 		
+        /// <summary>
+        /// Builds a PathFollower from a rigidbody
+        /// </summary>
+		/// <param name="rigidbody">
+		/// A rigidbody to be updated and from whom the mass is taken <see cref="Rigidbody"/>
+		/// </param>
+        /// <param name="pathway">
+        /// Pathway to follow <see cref="Pathway"/>
+        /// </param>
+        /// <param name="radius">
+        /// Vehicle radius <see cref="System.Single"/>
+        /// </param>
 		public PathFollower(Rigidbody rigidbody, Pathway pathway, float radius) : base( rigidbody )
 		{ 
 		    reset(); 
@@ -156,13 +189,18 @@ namespace UnitySteer.Vehicles
         {
             base.reset (); // reset the vehicle 
             neighbors = new ArrayList();
-            moving = true;
+            isMoving = true;
         }
                 
-        // one simulation step
+        /// <summary>
+        /// Executes one simulation step
+        /// </summary>
+        /// <param name="elapsedTime">
+        /// Time that has elapsed. In most cases you'll want to send Time.deltaTime.<see cref="System.Single"/>
+        /// </param>
         public void Update(float elapsedTime)
         {
-            if (!moving || Pathway == null)
+            if (!isMoving || Pathway == null)
                 return;
                 
             Vector3 steer = Vector3.zero;
@@ -192,7 +230,7 @@ namespace UnitySteer.Vehicles
             
             if (arrived)
             {
-                moving = !StopOnArrival;
+                isMoving = !StopOnArrival;
                 if (VehicleArrived != null)
                     VehicleArrived(this, target);
             }
