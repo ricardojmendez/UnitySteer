@@ -28,7 +28,10 @@ namespace UnitySteer
             float sourceLength = source.magnitude;
             if (sourceLength == 0) return source;
 
-            // measure the angular diviation of "source" from "basis"
+            // measure the angular deviation of "source" from "basis"
+			// There doesn't seem to be a significant performance difference
+			// between this and source.normalized, particularly since we 
+			// needed the magnitude before anyway.
             Vector3 direction = source / sourceLength;
             float cosineOfSourceAngle = Vector3.Dot(direction, basis);
 

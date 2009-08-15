@@ -144,10 +144,19 @@ namespace UnitySteer
         // xxx experimental 8-20-02
         //
         // parameter names commented out to prevent compiler warning from "-W"
-
-
-        public Vector3 adjustRawSteeringForce(Vector3 force)
+		//
+		// NOTE RJM: Upon profiling, this seems to be about 25% of what 
+		// applySteeringForce is doing. It might be worth reviewing if it
+		// should be kept around, considering that CWR was unsure if this
+		// "ad-hocery" should remain as default.
+		// 
+		// This sort of adjustment is definitely useful for vehicles such 
+		// as the lightning chain, but might not need to be on the base
+		// class.
+        public virtual Vector3 adjustRawSteeringForce(Vector3 force)
         {
+			// Do force adjustment only if the speed is a fifth of our
+			// maximum valid speed
             float maxAdjustedSpeed = 0.2f * MaxSpeed;
 
             if ((Speed > maxAdjustedSpeed) || (force == Vector3.zero))
@@ -202,10 +211,10 @@ namespace UnitySteer
                 return;
             }
 
-            Vector3 adjustedForce = adjustRawSteeringForce (force);//, elapsedTime);
+			force = adjustRawSteeringForce(force);
             
             // enforce limit on magnitude of steering force
-            Vector3 clippedForce = truncateLength(adjustedForce, MaxForce);
+            Vector3 clippedForce = truncateLength(force, MaxForce);
 
             // compute acceleration and velocity
             Vector3 newAcceleration = (clippedForce / Mass);
