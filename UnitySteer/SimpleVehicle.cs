@@ -326,17 +326,19 @@ namespace UnitySteer
         {
             if (elapsedTime > 0)
             {
-                Vector3 dP = _lastPosition - Position;
-                Vector3 dF = (_lastForward - Forward) / dP.magnitude;
+				Vector3 pos = Position;
+				Vector3 fwd = Forward;
+                Vector3 dP = _lastPosition - pos;
+                Vector3 dF = (_lastForward - fwd) / dP.magnitude;
                 //SI - BIT OF A WEIRD FIX HERE . NOT SURE IF ITS CORRECT
                 //Vector3 lateral = dF.perpendicularComponent (forward ());
-                Vector3 lateral = OpenSteerUtility.perpendicularComponent( dF,Forward);
+                Vector3 lateral = OpenSteerUtility.perpendicularComponent(dF, fwd);
 
                 float sign = (Vector3.Dot(lateral, Side) < 0) ? 1.0f : -1.0f;
                 _curvature = lateral.magnitude * sign;
                 /*
                     If elapsedTime is greater than 0.25, that means that blendIntoAccumulator
-                    will end up clipping the first parameter to (0,1), and we'll lose information,
+                    will end up clipping the first parameter to [0..1], and we'll lose information,
                     making this call framerate-dependent.
                     
                     No idea where that 4.0f value comes from, probably out of a hat.
@@ -345,8 +347,8 @@ namespace UnitySteer
                                         _curvature, 
                                         _smoothedCurvature);
 
-                _lastForward = Forward;
-                _lastPosition = Position;
+                _lastForward = fwd;
+                _lastPosition = pos;
             }
         }
 
