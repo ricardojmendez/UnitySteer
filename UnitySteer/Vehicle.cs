@@ -101,7 +101,7 @@ namespace UnitySteer
 			{
 				if( !MovesVertically )
 				{
-					value = new Vector3( value.x, Position.y, value.z );
+					value.y = Position.y;
 				}
 				if( rigidbody != null )
 				{
