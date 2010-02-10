@@ -68,7 +68,7 @@ public class TestMoveToPointObstacles : VehicleBehaviour, IRadarReceiver {
 		int layerMask = 1 << other.gameObject.layer;
 		if((layerMask & ObstacleLayer) != 0)
 		{
-    		Obstacle obstacle;
+    			Obstacle obstacle;
 			obstacle = SphericalObstacle.GetObstacle( other.gameObject );
 			if( obstacle != null )
 			{
