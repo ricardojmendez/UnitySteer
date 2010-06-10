@@ -50,7 +50,9 @@ namespace UnitySteer
 		private float WanderUp;
 
 
+		#if DEBUG
 		bool gaudyPursuitAnnotation;
+		#endif
 		
 		private Transform tether;
 		private float	  maxDistance;
@@ -141,7 +143,9 @@ namespace UnitySteer
 			WanderUp = 0;
 
 			// default to non-gaudyPursuitAnnotation
+			#if DEBUG
 			gaudyPursuitAnnotation = true;
+			#endif
 		}
 
 		bool isAhead ( Vector3 target)	{return isAhead (target, 0.707f);}
