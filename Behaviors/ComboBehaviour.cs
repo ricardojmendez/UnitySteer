@@ -126,7 +126,7 @@ public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 		}
 		set
 		{
-			steerToStayOnPath = value;
+			steerForPursuit = value;
 			vehicle.SteerForPursuitWeight = steerForPursuit;
 		}
 	}
