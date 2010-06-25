@@ -95,6 +95,18 @@ namespace UnitySteer
             else
                 return source;
         }
+		
+		public static Vector3 truncateLength(Vector3 tVector, float maxLength)
+		{
+			float tLength = tVector.magnitude;
+			Vector3 returnVector = tVector;
+			if (tLength > maxLength)
+			{
+				returnVector.Normalize();
+				returnVector *= maxLength;
+			}
+			return returnVector;
+		}		
         
         // ----------------------------------------------------------------------------
         // Computes distance from a point to a line segment 

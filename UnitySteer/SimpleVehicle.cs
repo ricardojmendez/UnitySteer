@@ -214,7 +214,7 @@ namespace UnitySteer
 			force = adjustRawSteeringForce(force);
             
             // enforce limit on magnitude of steering force
-            Vector3 clippedForce = truncateLength(force, MaxForce);
+            Vector3 clippedForce = OpenSteerUtility.truncateLength(force, MaxForce);
 
             // compute acceleration and velocity
             Vector3 newAcceleration = (clippedForce / Mass);
@@ -249,7 +249,7 @@ namespace UnitySteer
             newVelocity += _smoothedAcceleration * elapsedTime;
 
             // enforce speed limit
-            newVelocity = truncateLength(newVelocity, MaxSpeed);
+            newVelocity = OpenSteerUtility.truncateLength(newVelocity, MaxSpeed);
 
             // update Speed
             Speed = newVelocity.magnitude;

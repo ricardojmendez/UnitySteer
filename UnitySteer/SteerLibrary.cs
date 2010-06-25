@@ -260,7 +260,7 @@ namespace UnitySteer
 		public Vector3 steerForFleeTruncated(Vector3 target)
 		{
 			Vector3 offset = Position - target;
-			Vector3 desiredVelocity = truncateLength(offset, MaxSpeed);
+			Vector3 desiredVelocity = OpenSteerUtility.truncateLength(offset, MaxSpeed);
 			return desiredVelocity - Velocity;
 		}
 
@@ -269,7 +269,7 @@ namespace UnitySteer
 		public Vector3 steerForSeekTruncated ( Vector3 target)
 		{
 			Vector3 offset = target - Position;
-			Vector3 desiredVelocity = truncateLength(offset, MaxSpeed);
+			Vector3 desiredVelocity = OpenSteerUtility.truncateLength(offset, MaxSpeed);
 			return desiredVelocity - Velocity;
 		}
 
@@ -1034,17 +1034,6 @@ namespace UnitySteer
 			return next;
 		}
 
-		public Vector3 truncateLength(Vector3 tVector, float maxLength)
-		{
-			float tLength = tVector.magnitude;
-			Vector3 returnVector = tVector;
-			if (tLength > maxLength)
-			{
-				returnVector.Normalize();
-				returnVector *= maxLength;
-			}
-			return returnVector;
-		}
 
 		public int intervalComparison (float x, float lowerBound, float upperBound)
 		{
