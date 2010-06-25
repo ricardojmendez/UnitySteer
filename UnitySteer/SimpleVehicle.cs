@@ -153,7 +153,7 @@ namespace UnitySteer
 		// This sort of adjustment is definitely useful for vehicles such 
 		// as the lightning chain, but might not need to be on the base
 		// class.
-        public virtual Vector3 adjustRawSteeringForce(Vector3 force)
+        public virtual Vector3 AdjustRawSteeringForce(Vector3 force)
         {
 			// Do force adjustment only if the speed is a fifth of our
 			// maximum valid speed
@@ -211,7 +211,7 @@ namespace UnitySteer
                 return;
             }
 
-			force = adjustRawSteeringForce(force);
+			force = AdjustRawSteeringForce(force);
             
             // enforce limit on magnitude of steering force
             Vector3 clippedForce = OpenSteerUtility.truncateLength(force, MaxForce);
