@@ -24,7 +24,7 @@ public class WanderBehavior : VehicleBehaviour {
 		}
 	}
 	
-	public override Vehicle Vehicle 
+	public override SteeringVehicle Vehicle 
 	{
 		get { return wanderer; }
 	}

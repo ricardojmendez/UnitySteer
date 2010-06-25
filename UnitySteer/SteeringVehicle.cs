@@ -39,7 +39,7 @@ using UnityEngine;
 namespace UnitySteer
 {
 	// TODO: Alter use of this and SimpleVehicle to apply forces when using Rigidbody in stead of MovePosition
-	public class Vehicle
+	public class SteeringVehicle
 	{
 		ArrayList neighbors = new ArrayList();
 
@@ -55,20 +55,20 @@ namespace UnitySteer
 		private Vector3 internalPosition, internalSide, internalForward, internalUp;
 		
 
-		public Vehicle( Vector3 position, float mass )
+		public SteeringVehicle( Vector3 position, float mass )
 		{
 			this.Position = position;
 			internalMass = mass;
 		}		
 		
-		public Vehicle( Transform transform, float mass )
+		public SteeringVehicle( Transform transform, float mass )
 		{
 			this.transform = transform;
 			internalMass = mass;
 		}
 		
 		
-		public Vehicle( Rigidbody rigidbody )
+		public SteeringVehicle( Rigidbody rigidbody )
 		{
 			this.rigidbody = rigidbody;
 		}

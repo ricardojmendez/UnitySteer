@@ -121,7 +121,7 @@ namespace UnitySteer
         // Returns a zero vector if the obstacle is outside the cylinder
         //
         // xxx couldn't this be made more compact using localizePosition?
-        Vector3 steerToAvoid(Vehicle v, float minTimeToCollision)
+        Vector3 steerToAvoid(SteeringVehicle v, float minTimeToCollision)
         {
             // minimum distance to obstacle before avoidance is required
             float minDistanceToCollision = minTimeToCollision * v.Speed;

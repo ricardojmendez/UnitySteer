@@ -66,7 +66,7 @@ public class BoidBehaviour : VehicleBehaviour, IRadarReceiver {
 	
 	
 	
-	public override Vehicle Vehicle
+	public override SteeringVehicle Vehicle
 	{
 		get
 		{

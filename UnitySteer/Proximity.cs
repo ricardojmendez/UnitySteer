@@ -51,12 +51,12 @@ namespace UnitySteer
         // type for the "tokens" manipulated by this spatial database
         //typedef AbstractTokenForProximityDatabase<ContentType> tokenType;
         // allocate a token to represent a given client object in this database
-        public virtual AbstractTokenForProximityDatabase allocateToken(Vehicle parentObject) { return new AbstractTokenForProximityDatabase(); }
+        public virtual AbstractTokenForProximityDatabase allocateToken(SteeringVehicle parentObject) { return new AbstractTokenForProximityDatabase(); }
 
         // returns the number of tokens in the proximity database
         public virtual int getPopulation() { return 0; }
 
-        public virtual Vehicle getNearestVehicle(Vector3 position, float radius) { return null; }
+        public virtual SteeringVehicle getNearestVehicle(Vector3 position, float radius) { return null; }
 
         public virtual Vector3 getMostPopulatedBinCenter() { return Vector3.zero; } 
         
@@ -79,7 +79,7 @@ namespace UnitySteer
 
         // allocate a token to represent a given client object in this database
         //public override tokenType allocateToken (Object parentObject)
-        public override AbstractTokenForProximityDatabase allocateToken(Vehicle parentObject)
+        public override AbstractTokenForProximityDatabase allocateToken(SteeringVehicle parentObject)
         {
             tokenType tToken=new tokenType (parentObject, this);
             return (AbstractTokenForProximityDatabase)tToken;
@@ -101,11 +101,11 @@ namespace UnitySteer
     public class tokenType : AbstractTokenForProximityDatabase
     {
         BruteForceProximityDatabase bfpd;
-        Vehicle tParentObject;
+        SteeringVehicle tParentObject;
         Vector3 position;
 
         // constructor
-        public tokenType(Vehicle parentObject, BruteForceProximityDatabase pd)
+        public tokenType(SteeringVehicle parentObject, BruteForceProximityDatabase pd)
         {
             // store pointer to our associated database and the object this
             // token represents, and store this token on the database's vector

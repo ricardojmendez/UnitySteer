@@ -43,7 +43,7 @@ using UnityEngine;
 
 namespace UnitySteer
 {
-	public class SteerLibrary : Vehicle
+	public class SteerLibrary : SteeringVehicle
 	{
 		// Wander behavior
 		private float WanderSide;
@@ -191,7 +191,7 @@ namespace UnitySteer
 
 		// called when steerToAvoidCloseNeighbors decides steering is required
 		// (default action is to do nothing, layered classes can overload it)
-		public virtual void annotateAvoidCloseNeighbor(Vehicle otherVehicle, Vector3 component)
+		public virtual void annotateAvoidCloseNeighbor(SteeringVehicle otherVehicle, Vector3 component)
 		{
 			Debug.DrawLine(Position, otherVehicle.Position, Color.red);
 			Debug.DrawRay (Position, component*3, Color.yellow);
@@ -199,7 +199,7 @@ namespace UnitySteer
 
 		// called when steerToAvoidNeighbors decides steering is required
 		// (default action is to do nothing, layered classes can overload it)
-		public virtual void annotateAvoidNeighbor (	 Vehicle vehicle, float steer, Vector3 position, Vector3 threatPosition)
+		public virtual void annotateAvoidNeighbor (	 SteeringVehicle vehicle, float steer, Vector3 position, Vector3 threatPosition)
 		{
 			Debug.DrawLine(Position, vehicle.Position, Color.red); // Neighbor position
 			Debug.DrawLine(Position, position, Color.green);	   // Position we're aiming for
@@ -476,7 +476,7 @@ namespace UnitySteer
 
 			// otherwise, go on to consider potential future collisions
 			float steer = 0;
-			Vehicle threat = null;
+			SteeringVehicle threat = null;
 
 			// Time (in seconds) until the most immediate collision threat found
 			// so far.	Initial value is a threshold: don't look more than this
@@ -490,7 +490,7 @@ namespace UnitySteer
 			// pose the most immediate threat of collision.
 			for (int i=0; i<others.Count; i++)
 			{
-				Vehicle other = (Vehicle) others[i];
+				SteeringVehicle other = (SteeringVehicle) others[i];
 				if (other != this)
 				{	
 					// avoid when future positions are this close (or less)
@@ -590,7 +590,7 @@ namespace UnitySteer
 		// XXX should this return zero if they are already in contact?
 
 	   
-		float predictNearestApproachTime (Vehicle other)
+		float predictNearestApproachTime (SteeringVehicle other)
 		{
 			// imagine we are at the origin with no velocity,
 			// compute the relative velocity of the other vehicle
@@ -623,7 +623,7 @@ namespace UnitySteer
 		// Given the time until nearest approach (predictNearestApproachTime)
 		// determine position of each vehicle at that time, and the distance
 		// between them
-		float computeNearestApproachPositions(Vehicle other, float time, 
+		float computeNearestApproachPositions(SteeringVehicle other, float time, 
 											  ref Vector3 ourPosition, 
 											  ref Vector3 hisPosition)
 		{
@@ -650,7 +650,7 @@ namespace UnitySteer
 			Vector3 result = Vector3.zero;
 			for (int i=0;i<others.Count;i++)
 			{
-				Vehicle other = (Vehicle) others[i];
+				SteeringVehicle other = (SteeringVehicle) others[i];
 				if (other != this)
 				{
 					 float sumOfRadii = Radius + other.Radius;
@@ -677,7 +677,7 @@ namespace UnitySteer
 
 
 	   
-		bool inBoidNeighborhood ( Vehicle other, float minDistance, float maxDistance, float cosMaxAngle)
+		bool inBoidNeighborhood ( SteeringVehicle other, float minDistance, float maxDistance, float cosMaxAngle)
 		{
 			if (other == this)
 			{
@@ -724,7 +724,7 @@ namespace UnitySteer
 			// for each of the other vehicles...
 			for (int i = 0; i < flock.Count; i++)
 			{
-				Vehicle other = (Vehicle)flock[i];
+				SteeringVehicle other = (SteeringVehicle)flock[i];
 				if (inBoidNeighborhood (other, Radius*3, maxDistance, cosMaxAngle))
 				{
 					// add in steering contribution
@@ -761,7 +761,7 @@ namespace UnitySteer
 			// for each of the other vehicles...
 			for (int i=0;i<flock.Count;i++)
 			{
-				Vehicle other = (Vehicle) flock[i];
+				SteeringVehicle other = (SteeringVehicle) flock[i];
 
 				if (inBoidNeighborhood (other, Radius*3, maxDistance, cosMaxAngle))
 				{
@@ -798,7 +798,7 @@ namespace UnitySteer
 		   // for (AVIterator other = flock.begin(); other != flock.end(); other++)
 			for (int i = 0; i < flock.Count; i++)
 			{
-				Vehicle other = (Vehicle)flock[i];
+				SteeringVehicle other = (SteeringVehicle)flock[i];
 
 				if (inBoidNeighborhood (other, Radius*3, maxDistance, cosMaxAngle))
 				{
@@ -827,14 +827,14 @@ namespace UnitySteer
 
 
 	   
-		public Vector3 steerForPursuit (Vehicle quarry)
+		public Vector3 steerForPursuit (SteeringVehicle quarry)
 		{
 			return steerForPursuit (quarry, float.MaxValue);
 		}
 
 
 	   
-		public Vector3 steerForPursuit (Vehicle quarry, float maxPredictionTime)
+		public Vector3 steerForPursuit (SteeringVehicle quarry, float maxPredictionTime)
 		{
 			// offset from this to quarry, that distance, unit vector toward quarry
 			Vector3 offset = quarry.Position - Position;
@@ -938,7 +938,7 @@ namespace UnitySteer
 
 
 	   
-		public Vector3 steerForEvasion ( Vehicle menace, float maxPredictionTime)
+		public Vector3 steerForEvasion ( SteeringVehicle menace, float maxPredictionTime)
 		{
 			// offset from this to menace, that distance, unit vector toward menace
 			Vector3 offset = menace.Position - Position;

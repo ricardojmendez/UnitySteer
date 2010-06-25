@@ -74,7 +74,7 @@ namespace UnitySteer
                     lqClientProxy tProxy = (lqClientProxy)tList[i];
                     //tList.ForEach(delegate(lqClientProxy tProxy)
                     //{
-                    results.Add((Vehicle)tProxy.clientObject);
+                    results.Add((SteeringVehicle)tProxy.clientObject);
                     //});
                 }
             }
@@ -101,7 +101,7 @@ namespace UnitySteer
 
 
         // allocate a token to represent a given client object in this database
-        public override AbstractTokenForProximityDatabase allocateToken(Vehicle parentObject)
+        public override AbstractTokenForProximityDatabase allocateToken(SteeringVehicle parentObject)
         {
             return new tokenType(parentObject, this);
         }
@@ -117,12 +117,12 @@ namespace UnitySteer
             return count;
         }
 
-        public override Vehicle getNearestVehicle(Vector3 position,float radius) {
+        public override SteeringVehicle getNearestVehicle(Vector3 position,float radius) {
             lqClientProxy tProxy= lq.lqFindNearestNeighborWithinRadius(position.x, position.y, position.z, radius, null);
-             Vehicle tVehicle=null;
+             SteeringVehicle tVehicle=null;
              if (tProxy != null)
              {
-                 tVehicle = (Vehicle) tProxy.clientObject;
+                 tVehicle = (SteeringVehicle) tProxy.clientObject;
              }
             return tVehicle;
         }

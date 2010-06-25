@@ -20,7 +20,7 @@ public class TestMoveToPointObstacles : VehicleBehaviour, IRadarReceiver {
     public float     avoidDegrees = 45;
     
     
-    public override Vehicle Vehicle
+    public override SteeringVehicle Vehicle
     {
         get { return vehicle; }
     }

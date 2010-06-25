@@ -11,7 +11,7 @@ public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 	private float steerForPursuit;
 	
 	private ComboVehicle vehicle;
-	private Vehicle target;
+	private SteeringVehicle target;
 	
 	public void Awake()
 	{
@@ -33,7 +33,7 @@ public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 	
 	
 	
-	public override Vehicle Vehicle
+	public override SteeringVehicle Vehicle
 	{
 		get
 		{
@@ -148,7 +148,7 @@ public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 
 
 
-	public Vehicle Target
+	public SteeringVehicle Target
 	{
 		get
 		{
@@ -158,7 +158,7 @@ public class ComboBehaviour : VehicleBehaviour, IRadarReceiver
 
 
 
-	public void SetTarget( Vehicle target, float steeringWeight )
+	public void SetTarget( SteeringVehicle target, float steeringWeight )
 	{
 		this.target = target;
 		SteerForPursuit = steeringWeight;
