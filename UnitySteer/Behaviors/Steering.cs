@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using UnitySteer.Helpers;
 
-public class Steering : MonoBehaviour {
+public class Steering : MonoBehaviour, ITick {
 	
 	#region Private fields
 	/// <summary>
