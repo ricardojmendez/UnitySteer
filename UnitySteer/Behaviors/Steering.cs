@@ -76,8 +76,7 @@ public class Steering : MonoBehaviour, ITick {
 			_weight = value;
 		}
 	}
-
-#endregion
+	#endregion
 	
 	#region Methods
 	void Start()

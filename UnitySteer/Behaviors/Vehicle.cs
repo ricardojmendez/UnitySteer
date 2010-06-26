@@ -24,8 +24,8 @@ public class Vehicle: MonoBehaviour
 	/// This value will be disregarded if the object has a rigidbody, and
 	/// that rigidbody's mass value will be used instead.
 	////remarks>
-	private float _internalMass = 0;
-
+	private float _internalMass = 1;
+	
 	[SerializeField]
 	float _radius = 1;
 
@@ -43,6 +43,8 @@ public class Vehicle: MonoBehaviour
 	/// </summary>
 	[SerializeField]
 	bool _canMove = true;
+
+	private Radar _radar;
 	#endregion
 
 
@@ -118,6 +120,15 @@ public class Vehicle: MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Radar assigned to this vehicle
+	/// </summary>
+	public Radar Radar {
+		get {
+			return this._radar;
+		}
+	}
+
 
 	/// <summary>
 	/// Vehicle radius
@@ -159,6 +170,7 @@ public class Vehicle: MonoBehaviour
 	void Start()
 	{
 		_steerings = this.GetComponents<Steering>();
+		_radar = this.GetComponent<Radar>();
 	}
 
 	void FixedUpdate()
@@ -166,7 +178,8 @@ public class Vehicle: MonoBehaviour
 		var force = Vector3.zero;
 		foreach (var steering in _steerings)
 		{
-			force  += steering.WeighedForce;
+			if (steering.enabled)
+				force  += steering.WeighedForce;
 		}
 		ApplySteeringForce(force, Time.fixedDeltaTime);
 	}
