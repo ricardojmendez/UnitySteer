@@ -161,13 +161,14 @@ public class Vehicle: MonoBehaviour
 		_steerings = this.GetComponents<Steering>();
 	}
 
-	void Update()
+	void FixedUpdate()
 	{
+		var force = Vector3.zero;
 		foreach (var steering in _steerings)
 		{
-			var force  = steering.Force;
-			ApplySteeringForce(force, Time.fixedDeltaTime);
+			force  += steering.WeighedForce;
 		}
+		ApplySteeringForce(force, Time.fixedDeltaTime);
 	}
 
 	/// <summary>

@@ -4,17 +4,26 @@ using UnitySteer.Helpers;
 
 public class Steering : MonoBehaviour {
 	
+	#region Private fields
 	/// <summary>
 	/// Last force calculated
 	/// </summary>
-	private Vector3 _force = Vector3.zero;
+	Vector3 _force = Vector3.zero;
 	
+	/// <summary>
+	/// Cached vehicle
+	/// </summary>
 	Vehicle _vehicle;
 	
 	[SerializeField]
-	private Tick _tick;
+	Tick _tick;
+	
+	[SerializeField]
+	float _weight = 1;
+	#endregion
 	
 	
+	#region Public properties
 	/// <summary>
 	/// The force vector calculated by this steering behavior
 	/// </summary>
@@ -29,6 +38,16 @@ public class Steering : MonoBehaviour {
 	}
 	
 	/// <summary>
+	/// Force vector modified by the assigned weight 
+	/// </summary>
+	public Vector3 WeighedForce
+	{
+		get {
+			return Force * _weight;
+		}
+	}
+	
+	/// <summary>
 	/// Tick information
 	/// </summary>
 	public Tick Tick 
@@ -39,11 +58,28 @@ public class Steering : MonoBehaviour {
 		}
 	}	
 	
+	/// <summary>
+	/// Vehicle that this behavior will influence
+	/// </summary>
 	public Vehicle Vehicle {
 		get { return _vehicle; }
 	}
 	
+	/// <summary>
+	/// Weight assigned to this steering behavior
+	/// </summary>
+	public float Weight {
+		get {
+			return this._weight;
+		}
+		set {
+			_weight = value;
+		}
+	}
+
+#endregion
 	
+	#region Methods
 	void Start()
 	{
 		_vehicle = this.GetComponent<Vehicle>();
@@ -59,8 +95,5 @@ public class Steering : MonoBehaviour {
 	{
 		return Vector3.zero;
 	}
-	
-	
-	
-	
+	#endregion
 }
