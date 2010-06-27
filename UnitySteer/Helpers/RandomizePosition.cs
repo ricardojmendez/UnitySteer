@@ -13,6 +13,7 @@ public class RandomizePosition: MonoBehaviour
 		if (IsPlanar)
 		{
 			pos.y = 0;
+			rot.x = 0;
 			rot.z = 0;
 		}
 		

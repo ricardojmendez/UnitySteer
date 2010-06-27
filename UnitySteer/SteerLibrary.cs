@@ -203,17 +203,6 @@ namespace UnitySteer
 		}
 
 
-		// ----------------------------------------------------------------------------
-		// Flee behavior
-
-
-
-		public Vector3 steerForFlee(Vector3 target)
-		{
-			Vector3 desiredVelocity = Position- target;
-			return desiredVelocity - Velocity;
-		}
-
 
 		// ----------------------------------------------------------------------------
 		// xxx proposed, experimental new seek/flee [cwr 9-16-02]
@@ -269,59 +258,6 @@ namespace UnitySteer
 				return steerForSeek (onPath);
 			}
 		}
-
-
-		public Vector3 steerToFollowPath(int direction, float predictionTime, Pathway path)
-		{
-			// our goal will be offset from our path distance by this amount
-			float pathDistanceOffset = direction * predictionTime * Speed;
-
-			// predict our future position
-			Vector3 futurePosition = predictFuturePosition (predictionTime);
-			
-			// measure distance along path of our current and predicted positions
-			float nowPathDistance =
-				path.mapPointToPathDistance (Position);
-			float futurePathDistance =
-				path.mapPointToPathDistance (futurePosition);
-
-			// are we facing in the correction direction?
-			bool rightway = ((pathDistanceOffset > 0) ?
-								   (nowPathDistance < futurePathDistance) :
-								   (nowPathDistance > futurePathDistance));
-
-			// find the point on the path nearest the predicted future position
-			// XXX need to improve calling sequence, maybe change to return a
-			// XXX special path-defined object which includes two Vector3s and a 
-			// XXX bool (onPath,tangent (ignored), withinPath)
-			mapReturnStruct tStruct = new mapReturnStruct();
-			Vector3 onPath = path.mapPointToPath(futurePosition, ref tStruct);
-
-			// no steering is required if (a) our future position is inside
-			// the path tube and (b) we are facing in the correct direction
-			if ((tStruct.outside < 0) && rightway)
-			{
-				// all is well, return zero steering
-				return Vector3.zero;
-			}
-			else
-			{
-				// otherwise we need to steer towards a target point obtained
-				// by adding pathDistanceOffset to our current path position
-
-				float targetPathDistance = nowPathDistance + pathDistanceOffset;
-				Vector3 target = path.mapPathDistanceToPoint (targetPathDistance);
-
-				#if ANNOTATE_PATH
-				annotatePathFollowing(futurePosition, onPath, target, tStruct.outside);
-				//Debug.DrawLine(Position, path.LastPoint, Color.green);
-				#endif
-
-				// return steering to seek target on path
-				return steerForSeek (target);
-			}
-		}
-
 
 		// ----------------------------------------------------------------------------
 		// Obstacle Avoidance behavior
@@ -634,27 +570,7 @@ namespace UnitySteer
 			return result;;
 		}
 
-
-		// ----------------------------------------------------------------------------
-		// evasion of another vehicle
-
-
-	   
-		public Vector3 steerForEvasion ( SteeringVehicle menace, float maxPredictionTime)
-		{
-			// offset from this to menace, that distance, unit vector toward menace
-			Vector3 offset = menace.Position - Position;
-			float distance = offset.magnitude;
-
-			float roughTime = distance / menace.Speed;
-			float predictionTime = ((roughTime > maxPredictionTime) ?
-										  maxPredictionTime :
-										  roughTime);
-
-			Vector3 target = menace.predictFuturePosition (predictionTime);
-
-			return steerForFlee (target);
-		}
+	 
 	   
 
 		// ----------------------------------------------------------------------------
