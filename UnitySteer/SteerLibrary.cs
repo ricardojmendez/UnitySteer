@@ -45,11 +45,6 @@ namespace UnitySteer
 {
 	public class SteerLibrary : SteeringVehicle
 	{
-		// Wander behavior
-		private float WanderSide;
-		private float WanderUp;
-
-
 		#if DEBUG
 		bool gaudyPursuitAnnotation;
 		#endif
@@ -138,10 +133,6 @@ namespace UnitySteer
 		// reset state
 		public void resetSteering ()
 		{
-			// initial state of wander behavior
-			WanderSide = 0;
-			WanderUp = 0;
-
 			// default to non-gaudyPursuitAnnotation
 			#if DEBUG
 			gaudyPursuitAnnotation = true;
@@ -204,34 +195,6 @@ namespace UnitySteer
 			Debug.DrawLine(Position, vehicle.Position, Color.red); // Neighbor position
 			Debug.DrawLine(Position, position, Color.green);	   // Position we're aiming for
 		}
-
-		public Vector3 steerForWander (float dt)
-		{
-			// random walk WanderSide and WanderUp between -1 and +1
-			float speed = 12 * dt; // maybe this (12) should be an argument?
-			
-			if (Tether != null)
-			{
-				Vector3 future	= predictFuturePosition(dt);
-				Vector3 diff	= future - Tether.position;
-				float	sqrDist = diff.sqrMagnitude;
-
-				if (sqrDist > maxDistanceSquared)
-				{
-					//Debug.Log("We're getting far... "+sqrDist);
-					// When we're getting too far away, head back to base
-					return steerForSeek(Tether.position);
-				}
-			}
-
-			WanderSide = scalarRandomWalk (WanderSide, speed, -1, +1);
-			WanderUp   = scalarRandomWalk (WanderUp,   speed, -1, +1);
-			
-			// return a pure lateral steering vector: (+/-Side) + (+/-Up)
-			Vector3	 result = (Side * WanderSide) + (Up * WanderUp);
-			return result;
-		}
-
 
 		public Vector3 steerForSeek(Vector3 target)
 		{
@@ -673,155 +636,6 @@ namespace UnitySteer
 
 
 		// ----------------------------------------------------------------------------
-		// used by boid behaviors: is a given vehicle within this boid's neighborhood?
-
-
-	   
-		bool inBoidNeighborhood ( SteeringVehicle other, float minDistance, float maxDistance, float cosMaxAngle)
-		{
-			if (other == this)
-			{
-				return false;
-			}
-			else
-			{
-				Vector3 offset = other.Position - Position;
-				float distanceSquared = offset.sqrMagnitude;
-
-				// definitely in neighborhood if inside minDistance sphere
-				if (distanceSquared < (minDistance * minDistance))
-				{
-					return true;
-				}
-				else
-				{
-					// definitely not in neighborhood if outside maxDistance sphere
-					if (distanceSquared > (maxDistance * maxDistance))
-					{
-						return false;
-					}
-					else
-					{
-						// otherwise, test angular offset from forward axis
-						Vector3 unitOffset = offset / (float) System.Math.Sqrt (distanceSquared);
-						float forwardness = Vector3.Dot(Forward, unitOffset);
-						return forwardness > cosMaxAngle;
-					}
-				}
-			}
-		}
-
-
-		// ----------------------------------------------------------------------------
-		// pursuit of another vehicle (& version with ceiling on prediction time)
-
-		public Vector3 steerForPursuit (SteeringVehicle quarry)
-		{
-			return steerForPursuit (quarry, float.MaxValue);
-		}
-
-
-	   
-		public Vector3 steerForPursuit (SteeringVehicle quarry, float maxPredictionTime)
-		{
-			// offset from this to quarry, that distance, unit vector toward quarry
-			Vector3 offset = quarry.Position - Position;
-			float distance = offset.magnitude;
-			Vector3 unitOffset = offset / distance;
-
-			// how parallel are the paths of "this" and the quarry
-			// (1 means parallel, 0 is pependicular, -1 is anti-parallel)
-			float parallelness = Vector3.Dot(Forward, quarry.Forward);
-
-			// how "forward" is the direction to the quarry
-			// (1 means dead ahead, 0 is directly to the side, -1 is straight back)
-			float forwardness = Vector3.Dot(Forward, unitOffset);
-
-			float directTravelTime = distance / Speed;
-			int f = intervalComparison (forwardness,  -0.707f, 0.707f);
-			int p = intervalComparison (parallelness, -0.707f, 0.707f);
-
-			float timeFactor = 0;		// to be filled in below
-			Color color = Color.black;	// to be filled in below (xxx just for debugging)
-
-			// Break the pursuit into nine cases, the cross product of the
-			// quarry being [ahead, aside, or behind] us and heading
-			// [parallel, perpendicular, or anti-parallel] to us.
-			switch (f)
-			{
-				case +1:
-					switch (p)
-					{
-					case +1:		  // ahead, parallel
-						timeFactor = 4;
-						color = Color.black;
-						break;
-					case 0:			  // ahead, perpendicular
-						timeFactor = 1.8f;
-						color = Color.gray;
-						break;
-					case -1:		  // ahead, anti-parallel
-						timeFactor = 0.85f;
-						color = Color.white;
-						break;
-					}
-					break;
-				case 0:
-					switch (p)
-					{
-					case +1:		  // aside, parallel
-						timeFactor = 1;
-						color = Color.red;
-						break;
-					case 0:			  // aside, perpendicular
-						timeFactor = 0.8f;
-						color = Color.yellow;
-						break;
-					case -1:		  // aside, anti-parallel
-						timeFactor = 4;
-						color = Color.green;
-						break;
-					}
-					break;
-				case -1:
-					switch (p)
-					{
-					case +1:		  // behind, parallel
-						timeFactor = 0.5f;
-						color = Color.cyan;
-						break;
-					case 0:			  // behind, perpendicular
-						timeFactor = 2;
-						color = Color.blue;
-						break;
-					case -1:		  // behind, anti-parallel
-						timeFactor = 2;
-						color = Color.magenta;
-						break;
-					}
-					break;
-			}
-
-			// estimated time until intercept of quarry
-			float et = directTravelTime * timeFactor;
-
-			// xxx experiment, if kept, this limit should be an argument
-			float etl = (et > maxPredictionTime) ? maxPredictionTime : et;
-
-			// estimated position of quarry at intercept
-			Vector3 target = quarry.predictFuturePosition (etl);
-
-			// annotation
-			#if DEBUG
-			annotationLine (Position,
-							target,
-							gaudyPursuitAnnotation ? color : Color.gray);
-			#endif
-
-			return steerForSeek (target);
-		}
-
-		// ----------------------------------------------------------------------------
 		// evasion of another vehicle
 
 
@@ -913,21 +727,6 @@ namespace UnitySteer
 				((p > 0) ? p : q);
 			
 			return intersection;
-		}
-
-		public float scalarRandomWalk ( float initial, float walkspeed, float min, float max)
-		{
-			float next = initial + ((UnityEngine.Random.value * 2 - 1) * walkspeed);
-			next = Mathf.Clamp(next, min, max);
-			return next;
-		}
-
-
-		public int intervalComparison (float x, float lowerBound, float upperBound)
-		{
-			if (x < lowerBound) return -1;
-			if (x > upperBound) return +1;
-			return 0;
 		}
 
 		public float square (float x)

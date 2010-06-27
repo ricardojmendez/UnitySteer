@@ -27,7 +27,7 @@ public class SteerForCohesion : SteerForNeighbors
 		for (int i = 0; i < flock.Count; i++)
 		{
 			Vehicle other = flock[i];
-			if (VehicleHelper.InNeighborhood (this.Vehicle, other, Vehicle.Radius * 3, Radius, AngleCos)) 
+			if (Vehicle.IsInNeighborhood (other, Vehicle.Radius * 3, Radius, AngleCos)) 
 			{
 				// accumulate sum of neighbor's positions
 				steering += other.transform.position;

@@ -26,7 +26,7 @@ public class SteerForSeparation : SteerForNeighbors
 		// for each of the other vehicles...
 		for (int i = 0; i < flock.Count; i++) {
 			Vehicle other = flock[i];
-			if (VehicleHelper.InNeighborhood (this.Vehicle, other, Vehicle.Radius * 3, Radius, AngleCos)) {
+			if (Vehicle.IsInNeighborhood (other, Vehicle.Radius * 3, Radius, AngleCos)) {
 				// add in steering contribution
 				// (opposite of the offset direction, divided once by distance
 				// to normalize, divided another time to get 1/d falloff)

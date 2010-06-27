@@ -305,5 +305,111 @@ public class Vehicle: MonoBehaviour
 	{
 		return force;
 	}
+	
+	
+	/// <summary>
+	/// Predicts where the vehicle will be at a point in the future
+	/// </summary>
+	/// <param name="predictionTime">
+	/// A time in seconds for the prediction <see cref="System.Single"/>
+	/// </param>
+	/// <returns>
+	/// Vehicle position<see cref="Vector3"/>
+	/// </returns>
+	public virtual Vector3 PredictFuturePosition(float predictionTime)
+    {
+        return transform.position + (Velocity * predictionTime);
+    }	
+	
+	
+		/// <summary>
+		/// Calculates if a vehicle is in the neighborhood of another
+		/// </summary>
+		/// <param name="other">
+		/// Another vehicle to check against<see cref="Vehicle"/>
+		/// </param>
+		/// <param name="minDistance">
+		/// Minimum distance <see cref="System.Single"/>
+		/// </param>
+		/// <param name="maxDistance">
+		/// Maximum distance <see cref="System.Single"/>
+		/// </param>
+		/// <param name="cosMaxAngle">
+		/// Cosine of the maximum angle between vehicles (for performance)<see cref="System.Single"/>
+		/// </param>
+		/// <returns>
+		/// True if within the neighborhood, or false if otherwise<see cref="System.Boolean"/>
+		/// </returns>
+		/// <remarks>Originally SteerLibrary.inBoidNeighborhood</remarks>
+		public bool IsInNeighborhood (Vehicle other, float minDistance, float maxDistance, float cosMaxAngle)
+		{
+			if (other == this)
+			{
+				return false;
+			}
+			else
+			{
+				Vector3 offset = other.transform.position - transform.position;
+				float distanceSquared = offset.sqrMagnitude;
+
+				// definitely in neighborhood if inside minDistance sphere
+				if (distanceSquared < (minDistance * minDistance))
+				{
+					return true;
+				}
+				else
+				{
+					// definitely not in neighborhood if outside maxDistance sphere
+					if (distanceSquared > (maxDistance * maxDistance))
+					{
+						return false;
+					}
+					else
+					{
+						// otherwise, test angular offset from forward axis
+						Vector3 unitOffset = offset / (float) System.Math.Sqrt (distanceSquared);
+						float forwardness = Vector3.Dot(transform.forward, unitOffset);
+						return forwardness > cosMaxAngle;
+					}
+				}
+			}
+		}
+		
+	
+	/// <summary>
+	/// Returns a vector to seek a target position
+	/// </summary>
+	/// <param name="target">
+	/// Target position <see cref="Vector3"/>
+	/// </param>
+	/// <returns>
+	/// Seek vector <see cref="Vector3"/>
+	/// </returns>
+	public Vector3 GetSeekVector(Vector3 target)
+	{
+		/*
+		 * First off, we calculate how far we are from the target, If this
+		 * distance is smaller than the configured vehicle radius, we tell
+		 * the vehicle to stop.
+		 */
+		Vector3 force = Vector3.zero;
+        float d = Vector3.Distance(transform.position, target);
+        if (d > Radius)
+		{
+			/*
+			 * But suppose we still have some distance to go. The first step
+			 * then would be calculating the steering force necessary to orient
+			 * ourselves to and walk to that point.  The steerForSeek function
+			 * takes into account values luke the MaxForce to apply and the 
+			 * vehicle's MaxSpeed, and returns a steering vector.
+			 * 
+			 * It doesn't apply the steering itself, simply returns the value so
+			 * we can continue operating on it.
+			 */
+			force = target - transform.position - Velocity;
+		}
+		return force;
+		
+	}
 	#endregion
 }

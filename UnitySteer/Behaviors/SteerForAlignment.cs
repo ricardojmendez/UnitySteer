@@ -28,7 +28,7 @@ public class SteerForAlignment : SteerForNeighbors
 		for (int i=0;i<flock.Count;i++)
 		{
 			Vehicle other = flock[i];
-			if (VehicleHelper.InNeighborhood (this.Vehicle, other, Vehicle.Radius * 3, Radius, AngleCos))
+			if (Vehicle.IsInNeighborhood (other, Vehicle.Radius * 3, Radius, AngleCos))
 			{
 				// accumulate sum of neighbor's heading
 				steering += other.transform.forward;
