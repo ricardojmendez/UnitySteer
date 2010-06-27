@@ -27,6 +27,9 @@ public class Vehicle: MonoBehaviour
 	private float _internalMass = 1;
 	
 	[SerializeField]
+	bool _isPlanar = false;
+	
+	[SerializeField]
 	float _radius = 1;
 
 	[SerializeField]
@@ -37,6 +40,7 @@ public class Vehicle: MonoBehaviour
 
 	[SerializeField]
 	float _maxForce = 10;
+	
 
 	/// <summary>
 	/// Indicates if the behavior should move or not
@@ -70,6 +74,18 @@ public class Vehicle: MonoBehaviour
 		}
 		set {
 			_hasInertia = value;
+		}
+	}
+
+	/// <summary>
+	/// Does the vehicle move in Y space?
+	/// </summary>
+	public bool IsPlanar {
+		get {
+			return this._isPlanar;
+		}
+		set {
+			_isPlanar = value;
 		}
 	}
 
@@ -212,7 +228,7 @@ public class Vehicle: MonoBehaviour
 		}
 
 		Vector3 newVelocity = Velocity;
-
+		
 		/*
 			Damp out abrupt changes and oscillations in steering acceleration
 			(rate is proportional to time step, then clipped into useful range)
@@ -230,8 +246,15 @@ public class Vehicle: MonoBehaviour
 		// enforce speed limit
 		newVelocity = OpenSteerUtility.truncateLength(newVelocity, MaxSpeed);
 
+		if (IsPlanar)
+		{
+			newVelocity.y = Velocity.y;
+		}
+
 		// update Speed
 		Speed = newVelocity.magnitude;
+		
+		
 
 		// Euler integrate (per frame) velocity into position
 		// TODO: Change for a motor

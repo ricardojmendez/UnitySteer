@@ -13,7 +13,7 @@ namespace UnitySteer.Helpers
 		/// <summary>
 		/// How many ms should pass before the object is ticked again
 		/// </summary>
-		public float TickLapse = 0.2f;
+		public float TickLapse = 0.1f;
 		
 		/// <summary>
 		/// Tick priority (higher goes first)
