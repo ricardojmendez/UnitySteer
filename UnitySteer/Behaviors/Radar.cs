@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnitySteer.Helpers;
@@ -14,7 +15,8 @@ public class Radar: MonoBehaviour, ITick {
 	[SerializeField]
 	Tick _tick;
 	
-	ICollection<Collider> _detected;
+	IList<Collider> _detected;
+	List<Vehicle> _vehicles = new List<Vehicle>();
 	
 	[SerializeField]
 	LayerMask _layersChecked;
@@ -25,14 +27,23 @@ public class Radar: MonoBehaviour, ITick {
 	/// <summary>
 	/// List of currently detected neighbors
 	/// </summary>
-	public ICollection<Collider> Detected {
+	public IList<Collider> Detected {
 		get {
-			if (_tick.ShouldTick)
-				_detected = Detect();
+			ExecuteRadar();
 			return _detected;
 		}
 	}
-
+	
+	/// <summary>
+	/// List of vehicles detected among the colliders
+	/// </summary>
+	public IList<Vehicle> Vehicles {
+		get {
+			ExecuteRadar();
+			return _vehicles.AsReadOnly();
+		}
+	}
+	
 	/// <summary>
 	/// Layer mask for the object layers checked
 	/// </summary>
@@ -55,11 +66,24 @@ public class Radar: MonoBehaviour, ITick {
 	}
 	#endregion
 	
-	
 	#region Methods
-	protected virtual ICollection<Collider> Detect()
+	void ExecuteRadar()
+	{
+		if (_tick.ShouldTick) {
+			_detected = Detect();
+			FilterDetected();
+		}
+	}
+	
+	protected virtual IList<Collider> Detect()
 	{
 		return new List<Collider>();
+	}
+	
+	protected virtual void FilterDetected()
+	{
+		_vehicles = _detected.Select( x => x.gameObject.GetComponent<Vehicle>() ).ToList<Vehicle>();
+		_vehicles.RemoveAll( x => x == null);
 	}
 	#endregion
 }

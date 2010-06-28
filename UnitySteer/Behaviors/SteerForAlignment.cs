@@ -15,19 +15,10 @@ public class SteerForAlignment : SteerForNeighbors
 		Vector3 steering=Vector3.zero;
 		int neighbors = 0;
 		
-		var flock = new List<Vehicle>();
-		
-		foreach (var d in Vehicle.Radar.Detected)
-		{
-			var c = d.GetComponent<Vehicle>();
-			if (c != null)
-				flock.Add(c);
-		}		
-
 		// for each of the other vehicles...
-		for (int i=0;i<flock.Count;i++)
+		for (int i = 0; i < Vehicle.Radar.Vehicles.Count; i++)
 		{
-			Vehicle other = flock[i];
+			Vehicle other = Vehicle.Radar.Vehicles[i];
 			if (Vehicle.IsInNeighborhood (other, Vehicle.Radius * 3, Radius, AngleCos))
 			{
 				// accumulate sum of neighbor's heading

@@ -14,18 +14,10 @@ public class SteerForSeparation : SteerForNeighbors
 		Vector3 steering = Vector3.zero;
 		int neighbors = 0;
 		
-		var flock = new List<Vehicle>();
-		
-		foreach (var d in Vehicle.Radar.Detected)
-		{
-			var c = d.GetComponent<Vehicle>();
-			if (c != null)
-				flock.Add(c);
-		}
-		
 		// for each of the other vehicles...
-		for (int i = 0; i < flock.Count; i++) {
-			Vehicle other = flock[i];
+		for (int i = 0; i < Vehicle.Radar.Vehicles.Count; i++)
+		{
+			Vehicle other = Vehicle.Radar.Vehicles[i];
 			if (Vehicle.IsInNeighborhood (other, Vehicle.Radius * 3, Radius, AngleCos)) {
 				// add in steering contribution
 				// (opposite of the offset direction, divided once by distance
@@ -38,7 +30,7 @@ public class SteerForSeparation : SteerForNeighbors
 				neighbors++;
 			}
 		}
-		
+
 		// divide by neighbors, then normalize to pure direction
 		if (neighbors > 0) {
 			steering = (steering / (float)neighbors);

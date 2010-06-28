@@ -30,7 +30,7 @@ public class RadarPing: Radar
 	
 	
 	#region Methods
-	protected override ICollection<Collider> Detect()
+	protected override IList<Collider> Detect()
 	{
 		var detected = Physics.OverlapSphere(transform.position, _detectionRadius, LayersChecked);
 		var list = new List<Collider>(detected);
