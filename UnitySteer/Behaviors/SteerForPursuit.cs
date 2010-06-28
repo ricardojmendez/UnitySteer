@@ -66,7 +66,6 @@ public class SteerForPursuit : Steering
 			int p = OpenSteerUtility.intervalComparison (parallelness, -0.707f, 0.707f);
 
 			float timeFactor = 0;		// to be filled in below
-			Color color = Color.black;	// to be filled in below (xxx just for debugging)
 
 			// Break the pursuit into nine cases, the cross product of the
 			// quarry being [ahead, aside, or behind] us and heading
@@ -78,15 +77,12 @@ public class SteerForPursuit : Steering
 					{
 					case +1:		  // ahead, parallel
 						timeFactor = 4;
-						color = Color.black;
 						break;
 					case 0:			  // ahead, perpendicular
 						timeFactor = 1.8f;
-						color = Color.gray;
 						break;
 					case -1:		  // ahead, anti-parallel
 						timeFactor = 0.85f;
-						color = Color.white;
 						break;
 					}
 					break;
@@ -95,15 +91,12 @@ public class SteerForPursuit : Steering
 					{
 					case +1:		  // aside, parallel
 						timeFactor = 1;
-						color = Color.red;
 						break;
 					case 0:			  // aside, perpendicular
 						timeFactor = 0.8f;
-						color = Color.yellow;
 						break;
 					case -1:		  // aside, anti-parallel
 						timeFactor = 4;
-						color = Color.green;
 						break;
 					}
 					break;
@@ -112,15 +105,12 @@ public class SteerForPursuit : Steering
 					{
 					case +1:		  // behind, parallel
 						timeFactor = 0.5f;
-						color = Color.cyan;
 						break;
 					case 0:			  // behind, perpendicular
 						timeFactor = 2;
-						color = Color.blue;
 						break;
 					case -1:		  // behind, anti-parallel
 						timeFactor = 2;
-						color = Color.magenta;
 						break;
 					}
 					break;
@@ -139,5 +129,4 @@ public class SteerForPursuit : Steering
 		}
 		return force;
 	}
-	
 }
