@@ -7,17 +7,6 @@ namespace UnitySteer
 {
     public class Obstacle
     {
-        public enum seenFromState {outside, inside, both};
-
-        public virtual seenFromState seenFrom()
-        {
-            // Err not sure what best to do here
-            return seenFromState.inside;
-        }
-        public virtual void setSeenFrom(seenFromState s)
-        {
-        }
-
         // XXX 4-23-03: Temporary work around (see comment above)
         // CHANGED FROM ABSTRACTVEHICLE. PROBLY SHOULD CHANGE BACK!
         public virtual Vector3 steerToAvoid(System.Object v, float minTimeToCollision)
@@ -35,8 +24,6 @@ namespace UnitySteer
         public float radius;
         public Vector3 center;
 
-        private seenFromState _seenFrom;
-        
         static SphericalObstacle()
         {
             obstacleCache = new Hashtable();
@@ -104,9 +91,6 @@ namespace UnitySteer
     		return obstacle;
     	}
         
-
-        public override seenFromState seenFrom() { return _seenFrom; }
-        public override void setSeenFrom(seenFromState s) { _seenFrom = s; }
 
         // XXX 4-23-03: Temporary work around (see comment above)
         //

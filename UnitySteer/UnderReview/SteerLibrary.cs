@@ -212,7 +212,7 @@ namespace UnitySteer
 		public Vector3 steerForFleeTruncated(Vector3 target)
 		{
 			Vector3 offset = Position - target;
-			Vector3 desiredVelocity = OpenSteerUtility.truncateLength(offset, MaxSpeed);
+			Vector3 desiredVelocity = Vector3.ClampMagnitude(offset, MaxSpeed);
 			return desiredVelocity - Velocity;
 		}
 
@@ -221,7 +221,7 @@ namespace UnitySteer
 		public Vector3 steerForSeekTruncated ( Vector3 target)
 		{
 			Vector3 offset = target - Position;
-			Vector3 desiredVelocity = OpenSteerUtility.truncateLength(offset, MaxSpeed);
+			Vector3 desiredVelocity = Vector3.ClampMagnitude(offset, MaxSpeed);
 			return desiredVelocity - Velocity;
 		}
 

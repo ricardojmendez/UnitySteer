@@ -217,7 +217,7 @@ public class Vehicle: MonoBehaviour
 		}
 
 		// enforce limit on magnitude of steering force
-		Vector3 clippedForce = OpenSteerUtility.truncateLength(force, MaxForce);
+		Vector3 clippedForce = Vector3.ClampMagnitude(force, MaxForce);
 
 		// compute acceleration and velocity
 		Vector3 newAcceleration = (clippedForce / Mass);
@@ -244,7 +244,7 @@ public class Vehicle: MonoBehaviour
 		newVelocity += _smoothedAcceleration * elapsedTime;
 
 		// enforce speed limit
-		newVelocity = OpenSteerUtility.truncateLength(newVelocity, MaxSpeed);
+		newVelocity = Vector3.ClampMagnitude(newVelocity, MaxSpeed);
 
 		if (IsPlanar)
 		{

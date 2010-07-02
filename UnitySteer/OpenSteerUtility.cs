@@ -96,18 +96,6 @@ namespace UnitySteer
                 return source;
         }
 		
-		public static Vector3 truncateLength(Vector3 tVector, float maxLength)
-		{
-			float tLength = tVector.magnitude;
-			Vector3 returnVector = tVector;
-			if (tLength > maxLength)
-			{
-				returnVector.Normalize();
-				returnVector *= maxLength;
-			}
-			return returnVector;
-		}		
-		
 
 		public static float scalarRandomWalk (float initial, float walkspeed, float min, float max)
 		{
