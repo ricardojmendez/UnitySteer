@@ -55,74 +55,6 @@ namespace UnitySteer
 		
 		private float	  avoidAngleCos = 0.707f;
 		
-		
-		// Angle accessor for avoidance angle, the cosine is used on
-		// calculations for performance reasons
-		public float AvoidDeg
-		{
-			get
-			{
-				return OpenSteerUtility.DegreesFromCos(avoidAngleCos);
-			}
-			set
-			{
-				avoidAngleCos = OpenSteerUtility.CosFromDegrees(value);
-			}
-		}
-
-		public float MaxDistance
-		{
-			get
-			{
-				return maxDistance;
-			}
-			set
-			{
-				maxDistance = value;
-				maxDistanceSquared = maxDistance * maxDistance;
-			}
-		}
-		
-		public float MaxDistanceSquared
-		{
-			get
-			{
-				return maxDistanceSquared;
-			}
-		}
-		
-		
-		public Transform Tether
-		{
-			get
-			{
-				return tether;
-			}
-			set
-			{
-				tether = value;
-			}
-		}
-		
-		
-		public struct PathIntersection
-		{
-			public bool intersect;
-			public float distance;
-
-			// The two below are not used??
-
-			//public Vector3 surfacePoint;
-			//public Vector3 surfaceNormal;
-			public SphericalObstacle obstacle;
-			
-			public PathIntersection(SphericalObstacle obstacle)
-			{
-				this.obstacle = obstacle;
-				intersect = false;
-				distance = float.MaxValue;
-			}
-		};
 
 		public SteerLibrary( Vector3 position, float mass ) : base( position, mass ){}
 		public SteerLibrary( Transform transform, float mass ) : base( transform, mass ){}
@@ -203,33 +135,8 @@ namespace UnitySteer
 		}
 
 
-
-		// ----------------------------------------------------------------------------
-		// xxx proposed, experimental new seek/flee [cwr 9-16-02]
-
-
-
-		public Vector3 steerForFleeTruncated(Vector3 target)
-		{
-			Vector3 offset = Position - target;
-			Vector3 desiredVelocity = Vector3.ClampMagnitude(offset, MaxSpeed);
-			return desiredVelocity - Velocity;
-		}
-
-
-	   
-		public Vector3 steerForSeekTruncated ( Vector3 target)
-		{
-			Vector3 offset = target - Position;
-			Vector3 desiredVelocity = Vector3.ClampMagnitude(offset, MaxSpeed);
-			return desiredVelocity - Velocity;
-		}
-
-
 		// ----------------------------------------------------------------------------
 		// Path Following behaviors
-
-
 
 		public Vector3 steerToStayOnPath(float predictionTime, Pathway path)
 		{
@@ -288,69 +195,6 @@ namespace UnitySteer
 			// XXX more annotation modularity problems (assumes spherical obstacle)
 			if (avoidance != Vector3.zero)
 				annotateAvoidObstacle (minTimeToCollision * Speed);
-
-			return avoidance;
-		}
-
-
-		// this version avoids all of the obstacles in an ObstacleGroup
-		//
-		// XXX 9-12-03: note this does NOT use the Obstacle::steerToAvoid protocol
-		// XXX like the older steerToAvoidObstacle does/did.  It needs to be fixed
-	   
-		public Vector3 steerToAvoidObstacles (float minTimeToCollision, ArrayList obstacles)
-		{
-			Vector3 avoidance = Vector3.zero;
-
-			if (obstacles == null || obstacles.Count == 0)
-			{
-				return avoidance;
-			}
-
-			PathIntersection nearest = new PathIntersection(null);
-
-			float minDistanceToCollision = minTimeToCollision * Speed;
-
-			// test all obstacles for intersection with my forward axis,
-			// select the one whose point of intersection is nearest
-
-			for (int i=0; i < obstacles.Count; i++)
-			{
-				SphericalObstacle o=(SphericalObstacle) obstacles[i];
-				// xxx this should be a generic call on Obstacle, rather than
-				// xxx this code which presumes the obstacle is spherical
-				PathIntersection next = findNextIntersectionWithSphere (o);
-				if (!nearest.intersect ||
-					(next.intersect &&
-					 next.distance < nearest.distance))
-				{
-					nearest = next;
-				}
-			}
-
-
-			// when a nearest intersection was found
-			if (nearest.intersect &&
-				nearest.distance < minDistanceToCollision)
-			{
-				#if ANNOTATE_AVOIDOBSTACLES
-				Debug.DrawLine(Position, nearest.obstacle.center, Color.red);
-				#endif
-				// show the corridor that was checked for collisions
-				annotateAvoidObstacle (minDistanceToCollision);
-
-				// compute avoidance steering force: take offset from obstacle to me,
-				// take the component of that which is lateral (perpendicular to my
-				// forward direction), set length to maxForce, add a bit of forward
-				// component (in capture the flag, we never want to slow down)
-				Vector3 offset = Position - nearest.obstacle.center;
-				//avoidance = offset.perpendicularComponent (Forward);
-				avoidance =	 OpenSteerUtility.perpendicularComponent( offset,Forward);
-
-				avoidance.Normalize();
-				avoidance *= MaxForce;
-				avoidance += Forward * MaxForce * 0.75f;
-			}
 
 			return avoidance;
 		}
@@ -570,84 +414,15 @@ namespace UnitySteer
 			return result;;
 		}
 
-	 
-	   
-
 		// ----------------------------------------------------------------------------
 		// tries to maintain a given speed, returns a maxForce-clipped steering
 		// force along the forward/backward axis
 
-
-	   
 		public Vector3 steerForTargetSpeed ( float targetSpeed)
 		{
 			 float mf = MaxForce;
 			 float speedError = targetSpeed - Speed;
 			 return Forward * Mathf.Clamp (speedError, -mf, +mf);
-		}
-
-
-		// ----------------------------------------------------------------------------
-		// xxx experiment cwr 9-6-02
-
-
-	   
-		public PathIntersection findNextIntersectionWithSphere (SphericalObstacle obs)
-		{
-			// xxx"SphericalObstacle& obs" should be "const SphericalObstacle&
-			// obs" but then it won't let me store a pointer to in inside the
-			// PathIntersection
-
-			// This routine is based on the Paul Bourke's derivation in:
-			//	 Intersection of a Line and a Sphere (or circle)
-			//	 http://www.swin.edu.au/astronomy/pbourke/geometry/sphereline/
-
-			float b, c, d, p, q, s;
-			Vector3 lc;
-
-			// initialize pathIntersection object
-			PathIntersection intersection = new PathIntersection(obs);
-			// find "local center" (lc) of sphere in boid's coordinate space
-			lc = Transform.InverseTransformPoint(obs.center);
-			
-			#if ANNOTATE_AVOIDOBSTACLES
-			obs.annotatePosition();
-			#endif
-			
-			// computer line-sphere intersection parameters
-			b = -2 * lc.z;
-			c = square (lc.x) + square (lc.y) + square (lc.z) - 
-				square (obs.radius + Radius);
-			d = (b * b) - (4 * c);
-
-			// when the path does not intersect the sphere
-			if (d < 0) return intersection;
-
-			// otherwise, the path intersects the sphere in two points with
-			// parametric coordinates of "p" and "q".
-			// (If "d" is zero the two points are coincident, the path is tangent)
-			s = (float) System.Math.Sqrt(d);
-			p = (-b + s) / 2;
-			q = (-b - s) / 2;
-
-			// both intersections are behind us, so no potential collisions
-			if ((p < 0) && (q < 0)) return intersection; 
-
-			// at least one intersection is in front of us
-			intersection.intersect = true;
-			intersection.distance =
-				((p > 0) && (q > 0)) ?
-				// both intersections are in front of us, find nearest one
-				((p < q) ? p : q) :
-				// otherwise only one intersections is in front, select it
-				((p > 0) ? p : q);
-			
-			return intersection;
-		}
-
-		public float square (float x)
-		{
-			return x * x;
 		}
 	}
 }

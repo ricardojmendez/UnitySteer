@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using UnitySteer;
 using UnitySteer.Helpers;
 
 
@@ -15,11 +16,17 @@ public class Radar: MonoBehaviour, ITick {
 	[SerializeField]
 	Tick _tick;
 	
-	IList<Collider> _detected;
-	List<Vehicle> _vehicles = new List<Vehicle>();
-	
+	[SerializeField]
+	LayerMask _obstacleLayer;
+
 	[SerializeField]
 	LayerMask _layersChecked;
+		
+	IList<Collider> _detected;
+	List<Vehicle> _vehicles = new List<Vehicle>();
+	List<Obstacle> _obstacles = new List<Obstacle>();
+	
+	ObstacleFactory _obstacleFactory = null;
 	#endregion
 	
 	
@@ -35,6 +42,17 @@ public class Radar: MonoBehaviour, ITick {
 	}
 	
 	/// <summary>
+	/// List of obstacles detected by the radar
+	/// </summary>
+	public IList<Obstacle> Obstacles {
+		get {
+			ExecuteRadar();
+			return _obstacles.AsReadOnly();
+		}
+
+	}
+
+	/// <summary>
 	/// List of vehicles detected among the colliders
 	/// </summary>
 	public IList<Vehicle> Vehicles {
@@ -43,7 +61,37 @@ public class Radar: MonoBehaviour, ITick {
 			return _vehicles.AsReadOnly();
 		}
 	}
+
+	/// <summary>
+	/// Layers for objects considered obstacles
+	/// </summary>
+	public LayerMask ObstacleLayer {
+		get {
+			return this._obstacleLayer;
+		}
+		set {
+			_obstacleLayer = value;
+		}
+	}
 	
+	/// <summary>
+	/// Delegate for the method used to create obstacles
+	/// </summary>
+	/// <remarks>This delegate must be set by any steering behavior that
+	/// wishes to obtain a list of stationary obstacles to steer away from.
+	/// Notice that this means we can only have one type of obstacle detected,
+	/// which is just fine for now but we may want to review it in the future.
+	/// </remarks>
+	public ObstacleFactory ObstacleFactory {
+		get {
+			return this._obstacleFactory;
+		}
+		set {
+			_obstacleFactory = value;
+		}
+	}
+
+
 	/// <summary>
 	/// Layer mask for the object layers checked
 	/// </summary>
@@ -82,8 +130,21 @@ public class Radar: MonoBehaviour, ITick {
 	
 	protected virtual void FilterDetected()
 	{
-		_vehicles = _detected.Select( x => x.gameObject.GetComponent<Vehicle>() ).ToList<Vehicle>();
-		_vehicles.RemoveAll( x => x == null);
+		_vehicles.Clear();
+		_obstacles.Clear();
+		foreach (var other in _detected)
+		{
+			var vehicle = other.gameObject.GetComponent<Vehicle>();
+			if (vehicle != null)
+			{
+				_vehicles.Add(vehicle);
+			}
+			if (ObstacleFactory != null && ((1 << other.gameObject.layer & ObstacleLayer) > 0))
+			{
+				var obstacle = ObstacleFactory(other.gameObject);
+				_obstacles.Add (obstacle);
+			}
+		}
 	}
 	#endregion
 }

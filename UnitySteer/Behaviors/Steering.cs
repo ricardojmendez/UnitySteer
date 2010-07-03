@@ -79,7 +79,7 @@ public class Steering : MonoBehaviour, ITick {
 	#endregion
 	
 	#region Methods
-	void Start()
+	protected void Start()
 	{
 		_vehicle = this.GetComponent<Vehicle>();
 	}

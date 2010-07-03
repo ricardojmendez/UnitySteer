@@ -30,6 +30,12 @@ public class RadarPing: Radar
 	
 	
 	#region Methods
+	void OnDrawGizmos()
+	{
+		Gizmos.color = Color.cyan;
+		Gizmos.DrawWireSphere(transform.position, _detectionRadius);
+	}
+	
 	protected override IList<Collider> Detect()
 	{
 		var detected = Physics.OverlapSphere(transform.position, _detectionRadius, LayersChecked);

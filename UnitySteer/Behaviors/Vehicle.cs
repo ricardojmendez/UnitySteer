@@ -141,6 +141,10 @@ public class Vehicle: MonoBehaviour
 	/// </summary>
 	public Radar Radar {
 		get {
+			if (this._radar == null)
+			{
+				_radar = this.GetComponent<Radar>();
+			}
 			return this._radar;
 		}
 	}
@@ -186,7 +190,6 @@ public class Vehicle: MonoBehaviour
 	void Start()
 	{
 		_steerings = this.GetComponents<Steering>();
-		_radar = this.GetComponent<Radar>();
 	}
 
 	void FixedUpdate()
