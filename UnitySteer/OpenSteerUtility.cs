@@ -95,6 +95,21 @@ namespace UnitySteer
             else
                 return source;
         }
+		
+
+		public static float scalarRandomWalk (float initial, float walkspeed, float min, float max)
+		{
+			float next = initial + ((UnityEngine.Random.value * 2 - 1) * walkspeed);
+			next = Mathf.Clamp(next, min, max);
+			return next;
+		}		
+		
+		public static int intervalComparison (float x, float lowerBound, float upperBound)
+		{
+			if (x < lowerBound) return -1;
+			if (x > upperBound) return +1;
+			return 0;
+		}		
         
         // ----------------------------------------------------------------------------
         // Computes distance from a point to a line segment 

@@ -1,46 +1,40 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
 namespace UnitySteer
 {
+	public delegate Obstacle ObstacleFactory(GameObject go);
+	
     public class Obstacle
     {
-        public enum seenFromState {outside, inside, both};
-
-        public virtual seenFromState seenFrom()
+        private static Dictionary<int, Obstacle> _obstacleCache;
+		
+		public static Dictionary<int, Obstacle> ObstacleCache {
+			get {
+				return _obstacleCache;
+			}
+		}
+		
+		static Obstacle()
         {
-            // Err not sure what best to do here
-            return seenFromState.inside;
-        }
-        public virtual void setSeenFrom(seenFromState s)
-        {
-        }
-
-        // XXX 4-23-03: Temporary work around (see comment above)
-        // CHANGED FROM ABSTRACTVEHICLE. PROBLY SHOULD CHANGE BACK!
-        public virtual Vector3 steerToAvoid(System.Object v, float minTimeToCollision)
-        {
-            return Vector3.zero;
-        }
+            _obstacleCache = new Dictionary<int, Obstacle>();
+        }		
+		
+		
+		public virtual Vector3 steerToAvoid(SteeringVehicle v, float minTimeToCollision)
+		{
+			return Vector3.zero;
+		}
 
     }
 
     public class SphericalObstacle : Obstacle
     {
-        
-        private static Hashtable obstacleCache;
-
         public float radius;
         public Vector3 center;
 
-        private seenFromState _seenFrom;
-        
-        static SphericalObstacle()
-        {
-            obstacleCache = new Hashtable();
-        }
 
         // constructors
         public SphericalObstacle(float r, Vector3 c)
@@ -54,18 +48,31 @@ namespace UnitySteer
             radius = 1;
             center = Vector3.zero;
         }
+		
+		public override string ToString ()
+		{
+			return string.Format ("[SphericalObstacle {0} {1}]", center, radius);
+		}
         
-        
-        public static SphericalObstacle GetObstacle( GameObject gameObject )
+        /// <summary>
+        ///Returns a SphericalObstacle from the current gameObject 
+        /// </summary>
+        /// <param name="gameObject">
+        /// A game object to create the obstacle from<see cref="GameObject"/>
+        /// </param>
+        /// <returns>
+        /// A SphericalObstacle encompassing the game object<see cref="Obstacle"/>
+        /// </returns>
+        public static Obstacle GetObstacle( GameObject gameObject )
     	{
     		SphericalObstacle obstacle;
     		int id = gameObject.GetInstanceID();
     		Component[] colliders;
     		float radius = 0.0f, currentRadius;
 
-    		if( !obstacleCache.ContainsKey( id ) )
+    		if(!ObstacleCache.ContainsKey( id ))
     		{
-    			colliders = gameObject.GetComponentsInChildren( typeof( Collider ) );
+    			colliders = gameObject.GetComponentsInChildren<Collider>();
 
     			if( colliders == null )
     			{
@@ -97,16 +104,14 @@ namespace UnitySteer
     					radius = currentRadius;
     				}
     			}
-    			obstacleCache[id] = new SphericalObstacle( radius, gameObject.transform.position );
+    			ObstacleCache[id] = new SphericalObstacle( radius, gameObject.transform.position );
     		}
-    		obstacle = obstacleCache[ id ] as SphericalObstacle;
+    		obstacle = ObstacleCache[ id ] as SphericalObstacle;
 
     		return obstacle;
     	}
+		
         
-
-        public override seenFromState seenFrom() { return _seenFrom; }
-        public override void setSeenFrom(seenFromState s) { _seenFrom = s; }
 
         // XXX 4-23-03: Temporary work around (see comment above)
         //
@@ -121,7 +126,7 @@ namespace UnitySteer
         // Returns a zero vector if the obstacle is outside the cylinder
         //
         // xxx couldn't this be made more compact using localizePosition?
-        Vector3 steerToAvoid(Vehicle v, float minTimeToCollision)
+        public override Vector3 steerToAvoid(SteeringVehicle v, float minTimeToCollision)
         {
             // minimum distance to obstacle before avoidance is required
             float minDistanceToCollision = minTimeToCollision * v.Speed;
