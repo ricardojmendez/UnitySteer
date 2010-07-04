@@ -49,18 +49,11 @@ namespace UnitySteer
 		bool gaudyPursuitAnnotation;
 		#endif
 		
-		private Transform tether;
-		private float	  maxDistance;
-		private float	  maxDistanceSquared;
-		
 		private float	  avoidAngleCos = 0.707f;
 		
-
 		public SteerLibrary( Vector3 position, float mass ) : base( position, mass ){}
 		public SteerLibrary( Transform transform, float mass ) : base( transform, mass ){}
 		public SteerLibrary( Rigidbody rigidbody ) : base( rigidbody ){}
-		// TODO: Consider doing a call to resetSteering() within these?
-		
 
 		// reset state
 		public void resetSteering ()
@@ -95,12 +88,6 @@ namespace UnitySteer
 			Vector3 targetDirection = (target - Position);
 			targetDirection.Normalize ();
 			return Vector3.Dot(Forward, targetDirection) < cosThreshold;
-		}
-
-			// called when steerToAvoidObstacles decides steering is required
-		// (default action is to do nothing, layered classes can overload it)
-		public virtual void annotateAvoidObstacle ( float minDistanceToCollision)
-		{
 		}
 
 		// called when steerToFollowPath decides steering is required
@@ -191,10 +178,6 @@ namespace UnitySteer
 		public Vector3 steerToAvoidObstacle ( float minTimeToCollision, Obstacle obstacle)
 		{
 			Vector3 avoidance = obstacle.steerToAvoid (this, minTimeToCollision);
-
-			// XXX more annotation modularity problems (assumes spherical obstacle)
-			if (avoidance != Vector3.zero)
-				annotateAvoidObstacle (minTimeToCollision * Speed);
 
 			return avoidance;
 		}

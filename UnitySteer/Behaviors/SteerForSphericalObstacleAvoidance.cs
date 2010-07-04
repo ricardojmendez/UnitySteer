@@ -15,10 +15,6 @@ public class SteerForSphericalObstacleAvoidance : Steering
 		public bool intersect;
 		public float distance;
 
-		// The two below are not used??
-
-		//public Vector3 surfacePoint;
-		//public Vector3 surfaceNormal;
 		public SphericalObstacle obstacle;
 		
 		public PathIntersection(SphericalObstacle obstacle)
@@ -73,21 +69,20 @@ public class SteerForSphericalObstacleAvoidance : Steering
 		Vehicle.Radar.ObstacleFactory = new ObstacleFactory(SphericalObstacle.GetObstacle);
 	}
 	
-	
+	/// <summary>
+	/// Calculates the force necessary to avoid the closest spherical obstacle
+	/// </summary>
+	/// <returns>
+	/// Force necessary to avoid an obstacle, or Vector3.zero
+	/// </returns>
+	/// <remarks>
+	/// This method will iterate through all detected spherical obstacles that 
+	/// are within MinTimeToCollision, and steer to avoid the closest one to the 
+	/// vehicle.  It's not ideal, as that means the vehicle might crash into
+	/// another obstacle while avoiding the closest one, but it'll do.
+	/// </remarks>
 	protected override Vector3 CalculateForce()
 	{
-		/*
-		Debug.Log("Steering from "  + Vehicle.Radar.Obstacles.Count);
-		foreach (var o in Vehicle.Radar.Obstacles)
-		{
-			if (o != null)
-			{
-				Debug.Log(o.ToString());
-			}
-		}
-		Debug.Log("-----------------");
-		*/
-		
 		Vector3 avoidance = Vector3.zero;
 		if (Vehicle.Radar.Obstacles == null || Vehicle.Radar.Obstacles.Count == 0)
 		{
@@ -102,8 +97,6 @@ public class SteerForSphericalObstacleAvoidance : Steering
 		foreach (var o in Vehicle.Radar.Obstacles)
 		{
 			SphericalObstacle sphere = o as SphericalObstacle;
-			// xxx this should be a generic call on Obstacle, rather than
-			// xxx this code which presumes the obstacle is spherical
 			PathIntersection next = FindNextIntersectionWithSphere (sphere);
 			if (!nearest.intersect ||
 				(next.intersect &&
@@ -136,7 +129,6 @@ public class SteerForSphericalObstacleAvoidance : Steering
 
 		return avoidance;
 	}
-	
 	
 	/// <summary>
 	/// Finds the vehicle's next intersection with a spherical obstacle

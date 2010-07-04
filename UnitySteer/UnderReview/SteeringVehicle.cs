@@ -41,13 +41,6 @@ namespace UnitySteer
 	// TODO: Alter use of this and SimpleVehicle to apply forces when using Rigidbody in stead of MovePosition
 	public class SteeringVehicle
 	{
-		ArrayList neighbors = new ArrayList();
-
-		/*
-			Meh. This whole thing could be solved if we just replace it with an
-			object and then figure out if it supports the "position" property
-			or if it has a mass.
-		 */
 		private Transform transform;
 		private Rigidbody rigidbody;
 		private float internalMass, radius, speed, maxSpeed, maxForce;
@@ -73,15 +66,6 @@ namespace UnitySteer
 			this.rigidbody = rigidbody;
 		}
 		
-		
-		// ArrayList containing the Vehicle objects that are near this one
-		public ArrayList Neighbors
-		{
-			get
-			{
-				return neighbors;
-			}
-		}
 		
 		public Vector3 Position
 		{
@@ -335,14 +319,6 @@ namespace UnitySteer
 		
 		public virtual Vector3 predictFuturePosition(float predictionTime) { return Vector3.zero; }
 
-
-		public void ResetLocalSpace()
-		{
-		    this.Up = Vector3.up;
-		    this.Forward = Vector3.forward;
-			Position = Vector3.zero;
-		}
-		
 		private void RecalculateSide()
 		{
 			internalSide = Vector3.Cross(internalForward, internalUp);

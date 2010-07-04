@@ -93,7 +93,7 @@ namespace UnitySteer
         // return the number of tokens currently in the database
         public override int getPopulation()
         {
-            return group.Count;//.size();
+            return group.Count;
         }
     };
 

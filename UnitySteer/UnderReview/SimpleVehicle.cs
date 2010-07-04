@@ -41,8 +41,6 @@ namespace UnitySteer
     public class SimpleVehicle : SteerLibrary
     {
 
-        ArrayList obstacles;    // Obstacle list
-
         float _curvature;
         Vector3 _lastForward;
         Vector3 _lastPosition;
@@ -83,12 +81,7 @@ namespace UnitySteer
         public virtual void reset()
         {
             // reset SteerLibraryMixin state
-            // (XXX this seems really fragile, needs to be redesigned XXX)
-            //SimpleVehicle_3.reset ();
             resetSteering();
-            
-            // Create a default list for obstacles
-            obstacles = new ArrayList();
 
             Speed = 0.0f;       // speed along Forward direction.
 
@@ -96,18 +89,6 @@ namespace UnitySteer
             resetSmoothedPosition (Vector3.zero);
             resetSmoothedCurvature(0);
             resetSmoothedAcceleration(Vector3.zero);
-        }
-        
-        public ArrayList Obstacles
-        {
-            get
-            {
-                return obstacles;
-            }
-            set
-            {
-                obstacles = value;
-            }
         }
         
         

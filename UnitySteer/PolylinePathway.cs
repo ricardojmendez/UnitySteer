@@ -126,7 +126,7 @@ namespace UnitySteer
         }
 
 
-        public override Vector3 mapPointToPath(Vector3 point, ref mapReturnStruct tStruct)//Vector3 tangent, float outside)
+        public override Vector3 mapPointToPath(Vector3 point, ref mapReturnStruct tStruct)
         {
             float d;
             float minDistance = float.MaxValue;// FLT_MAX;
@@ -147,7 +147,7 @@ namespace UnitySteer
             }
 
             // measure how far original point is outside the Pathway's "tube"
-            tStruct.outside = (onPath - point).magnitude - radius;//Vector3::distance (onPath, point) - radius;
+            tStruct.outside = (onPath - point).magnitude - radius;
 
             // return point on path
             return onPath;
@@ -184,7 +184,6 @@ namespace UnitySteer
             if (isCyclic)
             {
                 remaining = (float)System.Math.IEEERemainder(pathDistance, totalPathLength);
-                //remaining = (float) fmod (pathDistance, totalPathLength);
             }
             else
             {

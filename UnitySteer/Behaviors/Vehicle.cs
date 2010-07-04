@@ -414,5 +414,14 @@ public class Vehicle: MonoBehaviour
 		return force;
 		
 	}
+	
+	/// <summary>
+	/// Resets the vehicle's orientation.
+	/// </summary>
+	public void ResetOrientation()
+	{
+		transform.up = Vector3.up;
+		transform.forward = Vector3.forward;
+	}
 	#endregion
 }
