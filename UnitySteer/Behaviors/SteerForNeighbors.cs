@@ -1,3 +1,4 @@
+#define DEBUG_DRAWNEIGHBORS
 using System.Collections.Generic;
 using UnityEngine;
 using UnitySteer;
@@ -26,7 +27,9 @@ public class SteerForNeighbors : Steering
 {
 	#region Private properties
 	[SerializeField]
-	float _radius = 7.5f;
+	float _minRadius = 3f;
+	[SerializeField]
+	float _maxRadius = 7.5f;
 	[SerializeField]
 	float _angleCos = 0.7f;
 	#endregion
@@ -62,14 +65,66 @@ public class SteerForNeighbors : Steering
             _angleCos = OpenSteerUtility.CosFromDegrees(value);
         }
     }	
-
-	public float Radius {
+	
+	/// <summary>
+	/// Minimum radius in which another vehicle is definitely considered in the neighborhood
+	/// </summary>
+	public float MinRadius {
 		get {
-			return this._radius;
+			return this._minRadius;
 		}
 		set {
-			_radius = value;
+			_minRadius = value;
 		}
 	}	
+	
+	/// <summary>
+	/// Maximum neighborhood radius
+	/// </summary>
+	public float MaxRadius {
+		get {
+			return this._maxRadius;
+		}
+		set {
+			_maxRadius = value;
+		}
+	}		
 	#endregion	
+	
+	
+	#region Methods
+	protected override Vector3 CalculateForce ()
+	{
+		// steering accumulator and count of neighbors, both initially zero
+		Vector3 steering = Vector3.zero;
+		int neighbors = 0;
+		
+		// for each of the other vehicles...
+		for (int i = 0; i < Vehicle.Radar.Vehicles.Count; i++)
+		{
+			Vehicle other = Vehicle.Radar.Vehicles[i];
+			if (Vehicle.IsInNeighborhood (other, MinRadius, MaxRadius, AngleCos)) {
+				#if DEBUG_DRAWNEIGHBORS
+				Debug.DrawLine(transform.position, other.transform.position, Color.yellow);
+				#endif
+				steering += CalculateNeighborContribution(other);				
+				neighbors++;
+			}
+		}
+
+		// divide by neighbors, then normalize to pure direction
+		if (neighbors > 0) {
+			steering = (steering / (float)neighbors);
+			steering.Normalize();
+		}
+		
+		return steering;
+	}
+	
+	protected virtual Vector3 CalculateNeighborContribution(Vehicle other)
+	{
+		return Vector3.zero;
+	}
+	#endregion
+	
 }

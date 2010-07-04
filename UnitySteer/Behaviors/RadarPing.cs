@@ -11,6 +11,9 @@ public class RadarPing: Radar
 	#region Private properties
 	[SerializeField]
 	private float _detectionRadius = 10;
+	
+	[SerializeField]
+	private bool _drawGizmos = false;
 	#endregion
 	
 	
@@ -32,21 +35,17 @@ public class RadarPing: Radar
 	#region Methods
 	void OnDrawGizmos()
 	{
-		Gizmos.color = Color.cyan;
-		Gizmos.DrawWireSphere(transform.position, _detectionRadius);
+		if (_drawGizmos)
+		{
+			Gizmos.color = Color.cyan;
+			Gizmos.DrawWireSphere(transform.position, _detectionRadius);
+		}
 	}
 	
 	protected override IList<Collider> Detect()
 	{
 		var detected = Physics.OverlapSphere(transform.position, _detectionRadius, LayersChecked);
 		var list = new List<Collider>(detected);
-		
-		/*
-		foreach (var c in list)
-		{
-			Debug.DrawLine(transform.position, c.transform.position, Color.magenta);
-		}
-		*/
 		return list;
 	}
 	#endregion
