@@ -49,8 +49,6 @@ namespace UnitySteer
 		bool gaudyPursuitAnnotation;
 		#endif
 		
-		private float	  avoidAngleCos = 0.707f;
-		
 		public SteerLibrary( Vector3 position, float mass ) : base( position, mass ){}
 		public SteerLibrary( Transform transform, float mass ) : base( transform, mass ){}
 		public SteerLibrary( Rigidbody rigidbody ) : base( rigidbody ){}
@@ -107,13 +105,6 @@ namespace UnitySteer
 			Debug.DrawRay (Position, component*3, Color.yellow);
 		}
 
-		// called when steerToAvoidNeighbors decides steering is required
-		// (default action is to do nothing, layered classes can overload it)
-		public virtual void annotateAvoidNeighbor (	 SteeringVehicle vehicle, float steer, Vector3 position, Vector3 threatPosition)
-		{
-			Debug.DrawLine(Position, vehicle.Position, Color.red); // Neighbor position
-			Debug.DrawLine(Position, position, Color.green);	   // Position we're aiming for
-		}
 
 		public Vector3 steerForSeek(Vector3 target)
 		{
@@ -182,185 +173,6 @@ namespace UnitySteer
 			return avoidance;
 		}
 
-
-		// ----------------------------------------------------------------------------
-		// Unaligned collision avoidance behavior: avoid colliding with other nearby
-		// vehicles moving in unconstrained directions.	 Determine which (if any)
-		// other other vehicle we would collide with first, then steers to avoid the
-		// site of that potential collision.  Returns a steering force vector, which
-		// is zero length if there is no impending collision.
-		public Vector3 steerToAvoidNeighbors(float minTimeToCollision, ArrayList others)
-		{
-			/*
-			// first priority is to prevent immediate interpenetration
-			Vector3 separation = steerToAvoidCloseNeighbors (0, others);
-			if (separation != Vector3.zero) 
-			{
-				return separation;
-			}
-			*/
-
-			// otherwise, go on to consider potential future collisions
-			float steer = 0;
-			SteeringVehicle threat = null;
-
-			// Time (in seconds) until the most immediate collision threat found
-			// so far.	Initial value is a threshold: don't look more than this
-			// many frames into the future.
-			float minTime = minTimeToCollision;
-
-			Vector3 threatPositionAtNearestApproach = Vector3.zero;
-			Vector3 ourPositionAtNearestApproach = Vector3.zero;
-
-			// for each of the other vehicles, determine which (if any)
-			// pose the most immediate threat of collision.
-			for (int i=0; i<others.Count; i++)
-			{
-				SteeringVehicle other = (SteeringVehicle) others[i];
-				if (other != this)
-				{	
-					// avoid when future positions are this close (or less)
-					float collisionDangerThreshold = Radius + other.Radius;
-
-					// predicted time until nearest approach of "this" and "other"
-					float time = predictNearestApproachTime (other);
-					
-					// If the time is in the future, sooner than any other
-					// threatened collision...
-					if ((time >= 0) && (time < minTime))
-					{
-						// if the two will be close enough to collide,
-						// make a note of it
-						Vector3 ourPos = Vector3.zero;
-						Vector3 hisPos = Vector3.zero;
-						float	dist   = computeNearestApproachPositions (other, time, ref ourPos, ref hisPos);
-						
-						if (dist < collisionDangerThreshold)
-						{
-							minTime = time;
-							threat = other;
-							threatPositionAtNearestApproach = hisPos;
-							ourPositionAtNearestApproach = ourPos;
-						}
-					}
-				}
-			}
-
-			// if a potential collision was found, compute steering to avoid
-			if (threat != null)
-			{
-				// parallel: +1, perpendicular: 0, anti-parallel: -1
-				float parallelness = Vector3.Dot(Forward, threat.Forward);
-				// Debug.Log("Parallel "+parallelness + " "+avoidAngleCos+" "+threatPositionAtNearestApproach);
-
-				if (parallelness < -avoidAngleCos)
-				{
-					// anti-parallel "head on" paths:
-					// steer away from future threat position
-					Vector3 offset = threatPositionAtNearestApproach - Position;
-					float sideDot = Vector3.Dot(offset, Side);
-					steer = (sideDot > 0) ? -1.0f : 1.0f;
-				}
-				else if (parallelness > avoidAngleCos)
-				{
-					// parallel paths: steer away from threat
-					Vector3 offset = threat.Position - Position;
-					float sideDot = Vector3.Dot(offset, Side);
-					steer = (sideDot > 0) ? -1.0f : 1.0f;
-				}
-				else 
-				{
-					/* 
-						Perpendicular paths: steer behind threat
-
-						Only the slower vehicle attempts this, unless that 
-						slower vehicle is static.  If both have the same
-						speed, then roll the dice.						
-						
-						Something to test is making a slower vehicle fall
-						behind, while a faster vehicle cuts ahead.
-					 */
-					if (Speed < threat.Speed
-							 || threat.Speed == 0
-							 || UnityEngine.Random.value <= 0.25f) 
-					{
-						float sideDot = Vector3.Dot(Side, threat.Velocity);
-						steer = (sideDot > 0) ? -1.0f : 1.0f;
-					}
-				}
-				
-				/* Steer will end up being applied as a multiplier to the
-				   vehicle's side vector. If we simply apply te -1/+1 being
-				   assigned above, then we'll end up with a unit displacement
-				   from the other object's position. We should account for
-				   both its radius and our own.
-				 */
-				steer *= Radius + threat.Radius;
-
-				#if ANNOTATE_AVOIDNEIGHBORS
-				annotateAvoidNeighbor (threat,
-									   steer,
-									   ourPositionAtNearestApproach,
-									   threatPositionAtNearestApproach);
-				#endif
-			}
-
-			return Side * steer;
-		}
-
-
-
-		// Given two vehicles, based on their current positions and velocities,
-		// determine the time until nearest approach
-		//
-		// XXX should this return zero if they are already in contact?
-
-	   
-		float predictNearestApproachTime (SteeringVehicle other)
-		{
-			// imagine we are at the origin with no velocity,
-			// compute the relative velocity of the other vehicle
-			Vector3 myVelocity = Velocity;
-			Vector3 otherVelocity = other.Velocity;
-			Vector3 relVelocity = otherVelocity - myVelocity;
-			float relSpeed = relVelocity.magnitude;
-
-			// for parallel paths, the vehicles will always be at the same distance,
-			// so return 0 (aka "now") since "there is no time like the present"
-			if (relSpeed == 0) return 0;
-
-			// Now consider the path of the other vehicle in this relative
-			// space, a line defined by the relative position and velocity.
-			// The distance from the origin (our vehicle) to that line is
-			// the nearest approach.
-
-			// Take the unit tangent along the other vehicle's path
-			Vector3 relTangent = relVelocity / relSpeed;
-
-			// find distance from its path to origin (compute offset from
-			// other to us, find length of projection onto path)
-			Vector3 relPosition = Position - other.Position;
-			float projection = Vector3.Dot(relTangent, relPosition);
-
-			return projection / relSpeed;
-		}
-
-
-		// Given the time until nearest approach (predictNearestApproachTime)
-		// determine position of each vehicle at that time, and the distance
-		// between them
-		float computeNearestApproachPositions(SteeringVehicle other, float time, 
-											  ref Vector3 ourPosition, 
-											  ref Vector3 hisPosition)
-		{
-			Vector3	   myTravel =		Forward *		Speed * time;
-			Vector3 otherTravel = other.Forward * other.Speed * time;
-
-			ourPosition =		Position + myTravel;
-			hisPosition = other.Position + otherTravel;
-
-			return Vector3.Distance(ourPosition, hisPosition);
-		}
 
 
 

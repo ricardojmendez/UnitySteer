@@ -40,6 +40,13 @@ public class RadarPing: Radar
 	{
 		var detected = Physics.OverlapSphere(transform.position, _detectionRadius, LayersChecked);
 		var list = new List<Collider>(detected);
+		
+		/*
+		foreach (var c in list)
+		{
+			Debug.DrawLine(transform.position, c.transform.position, Color.magenta);
+		}
+		*/
 		return list;
 	}
 	#endregion

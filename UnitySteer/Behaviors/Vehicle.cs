@@ -423,5 +423,85 @@ public class Vehicle: MonoBehaviour
 		transform.up = Vector3.up;
 		transform.forward = Vector3.forward;
 	}
+	
+	
+    /// <summary>
+    /// Predicts the time until nearest approach between this and another vehicle
+    /// </summary>
+    /// <returns>
+    /// The nearest approach time.
+    /// </returns>
+    /// <param name='other'>
+    /// Other vehicle to compare against
+    /// </param>
+	public float PredictNearestApproachTime (Vehicle other)
+	{
+		// imagine we are at the origin with no velocity,
+		// compute the relative velocity of the other vehicle
+		Vector3 myVelocity = Velocity;
+		Vector3 otherVelocity = other.Velocity;
+		Vector3 relVelocity = otherVelocity - myVelocity;
+		float relSpeed = relVelocity.magnitude;
+
+		// for parallel paths, the vehicles will always be at the same distance,
+		// so return 0 (aka "now") since "there is no time like the present"
+		if (relSpeed == 0) return 0;
+
+		// Now consider the path of the other vehicle in this relative
+		// space, a line defined by the relative position and velocity.
+		// The distance from the origin (our vehicle) to that line is
+		// the nearest approach.
+
+		// Take the unit tangent along the other vehicle's path
+		Vector3 relTangent = relVelocity / relSpeed;
+
+		// find distance from its path to origin (compute offset from
+		// other to us, find length of projection onto path)
+		Vector3 relPosition = transform.position - other.transform.position;
+		float projection = Vector3.Dot(relTangent, relPosition);
+
+		return projection / relSpeed;
+	}	
+	
+	
+	/// <summary>
+	/// Given the time until nearest approach (predictNearestApproachTime)
+	/// determine position of each vehicle at that time, and the distance
+	/// between them
+	/// </summary>
+	/// <returns>
+	/// Distance between positions
+	/// </returns>
+	/// <param name='other'>
+	/// Other vehicle to compare against
+	/// </param>
+	/// <param name='time'>
+	/// Time to estimate.
+	/// </param>
+	/// <param name='ourPosition'>
+	/// Our position.
+	/// </param>
+	/// <param name='hisPosition'>
+	/// The other vehicle's position.
+	/// </param>
+	public float ComputeNearestApproachPositions(Vehicle other, float time, 
+												  ref Vector3 ourPosition, 
+												  ref Vector3 hisPosition)
+	{
+		Vector3	   myTravel = transform.forward 	  *		Speed 	* time;
+		Vector3 otherTravel = other.transform.forward * other.Speed * time;
+
+		ourPosition = transform.position 	   + myTravel;
+		hisPosition = other.transform.position + otherTravel;
+
+		return Vector3.Distance(ourPosition, hisPosition);
+	}	
+	
+	
+	void OnDrawGizmos()
+	{
+		Gizmos.color = Color.grey;
+		Gizmos.DrawWireSphere(transform.position, Radius);
+	}
 	#endregion
 }
