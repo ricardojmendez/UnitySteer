@@ -32,7 +32,6 @@ public class Vehicle: MonoBehaviour
 	[SerializeField]
 	float _radius = 1;
 
-	[SerializeField]
 	float _speed = 0;
 
 	[SerializeField]
