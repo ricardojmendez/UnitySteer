@@ -261,9 +261,10 @@ public class Vehicle: MonoBehaviour
 
 		// Euler integrate (per frame) velocity into position
 		// TODO: Change for a motor
-		if (rigidbody == null)
+		var delta = (newVelocity * elapsedTime);
+		if (rigidbody == null || rigidbody.isKinematic)
 		{
-			transform.position += (newVelocity * elapsedTime);
+			transform.position += delta;
 		}
 		else
 		{
@@ -271,7 +272,7 @@ public class Vehicle: MonoBehaviour
 			 * TODO: This is just a quick test and should not remain, as the behavior is not
 			 * consistent to that we obtain when moving the transform.
 			 */
-			rigidbody.AddForce(Speed * elapsedTime * transform.forward, ForceMode.Impulse);
+			rigidbody.MovePosition (rigidbody.position + delta);
 		}
 		
 
