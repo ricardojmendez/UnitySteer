@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnitySteer;
 
+/// <summary>
+/// Vehicle subclass which automatically applies the steering forces from
+/// the components attached to the object.
+/// </summary>
 public class AutonomousVehicle: Vehicle
 {
 	#region Internal state values

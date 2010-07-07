@@ -3,6 +3,11 @@ using UnitySteer;
 using System.Collections;
 
 
+/// <summary>
+/// Base class for vehicles. It does not move the objects, and instead 
+/// provides a set of basic functionality for its subclasses.  See
+/// AutonomousVehicle for one that does apply the steering forces.
+/// </summary>
 public class Vehicle: MonoBehaviour
 {
 	#region Private fields
