@@ -9,7 +9,7 @@ public class SteerForCohesion : SteerForNeighbors
 	protected override Vector3 CalculateNeighborContribution(Vehicle other)
 	{
 		// accumulate sum of neighbor's positions
-		return other.transform.position;
+		return other.Position;
 	}
 }
 

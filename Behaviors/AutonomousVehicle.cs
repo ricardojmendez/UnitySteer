@@ -104,7 +104,7 @@ public class AutonomousVehicle: Vehicle
 		
 		// running average of recent positions
 		_smoothedPosition = OpenSteerUtility.blendIntoAccumulator(elapsedTime * 0.06f,
-								transform.position,
+								Position,
 								_smoothedPosition);
 	}	
 	#endregion

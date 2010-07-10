@@ -12,7 +12,6 @@ public class CharacterMotorVehicle: Vehicle
 	#region Private fields
 	CharacterMotor motor;
 	#endregion 
-
 	
 	#region Methods
 	void Awake()

@@ -112,14 +112,14 @@ public class SteerForSphericalObstacleAvoidance : Steering
 			nearest.distance < minDistanceToCollision)
 		{
 			#if ANNOTATE_AVOIDOBSTACLES
-			Debug.DrawLine(transform.position, nearest.obstacle.center, Color.red);
+			Debug.DrawLine(Vehicle.Position, nearest.obstacle.center, Color.red);
 			#endif
 
 			// compute avoidance steering force: take offset from obstacle to me,
 			// take the component of that which is lateral (perpendicular to my
 			// forward direction), set length to maxForce, add a bit of forward
 			// component (in capture the flag, we never want to slow down)
-			Vector3 offset = transform.position - nearest.obstacle.center;
+			Vector3 offset = Vehicle.Position - nearest.obstacle.center;
 			avoidance =	 OpenSteerUtility.perpendicularComponent(offset, transform.forward);
 
 			avoidance.Normalize();
@@ -151,16 +151,18 @@ public class SteerForSphericalObstacleAvoidance : Steering
 		// initialize pathIntersection object
 		PathIntersection intersection = new PathIntersection(obs);
 		// find "local center" (lc) of sphere in the vehicle's coordinate space
-		lc = transform.InverseTransformPoint(obs.center);
+		lc = transform.InverseTransformPoint(obs.center) + Vehicle.ScaledCenter;
 		
 		#if ANNOTATE_AVOIDOBSTACLES
 		obs.annotatePosition();
+		Debug.DrawRay(Vehicle.Position, transform.forward * Vehicle.Speed, Color.magenta);
+		Debug.DrawRay(Vehicle.Position, lc, Color.yellow);
 		#endif
 		
 		// computer line-sphere intersection parameters
 		b = -2 * lc.z;
 		c = Mathf.Pow(lc.x, 2) + Mathf.Pow(lc.y, 2) + Mathf.Pow(lc.z, 2) - 
-			Mathf.Pow(obs.radius + Vehicle.Radius, 2);
+			Mathf.Pow(obs.radius + Vehicle.ScaledRadius, 2);
 		d = (b * b) - (4 * c);
 
 		// when the path does not intersect the sphere
@@ -188,4 +190,18 @@ public class SteerForSphericalObstacleAvoidance : Steering
 		return intersection;
 	}
 	
+	#if ANNOTATE_AVOIDOBSTACLES
+	void OnDrawGizmos()
+	{
+		if (Vehicle != null)
+		{
+			foreach (var o in Vehicle.Radar.Obstacles)
+			{
+				var sphere = o as SphericalObstacle;
+				Gizmos.color = Color.red;
+				Gizmos.DrawWireSphere(sphere.center, sphere.radius);
+			}
+		}
+	}
+	#endif
 }
