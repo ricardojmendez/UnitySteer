@@ -286,8 +286,7 @@ public class Vehicle: MonoBehaviour
 			var newForward = newVelocity / Speed;
 			newForward.y = IsPlanar ? transform.forward.y : newForward.y;
 			
-			var q = Quaternion.FromToRotation(transform.forward, newForward);
-			transform.rotation *= q;			
+			transform.forward = newForward;
 		}
 	}
 	

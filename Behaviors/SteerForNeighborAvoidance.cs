@@ -85,7 +85,7 @@ public class SteerForNeighborAvoidance : Steering {
 			if (other != this)
 			{	
 				// avoid when future positions are this close (or less)
-				float collisionDangerThreshold = Vehicle.Radius + other.Radius;
+				float collisionDangerThreshold = Vehicle.ScaledRadius + other.ScaledRadius;
 				
 				// predicted time until nearest approach of "this" and "other"
 				float time = Vehicle.PredictNearestApproachTime (other);
@@ -163,7 +163,7 @@ public class SteerForNeighborAvoidance : Steering {
 			   from the other object's position. We should account for
 			   both its radius and our own.
 			 */
-			steer *= Vehicle.Radius + threat.Radius;
+			steer *= Vehicle.ScaledRadius + threat.ScaledRadius;
 
 			#if ANNOTATE_AVOIDNEIGHBORS
 			AnnotateAvoidNeighbor (threat,
