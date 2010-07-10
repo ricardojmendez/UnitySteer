@@ -101,8 +101,7 @@ public class Vehicle: MonoBehaviour
 		}
 		set {
 			_center = value;
-			_scaledCenter = value;
-			_scaledCenter.Scale(transform.lossyScale);
+			_scaledCenter = Vector3.Scale(_center, transform.lossyScale);
 		}
 	}
 
