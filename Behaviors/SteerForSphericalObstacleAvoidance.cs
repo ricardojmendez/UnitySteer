@@ -91,7 +91,7 @@ public class SteerForSphericalObstacleAvoidance : Steering
 
 		PathIntersection nearest = new PathIntersection(null);
 		/*
-		 * While we could just calculate lien as (Velocity * predictionTime) 
+		 * While we could just calculate line as (Velocity * predictionTime) 
 		 * and save ourselves the substraction, this allows other vehicles to
 		 * override PredictFuturePosition for their own ends.
 		 */
