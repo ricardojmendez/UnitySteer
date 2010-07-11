@@ -35,10 +35,12 @@ public class RadarPing: Radar
 	#region Methods
 	void OnDrawGizmos()
 	{
-		if (_drawGizmos && Vehicle != null)
+		if (_drawGizmos)
 		{
+			var pos = (Vehicle == null) ? transform.position : Vehicle.Position;
+			
 			Gizmos.color = Color.cyan;
-			Gizmos.DrawWireSphere(Vehicle.Position, _detectionRadius);
+			Gizmos.DrawWireSphere(pos, _detectionRadius);
 		}
 	}
 	
