@@ -281,7 +281,8 @@ public class Vehicle: MonoBehaviour
 	
 	protected virtual void RegenerateLocalSpace (Vector3 newVelocity)
 	{
- 		if (Speed > 0)
+		// Avoid adjusting if we aren't applying any velocity
+ 		if (Speed > 0 && newVelocity != Vector3.zero)
 		{
 			var newForward = newVelocity / Speed;
 			newForward.y = IsPlanar ? transform.forward.y : newForward.y;
