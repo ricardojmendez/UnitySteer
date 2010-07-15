@@ -85,7 +85,7 @@ public class SteerForNeighborAvoidance : Steering {
 			if (other != this)
 			{	
 				// avoid when future positions are this close (or less)
-				float collisionDangerThreshold = Vehicle.Radius + other.Radius;
+				float collisionDangerThreshold = Vehicle.ScaledRadius + other.ScaledRadius;
 				
 				// predicted time until nearest approach of "this" and "other"
 				float time = Vehicle.PredictNearestApproachTime (other);
@@ -124,14 +124,14 @@ public class SteerForNeighborAvoidance : Steering {
 			{
 				// anti-parallel "head on" paths:
 				// steer away from future threat position
-				Vector3 offset = threatPositionAtNearestApproach - transform.position;
+				Vector3 offset = threatPositionAtNearestApproach - Vehicle.Position;
 				float sideDot = Vector3.Dot(offset, transform.right);
 				steer = (sideDot > 0) ? -1.0f : 1.0f;
 			}
 			else if (parallelness > _avoidAngleCos)
 			{
 				// parallel paths: steer away from threat
-				Vector3 offset = threat.transform.position - transform.position;
+				Vector3 offset = threat.Position - Vehicle.Position;
 				float sideDot = Vector3.Dot(offset, transform.right);
 				steer = (sideDot > 0) ? -1.0f : 1.0f;
 			}
@@ -163,7 +163,7 @@ public class SteerForNeighborAvoidance : Steering {
 			   from the other object's position. We should account for
 			   both its radius and our own.
 			 */
-			steer *= Vehicle.Radius + threat.Radius;
+			steer *= Vehicle.ScaledRadius + threat.ScaledRadius;
 
 			#if ANNOTATE_AVOIDNEIGHBORS
 			AnnotateAvoidNeighbor (threat,
@@ -179,9 +179,9 @@ public class SteerForNeighborAvoidance : Steering {
 	#if ANNOTATE_AVOIDNEIGHBORS
 	protected virtual void AnnotateAvoidNeighbor (Vehicle vehicle, float steer, Vector3 position, Vector3 threatPosition)
 	{
-		Debug.DrawLine(transform.position, vehicle.transform.position, Color.red); // Neighbor position
-		Debug.DrawLine(transform.position, position, Color.green);	   // Position we're aiming for
-		Debug.DrawLine(transform.position, threatPosition, Color.magenta);	// Calculated threat position
+		Debug.DrawLine(Vehicle.Position, vehicle.Position, Color.red); // Neighbor position
+		Debug.DrawLine(Vehicle.Position, position, Color.green);	   // Position we're aiming for
+		Debug.DrawLine(Vehicle.Position, threatPosition, Color.magenta);	// Calculated threat position
 	}
 	#endif
 	

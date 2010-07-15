@@ -90,14 +90,20 @@ public class SteerForSphericalObstacleAvoidance : Steering
 		}
 
 		PathIntersection nearest = new PathIntersection(null);
-		float minDistanceToCollision = _minTimeToCollision * Vehicle.Speed;
+		/*
+		 * While we could just calculate line as (Velocity * predictionTime) 
+		 * and save ourselves the substraction, this allows other vehicles to
+		 * override PredictFuturePosition for their own ends.
+		 */
+		Vector3 futurePosition = Vehicle.PredictFuturePosition(_minTimeToCollision);
+		Vector3 line = (futurePosition - Vehicle.Position);
 
 		// test all obstacles for intersection with my forward axis,
 		// select the one whose point of intersection is nearest
 		foreach (var o in Vehicle.Radar.Obstacles)
 		{
 			SphericalObstacle sphere = o as SphericalObstacle;
-			PathIntersection next = FindNextIntersectionWithSphere (sphere);
+			PathIntersection next = FindNextIntersectionWithSphere (sphere, line);
 			if (!nearest.intersect ||
 				(next.intersect &&
 				 next.distance < nearest.distance))
@@ -109,17 +115,17 @@ public class SteerForSphericalObstacleAvoidance : Steering
 
 		// when a nearest intersection was found
 		if (nearest.intersect &&
-			nearest.distance < minDistanceToCollision)
+			nearest.distance < line.magnitude)
 		{
 			#if ANNOTATE_AVOIDOBSTACLES
-			Debug.DrawLine(transform.position, nearest.obstacle.center, Color.red);
+			Debug.DrawLine(Vehicle.Position, nearest.obstacle.center, Color.red);
 			#endif
 
 			// compute avoidance steering force: take offset from obstacle to me,
 			// take the component of that which is lateral (perpendicular to my
 			// forward direction), set length to maxForce, add a bit of forward
 			// component (in capture the flag, we never want to slow down)
-			Vector3 offset = transform.position - nearest.obstacle.center;
+			Vector3 offset = Vehicle.Position - nearest.obstacle.center;
 			avoidance =	 OpenSteerUtility.perpendicularComponent(offset, transform.forward);
 
 			avoidance.Normalize();
@@ -136,56 +142,88 @@ public class SteerForSphericalObstacleAvoidance : Steering
 	/// <param name="obs">
 	/// A spherical obstacle to check against <see cref="SphericalObstacle"/>
 	/// </param>
+	/// <param name="line">
+	/// Line that we expect we'll follow to our future destination
+	/// </param>
 	/// <returns>
 	/// A PathIntersection with the intersection details <see cref="PathIntersection"/>
 	/// </returns>
-	public PathIntersection FindNextIntersectionWithSphere (SphericalObstacle obs)
+	public PathIntersection FindNextIntersectionWithSphere (SphericalObstacle obs, Vector3 line)
 	{
-		// This routine is based on the Paul Bourke's derivation in:
-		//	 Intersection of a Line and a Sphere (or circle)
-		//	 http://www.swin.edu.au/astronomy/pbourke/geometry/sphereline/
-
-		float b, c, d, p, q, s;
-		Vector3 lc;
+		/*
+		 * This routine is based on the Paul Bourke's derivation in:
+		 *   Intersection of a Line and a Sphere (or circle)
+		 *   http://www.swin.edu.au/astronomy/pbourke/geometry/sphereline/
+		 *
+		 * Retaining the same variable values used in that description.
+		 * 
+		 */
+		float a, b, c, bb4ac;
+		var toCenter = Vehicle.Position - obs.center;
 
 		// initialize pathIntersection object
-		PathIntersection intersection = new PathIntersection(obs);
-		// find "local center" (lc) of sphere in the vehicle's coordinate space
-		lc = transform.InverseTransformPoint(obs.center);
+		var intersection = new PathIntersection(obs);
 		
 		#if ANNOTATE_AVOIDOBSTACLES
 		obs.annotatePosition();
+		Debug.DrawLine(Vehicle.Position, Vehicle.Position + line, Color.cyan);
 		#endif
 		
 		// computer line-sphere intersection parameters
-		b = -2 * lc.z;
-		c = Mathf.Pow(lc.x, 2) + Mathf.Pow(lc.y, 2) + Mathf.Pow(lc.z, 2) - 
-			Mathf.Pow(obs.radius + Vehicle.Radius, 2);
-		d = (b * b) - (4 * c);
+		a = line.sqrMagnitude;
+		b = 2 * Vector3.Dot(line, toCenter);
+		c = obs.center.sqrMagnitude;
+		c += Vehicle.Position.sqrMagnitude;
+		c -= 2 * Vector3.Dot(obs.center, Vehicle.Position); 
+		c -= Mathf.Pow(obs.radius + Vehicle.ScaledRadius, 2);
+		bb4ac = b * b - 4 * a * c;
 
-		// when the path does not intersect the sphere
-		if (d < 0) return intersection;
+		if (bb4ac >= 0)  {
+			intersection.intersect = true;
+			Vector3 closest = Vector3.zero;
+			if (bb4ac == 0) {
+				// Only one intersection
+				var mu = -b / (2*a);
+				closest = mu * line;
+			}
+			else {
+				// More than one intersection
+				var mu1 = (-b + Mathf.Sqrt(bb4ac)) / (2*a);
+				var mu2 = (-b - Mathf.Sqrt(bb4ac)) / (2*a);
+				/*
+				 * If the results are negative, the obstacle is behind us.
+				 * If one result is negative and the other one positive,
+				 * that would indicate that one intersection is behind us while
+				 * the other one ahead of us, which would mean that we're 
+				 * within the obstacle, and there's no sense in performing
+				 * avoidance anymore.
+				 */
+				if (mu1 < 0 || mu2 < 0)
+					intersection.intersect = false;
+				else
+					closest = (Mathf.Abs(mu1) < Mathf.Abs (mu2)) ? mu1 * line : mu2 * line;
+			}
+			#if ANNOTATE_AVOIDOBSTACLES
+			Debug.DrawRay(Vehicle.Position, closest, Color.red);
+			#endif
 
-		// otherwise, the path intersects the sphere in two points with
-		// parametric coordinates of "p" and "q".
-		// (If "d" is zero the two points are coincident, the path is tangent)
-		s = (float) System.Math.Sqrt(d);
-		p = (-b + s) / 2;
-		q = (-b - s) / 2;
-
-		// both intersections are behind us, so no potential collisions
-		if ((p < 0) && (q < 0)) return intersection; 
-
-		// at least one intersection is in front of us
-		intersection.intersect = true;
-		intersection.distance =
-			((p > 0) && (q > 0)) ?
-			// both intersections are in front of us, find nearest one
-			((p < q) ? p : q) :
-			// otherwise only one intersections is in front, select it
-			((p > 0) ? p : q);
-		
+			intersection.distance =  closest.magnitude;
+		}
 		return intersection;
 	}
 	
+	#if ANNOTATE_AVOIDOBSTACLES
+	void OnDrawGizmos()
+	{
+		if (Vehicle != null)
+		{
+			foreach (var o in Vehicle.Radar.Obstacles)
+			{
+				var sphere = o as SphericalObstacle;
+				Gizmos.color = Color.red;
+				Gizmos.DrawWireSphere(sphere.center, sphere.radius);
+			}
+		}
+	}
+	#endif
 }

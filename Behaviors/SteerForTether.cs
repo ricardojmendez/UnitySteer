@@ -41,7 +41,7 @@ public class SteerForTether : Steering
 	{
 		Vector3 steering = Vector3.zero;
 		
-		var difference = TetherPosition - transform.position;
+		var difference = TetherPosition - Vehicle.Position;
 		var distance = difference.magnitude;
 		if (distance > _maximumDistance)
 		{

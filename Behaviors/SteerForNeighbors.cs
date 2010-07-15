@@ -105,7 +105,7 @@ public class SteerForNeighbors : Steering
 			Vehicle other = Vehicle.Radar.Vehicles[i];
 			if (Vehicle.IsInNeighborhood (other, MinRadius, MaxRadius, AngleCos)) {
 				#if DEBUG_DRAWNEIGHBORS
-				Debug.DrawLine(transform.position, other.transform.position, Color.yellow);
+				Debug.DrawLine(Vehicle.Position, other.Position, Color.clear);
 				#endif
 				steering += CalculateNeighborContribution(other);				
 				neighbors++;

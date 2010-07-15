@@ -44,11 +44,7 @@ using UnityEngine;
 namespace UnitySteer
 {
 	public class SteerLibrary : SteeringVehicle
-	{
-		#if DEBUG
-		bool gaudyPursuitAnnotation;
-		#endif
-		
+	{		
 		public SteerLibrary( Vector3 position, float mass ) : base( position, mass ){}
 		public SteerLibrary( Transform transform, float mass ) : base( transform, mass ){}
 		public SteerLibrary( Rigidbody rigidbody ) : base( rigidbody ){}
@@ -56,10 +52,6 @@ namespace UnitySteer
 		// reset state
 		public void resetSteering ()
 		{
-			// default to non-gaudyPursuitAnnotation
-			#if DEBUG
-			gaudyPursuitAnnotation = true;
-			#endif
 		}
 
 		bool isAhead ( Vector3 target)	{return isAhead (target, 0.707f);}

@@ -1,3 +1,4 @@
+#define ANNOTATE_PURSUIT
 using System.Collections.Generic;
 using UnityEngine;
 using UnitySteer;
@@ -45,9 +46,9 @@ public class SteerForPursuit : Steering
 	protected override Vector3 CalculateForce ()
 	{
 		var force    = Vector3.zero;
-		var offset	 = _quarry.transform.position - transform.position;
+		var offset	 = _quarry.Position - Vehicle.Position;
 		var distance = offset.magnitude;
-        var radius   = Vehicle.Radius + _quarry.Radius;
+        var radius   = Vehicle.ScaledRadius + _quarry.ScaledRadius;
 
 		if (distance > radius)
 		{
@@ -126,6 +127,13 @@ public class SteerForPursuit : Steering
 			Vector3 target = _quarry.PredictFuturePosition (etl);
 
 			force = Vehicle.GetSeekVector(target);
+			
+			#if ANNOTATE_PURSUIT
+			Debug.DrawLine(Vehicle.Position, force, Color.blue);
+			Debug.DrawLine(Quarry.Position, target, Color.cyan);
+			Debug.DrawRay(target, Vector3.up * 4, Color.cyan);
+			#endif
+			
 		}
 		return force;
 	}

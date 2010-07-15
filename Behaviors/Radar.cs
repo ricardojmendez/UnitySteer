@@ -27,6 +27,8 @@ public class Radar: MonoBehaviour, ITick {
 	List<Obstacle> _obstacles = new List<Obstacle>();
 	
 	ObstacleFactory _obstacleFactory = null;
+	
+	Vehicle _vehicle;
 	#endregion
 	
 	
@@ -50,6 +52,15 @@ public class Radar: MonoBehaviour, ITick {
 			return _obstacles.AsReadOnly();
 		}
 
+	}
+	
+	/// <summary>
+	/// Gets the vehicle this radar is attached to
+	/// </summary>
+	public Vehicle Vehicle {
+		get {
+			return _vehicle;
+		}
 	}
 
 	/// <summary>
@@ -115,6 +126,11 @@ public class Radar: MonoBehaviour, ITick {
 	#endregion
 	
 	#region Methods
+	protected virtual void Awake() {
+		_vehicle = GetComponent<Vehicle>();	
+	}
+	
+	
 	void ExecuteRadar()
 	{
 		if (_tick.ShouldTick) {

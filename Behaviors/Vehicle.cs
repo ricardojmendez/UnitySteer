@@ -3,15 +3,28 @@ using UnitySteer;
 using System.Collections;
 
 
+/// <summary>
+/// Base class for vehicles. It does not move the objects, and instead 
+/// provides a set of basic functionality for its subclasses.  See
+/// AutonomousVehicle for one that does apply the steering forces.
+/// </summary>
 public class Vehicle: MonoBehaviour
 {
-	#region Internal state values
-	Vector3 _smoothedAcceleration;
-	Vector3 _smoothedPosition;
-	#endregion
-
 	#region Private fields
 	Steering[] _steerings;
+
+	/// <summary>
+	/// The vehicle's center in the transform
+	/// </summary>
+	[SerializeField]
+	[HideInInspector]
+	private Vector3 _center;
+	/// <summary>
+	/// The vehicle's center in the transform, scaled to by the transform's lossyScale
+	/// </summary>
+	[SerializeField]
+	[HideInInspector]
+	private Vector3 _scaledCenter;
 
 	[SerializeField]
 	private bool _hasInertia = false;
@@ -29,10 +42,20 @@ public class Vehicle: MonoBehaviour
 	[SerializeField]
 	bool _isPlanar = false;
 	
+	/// <summary>
+	/// The vehicle's radius.
+	/// </summary>
 	[SerializeField]
+	[HideInInspector]
 	float _radius = 1;
-
+	
+	/// <summary>
+	/// The vehicle's radius, scaled by the maximum of the transform's lossyScale values
+	/// </summary>
 	[SerializeField]
+	[HideInInspector]
+	float _scaledRadius = 1;
+
 	float _speed = 0;
 
 	[SerializeField]
@@ -62,6 +85,23 @@ public class Vehicle: MonoBehaviour
 		}
 		set {
 			_canMove = value;
+		}
+	}
+	
+	/// <summary>
+	/// Vehicle center on the transform
+	/// </summary>
+	/// <remarks>
+	/// This property's setter recalculates a temporary value, so it's
+	/// advised you don't re-scale the vehicle's transform after it has been set
+	/// </remarks>
+	public Vector3 Center {
+		get {
+			return this._center;
+		}
+		set {
+			_center = value;
+			_scaledCenter = Vector3.Scale(_center, transform.lossyScale);
 		}
 	}
 
@@ -135,6 +175,18 @@ public class Vehicle: MonoBehaviour
 			_maxSpeed = Mathf.Clamp(value, 0, float.MaxValue);
 		}
 	}
+	
+	/// <summary>
+	/// Vehicle's position
+	/// </summary>
+	/// <remarks>The vehicle's position is the transform's position displaced 
+	/// by the vehicle center</remarks>
+	public Vector3 Position {
+		get {
+			return transform.position + _scaledCenter;
+		}
+	}
+	
 
 	/// <summary>
 	/// Radar assigned to this vehicle
@@ -153,12 +205,38 @@ public class Vehicle: MonoBehaviour
 	/// <summary>
 	/// Vehicle radius
 	/// </summary>
+	/// <remarks>
+	/// This property's setter recalculates a temporary value, so it's
+	/// advised you don't re-scale the vehicle's transform after it has been set
+	/// </remarks>
 	public float Radius {
 		get {
 			return _radius;
 		}
 		set {
 			_radius = Mathf.Clamp(value, 0.01f, float.MaxValue);
+			
+			var scale  = transform.lossyScale;
+			_scaledRadius = _radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
+			
+		}
+	}
+
+	/// <summary>
+	/// The vehicle's center in the transform, scaled to by the transform's lossyScale
+	/// </summary>
+	public Vector3 ScaledCenter {
+		get {
+			return this._scaledCenter;
+		}
+	}
+	
+	/// <summary>
+	/// The vehicle's radius, scaled by the maximum of the transform's lossyScale values
+	/// </summary>
+		public float ScaledRadius {
+		get {
+			return this._scaledRadius;
 		}
 	}
 
@@ -171,6 +249,15 @@ public class Vehicle: MonoBehaviour
 		}
 		set {
 			_speed = Mathf.Clamp(value, 0, MaxSpeed);
+		}
+	}
+	
+	/// <summary>
+	/// Array of steering behaviors
+	/// </summary>
+	public Steering[] Steerings {
+		get {
+			return _steerings;
 		}
 	}
 
@@ -187,109 +274,22 @@ public class Vehicle: MonoBehaviour
 	#endregion
 
 	#region Methods
-	void Start()
+	protected void Start()
 	{
 		_steerings = this.GetComponents<Steering>();
-	}
-
-	void FixedUpdate()
-	{
-		var force = Vector3.zero;
-		foreach (var steering in _steerings)
-		{
-			if (steering.enabled)
-				force  += steering.WeighedForce;
-		}
-		ApplySteeringForce(force, Time.fixedDeltaTime);
-	}
-
-	/// <summary>
-	/// Applies a steering force to this vehicle
-	/// </summary>
-	/// <param name="force">
-	/// A force vector to apply<see cref="Vector3"/>
-	/// </param>
-	/// <param name="elapsedTime">
-	/// How long has elapsed since the last update<see cref="System.Single"/>
-	/// </param>
-	private void ApplySteeringForce(Vector3 force, float elapsedTime)
-	{
-		if (MaxForce == 0 || MaxSpeed == 0 || elapsedTime == 0)
-		{
-			return;
-		}
-
-		// enforce limit on magnitude of steering force
-		Vector3 clippedForce = Vector3.ClampMagnitude(force, MaxForce);
-
-		// compute acceleration and velocity
-		Vector3 newAcceleration = (clippedForce / Mass);
-
-		if (newAcceleration.sqrMagnitude == 0 && !HasInertia)
-		{
-			Speed = 0;
-		}
-
-		Vector3 newVelocity = Velocity;
-		
-		/*
-			Damp out abrupt changes and oscillations in steering acceleration
-			(rate is proportional to time step, then clipped into useful range)
-			
-			The lower the smoothRate parameter, the more noise there is
-			likely to be in the movement.
-		 */
-		_smoothedAcceleration = OpenSteerUtility.blendIntoAccumulator(0.4f,
-									newAcceleration,
-									_smoothedAcceleration);
-
-		// Euler integrate (per frame) acceleration into velocity
-		newVelocity += _smoothedAcceleration * elapsedTime;
-
-		// enforce speed limit
-		newVelocity = Vector3.ClampMagnitude(newVelocity, MaxSpeed);
-
-		if (IsPlanar)
-		{
-			newVelocity.y = Velocity.y;
-		}
-
-		// update Speed
-		Speed = newVelocity.magnitude;
-		
-		
-
-		// Euler integrate (per frame) velocity into position
-		// TODO: Change for a motor
-		if (rigidbody == null)
-		{
-			transform.position += (newVelocity * elapsedTime);
-		}
-		else
-		{
-			/*
-			 * TODO: This is just a quick test and should not remain, as the behavior is not
-			 * consistent to that we obtain when moving the transform.
-			 */
-			rigidbody.AddForce(Speed * elapsedTime * transform.forward, ForceMode.Impulse);
-		}
-		
-
-		// regenerate local space (by default: align vehicle's forward axis with
-		// new velocity, but this behavior may be overridden by derived classes.)
-		RegenerateLocalSpace (newVelocity);
-		
-		// running average of recent positions
-		_smoothedPosition = OpenSteerUtility.blendIntoAccumulator(elapsedTime * 0.06f,
-								transform.position,
-								_smoothedPosition);
 	}
 	
 	protected virtual void RegenerateLocalSpace (Vector3 newVelocity)
 	{
- 		if (Speed > 0)
-			transform.forward = newVelocity / Speed;
-	}	
+		// Avoid adjusting if we aren't applying any velocity
+ 		if (Speed > 0 && newVelocity != Vector3.zero)
+		{
+			var newForward = newVelocity / Speed;
+			newForward.y = IsPlanar ? transform.forward.y : newForward.y;
+			
+			transform.forward = newForward;
+		}
+	}
 	
 	/// <summary>
 	/// Adjust the steering force passed to ApplySteeringForce.
@@ -322,7 +322,7 @@ public class Vehicle: MonoBehaviour
 	public virtual Vector3 PredictFuturePosition(float predictionTime)
     {
         return transform.position + (Velocity * predictionTime);
-    }	
+	}
 	
 	
 	/// <summary>
@@ -352,7 +352,7 @@ public class Vehicle: MonoBehaviour
 		}
 		else
 		{
-			Vector3 offset = other.transform.position - transform.position;
+			Vector3 offset = other.Position - Position;
 			float distanceSquared = offset.sqrMagnitude;
 
 			// definitely in neighborhood if inside minDistance sphere
@@ -396,7 +396,7 @@ public class Vehicle: MonoBehaviour
 		 * the vehicle to stop.
 		 */
 		Vector3 force = Vector3.zero;
-        float d = Vector3.Distance(transform.position, target);
+        float d = Vector3.Distance(Position, target);
         if (d > Radius)
 		{
 			/*
@@ -409,7 +409,7 @@ public class Vehicle: MonoBehaviour
 			 * It doesn't apply the steering itself, simply returns the value so
 			 * we can continue operating on it.
 			 */
-			force = target - transform.position - Velocity;
+			force = target - Position - Velocity;
 		}
 		return force;
 		
@@ -457,7 +457,7 @@ public class Vehicle: MonoBehaviour
 
 		// find distance from its path to origin (compute offset from
 		// other to us, find length of projection onto path)
-		Vector3 relPosition = transform.position - other.transform.position;
+		Vector3 relPosition = Position - other.Position;
 		float projection = Vector3.Dot(relTangent, relPosition);
 
 		return projection / relSpeed;
@@ -491,8 +491,8 @@ public class Vehicle: MonoBehaviour
 		Vector3	   myTravel = transform.forward 	  *		Speed 	* time;
 		Vector3 otherTravel = other.transform.forward * other.Speed * time;
 
-		ourPosition = transform.position 	   + myTravel;
-		hisPosition = other.transform.position + otherTravel;
+		ourPosition = Position 		 + myTravel;
+		hisPosition = other.Position + otherTravel;
 
 		return Vector3.Distance(ourPosition, hisPosition);
 	}	
@@ -501,7 +501,7 @@ public class Vehicle: MonoBehaviour
 	void OnDrawGizmos()
 	{
 		Gizmos.color = Color.grey;
-		Gizmos.DrawWireSphere(transform.position, Radius);
+		Gizmos.DrawWireSphere(Position, _scaledRadius);
 	}
 	#endregion
 }

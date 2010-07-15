@@ -77,7 +77,7 @@ public class SteerToFollowPath : Steering
 		Vector3 futurePosition = Vehicle.PredictFuturePosition(_predictionTime);
 		
 		// measure distance along path of our current and predicted positions
-		float nowPathDistance = _path.mapPointToPathDistance (transform.position);
+		float nowPathDistance = _path.mapPointToPathDistance (Vehicle.Position);
 		float futurePathDistance = _path.mapPointToPathDistance (futurePosition);
 		
 		// are we facing in the correction direction?
