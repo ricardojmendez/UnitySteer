@@ -192,13 +192,13 @@ public class SteerForSphericalObstacleAvoidance : Steering
 				var mu2 = (-b - Mathf.Sqrt(bb4ac)) / (2*a);
 				/*
 				 * If the results are negative, the obstacle is behind us.
+				 * 
 				 * If one result is negative and the other one positive,
 				 * that would indicate that one intersection is behind us while
 				 * the other one ahead of us, which would mean that we're 
-				 * within the obstacle, and there's no sense in performing
-				 * avoidance anymore.
+				 * just overlapping the obstacle, so we should still avoid.  
 				 */
-				if (mu1 < 0 || mu2 < 0)
+				if (mu1 < 0 && mu2 < 0)
 					intersection.intersect = false;
 				else
 					closest = (Mathf.Abs(mu1) < Mathf.Abs (mu2)) ? mu1 * line : mu2 * line;
