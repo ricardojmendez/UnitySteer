@@ -101,7 +101,7 @@ public class Vehicle: MonoBehaviour
 		}
 		set {
 			_center = value;
-			_scaledCenter = Vector3.Scale(_center, transform.lossyScale);
+			RecalculateScaledValues();
 		}
 	}
 
@@ -216,9 +216,7 @@ public class Vehicle: MonoBehaviour
 		set {
 			_radius = Mathf.Clamp(value, 0.01f, float.MaxValue);
 			
-			var scale  = transform.lossyScale;
-			_scaledRadius = _radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
-			
+			RecalculateScaledValues();			
 		}
 	}
 
@@ -277,6 +275,7 @@ public class Vehicle: MonoBehaviour
 	protected void Start()
 	{
 		_steerings = this.GetComponents<Steering>();
+		RecalculateScaledValues();
 	}
 	
 	protected virtual void RegenerateLocalSpace (Vector3 newVelocity)
@@ -307,6 +306,15 @@ public class Vehicle: MonoBehaviour
 	protected virtual Vector3 AdjustRawSteeringForce(Vector3 force)
 	{
 		return force;
+	}
+
+	/// <summary>
+	/// Recalculates the vehicle's scaled radius and center
+	/// </summary>
+	protected void RecalculateScaledValues() {
+		var scale  = transform.lossyScale;
+		_scaledRadius = _radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
+		_scaledCenter = Vector3.Scale(_center, scale);
 	}
 	
 	
@@ -370,7 +378,7 @@ public class Vehicle: MonoBehaviour
 				else
 				{
 					// otherwise, test angular offset from forward axis
-					Vector3 unitOffset = offset / (float) System.Math.Sqrt (distanceSquared);
+					Vector3 unitOffset = offset / (float) Mathf.Sqrt (distanceSquared);
 					float forwardness = Vector3.Dot(transform.forward, unitOffset);
 					return forwardness > cosMaxAngle;
 				}
