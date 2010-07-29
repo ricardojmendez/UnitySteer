@@ -45,6 +45,11 @@ public class SteerForPursuit : Steering
 	
 	protected override Vector3 CalculateForce ()
 	{
+		if (_quarry == null) {
+			this.enabled = false;
+			return Vector3.zero;
+		}
+		
 		var force    = Vector3.zero;
 		var offset	 = _quarry.Position - Vehicle.Position;
 		var distance = offset.magnitude;
