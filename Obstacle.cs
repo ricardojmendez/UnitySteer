@@ -110,56 +110,6 @@ namespace UnitySteer
 
     		return obstacle;
     	}
-		
-        
-
-        // XXX 4-23-03: Temporary work around (see comment above)
-        //
-        // Checks for intersection of the given spherical obstacle with a
-        // volume of "likely future vehicle positions": a cylinder along the
-        // current path, extending minTimeToCollision seconds along the
-        // forward axis from current position.
-        //
-        // If they intersect, a collision is imminent and this function returns
-        // a steering force pointing laterally away from the obstacle's center.
-        //
-        // Returns a zero vector if the obstacle is outside the cylinder
-        //
-        // xxx couldn't this be made more compact using localizePosition?
-        public override Vector3 steerToAvoid(SteeringVehicle v, float minTimeToCollision)
-        {
-            // minimum distance to obstacle before avoidance is required
-            float minDistanceToCollision = minTimeToCollision * v.Speed;
-            float minDistanceToCenter = minDistanceToCollision + radius;
-
-            // contact distance: sum of radii of obstacle and vehicle
-             float totalRadius = radius + v.Radius;
-
-            // obstacle center relative to vehicle position
-             Vector3 localOffset = center - v.Position;
-
-            // distance along vehicle's forward axis to obstacle's center
-             float forwardComponent = Vector3.Dot(localOffset, v.Forward);
-             Vector3 forwardOffset = forwardComponent * v.Forward;
-
-            // offset from forward axis to obstacle's center
-             Vector3 offForwardOffset = localOffset - forwardOffset;
-
-            // test to see if sphere overlaps with obstacle-free corridor
-             bool inCylinder = offForwardOffset.magnitude < totalRadius;
-             bool nearby = forwardComponent < minDistanceToCenter;
-             bool inFront = forwardComponent > 0;
-
-            // if all three conditions are met, steer away from sphere center
-            if (inCylinder && nearby && inFront)
-            {
-                return offForwardOffset * -1;
-            }
-            else
-            {
-                return Vector3.zero;
-            }
-        }
 
         public void annotatePosition()
         {
