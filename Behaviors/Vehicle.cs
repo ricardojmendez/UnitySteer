@@ -10,6 +10,11 @@ using System.Collections;
 /// </summary>
 public class Vehicle: MonoBehaviour
 {
+	/// <summary>
+	/// Minimum force squared magnitude threshold
+	/// </summary>
+	static float MIN_FORCE_THRESHOLD = 0.01f;
+	
 	#region Private fields
 	Steering[] _steerings;
 
@@ -280,8 +285,12 @@ public class Vehicle: MonoBehaviour
 	
 	protected virtual void RegenerateLocalSpace (Vector3 newVelocity)
 	{
-		// Avoid adjusting if we aren't applying any velocity
- 		if (Speed > 0 && newVelocity != Vector3.zero)
+		/* 
+		 * Avoid adjusting if we aren't applying any velocity. We also
+		 * disregard very small velocities, to avoid jittery movement on
+		 * rounding errors.
+		 */
+ 		if (Speed > 0 && newVelocity.sqrMagnitude > MIN_FORCE_THRESHOLD)
 		{
 			var newForward = newVelocity / Speed;
 			newForward.y = IsPlanar ? transform.forward.y : newForward.y;
