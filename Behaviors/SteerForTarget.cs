@@ -19,10 +19,10 @@ public class SteerForTarget : Steering {
 	}
 
 	/// <summary>
-	/// Should the force be calculated?
+	/// Calculates the force to apply to a vehicle to reach a target transform
 	/// </summary>
 	/// <returns>
-	/// A <see cref="Vector3"/>
+	/// Force to apply <see cref="Vector3"/>
 	/// </returns>
 	protected override Vector3 CalculateForce()
 	{

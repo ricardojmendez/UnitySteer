@@ -237,7 +237,7 @@ public class Vehicle: MonoBehaviour
 	/// <summary>
 	/// The vehicle's radius, scaled by the maximum of the transform's lossyScale values
 	/// </summary>
-		public float ScaledRadius {
+	public float ScaledRadius {
 		get {
 			return this._scaledRadius;
 		}
