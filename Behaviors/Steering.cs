@@ -4,6 +4,22 @@ using UnitySteer.Helpers;
 
 public class Steering : MonoBehaviour, ITick {
 	
+	#region Delegate declarations
+	/// <summary>
+	/// Delegate for steering event notifications
+	/// </summary>
+	/// <remarks>
+	/// We really need the ability to communicate to whatever gameObject owns the
+	/// vehicle that some steering action is considered complete, for instance
+	/// when the pursuit behavior has reached its quarry.  I consider an event
+	/// on the component a lot cleaner than having the main behavior polling
+	/// constantly for "are we there yet?", particularly on cases like this one
+	/// where events are so easily identifiable.
+	/// </remarks>
+	public delegate void SteeringEventHandler<T>(SteeringEvent<T> e);
+	#endregion	
+	
+	
 	#region Private fields
 	/// <summary>
 	/// Last force calculated

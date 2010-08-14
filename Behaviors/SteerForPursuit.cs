@@ -10,6 +10,10 @@ using UnitySteer.Helpers;
 public class SteerForPursuit : Steering
 {
 	#region Private fields
+	bool _reportedArrival = false;
+	
+	SteeringEventHandler<Vehicle> _onArrival;
+	
 	[SerializeField]
 	Vehicle _quarry;
 	
@@ -30,15 +34,28 @@ public class SteerForPursuit : Steering
 		}
 	}
 	
+	public SteeringEventHandler<Vehicle> OnArrival {
+		get {
+			return this._onArrival;
+		}
+		set {
+			_onArrival = value;
+		}
+	}
+
 	/// <summary>
 	/// Target being pursued
 	/// </summary>
+	/// <remarks>When set, it will clear the flag that indicates we've already reported that we arrived</remarks>
 	public Vehicle Quarry {
 		get {
 			return this._quarry;
 		}
 		set {
-			_quarry = value;
+			if (_quarry != value) {
+				_reportedArrival = false;
+				_quarry = value;
+			}
 		}
 	}
 	#endregion
@@ -140,6 +157,15 @@ public class SteerForPursuit : Steering
 			#endif
 			
 		}
+		
+		// Raise the arrival event
+		if (!_reportedArrival && force == Vector3.zero) {
+			_reportedArrival = true;
+			_onArrival(new SteeringEvent<Vehicle>(this, "arrived", Quarry));
+		}
+		else
+			_reportedArrival = force == Vector3.zero;
+		
 		return force;
 	}
 }
