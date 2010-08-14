@@ -159,7 +159,7 @@ public class SteerForPursuit : Steering
 		}
 		
 		// Raise the arrival event
-		if (!_reportedArrival && force == Vector3.zero) {
+		if (!_reportedArrival && _onArrival != null && force == Vector3.zero) {
 			_reportedArrival = true;
 			_onArrival(new SteeringEvent<Vehicle>(this, "arrived", Quarry));
 		}

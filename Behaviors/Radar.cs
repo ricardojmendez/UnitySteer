@@ -13,6 +13,8 @@ using UnitySteer.Helpers;
 /// OnTriggerEnter/Exit</remarks>
 public class Radar: MonoBehaviour, ITick {
 	#region Private properties
+	SteeringEventHandler<Radar> _onDetected;
+	
 	[SerializeField]
 	Tick _tick;
 	
@@ -54,6 +56,15 @@ public class Radar: MonoBehaviour, ITick {
 
 	}
 	
+	public SteeringEventHandler<Radar> OnDetected {
+		get {
+			return this._onDetected;
+		}
+		set {
+			_onDetected = value;
+		}
+	}
+
 	/// <summary>
 	/// Gets the vehicle this radar is attached to
 	/// </summary>
@@ -136,6 +147,8 @@ public class Radar: MonoBehaviour, ITick {
 		if (_tick.ShouldTick) {
 			_detected = Detect();
 			FilterDetected();
+			if (_onDetected != null)
+				_onDetected(new SteeringEvent<Radar>(null, "detect", this));
 		}
 	}
 	
