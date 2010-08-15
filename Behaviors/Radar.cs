@@ -1,5 +1,5 @@
 using System.Linq;
-using System.Collections.Generic;
+using C5;
 using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
@@ -24,9 +24,10 @@ public class Radar: MonoBehaviour, ITick {
 	[SerializeField]
 	LayerMask _layersChecked;
 		
+	
 	IList<Collider> _detected;
-	List<Vehicle> _vehicles = new List<Vehicle>();
-	List<Obstacle> _obstacles = new List<Obstacle>();
+	IList<Vehicle> _vehicles = new ArrayList<Vehicle>();
+	IList<Obstacle> _obstacles = new ArrayList<Obstacle>();
 	
 	ObstacleFactory _obstacleFactory = null;
 	
@@ -51,7 +52,7 @@ public class Radar: MonoBehaviour, ITick {
 	public IList<Obstacle> Obstacles {
 		get {
 			ExecuteRadar();
-			return _obstacles.AsReadOnly();
+			return new GuardedList<Obstacle>(_obstacles);
 		}
 
 	}
@@ -80,7 +81,7 @@ public class Radar: MonoBehaviour, ITick {
 	public IList<Vehicle> Vehicles {
 		get {
 			ExecuteRadar();
-			return _vehicles.AsReadOnly();
+			return new GuardedList<Vehicle>(_vehicles);
 		}
 	}
 
@@ -154,7 +155,7 @@ public class Radar: MonoBehaviour, ITick {
 	
 	protected virtual IList<Collider> Detect()
 	{
-		return new List<Collider>();
+		return new ArrayList<Collider>();
 	}
 	
 	protected virtual void FilterDetected()

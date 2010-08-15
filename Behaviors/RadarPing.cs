@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using C5;
 using UnityEngine;
 using UnitySteer.Helpers;
 
@@ -47,7 +47,8 @@ public class RadarPing: Radar
 	protected override IList<Collider> Detect()
 	{
 		var detected = Physics.OverlapSphere(Vehicle.Position, _detectionRadius, LayersChecked);
-		var list = new List<Collider>(detected);
+		var list = new ArrayList<Collider>();
+		list.AddAll<Collider>(detected);
 		return list;
 	}
 	#endregion
