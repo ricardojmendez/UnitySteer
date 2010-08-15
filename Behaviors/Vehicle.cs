@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnitySteer;
-using System.Collections;
 
 
 /// <summary>

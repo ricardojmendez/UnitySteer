@@ -1,5 +1,4 @@
 #define ANNOTATE_AVOIDOBSTACLES
-using System.Collections.Generic;
 using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
@@ -100,6 +99,7 @@ public class SteerForSphericalObstacleAvoidance : Steering
 
 		// test all obstacles for intersection with my forward axis,
 		// select the one whose point of intersection is nearest
+		Profiler.BeginSample("Find nearest intersection");
 		foreach (var o in Vehicle.Radar.Obstacles)
 		{
 			SphericalObstacle sphere = o as SphericalObstacle;
@@ -111,9 +111,11 @@ public class SteerForSphericalObstacleAvoidance : Steering
 				nearest = next;
 			}
 		}
+		Profiler.EndSample();
 
 
 		// when a nearest intersection was found
+		Profiler.BeginSample("Calculate avoidance");
 		if (nearest.intersect &&
 			nearest.distance < line.magnitude)
 		{
@@ -132,6 +134,7 @@ public class SteerForSphericalObstacleAvoidance : Steering
 			avoidance *= Vehicle.MaxForce;
 			avoidance += transform.forward * Vehicle.MaxForce * _avoidanceForceFactor;
 		}
+		Profiler.EndSample();
 
 		return avoidance;
 	}

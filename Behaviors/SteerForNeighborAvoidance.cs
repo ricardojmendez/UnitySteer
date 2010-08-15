@@ -1,6 +1,5 @@
 #define ANNOTATE_AVOIDNEIGHBORS
 using UnityEngine;
-using System.Collections;
 
 public class SteerForNeighborAvoidance : Steering {
 	

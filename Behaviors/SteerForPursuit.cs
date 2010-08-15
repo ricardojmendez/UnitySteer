@@ -1,5 +1,4 @@
 #define ANNOTATE_PURSUIT
-using System.Collections.Generic;
 using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;

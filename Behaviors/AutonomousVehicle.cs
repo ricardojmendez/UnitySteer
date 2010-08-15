@@ -1,3 +1,4 @@
+#define PROFILING
 using UnityEngine;
 using UnitySteer;
 
@@ -9,7 +10,6 @@ public class AutonomousVehicle: Vehicle
 {
 	#region Internal state values
 	Vector3 _smoothedAcceleration;
-	Vector3 _smoothedPosition;
 	#endregion
 	
 	
@@ -17,11 +17,17 @@ public class AutonomousVehicle: Vehicle
 	void FixedUpdate()
 	{
 		var force = Vector3.zero;
+#if PROFILING
+		Profiler.BeginSample("Calculating forces");
+#endif
 		foreach (var steering in Steerings)
 		{
 			if (steering.enabled)
 				force  += steering.WeighedForce;
 		}
+#if PROFILING
+		Profiler.EndSample();
+#endif	
 		ApplySteeringForce(force, Time.fixedDeltaTime);
 	}
 	
@@ -83,6 +89,7 @@ public class AutonomousVehicle: Vehicle
 
 		// Euler integrate (per frame) velocity into position
 		// TODO: Change for a motor
+		Profiler.BeginSample("Applying displacement");
 		var delta = (newVelocity * elapsedTime);
 		if (rigidbody == null || rigidbody.isKinematic)
 		{
@@ -96,16 +103,12 @@ public class AutonomousVehicle: Vehicle
 			 */
 			rigidbody.MovePosition (rigidbody.position + delta);
 		}
+		Profiler.EndSample();
 		
 
 		// regenerate local space (by default: align vehicle's forward axis with
 		// new velocity, but this behavior may be overridden by derived classes.)
 		RegenerateLocalSpace (newVelocity);
-		
-		// running average of recent positions
-		_smoothedPosition = OpenSteerUtility.blendIntoAccumulator(elapsedTime * 0.06f,
-								Position,
-								_smoothedPosition);
 	}	
 	#endregion
 }
