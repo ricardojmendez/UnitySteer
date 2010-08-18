@@ -201,15 +201,5 @@ namespace UnitySteer
 			return result;;
 		}
 
-		// ----------------------------------------------------------------------------
-		// tries to maintain a given speed, returns a maxForce-clipped steering
-		// force along the forward/backward axis
-
-		public Vector3 steerForTargetSpeed ( float targetSpeed)
-		{
-			 float mf = MaxForce;
-			 float speedError = targetSpeed - Speed;
-			 return Forward * Mathf.Clamp (speedError, -mf, +mf);
-		}
 	}
 }

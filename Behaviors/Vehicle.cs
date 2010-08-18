@@ -430,6 +430,22 @@ public class Vehicle: MonoBehaviour
 		return force;
 	}
 	
+	/// <summary>
+	/// Returns a returns a maxForce-clipped steering force along the 
+	/// forward vector that can be used to try to maintain a target speed
+	/// </summary>
+	/// <returns>
+	/// The target speed vector.
+	/// </returns>
+	/// <param name='targetSpeed'>
+	/// Target speed to aim for.
+	/// </param>
+	public Vector3 GetTargetSpeedVector(float targetSpeed) {
+		 float mf = MaxForce;
+		 float speedError = targetSpeed - Speed;
+		 return transform.forward * Mathf.Clamp (speedError, -mf, +mf);		
+	}
+	
 	
 	/// <summary>
 	/// Returns the distance from the this vehicle to another
