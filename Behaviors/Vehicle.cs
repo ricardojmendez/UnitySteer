@@ -428,7 +428,21 @@ public class Vehicle: MonoBehaviour
 			force = target - Position - Velocity;
 		}
 		return force;
-		
+	}
+	
+	
+	/// <summary>
+	/// Returns the distance from the this vehicle to another
+	/// </summary>
+	/// <returns>
+	/// The distance between both vehicles' positions. If negative, they are overlapping.
+	/// </returns>
+	/// <param name='other'>
+	/// Vehicle to compare against.
+	/// </param>
+	public float DistanceFromPerimeter(Vehicle other) {
+		var diff  = Position - other.Position;
+		return diff.magnitude - ScaledRadius - other.ScaledRadius;
 	}
 	
 	/// <summary>

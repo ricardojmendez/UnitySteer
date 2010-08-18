@@ -1,4 +1,3 @@
-#define PROFILING
 using UnityEngine;
 using UnitySteer;
 
@@ -17,17 +16,17 @@ public class AutonomousVehicle: Vehicle
 	void FixedUpdate()
 	{
 		var force = Vector3.zero;
-#if PROFILING
+
 		Profiler.BeginSample("Calculating forces");
-#endif
+
 		foreach (var steering in Steerings)
 		{
 			if (steering.enabled)
 				force  += steering.WeighedForce;
 		}
-#if PROFILING
+
 		Profiler.EndSample();
-#endif	
+
 		ApplySteeringForce(force, Time.fixedDeltaTime);
 	}
 	

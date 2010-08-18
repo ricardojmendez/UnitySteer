@@ -140,8 +140,6 @@ public class SteerForPursuit : Steering
 
 			// estimated time until intercept of quarry
 			float et = directTravelTime * timeFactor;
-
-			// xxx experiment, if kept, this limit should be an argument
 			float etl = (et > _maxPredictionTime) ? _maxPredictionTime : et;
 
 			// estimated position of quarry at intercept
@@ -154,7 +152,6 @@ public class SteerForPursuit : Steering
 			Debug.DrawLine(Quarry.Position, target, Color.cyan);
 			Debug.DrawRay(target, Vector3.up * 4, Color.cyan);
 			#endif
-			
 		}
 		
 		// Raise the arrival event
