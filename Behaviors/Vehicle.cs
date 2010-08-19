@@ -22,16 +22,16 @@ public class Vehicle: MonoBehaviour
 	/// </summary>
 	[SerializeField]
 	[HideInInspector]
-	private Vector3 _center;
+	Vector3 _center;
 	/// <summary>
 	/// The vehicle's center in the transform, scaled to by the transform's lossyScale
 	/// </summary>
 	[SerializeField]
 	[HideInInspector]
-	private Vector3 _scaledCenter;
+	Vector3 _scaledCenter;
 
 	[SerializeField]
-	private bool _hasInertia = false;
+	bool _hasInertia = false;
 
 	[SerializeField]
 	/// <summary>
@@ -41,7 +41,7 @@ public class Vehicle: MonoBehaviour
 	/// This value will be disregarded if the object has a rigidbody, and
 	/// that rigidbody's mass value will be used instead.
 	////remarks>
-	private float _internalMass = 1;
+	float _internalMass = 1;
 	
 	[SerializeField]
 	bool _isPlanar = false;
@@ -67,15 +67,22 @@ public class Vehicle: MonoBehaviour
 
 	[SerializeField]
 	float _maxForce = 10;
-	
 
 	/// <summary>
 	/// Indicates if the behavior should move or not
 	/// </summary>
 	[SerializeField]
 	bool _canMove = true;
-
-	private Radar _radar;
+	
+	/// <summary>
+	/// Cached Radar attached to the same gameobject
+	/// </summary>
+	Radar _radar;
+	
+	/// <summary>
+	/// Cached transform for this behaviour
+	/// </summary>
+	Transform _transform;
 	#endregion
 
 
@@ -187,7 +194,7 @@ public class Vehicle: MonoBehaviour
 	/// by the vehicle center</remarks>
 	public Vector3 Position {
 		get {
-			return transform.position + _scaledCenter;
+			return _transform.position + _scaledCenter;
 		}
 	}
 	
@@ -270,15 +277,16 @@ public class Vehicle: MonoBehaviour
 	{
 		get
 		{
-			return transform.forward * _speed;
+			return _transform.forward * _speed;
 		}
 	}
 	#endregion
 
 	#region Methods
-	protected void Start()
+	protected void Awake()
 	{
-		_steerings = this.GetComponents<Steering>();
+		_steerings = GetComponents<Steering>();
+		_transform = GetComponent<Transform>();
 		RecalculateScaledValues();
 	}
 	
@@ -292,9 +300,9 @@ public class Vehicle: MonoBehaviour
  		if (Speed > 0 && newVelocity.sqrMagnitude > MIN_FORCE_THRESHOLD)
 		{
 			var newForward = newVelocity / Speed;
-			newForward.y = IsPlanar ? transform.forward.y : newForward.y;
+			newForward.y = IsPlanar ? _transform.forward.y : newForward.y;
 			
-			transform.forward = newForward;
+			_transform.forward = newForward;
 		}
 	}
 	
@@ -320,7 +328,7 @@ public class Vehicle: MonoBehaviour
 	/// Recalculates the vehicle's scaled radius and center
 	/// </summary>
 	protected void RecalculateScaledValues() {
-		var scale  = transform.lossyScale;
+		var scale  = _transform.lossyScale;
 		_scaledRadius = _radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
 		_scaledCenter = Vector3.Scale(_center, scale);
 	}
@@ -337,7 +345,7 @@ public class Vehicle: MonoBehaviour
 	/// </returns>
 	public virtual Vector3 PredictFuturePosition(float predictionTime)
     {
-        return transform.position + (Velocity * predictionTime);
+        return _transform.position + (Velocity * predictionTime);
 	}
 	
 	
@@ -387,7 +395,7 @@ public class Vehicle: MonoBehaviour
 				{
 					// otherwise, test angular offset from forward axis
 					Vector3 unitOffset = offset / (float) Mathf.Sqrt (distanceSquared);
-					float forwardness = Vector3.Dot(transform.forward, unitOffset);
+					float forwardness = Vector3.Dot(_transform.forward, unitOffset);
 					return forwardness > cosMaxAngle;
 				}
 			}
@@ -443,7 +451,7 @@ public class Vehicle: MonoBehaviour
 	public Vector3 GetTargetSpeedVector(float targetSpeed) {
 		 float mf = MaxForce;
 		 float speedError = targetSpeed - Speed;
-		 return transform.forward * Mathf.Clamp (speedError, -mf, +mf);		
+		 return _transform.forward * Mathf.Clamp (speedError, -mf, +mf);		
 	}
 	
 	
@@ -466,8 +474,8 @@ public class Vehicle: MonoBehaviour
 	/// </summary>
 	public void ResetOrientation()
 	{
-		transform.up = Vector3.up;
-		transform.forward = Vector3.forward;
+		_transform.up = Vector3.up;
+		_transform.forward = Vector3.forward;
 	}
 	
 	
@@ -534,8 +542,8 @@ public class Vehicle: MonoBehaviour
 												  ref Vector3 ourPosition, 
 												  ref Vector3 hisPosition)
 	{
-		Vector3	   myTravel = transform.forward 	  *		Speed 	* time;
-		Vector3 otherTravel = other.transform.forward * other.Speed * time;
+		Vector3	   myTravel = _transform.forward 	   *	   Speed * time;
+		Vector3 otherTravel = other._transform.forward * other.Speed * time;
 
 		ourPosition = Position 		 + myTravel;
 		hisPosition = other.Position + otherTravel;
@@ -546,6 +554,10 @@ public class Vehicle: MonoBehaviour
 	
 	void OnDrawGizmos()
 	{
+		// Since this value gets assigned on Awake, we need to assign it when on the editor
+		if (_transform == null)
+			_transform = GetComponent<Transform>();
+
 		Gizmos.color = Color.grey;
 		Gizmos.DrawWireSphere(Position, _scaledRadius);
 	}
