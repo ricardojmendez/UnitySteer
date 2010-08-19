@@ -30,7 +30,10 @@ public class SteerForNeighbors : Steering
 	[SerializeField]
 	float _maxRadius = 7.5f;
 	[SerializeField]
-	float _angleCos = 0.7f;
+	float _angleCos = 0.7f;	
+	[SerializeField]
+	LayerMask _layersChecked;
+	
 	#endregion
 	
 	
@@ -65,6 +68,18 @@ public class SteerForNeighbors : Steering
         }
     }	
 	
+	/// <summary>
+	/// Indicates the vehicles on which layers are evaluated on this behavior
+	/// </summary>	
+	public LayerMask LayersChecked {
+		get {
+			return this._layersChecked;
+		}
+		set {
+			_layersChecked = value;
+		}
+	}
+
 	/// <summary>
 	/// Minimum radius in which another vehicle is definitely considered in the neighborhood
 	/// </summary>
@@ -102,9 +117,11 @@ public class SteerForNeighbors : Steering
 		for (int i = 0; i < Vehicle.Radar.Vehicles.Count; i++)
 		{
 			Vehicle other = Vehicle.Radar.Vehicles[i];
-			if (Vehicle.IsInNeighborhood (other, MinRadius, MaxRadius, AngleCos)) {
+			if ((1 << other.gameObject.layer & LayersChecked) != 0 &&
+				Vehicle.IsInNeighborhood (other, MinRadius, MaxRadius, AngleCos)) 
+			{
 				#if DEBUG_DRAWNEIGHBORS
-				Debug.DrawLine(Vehicle.Position, other.Position, Color.clear);
+				Debug.DrawLine(Vehicle.Position, other.Position, Color.magenta);
 				#endif
 				steering += CalculateNeighborContribution(other);				
 				neighbors++;
