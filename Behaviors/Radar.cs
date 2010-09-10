@@ -145,7 +145,7 @@ public class Radar: MonoBehaviour, ITick {
 	
 	void ExecuteRadar()
 	{
-		if (_tick.ShouldTick) {
+		if (_tick.ShouldTick()) {
 			_detected = Detect();
 			FilterDetected();
 			if (_onDetected != null)

@@ -30,7 +30,7 @@ public class Steering : MonoBehaviour, ITick {
 	{
 		get
 		{
-			if (Tick.ShouldTick)
+			if (Tick.ShouldTick())
 				_force = CalculateForce();
 			return _force;
 		}
