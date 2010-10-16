@@ -9,10 +9,19 @@ public class AutonomousVehicle: Vehicle
 {
 	#region Internal state values
 	Vector3 _smoothedAcceleration;
+	Rigidbody _rigidbody;
+	CharacterController _characterController;
 	#endregion
 	
 	
 	#region Methods
+	void Start()
+	{
+		_rigidbody = GetComponent<Rigidbody>();
+		_characterController = GetComponent<CharacterController>();
+	}
+		
+	
 	void FixedUpdate()
 	{
 		var force = Vector3.zero;
@@ -90,7 +99,11 @@ public class AutonomousVehicle: Vehicle
 		// TODO: Change for a motor
 		Profiler.BeginSample("Applying displacement");
 		var delta = (newVelocity * elapsedTime);
-		if (rigidbody == null || rigidbody.isKinematic)
+		if (_characterController != null) 
+		{
+			_characterController.Move(delta);
+		}
+		else if (_rigidbody == null || _rigidbody.isKinematic)
 		{
 			transform.position += delta;
 		}
@@ -100,7 +113,7 @@ public class AutonomousVehicle: Vehicle
 			 * TODO: This is just a quick test and should not remain, as the behavior is not
 			 * consistent to that we obtain when moving the transform.
 			 */
-			rigidbody.MovePosition (rigidbody.position + delta);
+			_rigidbody.MovePosition (_rigidbody.position + delta);
 		}
 		Profiler.EndSample();
 		
