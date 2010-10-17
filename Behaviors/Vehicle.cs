@@ -7,6 +7,13 @@ using UnitySteer;
 /// provides a set of basic functionality for its subclasses.  See
 /// AutonomousVehicle for one that does apply the steering forces.
 /// </summary>
+/// <remarks>The main reasoning behind having a base vehicle class that is not
+/// autonomous in a library geared towards autonomous vehicles, is that in
+/// some circumstances we want to treat agents such as the player (wihch is not
+/// controlled by our automated steering functions) the same as other 
+/// vehicles, at least for purposes of estimation, avoidance, pursuit, etc.
+/// In this case, the base Vehicle class can be used to provide an interface
+/// to whatever is doing the moving, like a CharacterMotor.</remarks>
 public class Vehicle: MonoBehaviour
 {
 	/// <summary>
