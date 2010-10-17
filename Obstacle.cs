@@ -72,39 +72,50 @@ namespace UnitySteer
 
     		if(!ObstacleCache.ContainsKey( id ))
     		{
-    			colliders = gameObject.GetComponentsInChildren<Collider>();
-
-    			if( colliders == null )
-    			{
-    				Debug.LogError( "Obstacle '" + gameObject.name + "' has no colliders" );
-    				return null;
-    			}
-
-    			foreach( Collider collider in colliders )
-    			{
-    				if( collider.isTrigger )
-    				{
-    					continue;
-    				}
-    				// Get the maximum extent to create a sphere that encompasses the whole obstacle
-    				float maxExtents = Mathf.Max(Mathf.Max(collider.bounds.extents.x, collider.bounds.extents.y),
-    				                             collider.bounds.extents.z);
-    				
-				    /*
-				     * Calculate the displacement from the object center to the 
-				     * collider, and add in the maximum extents of the bounds.
-				     * Notice that we don't need to multiply by the object's 
-				     * local scale, since that is already considered in the 
-				     * bounding rectangle.
-				     */
-				    float distanceToCollider = Vector3.Distance(gameObject.transform.position, collider.bounds.center);
-                    currentRadius = distanceToCollider + maxExtents;
-    				if( currentRadius > radius )
-    				{
-    					radius = currentRadius;
-    				}
-    			}
-    			ObstacleCache[id] = new SphericalObstacle( radius, gameObject.transform.position );
+				var obstacleData = gameObject.GetComponent<SphericalObstacleData>();
+				// If the object provides his own spherical obstacle information,
+				// use it instead of calculating a sphere that encompasses the 
+				// whole collider.
+				if (obstacleData != null) 
+				{
+					ObstacleCache[id] = new SphericalObstacle(obstacleData.Radius, gameObject.transform.position + obstacleData.Center);
+				}
+				else 
+				{
+	    			colliders = gameObject.GetComponentsInChildren<Collider>();
+	
+	    			if( colliders == null )
+	    			{
+	    				Debug.LogError( "Obstacle '" + gameObject.name + "' has no colliders" );
+	    				return null;
+	    			}
+	
+	    			foreach( Collider collider in colliders )
+	    			{
+	    				if( collider.isTrigger )
+	    				{
+	    					continue;
+	    				}
+	    				// Get the maximum extent to create a sphere that encompasses the whole obstacle
+	    				float maxExtents = Mathf.Max(Mathf.Max(collider.bounds.extents.x, collider.bounds.extents.y),
+	    				                             collider.bounds.extents.z);
+	    				
+					    /*
+					     * Calculate the displacement from the object center to the 
+					     * collider, and add in the maximum extents of the bounds.
+					     * Notice that we don't need to multiply by the object's 
+					     * local scale, since that is already considered in the 
+					     * bounding rectangle.
+					     */
+					    float distanceToCollider = Vector3.Distance(gameObject.transform.position, collider.bounds.center);
+	                    currentRadius = distanceToCollider + maxExtents;
+	    				if( currentRadius > radius )
+	    				{
+	    					radius = currentRadius;
+	    				}
+	    			}
+	    			ObstacleCache[id] = new SphericalObstacle( radius, gameObject.transform.position );
+				}
     		}
     		obstacle = ObstacleCache[ id ] as SphericalObstacle;
 
