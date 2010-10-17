@@ -23,6 +23,9 @@ public class Vehicle: MonoBehaviour
 	
 	#region Private fields
 	Steering[] _steerings;
+	
+	[SerializeField]
+	bool _drawGizmos = false;
 
 	/// <summary>
 	/// The vehicle's center in the transform
@@ -562,11 +565,14 @@ public class Vehicle: MonoBehaviour
 	void OnDrawGizmos()
 	{
 		// Since this value gets assigned on Awake, we need to assign it when on the editor
-		if (_transform == null)
-			_transform = GetComponent<Transform>();
-
-		Gizmos.color = Color.grey;
-		Gizmos.DrawWireSphere(Position, _scaledRadius);
+		if (_drawGizmos)
+		{
+			if (_transform == null)
+				_transform = GetComponent<Transform>();
+	
+			Gizmos.color = Color.grey;
+			Gizmos.DrawWireSphere(Position, _scaledRadius);
+		}
 	}
 	#endregion
 }
