@@ -109,10 +109,6 @@ public class AutonomousVehicle: Vehicle
 		}
 		else
 		{
-			/*
-			 * TODO: This is just a quick test and should not remain, as the behavior is not
-			 * consistent to that we obtain when moving the transform.
-			 */
 			_rigidbody.MovePosition (_rigidbody.position + delta);
 		}
 		Profiler.EndSample();
