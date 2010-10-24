@@ -51,9 +51,9 @@ namespace UnitySteer
 	/// </remarks>
     public class PolylinePathway : Pathway
     {
-        int pointCount;
-        Vector3[] points;
-        float radius;
+        int _pointCount;
+        Vector3[] _points;
+        float _radius;
 
         float segmentLength;
         float segmentProjection;
@@ -70,40 +70,40 @@ namespace UnitySteer
 
         // construct a PolylinePathway given the number of points (vertices),
         // an array of points, and a path radius.
-        PolylinePathway (Vector3[] _points, float _radius, bool _cyclic)
+        PolylinePathway (Vector3[] points, float radius, bool isCyclic)
         {
-            initialize (_points, _radius, _cyclic);
+            initialize (points, radius, isCyclic);
         }
 
         // utility for constructors in derived classes
-        void initialize (Vector3[] _points, float _radius, bool _cyclic)
+        void initialize (Vector3[] points, float radius, bool isCyclic)
         {
             // set data members, allocate arrays
-            radius = _radius;
-            isCyclic = _cyclic;
-            pointCount = _points.Length;
+            _radius = radius;
+            IsCyclic = isCyclic;
+            _pointCount = points.Length;
             totalPathLength = 0;
             if (isCyclic) 
             {
-                pointCount++;
+                _pointCount++;
             }
-            lengths = new float [pointCount];
-            points  = new Vector3 [pointCount];
-            normals = new Vector3 [pointCount];
+            lengths = new float [_pointCount];
+            _points  = new Vector3 [_pointCount];
+            normals = new Vector3 [_pointCount];
 
             // loop over all points
-            for (int i = 0; i < _points.Length; i++)
+            for (int i = 0; i < points.Length; i++)
             {
                 // copy in point locations, closing cycle when appropriate
-                bool closeCycle = isCyclic && (i == pointCount-1);
+                bool closeCycle = isCyclic && (i == _pointCount-1);
                 int j = closeCycle ? 0 : i;
-                points[i] = _points[j];
+                _points[i] = points[j];
 
                 // for the end of each segment
                 if (i > 0)
                 {
                     // compute the segment length
-                    normals[i] = points[i] - points[i-1];
+                    normals[i] = _points[i] - _points[i-1];
                     lengths[i] = normals[i].magnitude;
 
                     // find the normalized vector parallel to the segment
@@ -126,18 +126,18 @@ namespace UnitySteer
         }
 
 
-        public override Vector3 mapPointToPath(Vector3 point, ref mapReturnStruct tStruct)
+        public override Vector3 MapPointToPath(Vector3 point, ref mapReturnStruct tStruct)
         {
             float d;
             float minDistance = float.MaxValue;// FLT_MAX;
             Vector3 onPath=Vector3.zero;
 
             // loop over all segments, find the one nearest to the given point
-            for (int i = 1; i < pointCount; i++)
+            for (int i = 1; i < _pointCount; i++)
             {
                 segmentLength = lengths[i];
                 segmentNormal = normals[i];
-                d = pointToSegmentDistance (point, points[i-1], points[i]);
+                d = PointToSegmentDistance (point, _points[i-1], _points[i]);
                 if (d < minDistance)
                 {
                     minDistance = d;
@@ -147,24 +147,24 @@ namespace UnitySteer
             }
 
             // measure how far original point is outside the Pathway's "tube"
-            tStruct.outside = (onPath - point).magnitude - radius;
+            tStruct.outside = (onPath - point).magnitude - _radius;
 
             // return point on path
             return onPath;
         }
 
-        public override float mapPointToPathDistance(Vector3 point)
+        public override float MapPointToPathDistance(Vector3 point)
         {
             float d;
             float minDistance = float.MaxValue;
             float segmentLengthTotal = 0;
             float pathDistance = 0;
 
-            for (int i = 1; i < pointCount; i++)
+            for (int i = 1; i < _pointCount; i++)
             {
                 segmentLength = lengths[i];
                 segmentNormal = normals[i];
-                d = pointToSegmentDistance (point, points[i-1], points[i]);
+                d = PointToSegmentDistance (point, _points[i-1], _points[i]);
                 if (d < minDistance)
                 {
                     minDistance = d;
@@ -177,25 +177,25 @@ namespace UnitySteer
             return pathDistance;
         }
 
-        public override Vector3 mapPathDistanceToPoint(float pathDistance)
+        public override Vector3 MapPathDistanceToPoint(float pathDistance)
         {
             // clip or wrap given path distance according to cyclic flag
             float remaining = pathDistance;
-            if (isCyclic)
+            if (IsCyclic)
             {
                 remaining = (float)System.Math.IEEERemainder(pathDistance, totalPathLength);
             }
             else
             {
-                if (pathDistance < 0) return points[0];
-                if (pathDistance >= totalPathLength) return points [pointCount-1];
+                if (pathDistance < 0) return _points[0];
+                if (pathDistance >= totalPathLength) return _points [_pointCount-1];
             }
 
             // step through segments, subtracting off segment lengths until
             // locating the segment that contains the original pathDistance.
             // Interpolate along that segment to find 3d point value to return.
             Vector3 result=Vector3.zero;
-            for (int i = 1; i < pointCount; i++)
+            for (int i = 1; i < _pointCount; i++)
             {
                 segmentLength = lengths[i];
                 if (segmentLength < remaining)
@@ -205,7 +205,7 @@ namespace UnitySteer
                 else
                 {
                     float ratio = remaining / segmentLength;
-                    result = Vector3.Lerp(points[i - 1], points[i], ratio);
+                    result = Vector3.Lerp(_points[i - 1], _points[i], ratio);
                     break;
                 }
             }
@@ -222,7 +222,7 @@ namespace UnitySteer
         // RJM: Look into OpenSteerUtility for a version  of this method without
         // the entangled local state
         // 
-        float pointToSegmentDistance (Vector3 point, Vector3 ep0, Vector3 ep1)
+        float PointToSegmentDistance (Vector3 point, Vector3 ep0, Vector3 ep1)
         {
             // convert the test point to be "local" to ep0
             Vector3 local = point - ep0;

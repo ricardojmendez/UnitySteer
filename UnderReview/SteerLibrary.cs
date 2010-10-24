@@ -116,7 +116,7 @@ namespace UnitySteer
 			// find the point on the path nearest the predicted future position
 			mapReturnStruct tStruct = new mapReturnStruct();
 
-			Vector3 onPath = path.mapPointToPath(futurePosition, ref tStruct);
+			Vector3 onPath = path.MapPointToPath(futurePosition, ref tStruct);
 
 			if (tStruct.outside < 0)
 			{

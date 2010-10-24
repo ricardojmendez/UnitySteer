@@ -77,8 +77,8 @@ public class SteerToFollowPath : Steering
 		Vector3 futurePosition = Vehicle.PredictFuturePosition(_predictionTime);
 		
 		// measure distance along path of our current and predicted positions
-		float nowPathDistance = _path.mapPointToPathDistance (Vehicle.Position);
-		float futurePathDistance = _path.mapPointToPathDistance (futurePosition);
+		float nowPathDistance = _path.MapPointToPathDistance (Vehicle.Position);
+		float futurePathDistance = _path.MapPointToPathDistance (futurePosition);
 		
 		// are we facing in the correction direction?
 		bool rightway = ((pathDistanceOffset > 0) ? (nowPathDistance < futurePathDistance) : (nowPathDistance > futurePathDistance));
@@ -88,7 +88,7 @@ public class SteerToFollowPath : Steering
 		// XXX special path-defined object which includes two Vector3s and a 
 		// XXX bool (onPath,tangent (ignored), withinPath)
 		mapReturnStruct tStruct = new mapReturnStruct ();
-		_path.mapPointToPath (futurePosition, ref tStruct);
+		_path.MapPointToPath (futurePosition, ref tStruct);
 		
 		
 		// no steering is required if (a) our future position is inside
@@ -101,7 +101,7 @@ public class SteerToFollowPath : Steering
 			// by adding pathDistanceOffset to our current path position
 			
 			float targetPathDistance = nowPathDistance + pathDistanceOffset;
-			Vector3 target = _path.mapPathDistanceToPoint (targetPathDistance);
+			Vector3 target = _path.MapPathDistanceToPoint (targetPathDistance);
 			
 			// return steering to seek target on path
 			return Vehicle.GetSeekVector(target);
