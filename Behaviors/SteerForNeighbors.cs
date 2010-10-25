@@ -56,7 +56,7 @@ public class SteerForNeighbors : Steering
 	/// Degree accessor for the angle
 	/// </summary>
 	/// <remarks>The cosine is actually used in calculations for performance reasons</remarks>
-    public float AngleDeg
+    public float AngleDegrees
     {
         get
         {

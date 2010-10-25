@@ -14,6 +14,19 @@ public class SteerForNeighborAvoidance : Steering {
 	
 	
 	#region Public properties
+	public float AvoidAngleDegrees 
+	{
+		get
+		{
+			return UnitySteer.OpenSteerUtility.DegreesFromCos(AvoidAngleCos);
+		}
+		set
+		{
+			AvoidAngleCos = UnitySteer.OpenSteerUtility.CosFromDegrees(value);
+		}
+	}
+	
+	
 	/// <summary>
 	/// Cosine of the angle limit for the approach that a neighbor must be 
 	/// coming at before we avoid it
