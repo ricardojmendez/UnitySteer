@@ -45,7 +45,7 @@ namespace UnitySteer
         public Vector3 tangent;
     }
 
-    public class Pathway
+    public abstract class Pathway
     {
         private bool _isCyclic;
         
@@ -86,6 +86,14 @@ namespace UnitySteer
                 return GetLastPoint();
             }
         }
+		
+		public int SegmentCount
+		{
+			get
+			{
+				return GetSegmentCount();
+			}
+		}
         
         
         // Returns the total path length. It's expected to be overriden by the 
@@ -116,6 +124,11 @@ namespace UnitySteer
         {
             return Vector3.zero;
         }
+		
+		protected virtual int GetSegmentCount()
+		{
+			return 0;
+		}
         
         // Given an arbitrary point ("A"), returns the nearest point ("P") on
         // this path.  Also returns, via output arguments, the path tangent at

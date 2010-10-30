@@ -67,7 +67,7 @@ public class SteerToFollowPath : Steering
 	/// </returns>
 	protected override Vector3 CalculateForce ()
 	{
-		if (_path == null) 
+		if (_path == null || _path.SegmentCount < 2) 
 			return Vector3.zero;
 		
 		// our goal will be offset from our path distance by this amount
@@ -87,24 +87,27 @@ public class SteerToFollowPath : Steering
 		// XXX need to improve calling sequence, maybe change to return a
 		// XXX special path-defined object which includes two Vector3s and a 
 		// XXX bool (onPath,tangent (ignored), withinPath)
-		mapReturnStruct tStruct = new mapReturnStruct ();
+		var tStruct = new mapReturnStruct ();
 		_path.MapPointToPath (futurePosition, ref tStruct);
 		
 		
 		// no steering is required if (a) our future position is inside
 		// the path tube and (b) we are facing in the correct direction
-		if ((tStruct.outside < 0) && rightway) {
+		if ((tStruct.outside < 0) && rightway) 
+		{
 			// all is well, return zero steering
 			return Vector3.zero;
-		} else {
+		} else 
+		{
 			// otherwise we need to steer towards a target point obtained
 			// by adding pathDistanceOffset to our current path position
 			
 			float targetPathDistance = nowPathDistance + pathDistanceOffset;
-			Vector3 target = _path.MapPathDistanceToPoint (targetPathDistance);
+			var target = _path.MapPathDistanceToPoint (targetPathDistance);
 			
 			// return steering to seek target on path
-			return Vehicle.GetSeekVector(target);
+			var seek = Vehicle.GetSeekVector(target);
+			return seek;
 		}
 	}
 }
