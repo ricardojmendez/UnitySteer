@@ -25,9 +25,7 @@ public class AutonomousVehicle: Vehicle
 	void FixedUpdate()
 	{
 		var force = Vector3.zero;
-
 		Profiler.BeginSample("Calculating forces");
-
 		foreach (var steering in Steerings)
 		{
 			if (steering.enabled)
@@ -35,8 +33,17 @@ public class AutonomousVehicle: Vehicle
 		}
 
 		Profiler.EndSample();
-
-		ApplySteeringForce(force, Time.fixedDeltaTime);
+		
+		// We still update the forces if the vehicle cannot move, as the
+		// calculations on those steering behaviors might be relevant for
+		// other methods, but we don't apply it.  
+		//
+		// If you don't want to have the forces calculated at all, simply
+		// disable the vehicle.
+		if (CanMove)
+		{
+			ApplySteeringForce(force, Time.fixedDeltaTime);
+		}
 	}
 	
 	/// <summary>
