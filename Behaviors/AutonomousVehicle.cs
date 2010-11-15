@@ -44,6 +44,11 @@ public class AutonomousVehicle: Vehicle
 		{
 			ApplySteeringForce(force, Time.fixedDeltaTime);
 		}
+		else 
+		{
+			Speed = 0;
+		}
+			
 	}
 	
 	/// <summary>
