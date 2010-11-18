@@ -23,6 +23,7 @@ public class Vehicle: MonoBehaviour
 	
 	#region Private fields
 	Steering[] _steerings;
+	float _squaredRadius;
 	
 	[SerializeField]
 	bool _drawGizmos = false;
@@ -236,7 +237,6 @@ public class Vehicle: MonoBehaviour
 		}
 		set {
 			_radius = Mathf.Clamp(value, 0.01f, float.MaxValue);
-			
 			RecalculateScaledValues();			
 		}
 	}
@@ -256,6 +256,12 @@ public class Vehicle: MonoBehaviour
 	public float ScaledRadius {
 		get {
 			return this._scaledRadius;
+		}
+	}
+
+	public float SquaredRadius {
+		get {
+			return this._squaredRadius;
 		}
 	}
 
@@ -341,6 +347,7 @@ public class Vehicle: MonoBehaviour
 		var scale  = _transform.lossyScale;
 		_scaledRadius = _radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
 		_scaledCenter = Vector3.Scale(_center, scale);
+		_squaredRadius = _radius * _radius;
 	}
 	
 	
