@@ -2,6 +2,7 @@ using UnityEngine;
 using UnitySteer.Helpers;
 
 public class Steering : MonoBehaviour, ITick {	
+	public const string STEERING_MESSAGE = "Steering";
 	
 	#region Private fields
 	/// <summary>
