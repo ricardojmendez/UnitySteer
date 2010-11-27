@@ -26,6 +26,9 @@ public class Vehicle: MonoBehaviour
 	float _squaredRadius;
 	
 	[SerializeField]
+	float _speedFactorOnTurn = 1;
+	
+	[SerializeField]
 	bool _drawGizmos = false;
 
 	/// <summary>
@@ -278,6 +281,29 @@ public class Vehicle: MonoBehaviour
 	}
 	
 	/// <summary>
+	/// How much of the vehicle's speed should count against it when turning
+	/// </summary>
+	/// <value>
+	/// The speed factor on turn.
+	/// </value>
+	/// <remarks>
+	/// By default, RegenerateLocalSpace divides the new velocity by the 
+	/// vehicle's speed.  This value will set if the full Speed should be
+	/// used as a divider (when set to 1) or a fraction of it.
+	/// </remarks>
+	public float SpeedFactorOnTurn 
+	{
+		get 
+		{
+			return this._speedFactorOnTurn;
+		}
+		set 
+		{
+			_speedFactorOnTurn = Mathf.Max(0, value);
+		}
+	}
+
+	/// <summary>
 	/// Array of steering behaviors
 	/// </summary>
 	public Steering[] Steerings {
@@ -315,7 +341,7 @@ public class Vehicle: MonoBehaviour
 		 */
  		if (Speed > 0 && newVelocity.sqrMagnitude > MIN_FORCE_THRESHOLD)
 		{
-			var newForward = newVelocity / Speed;
+			var newForward = (SpeedFactorOnTurn != 0) ? newVelocity / (Speed * SpeedFactorOnTurn) : newVelocity;
 			newForward.y = IsPlanar ? _transform.forward.y : newForward.y;
 			
 			_transform.forward = newForward;
