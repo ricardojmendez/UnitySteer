@@ -183,7 +183,7 @@ namespace UnitySteer
             float remaining = pathDistance;
             if (IsCyclic)
             {
-                remaining = (float)System.Math.IEEERemainder(pathDistance, totalPathLength);
+                remaining = pathDistance % totalPathLength;
             }
             else
             {
