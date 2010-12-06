@@ -452,10 +452,13 @@ public class Vehicle: MonoBehaviour
 	/// <param name="target">
 	/// Target position <see cref="Vector3"/>
 	/// </param>
+	/// <param name="considerVelocity">
+	/// Should the current velocity be taken into account?
+	/// </param>
 	/// <returns>
 	/// Seek vector <see cref="Vector3"/>
 	/// </returns>
-	public Vector3 GetSeekVector(Vector3 target)
+	public Vector3 GetSeekVector(Vector3 target, bool considerVelocity)
 	{
 		/*
 		 * First off, we calculate how far we are from the target, If this
@@ -463,6 +466,14 @@ public class Vehicle: MonoBehaviour
 		 * the vehicle to stop.
 		 */
 		Vector3 force = Vector3.zero;
+		
+		// If we're dealing with a planar vehicle, disregard the target's 
+		// Y position from the calculation
+		if (IsPlanar)
+		{
+			target.y = Position.y;
+		}
+		
         float d = Vector3.Distance(Position, target);
         if (d > Radius)
 		{
@@ -476,10 +487,22 @@ public class Vehicle: MonoBehaviour
 			 * It doesn't apply the steering itself, simply returns the value so
 			 * we can continue operating on it.
 			 */
-			force = target - Position - Velocity;
+			force = target - Position;
+			if (considerVelocity)
+			{
+				force -= Velocity;
+			}
 		}
 		return force;
 	}
+	
+	/// <summary>
+	/// Wrapper for GetSeekVector, necessary because MonoDevelop chokes on default parameters.
+	/// </summary>
+	public Vector3 GetSeekVector(Vector3 target)
+	{
+		return GetSeekVector(target, true);
+	}	
 	
 	/// <summary>
 	/// Returns a returns a maxForce-clipped steering force along the 

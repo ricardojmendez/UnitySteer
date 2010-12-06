@@ -29,7 +29,9 @@ public class AutonomousVehicle: Vehicle
 		foreach (var steering in Steerings)
 		{
 			if (steering.enabled)
-				force  += steering.WeighedForce;
+			{
+				force += steering.WeighedForce;
+			}
 		}
 
 		Profiler.EndSample();
