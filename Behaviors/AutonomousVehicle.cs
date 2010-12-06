@@ -15,14 +15,16 @@ public class AutonomousVehicle: Vehicle
 	[SerializeField]
 	float _accelerationSmoothRate = 0.4f;
 	
+	Vector3 _lastRawForce = Vector3.zero;
+	
 	#endregion
 	
 	/// <summary>
 	/// Gets or sets the acceleration smooth rate.
 	/// </summary>
 	/// <value>
-	/// The acceleration smooth rate. The lower it is, the more noise there is
-	/// likely to be in the movement.
+	/// The acceleration smooth rate. The higher it is, the more abrupt 
+	/// the acceleration is likely to be.
 	/// </value>
 	public float AccelerationSmoothRate {
 		get {
@@ -34,6 +36,11 @@ public class AutonomousVehicle: Vehicle
 	}
 	
 	
+	public Vector3 LastRawForce {
+		get {
+			return this._lastRawForce;
+		}
+	}	
 	
 	#region Methods
 	void Start()
@@ -94,6 +101,7 @@ public class AutonomousVehicle: Vehicle
 		{
 			force.y = 0;
 		}
+		_lastRawForce = force;
 		
 		// enforce limit on magnitude of steering force
 		Vector3 clippedForce = Vector3.ClampMagnitude(force, MaxForce);
