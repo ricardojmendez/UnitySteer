@@ -89,13 +89,18 @@ public class AutonomousVehicle: Vehicle
 		{
 			return;
 		}
-
+		
+		if (IsPlanar)
+		{
+			force.y = 0;
+		}
+		
 		// enforce limit on magnitude of steering force
 		Vector3 clippedForce = Vector3.ClampMagnitude(force, MaxForce);
 
 		// compute acceleration and velocity
 		Vector3 newAcceleration = (clippedForce / Mass);
-
+		
 		if (newAcceleration.sqrMagnitude == 0 && !HasInertia)
 		{
 			Speed = 0;
@@ -127,15 +132,8 @@ public class AutonomousVehicle: Vehicle
 		// enforce speed limit
 		newVelocity = Vector3.ClampMagnitude(newVelocity, MaxSpeed);
 
-		if (IsPlanar)
-		{
-			newVelocity.y = Velocity.y;
-		}
-
 		// update Speed
 		Speed = newVelocity.magnitude;
-		
-		
 
 		// Euler integrate (per frame) velocity into position
 		// TODO: Change for a motor
