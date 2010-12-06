@@ -11,7 +11,28 @@ public class AutonomousVehicle: Vehicle
 	Vector3 _smoothedAcceleration;
 	Rigidbody _rigidbody;
 	CharacterController _characterController;
+	
+	[SerializeField]
+	float _accelerationSmoothRate = 0.4f;
+	
 	#endregion
+	
+	/// <summary>
+	/// Gets or sets the acceleration smooth rate.
+	/// </summary>
+	/// <value>
+	/// The acceleration smooth rate. The lower it is, the more noise there is
+	/// likely to be in the movement.
+	/// </value>
+	public float AccelerationSmoothRate {
+		get {
+			return this._accelerationSmoothRate;
+		}
+		set {
+			_accelerationSmoothRate = value;
+		}
+	}
+	
 	
 	
 	#region Methods
@@ -89,9 +110,16 @@ public class AutonomousVehicle: Vehicle
 			The lower the smoothRate parameter, the more noise there is
 			likely to be in the movement.
 		 */
-		_smoothedAcceleration = OpenSteerUtility.blendIntoAccumulator(0.4f,
-									newAcceleration,
-									_smoothedAcceleration);
+		if (_accelerationSmoothRate > 0)
+		{
+			_smoothedAcceleration = OpenSteerUtility.blendIntoAccumulator(_accelerationSmoothRate,
+										newAcceleration,
+										_smoothedAcceleration);
+		}
+		else
+		{
+			_smoothedAcceleration = newAcceleration;
+		}
 
 		// Euler integrate (per frame) acceleration into velocity
 		newVelocity += _smoothedAcceleration * elapsedTime;
