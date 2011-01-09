@@ -159,12 +159,13 @@ namespace UnitySteer
 			_points.Add(point);
 		}
         
-        public override Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition tStruct)
+        public override Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative)
         {
             float d;
             float minDistance = float.MaxValue;
             Vector3 onPath = Vector3.zero;
-
+			
+			pathRelative.segmentIndex = -1;
             // loop over all segments, find the one nearest to the given point
             for (int i = 1; i < _points.Count; i++)
             {
@@ -176,14 +177,15 @@ namespace UnitySteer
                                                             ref chosenPoint);
                 if (d < minDistance)
                 {
-                    minDistance = d;
-                    onPath = chosenPoint;
-                    tStruct.tangent = segmentNormal;
+					minDistance = d;
+					onPath = chosenPoint;
+					pathRelative.tangent = segmentNormal;
+					pathRelative.segmentIndex = i;
                 }
             }
 
             // measure how far original point is outside the Pathway's "tube"
-            tStruct.outside = (onPath - point).magnitude - _radius;
+            pathRelative.outside = (onPath - point).magnitude - _radius;
 			
 			// return point on path
             return onPath;

@@ -43,6 +43,7 @@ namespace UnitySteer
     {
         public float outside;
         public Vector3 tangent;
+		public int segmentIndex;
 	}
 
     public abstract class Pathway
@@ -145,7 +146,6 @@ namespace UnitySteer
         // is the given point inside the path tube?
         public bool IsInsidePath(Vector3 point)
         {
-
             var tStruct = new PathRelativePosition();
 
             MapPointToPath(point, ref tStruct);
@@ -155,9 +155,7 @@ namespace UnitySteer
         // how far outside path tube is the given point?  (negative is inside)
         public float HowFarOutsidePath(Vector3 point)
         {
-            //float outside;
-            //Vector3 tangent;
-            PathRelativePosition tStruct = new PathRelativePosition();
+            var tStruct = new PathRelativePosition();
 
             MapPointToPath(point, ref tStruct);
             return tStruct.outside;
