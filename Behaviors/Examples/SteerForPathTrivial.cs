@@ -57,7 +57,7 @@ public class SteerForPathTrivial : Steering
 	#endregion
 
 	/// <summary>
-	/// Should the force be calculated?
+	/// Force to apply to the vehicle
 	/// </summary>
 	/// <returns>
 	/// A <see cref="Vector3"/>
