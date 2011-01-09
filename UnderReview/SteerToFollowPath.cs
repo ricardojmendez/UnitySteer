@@ -15,13 +15,12 @@ public enum FollowDirection: int {
 /// 
 /// This is pretty much a direct conversion of the original OpenSteer 
 /// steerToFollowPath method, minus some global variable use. It looks for 
-/// the point in the path that's nearest to the vehicle's future position. 
+/// the point along path that's nearest to the vehicle's future position. 
 /// As such, it won't strictly follow a path that  loops over itself (or 
 /// even one were two segments come really close), and will look like it's 
-/// taking a shortcut.
+/// taking a shortcut if the prediction time is too large.
 /// 
-/// I've updated it little other than to implement it and fix the previously
-/// mentioned entangled state, as my own needs require strict path following.
+/// See also SteerForPathSimplified.
 /// </remarks>
 public class SteerToFollowPath : Steering
 {
