@@ -97,9 +97,6 @@ public class SteerToFollowPath : Steering
 		bool rightway = ((pathDistanceOffset > 0) ? (nowPathDistance < futurePathDistance) : (nowPathDistance > futurePathDistance));
 		
 		// find the point on the path nearest the predicted future position
-		// XXX need to improve calling sequence, maybe change to return a
-		// XXX special path-defined object which includes two Vector3s and a 
-		// XXX bool (onPath,tangent (ignored), withinPath)
 		var tStruct = new PathRelativePosition ();
 		_path.MapPointToPath (futurePosition, ref tStruct);
 		
@@ -108,13 +105,29 @@ public class SteerToFollowPath : Steering
 		// the path tube and (b) we are facing in the correct direction
 		if ((tStruct.outside < 0) && rightway) 
 		{
-			// all is well, return zero steering
+			// TODO Evaluate. This assumes the vehicle has inertia, and would stop if inside the path tube
 			return Vector3.zero;
 		} else 
 		{
-			// otherwise we need to steer towards a target point obtained
-			// by adding pathDistanceOffset to our current path position
-			
+			/*
+			 * Otherwise we need to steer towards a target point obtained
+			 * by adding pathDistanceOffset to our current path position.
+			 * 
+			 * Notice that this method does not steer for the point in the
+			 * path that is closest to our future position, which is why 
+			 * the return value of MapPointToPath is ignored above. Instead,
+			 * it estimates how far the vehicle will move in units, and then
+			 * aim for the point in the path that is that many units away
+			 * from our current path position _in path length_.   This means 
+			 * that it adds up the segment lengths and aims for the point 
+			 * that is N units along the length of the path, which can imply
+			 * bends and turns and is not a straight vector projected away
+			 * from our position.
+			 * 
+			 * This also means that having too high a prediction time will
+			 * have the effect of the agent seemingly approaching the path
+			 * in an elliptical manner.
+			 */
 			float targetPathDistance = nowPathDistance + pathDistanceOffset;
 			var target = _path.MapPathDistanceToPoint (targetPathDistance);
 			

@@ -178,7 +178,7 @@ namespace UnitySteer
                 if (d < minDistance)
                 {
 					minDistance = d;
-					onPath = chosenPoint;
+					onPath = chosenPoint; 
 					pathRelative.tangent = segmentNormal;
 					pathRelative.segmentIndex = i;
                 }
