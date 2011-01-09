@@ -66,9 +66,13 @@ public class SteerForPathPredictiveTrivial : Steering
 		Vector3 forceNode = Vector3.zero;
 		if (_path != null)
 		{
-			var tStruct = new mapReturnStruct();
+			var tStruct = new PathRelativePosition();
 			var futurePosition = Vehicle.PredictFuturePosition(_predictionTime);
 			var futurePathPoint = _path.MapPointToPath (futurePosition, ref tStruct);
+#if TRACE_PATH
+			Debug.DrawLine(Vehicle.Position, futurePosition, Color.red);
+			Debug.DrawLine(Vehicle.Position, futurePathPoint, Color.green);
+#endif
 			
 			forceNode = Vehicle.GetSeekVector(futurePathPoint, false);
 		}

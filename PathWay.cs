@@ -39,11 +39,11 @@ using UnityEngine;
 
 namespace UnitySteer
 {
-    public struct mapReturnStruct
+    public struct PathRelativePosition
     {
         public float outside;
         public Vector3 tangent;
-    }
+	}
 
     public abstract class Pathway
     {
@@ -134,7 +134,7 @@ namespace UnitySteer
         // this path.  Also returns, via output arguments, the path tangent at
         // P and a measure of how far A is outside the Pathway's "tube".  Note
         // that a negative distance indicates A is inside the Pathway.
-        public virtual Vector3 MapPointToPath(Vector3 point, ref mapReturnStruct tStruct) { return Vector3.zero; }
+        public virtual Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition tStruct) { return Vector3.zero; }
 
         // given a distance along the path, convert it to a point on the path
         public virtual Vector3 MapPathDistanceToPoint(float pathDistance) { return Vector3.zero; }
@@ -146,9 +146,7 @@ namespace UnitySteer
         public bool IsInsidePath(Vector3 point)
         {
 
-            //float outside;
-            //Vector3 tangent;
-            mapReturnStruct tStruct = new mapReturnStruct();
+            var tStruct = new PathRelativePosition();
 
             MapPointToPath(point, ref tStruct);
             return tStruct.outside < 0;
@@ -159,7 +157,7 @@ namespace UnitySteer
         {
             //float outside;
             //Vector3 tangent;
-            mapReturnStruct tStruct = new mapReturnStruct();
+            PathRelativePosition tStruct = new PathRelativePosition();
 
             MapPointToPath(point, ref tStruct);
             return tStruct.outside;

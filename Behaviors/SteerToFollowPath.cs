@@ -100,7 +100,7 @@ public class SteerToFollowPath : Steering
 		// XXX need to improve calling sequence, maybe change to return a
 		// XXX special path-defined object which includes two Vector3s and a 
 		// XXX bool (onPath,tangent (ignored), withinPath)
-		var tStruct = new mapReturnStruct ();
+		var tStruct = new PathRelativePosition ();
 		_path.MapPointToPath (futurePosition, ref tStruct);
 		
 		

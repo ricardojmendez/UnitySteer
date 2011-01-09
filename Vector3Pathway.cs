@@ -159,7 +159,7 @@ namespace UnitySteer
 			_points.Add(point);
 		}
         
-        public override Vector3 MapPointToPath(Vector3 point, ref mapReturnStruct tStruct)
+        public override Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition tStruct)
         {
             float d;
             float minDistance = float.MaxValue;
