@@ -16,6 +16,7 @@ public class AutonomousVehicle: Vehicle
 	float _accelerationSmoothRate = 0.4f;
 	
 	Vector3 _lastRawForce = Vector3.zero;
+	Vector3 _lastAppliedVelocity = Vector3.zero;
 	
 	#endregion
 	
@@ -42,6 +43,14 @@ public class AutonomousVehicle: Vehicle
 		}
 	}	
 	
+	
+	public Vector3 LastAppliedVelocity {
+		get {
+			return this._lastAppliedVelocity;
+		}
+	}
+
+
 	#region Methods
 	void Start()
 	{
@@ -141,8 +150,9 @@ public class AutonomousVehicle: Vehicle
 		newVelocity = Vector3.ClampMagnitude(newVelocity, MaxSpeed);
 
 		// update Speed
+		_lastAppliedVelocity = newVelocity;
 		Speed = newVelocity.magnitude;
-
+		
 		// Euler integrate (per frame) velocity into position
 		// TODO: Change for a motor
 		Profiler.BeginSample("Applying displacement");
