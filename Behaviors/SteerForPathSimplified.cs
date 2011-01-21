@@ -85,7 +85,15 @@ public class SteerForPathSimplified : Steering
 		float targetPathDistance = currentPathDistance + pathDistanceOffset;
 		var target = _path.MapPathDistanceToPoint (targetPathDistance);
 		
-		// return steering to seek target on path
+		/*
+		 * Return steering to seek target on path.
+		 * 
+		 * If you set the considerVelocity parameter to true, it'll slow
+		 * down at each target to try to ease its arrival, which will 
+		 * likely cause it to come to a stand still at low prediction
+		 * times.
+		 *
+		 */
 		var seek = Vehicle.GetSeekVector(target, false);
 		
 
