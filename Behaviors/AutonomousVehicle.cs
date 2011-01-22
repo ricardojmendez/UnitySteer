@@ -56,6 +56,10 @@ public class AutonomousVehicle: Vehicle
 	{
 		_rigidbody = GetComponent<Rigidbody>();
 		_characterController = GetComponent<CharacterController>();
+		if (HasInertia)
+		{
+			Debug.LogError("AutonomousVehicle should not have HasInertia set to TRUE. See the release notes of UnitySteer 2.1 for details.");
+		}
 	}
 		
 	
@@ -118,7 +122,7 @@ public class AutonomousVehicle: Vehicle
 		// compute acceleration and velocity
 		Vector3 newAcceleration = (clippedForce / Mass);
 		
-		if (newAcceleration.sqrMagnitude == 0 && !HasInertia)
+		if (newAcceleration.sqrMagnitude == 0)
 		{
 			Speed = 0;
 		}
