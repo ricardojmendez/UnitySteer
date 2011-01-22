@@ -62,10 +62,10 @@ namespace UnitySteer
 
 		
 		/// <summary>
-		/// Constructs a PolylinePathway given an array of points and a path radius
+		/// Constructs a Vector3Pathway given an array of points and a path radius
 		/// </summary>
 		/// <param name="path">
-		/// List of ConnectionAsset returned from Path <see cref="ConnectionAsset"/>
+		/// List of Vector3 to be used for the path in world space <see cref="Vector3"/>
 		/// </param>
 		/// <param name="radius">
 		/// Radius to use for the connections <see cref="System.Single"/>
@@ -74,8 +74,7 @@ namespace UnitySteer
 		/// Is the path cyclic? <see cref="System.Boolean"/>
 		/// </param>
 		/// <remarks>The current implementation assumes that all pathways will 
-		/// have the same radius.  The connection radius could be taken from the 
-		/// NetworkAssets in Path, which should be what we do in future implementations.
+		/// have the same radius.
 		/// </remarks>
         public Vector3Pathway (IList<Vector3> path, float radius, bool cyclic)
         {
@@ -103,10 +102,10 @@ namespace UnitySteer
 		}
         
 		/// <summary>
-		/// Constructs the Pathway from a list of ConnectionAssets
+		/// Constructs the Pathway from a list of Vector3
 		/// </summary>
 		/// <param name="path">
-		/// A list of ConnectionAssets as returned by Path <see cref="ConnectionAsset"/>
+		/// A list of Vector3 defining the path points in world space<see cref="Vector3"/>
 		/// </param>
 		/// <param name="radius">
 		/// Radius to use for the connections<see cref="System.Single"/>
