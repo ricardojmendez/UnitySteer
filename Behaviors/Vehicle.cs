@@ -24,6 +24,7 @@ public class Vehicle: MonoBehaviour
 	#region Private fields
 	Steering[] _steerings;
 	float _squaredRadius;
+	float _squaredArrivalRadius;
 	
 	[SerializeField]
 	float _speedFactorOnTurn = 1;
@@ -71,6 +72,18 @@ public class Vehicle: MonoBehaviour
 	[SerializeField]
 	[HideInInspector]
 	float _radius = 1;
+	
+	/// <summary>
+	/// The vehicle's arrival radius.
+	/// </summary>
+	/// <remarks>The difference between the radius and arrival radius is that
+	/// the first is used to determine the area the vehicle covers, whereas the
+	/// second one is a value used to determine if a vehicle is close enough
+	/// to a desired target.  Unlike the radius, it is not scaled with the vehicle.</remarks>
+	[SerializeField]
+	float _arrivalRadius = 1;
+	
+	
 	
 	/// <summary>
 	/// The vehicle's radius, scaled by the maximum of the transform's lossyScale values
@@ -276,6 +289,19 @@ public class Vehicle: MonoBehaviour
 	}
 
 	/// <summary>
+	/// Vehicle arrival radius
+	/// </summary>
+	public float ArrivalRadius {
+		get {
+			return _arrivalRadius;
+		}
+		set {
+			_arrivalRadius = Mathf.Clamp(value, 0.01f, float.MaxValue);
+			RecalculateScaledValues();			
+		}
+	}
+	
+	/// <summary>
 	/// The vehicle's center in the transform, scaled to by the transform's lossyScale
 	/// </summary>
 	public Vector3 ScaledCenter {
@@ -405,6 +431,7 @@ public class Vehicle: MonoBehaviour
 		_scaledRadius = _radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
 		_scaledCenter = Vector3.Scale(_center, scale);
 		_squaredRadius = _radius * _radius;
+		_squaredArrivalRadius = _arrivalRadius * _arrivalRadius;
 	}
 	
 	
@@ -657,8 +684,10 @@ public class Vehicle: MonoBehaviour
 			if (_transform == null)
 				_transform = GetComponent<Transform>();
 	
-			Gizmos.color = Color.grey;
+			Gizmos.color = Color.blue;
 			Gizmos.DrawWireSphere(Position, _scaledRadius);
+			Gizmos.color = Color.grey;
+			Gizmos.DrawWireSphere(Position, _arrivalRadius);
 		}
 	}
 	#endregion
