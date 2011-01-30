@@ -324,6 +324,13 @@ public class Vehicle: MonoBehaviour
 			return this._squaredRadius;
 		}
 	}
+	
+	public float SquaredArrivalRadius 
+	{
+		get {
+			return this._squaredArrivalRadius;
+		}
+	}
 
 	/// <summary>
 	/// Current vehicle speed
@@ -430,7 +437,7 @@ public class Vehicle: MonoBehaviour
 		var scale  = _transform.lossyScale;
 		_scaledRadius = _radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
 		_scaledCenter = Vector3.Scale(_center, scale);
-		_squaredRadius = _radius * _radius;
+		_squaredRadius = _scaledRadius * _scaledRadius;
 		_squaredArrivalRadius = _arrivalRadius * _arrivalRadius;
 	}
 	
@@ -532,8 +539,8 @@ public class Vehicle: MonoBehaviour
 			target.y = Position.y;
 		}
 		
-        float d = Vector3.Distance(Position, target);
-        if (d > Radius)
+        float d = (Position - target).sqrMagnitude;
+        if (d > SquaredArrivalRadius)
 		{
 			/*
 			 * But suppose we still have some distance to go. The first step

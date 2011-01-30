@@ -11,11 +11,14 @@ public class SteerForPoint: Steering
 	/// </summary>
  	public Vector3 TargetPoint;
 	
-	public SteeringEventHandler<Vector3> OnArrival {
-		get {
+	public SteeringEventHandler<Vector3> OnArrival 
+	{
+		get 
+		{
 			return this._onArrival;
 		}
-		set {
+		set 
+		{
 			_onArrival = value;
 		}
 	}	
@@ -33,7 +36,7 @@ public class SteerForPoint: Steering
 	/// </returns>
 	protected override Vector3 CalculateForce()
 	{
-		var force = Vehicle.GetSeekVector(TargetPoint);
+		var force = Vehicle.GetSeekVector(TargetPoint, false);
 		
 		// Raise the arrival event
 		if (!_reportedArrival && _onArrival != null && force == Vector3.zero) {
