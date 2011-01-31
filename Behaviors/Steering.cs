@@ -11,6 +11,12 @@ public class Steering : MonoBehaviour, ITick {
 	Vector3 _force = Vector3.zero;
 	
 	/// <summary>
+	/// Have we reported that we stopped moving?
+	/// </summary>
+	bool _reportedArrival = false;
+	
+	
+	/// <summary>
 	/// Cached vehicle
 	/// </summary>
 	Vehicle _vehicle;
@@ -32,10 +38,31 @@ public class Steering : MonoBehaviour, ITick {
 		get
 		{
 			if (Tick.ShouldTick())
+			{
 				_force = CalculateForce();
+			}
+			if (_force != Vector3.zero)
+			{
+				_reportedArrival = false;
+			}
+			else if (!_reportedArrival)
+			{
+				if (OnArrival != null)
+				{
+					OnArrival(new SteeringEvent<Vehicle>(this, "arrived", Vehicle));
+				}
+				_reportedArrival = true;
+			}
 			return _force;
 		}
 	}
+	
+
+	/// <summary>
+	/// Steering event handler for arrival notification
+	/// </summary>
+	public SteeringEventHandler<Vehicle> OnArrival { get; set; }
+	
 	
 	/// <summary>
 	/// Force vector modified by the assigned weight 
