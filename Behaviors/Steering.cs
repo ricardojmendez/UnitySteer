@@ -10,11 +10,7 @@ public class Steering : MonoBehaviour, ITick {
 	/// </summary>
 	Vector3 _force = Vector3.zero;
 	
-	/// <summary>
-	/// Have we reported that we stopped moving?
-	/// </summary>
-	bool _reportedArrival = false;
-	
+
 	
 	/// <summary>
 	/// Cached vehicle
@@ -43,25 +39,31 @@ public class Steering : MonoBehaviour, ITick {
 			}
 			if (_force != Vector3.zero)
 			{
-				_reportedArrival = false;
+				ReportedArrival = false;
 			}
-			else if (!_reportedArrival)
+			else if (!ReportedArrival)
 			{
 				if (OnArrival != null)
 				{
 					OnArrival(new SteeringEvent<Vehicle>(this, "arrived", Vehicle));
 				}
-				_reportedArrival = true;
+				ReportedArrival = true;
 			}
 			return _force;
 		}
 	}
 	
 
+
 	/// <summary>
 	/// Steering event handler for arrival notification
 	/// </summary>
 	public SteeringEventHandler<Vehicle> OnArrival { get; set; }
+	
+	/// <summary>
+	/// Have we reported that we stopped moving?
+	/// </summary>
+	public bool ReportedArrival { get; protected set; }	
 	
 	
 	/// <summary>
