@@ -3,14 +3,37 @@ using UnitySteer.Helpers;
 
 public class SteerForPoint: Steering
 {
+	
+	/// <summary>
+	/// Target point
+	/// </summary>
+	/// <remarks>
+	/// Declared as a separate value so that we can inspect it on Unity in 
+	/// debug mode.
+	/// </remarks>
+	Vector3 _targetPoint = Vector3.zero;
+	
+	
 	/// <summary>
 	/// The target point.
 	/// </summary>
- 	public Vector3 TargetPoint;
+ 	public Vector3 TargetPoint
+	{
+		get { return _targetPoint; }
+		set
+		{
+			_targetPoint = value;
+			ReportedArrival = false;
+		}
+	}
+
+	
 		
 	void Awake() {
 		if (TargetPoint == Vector3.zero)
+		{
 			TargetPoint = transform.position;
+		}
 	}
 	
 	/// <summary>

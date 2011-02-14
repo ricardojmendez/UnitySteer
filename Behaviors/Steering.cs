@@ -3,6 +3,7 @@ using UnitySteer.Helpers;
 
 public class Steering : MonoBehaviour, ITick {	
 	public const string STEERING_MESSAGE = "Steering";
+	public const string ACTION_RETRY = "retry";
 	
 	#region Private fields
 	/// <summary>
@@ -43,11 +44,16 @@ public class Steering : MonoBehaviour, ITick {
 			}
 			else if (!ReportedArrival)
 			{
+				ReportedArrival = true;
 				if (OnArrival != null)
 				{
-					OnArrival(new SteeringEvent<Vehicle>(this, "arrived", Vehicle));
+					var message = new SteeringEvent<Vehicle>(this, "arrived", Vehicle);
+					OnArrival(message);
+					if (message.Action == ACTION_RETRY)
+					{
+						_force = CalculateForce();
+					}
 				}
-				ReportedArrival = true;
 			}
 			return _force;
 		}

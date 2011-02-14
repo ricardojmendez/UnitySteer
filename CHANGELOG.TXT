@@ -14,6 +14,10 @@ When introducing a new configurable value, I've aimed to keep the same behavior 
 - Added ArrivalRadius to Vehicle, to separate the concept of the vehicle's volume/area from when it's close enough to its target (if said target is a point).
 - Added OnArrival to Steering
 - BUGFIX: Setting the Tick's TickLapse will reset the next tick time
+- See this for more details on the path following classes:
+  http://www.arges-systems.com/articles/213/unitysteer-upcoming-path-following-changes/
+- Any receiver of an OnArrival call can now tell the vehicle to retry once by setting the SteeringEvent's Action property to 'retry'.   This is useful if you don't want the steering behavior to skip a beat when it has arrived at the designated spot and needs to await instructions from the receiver (as otherwise the value returned might get cached for a few frames).
+
 
 BREAKING CHANGE:
 
