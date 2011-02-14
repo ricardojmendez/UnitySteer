@@ -1,0 +1,21 @@
+UnitySteer changelog
+
+v2.1
+----
+
+When introducing a new configurable value, I've aimed to keep the same behavior as before by defaulting it to the previous constant.
+
+- Allowing you to disable the acceleration blending. Simply set AutonomousVehicle's AccelerationSmoothRate to 0.
+- Zeroing the Y force for planar vehicles before the force and speed even get clamped.   This may have an effect on your previously created vehicles, but it shouldn't alter their behavior significantly.  I'd rather not do these sort of changes after release, but the alternative was forking AutonomousVehicle.
+- Vehicle.CanMove is now taken into account.  If CanMove is FALSE, the forces are still calculated, but the vehicle does not update its position. If you want to avoid calculating the forces altogether simply disable the vehicle.
+- Documented the actual state of SteerToFollowPath.
+- Removed PolylinePathway.  Use Vector3Pathway instead.
+- AutonomousVehicle no longer evaluating HasInertia. All the steering behaviors I've created assume "Star Wars physics" for their calculations, where if you stop applying a force to the object it should stop.  This means that HasInertia should be false.  No longer evaluating the value on AutonomousVehicle to avoid the confusion caused by the vehicle not acting as expected, and added a warning on vehicle start.
+- Added ArrivalRadius to Vehicle, to separate the concept of the vehicle's volume/area from when it's close enough to its target (if said target is a point).
+- Added OnArrival to Steering
+- BUGFIX: Setting the Tick's TickLapse will reset the next tick time
+
+BREAKING CHANGE:
+
+- Arrival is now calculated not by the radius, but by the "arrival radius".  Please adjust accordingly.
+
