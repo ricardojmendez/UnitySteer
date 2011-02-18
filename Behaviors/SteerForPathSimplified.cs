@@ -14,8 +14,6 @@ public class SteerForPathSimplified : Steering
 	#region Private fields
 	[SerializeField]
 	float _predictionTime = 1f;
-	
-	Pathway _path;
 	#endregion
 	
 	
@@ -35,15 +33,7 @@ public class SteerForPathSimplified : Steering
 	/// <summary>
 	/// Path to follow
 	/// </summary>
-	public Pathway Path {
-		get {
-			return this._path;
-		}
-		set {
-			_path = value;
-		}
-	}
-
+	public Pathway Path { get; set; }
 	#endregion
 
 	/// <summary>
@@ -54,7 +44,7 @@ public class SteerForPathSimplified : Steering
 	/// </returns>
 	protected override Vector3 CalculateForce ()
 	{
-		if (_path == null || _path.SegmentCount < 2) 
+		if (Path == null || Path.SegmentCount < 2) 
 		{
 			return Vector3.zero;
 		}
@@ -63,7 +53,7 @@ public class SteerForPathSimplified : Steering
 		float pathDistanceOffset = _predictionTime * Vehicle.Speed;
 		
 		// measure distance along path of our current and predicted positions
-		float currentPathDistance = _path.MapPointToPathDistance (Vehicle.Position);
+		float currentPathDistance = Path.MapPointToPathDistance (Vehicle.Position);
 		
 		/*
 		 * Otherwise we need to steer towards a target point obtained
@@ -83,7 +73,7 @@ public class SteerForPathSimplified : Steering
 		 * from our position.
 		 */
 		float targetPathDistance = currentPathDistance + pathDistanceOffset;
-		var target = _path.MapPathDistanceToPoint (targetPathDistance);
+		var target = Path.MapPathDistanceToPoint (targetPathDistance);
 		
 		/*
 		 * Return steering to seek target on path.
