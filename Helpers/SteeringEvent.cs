@@ -21,45 +21,40 @@ namespace UnitySteer.Helpers
 	/// </summary>
 	public class SteeringEvent<T>
 	{
-		#region Internal members
-		Steering _sender;
-		string   _action;
-		T       _parameter;
-		#endregion
 		
 		#region Public properties
-		public string Action {
-			get {
-				return this._action;
-			}
-			set {
-				_action = value;
-			}
-		}
-
-		public T Parameter {
-			get {
-				return this._parameter;
-			}
-			set {
-				_parameter = value;
-			}
-		}
-
-		public Steering Sender {
-			get {
-				return this._sender;
-			}
-			set {
-				_sender = value;
-			}
-		}
+		/// <summary>
+		/// Message action
+		/// </summary>
+		public string Action { get; set; }
+		
+		/// <summary>
+		/// Parameter being passed (for instance, the vehicle)
+		/// </summary>
+		public T Parameter { get; set; }
+		
+		/// <summary>
+		/// Steering object sending the message
+		/// </summary>
+		public Steering Sender { get; set; }
 		#endregion
 		
+		/// <summary>
+		/// Public constructor
+		/// </summary>
+		/// <param name="sender">
+		/// Steering object sending the message <see cref="Steering"/>
+		/// </param>
+		/// <param name="action">
+		/// Action <see cref="System.String"/>
+		/// </param>
+		/// <param name="parameter">
+		/// Message parameter <see cref="T"/>
+		/// </param>
 		public SteeringEvent (Steering sender, string action, T parameter) {
-			_sender = sender;
-			_action = action;
-			_parameter = parameter;
+			Sender = sender;
+			Action = action;
+			Parameter = parameter;
 		}
 		
 	}

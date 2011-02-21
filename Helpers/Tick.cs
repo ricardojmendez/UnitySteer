@@ -64,12 +64,16 @@ namespace UnitySteer.Helpers
 		/// <summary>
 		/// How many seconds should pass before the object is ticked again
 		/// </summary>
+		/// <remarks>
+		/// Setting the TickLapse value will reset the next tick value.
+		/// </remarks>
 		public float TickLapse {
 			get {
 				return this._tickLapse;
 			}
 			set {
 				_tickLapse = Mathf.Max(value, 0);
+				_nextTick = 0;
 			}
 		}
 

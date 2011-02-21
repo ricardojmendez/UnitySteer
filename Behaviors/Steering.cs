@@ -2,12 +2,16 @@ using UnityEngine;
 using UnitySteer.Helpers;
 
 public class Steering : MonoBehaviour, ITick {	
+	public const string STEERING_MESSAGE = "Steering";
+	public const string ACTION_RETRY = "retry";
 	
 	#region Private fields
 	/// <summary>
 	/// Last force calculated
 	/// </summary>
 	Vector3 _force = Vector3.zero;
+	
+
 	
 	/// <summary>
 	/// Cached vehicle
@@ -31,10 +35,42 @@ public class Steering : MonoBehaviour, ITick {
 		get
 		{
 			if (Tick.ShouldTick())
+			{
 				_force = CalculateForce();
+			}
+			if (_force != Vector3.zero)
+			{
+				ReportedArrival = false;
+			}
+			else if (!ReportedArrival)
+			{
+				ReportedArrival = true;
+				if (OnArrival != null)
+				{
+					var message = new SteeringEvent<Vehicle>(this, "arrived", Vehicle);
+					OnArrival(message);
+					if (message.Action == ACTION_RETRY)
+					{
+						_force = CalculateForce();
+					}
+				}
+			}
 			return _force;
 		}
 	}
+	
+
+
+	/// <summary>
+	/// Steering event handler for arrival notification
+	/// </summary>
+	public SteeringEventHandler<Vehicle> OnArrival { get; set; }
+	
+	/// <summary>
+	/// Have we reported that we stopped moving?
+	/// </summary>
+	public bool ReportedArrival { get; protected set; }	
+	
 	
 	/// <summary>
 	/// Force vector modified by the assigned weight 

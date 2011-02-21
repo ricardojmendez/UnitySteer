@@ -39,22 +39,27 @@ using UnityEngine;
 
 namespace UnitySteer
 {
-    public struct mapReturnStruct
+    public struct PathRelativePosition
     {
         public float outside;
         public Vector3 tangent;
-    }
+		public int segmentIndex;
+	}
 
-    public class Pathway
+    public abstract class Pathway
     {
-        protected bool isCyclic;
+        private bool _isCyclic;
         
         public bool IsCyclic
         {
             get
             {
-                return isCyclic;
+                return _isCyclic;
             }
+			protected set 
+			{
+				_isCyclic = value;
+			}
         }
         
         
@@ -82,6 +87,14 @@ namespace UnitySteer
                 return GetLastPoint();
             }
         }
+		
+		public int SegmentCount
+		{
+			get
+			{
+				return GetSegmentCount();
+			}
+		}
         
         
         // Returns the total path length. It's expected to be overriden by the 
@@ -112,39 +125,39 @@ namespace UnitySteer
         {
             return Vector3.zero;
         }
+		
+		protected virtual int GetSegmentCount()
+		{
+			return 0;
+		}
         
         // Given an arbitrary point ("A"), returns the nearest point ("P") on
         // this path.  Also returns, via output arguments, the path tangent at
         // P and a measure of how far A is outside the Pathway's "tube".  Note
         // that a negative distance indicates A is inside the Pathway.
-        public virtual Vector3 mapPointToPath(Vector3 point, ref mapReturnStruct tStruct) { return Vector3.zero; }
+        public virtual Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition tStruct) { return Vector3.zero; }
 
         // given a distance along the path, convert it to a point on the path
-        public virtual Vector3 mapPathDistanceToPoint(float pathDistance) { return Vector3.zero; }
+        public virtual Vector3 MapPathDistanceToPoint(float pathDistance) { return Vector3.zero; }
 
         // Given an arbitrary point, convert it to a distance along the path.
-        public virtual float mapPointToPathDistance(Vector3 point) { return 0; }
+        public virtual float MapPointToPathDistance(Vector3 point) { return 0; }
 
         // is the given point inside the path tube?
-        public bool isInsidePath(Vector3 point)
+        public bool IsInsidePath(Vector3 point)
         {
+            var tStruct = new PathRelativePosition();
 
-            //float outside;
-            //Vector3 tangent;
-            mapReturnStruct tStruct = new mapReturnStruct();
-
-            mapPointToPath(point, ref tStruct);
+            MapPointToPath(point, ref tStruct);
             return tStruct.outside < 0;
         }
 
         // how far outside path tube is the given point?  (negative is inside)
-        public float howFarOutsidePath(Vector3 point)
+        public float HowFarOutsidePath(Vector3 point)
         {
-            //float outside;
-            //Vector3 tangent;
-            mapReturnStruct tStruct = new mapReturnStruct();
+            var tStruct = new PathRelativePosition();
 
-            mapPointToPath(point, ref tStruct);
+            MapPointToPath(point, ref tStruct);
             return tStruct.outside;
         }
     }
