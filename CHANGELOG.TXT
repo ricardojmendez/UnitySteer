@@ -6,8 +6,10 @@ v2.1
 When introducing a new configurable value, I've aimed to keep the same behavior as before by defaulting it to the previous constant.
 
 - Allowing you to disable the acceleration blending. Simply set AutonomousVehicle's AccelerationSmoothRate to 0.
+- Added VehicleLookAtOverride.
 - Zeroing the Y force for planar vehicles before the force and speed even get clamped.   This may have an effect on your previously created vehicles, but it shouldn't alter their behavior significantly.  I'd rather not do these sort of changes after release, but the alternative was forking AutonomousVehicle.
-- Vehicle.CanMove is now taken into account.  If CanMove is FALSE, the forces are still calculated, but the vehicle does not update its position. If you want to avoid calculating the forces altogether simply disable the vehicle.
+- AutonomousVehicle now takes into account its CanMove value.  If CanMove is FALSE, the forces are still calculated, but the vehicle does not update its position. If you want to avoid calculating the forces altogether simply disable the vehicle.
+- Vehicle.GetSeekVector now has a parameter so you can indicate that its own speed should be disregarded for arrival purposes.
 - Documented the actual state of SteerToFollowPath.
 - Removed PolylinePathway.  Use Vector3Pathway instead.
 - AutonomousVehicle no longer evaluating HasInertia. All the steering behaviors I've created assume "Star Wars physics" for their calculations, where if you stop applying a force to the object it should stop.  This means that HasInertia should be false.  No longer evaluating the value on AutonomousVehicle to avoid the confusion caused by the vehicle not acting as expected, and added a warning on vehicle start.
@@ -17,9 +19,9 @@ When introducing a new configurable value, I've aimed to keep the same behavior 
 - See this for more details on the path following classes:
   http://www.arges-systems.com/articles/213/unitysteer-upcoming-path-following-changes/
 - Any receiver of an OnArrival call can now tell the vehicle to retry once by setting the SteeringEvent's Action property to 'retry'.   This is useful if you don't want the steering behavior to skip a beat when it has arrived at the designated spot and needs to await instructions from the receiver (as otherwise the value returned might get cached for a few frames).
+- Expanded comments
 
 
 BREAKING CHANGE:
 
-- Arrival is now calculated not by the radius, but by the "arrival radius".  Please adjust accordingly.
-
+- Arrival is now calculated not by the Radius, but by the ArrivalRadius.  Please adjust accordingly.
