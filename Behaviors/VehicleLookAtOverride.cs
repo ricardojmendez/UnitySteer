@@ -16,6 +16,7 @@ using UnitySteer;
 /// Creating as a separate behavior to avoid making drastic alterations to
 /// AutonomousVehicle on a point upgrade.
 /// </summary>
+[RequireComponent(typeof(AutonomousVehicle))]
 public class VehicleLookAtOverride : MonoBehaviour {
 	
 	AutonomousVehicle _vehicle;
