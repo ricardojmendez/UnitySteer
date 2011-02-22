@@ -282,6 +282,7 @@ public class Vehicle: DetectableObject
 	#region Methods
 	protected override void Awake()
 	{
+		base.Awake();
 		_steerings = GetComponents<Steering>();
 	}
 	
