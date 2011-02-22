@@ -14,7 +14,7 @@ using UnitySteer;
 /// vehicles, at least for purposes of estimation, avoidance, pursuit, etc.
 /// In this case, the base Vehicle class can be used to provide an interface
 /// to whatever is doing the moving, like a CharacterMotor.</remarks>
-public class Vehicle: MonoBehaviour
+public class Vehicle: DetectableObject
 {
 	/// <summary>
 	/// Minimum force squared magnitude threshold
@@ -23,28 +23,11 @@ public class Vehicle: MonoBehaviour
 	
 	#region Private fields
 	Steering[] _steerings;
-	float _squaredRadius;
 	float _squaredArrivalRadius;
 	
 	[SerializeField]
 	float _speedFactorOnTurn = 1;
 	
-	[SerializeField]
-	bool _drawGizmos = false;
-
-	/// <summary>
-	/// The vehicle's center in the transform
-	/// </summary>
-	[SerializeField]
-	[HideInInspector]
-	Vector3 _center;
-	/// <summary>
-	/// The vehicle's center in the transform, scaled to by the transform's lossyScale
-	/// </summary>
-	[SerializeField]
-	[HideInInspector]
-	Vector3 _scaledCenter;
-
 	[SerializeField]
 	bool _hasInertia = false;
 
@@ -65,14 +48,6 @@ public class Vehicle: MonoBehaviour
 	[SerializeField]
 	bool _isPlanar = false;
 	
-	
-	/// <summary>
-	/// The vehicle's radius.
-	/// </summary>
-	[SerializeField]
-	[HideInInspector]
-	float _radius = 1;
-	
 	/// <summary>
 	/// The vehicle's arrival radius.
 	/// </summary>
@@ -81,17 +56,7 @@ public class Vehicle: MonoBehaviour
 	/// second one is a value used to determine if a vehicle is close enough
 	/// to a desired target.  Unlike the radius, it is not scaled with the vehicle.</remarks>
 	[SerializeField]
-	float _arrivalRadius = 1;
-	
-	
-	
-	/// <summary>
-	/// The vehicle's radius, scaled by the maximum of the transform's lossyScale values
-	/// </summary>
-	[SerializeField]
-	[HideInInspector]
-	float _scaledRadius = 1;
-	
+	float _arrivalRadius = 1;	
 
 	float _speed = 0;
 
@@ -112,10 +77,6 @@ public class Vehicle: MonoBehaviour
 	/// </summary>
 	Radar _radar;
 	
-	/// <summary>
-	/// Cached transform for this behaviour
-	/// </summary>
-	Transform _transform;
 	#endregion
 
 
@@ -132,23 +93,6 @@ public class Vehicle: MonoBehaviour
 		}
 	}
 	
-	/// <summary>
-	/// Vehicle center on the transform
-	/// </summary>
-	/// <remarks>
-	/// This property's setter recalculates a temporary value, so it's
-	/// advised you don't re-scale the vehicle's transform after it has been set
-	/// </remarks>
-	public Vector3 Center {
-		get {
-			return this._center;
-		}
-		set {
-			_center = value;
-			RecalculateScaledValues();
-		}
-	}
-
 	/// <summary>
 	/// Does the vehicle continue going when there's no force applied to it?
 	/// </summary>
@@ -246,18 +190,6 @@ public class Vehicle: MonoBehaviour
 	}
 
 	/// <summary>
-	/// Vehicle's position
-	/// </summary>
-	/// <remarks>The vehicle's position is the transform's position displaced 
-	/// by the vehicle center</remarks>
-	public Vector3 Position {
-		get {
-			return _transform.position + _scaledCenter;
-		}
-	}
-	
-
-	/// <summary>
 	/// Radar assigned to this vehicle
 	/// </summary>
 	public Radar Radar {
@@ -272,23 +204,6 @@ public class Vehicle: MonoBehaviour
 
 
 	/// <summary>
-	/// Vehicle radius
-	/// </summary>
-	/// <remarks>
-	/// This property's setter recalculates a temporary value, so it's
-	/// advised you don't re-scale the vehicle's transform after it has been set
-	/// </remarks>
-	public float Radius {
-		get {
-			return _radius;
-		}
-		set {
-			_radius = Mathf.Clamp(value, 0.01f, float.MaxValue);
-			RecalculateScaledValues();			
-		}
-	}
-
-	/// <summary>
 	/// Vehicle arrival radius
 	/// </summary>
 	public float ArrivalRadius {
@@ -298,30 +213,6 @@ public class Vehicle: MonoBehaviour
 		set {
 			_arrivalRadius = Mathf.Clamp(value, 0.01f, float.MaxValue);
 			RecalculateScaledValues();			
-		}
-	}
-	
-	/// <summary>
-	/// The vehicle's center in the transform, scaled to by the transform's lossyScale
-	/// </summary>
-	public Vector3 ScaledCenter {
-		get {
-			return this._scaledCenter;
-		}
-	}
-	
-	/// <summary>
-	/// The vehicle's radius, scaled by the maximum of the transform's lossyScale values
-	/// </summary>
-	public float ScaledRadius {
-		get {
-			return this._scaledRadius;
-		}
-	}
-
-	public float SquaredRadius {
-		get {
-			return this._squaredRadius;
 		}
 	}
 	
@@ -389,11 +280,9 @@ public class Vehicle: MonoBehaviour
 	#endregion
 
 	#region Methods
-	protected void Awake()
+	protected override void Awake()
 	{
 		_steerings = GetComponents<Steering>();
-		_transform = GetComponent<Transform>();
-		RecalculateScaledValues();
 	}
 	
 	protected virtual void RegenerateLocalSpace (Vector3 newVelocity)
@@ -433,11 +322,9 @@ public class Vehicle: MonoBehaviour
 	/// <summary>
 	/// Recalculates the vehicle's scaled radius and center
 	/// </summary>
-	protected void RecalculateScaledValues() {
-		var scale  = _transform.lossyScale;
-		_scaledRadius = _radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
-		_scaledCenter = Vector3.Scale(_center, scale);
-		_squaredRadius = _scaledRadius * _scaledRadius;
+	protected override void RecalculateScaledValues() 
+	{
+		base.RecalculateScaledValues();
 		_squaredArrivalRadius = _arrivalRadius * _arrivalRadius;
 	}
 	
@@ -451,7 +338,7 @@ public class Vehicle: MonoBehaviour
 	/// <returns>
 	/// Vehicle position<see cref="Vector3"/>
 	/// </returns>
-	public virtual Vector3 PredictFuturePosition(float predictionTime)
+	public override Vector3 PredictFuturePosition(float predictionTime)
     {
         return _transform.position + (Velocity * predictionTime);
 	}
@@ -646,7 +533,7 @@ public class Vehicle: MonoBehaviour
 		float projection = Vector3.Dot(relTangent, relPosition);
 
 		return projection / relSpeed;
-	}	
+	}
 	
 	
 	/// <summary>
@@ -683,16 +570,11 @@ public class Vehicle: MonoBehaviour
 	}	
 	
 	
-	void OnDrawGizmos()
+	protected override void OnDrawGizmos()
 	{
-		// Since this value gets assigned on Awake, we need to assign it when on the editor
 		if (_drawGizmos)
 		{
-			if (_transform == null)
-				_transform = GetComponent<Transform>();
-	
-			Gizmos.color = Color.blue;
-			Gizmos.DrawWireSphere(Position, _scaledRadius);
+			base.OnDrawGizmos();
 			Gizmos.color = Color.grey;
 			Gizmos.DrawWireSphere(Position, _arrivalRadius);
 		}

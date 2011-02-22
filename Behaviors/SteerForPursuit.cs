@@ -10,7 +10,7 @@ public class SteerForPursuit : Steering
 {
 	#region Private fields
 	[SerializeField]
-	Vehicle _quarry;
+	DetectableObject _quarry;
 	
 	[SerializeField]
 	float _maxPredictionTime = 5;
@@ -33,12 +33,13 @@ public class SteerForPursuit : Steering
 	/// Target being pursued
 	/// </summary>
 	/// <remarks>When set, it will clear the flag that indicates we've already reported that we arrived</remarks>
-	public Vehicle Quarry {
+	public DetectableObject Quarry {
 		get {
 			return this._quarry;
 		}
 		set {
-			if (_quarry != value) {
+			if (_quarry != value) 
+			{
 				ReportedArrival = false;
 				_quarry = value;
 			}
