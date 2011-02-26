@@ -15,36 +15,11 @@ using System.Collections;
 /// positioned for the area we wish to block off. For example, if our 
 /// agents are gravity-bound we care only about considering the trunks of 
 /// trees as obstacles, not the whole figure.
+/// 
+/// The vast majority of the functionality is now implemented as part of 
+/// DetectableObject. Retaining this class for backwards compatibility.
 /// </remarks>
-public class SphericalObstacleData : MonoBehaviour {
-	
-	[SerializeField]
-	Vector3 _center = Vector3.zero;
-	
-	[SerializeField]	
-	float _radius = 1;
-
-	
-	/// <summary>
-	/// The obstacle's center relative to the transform's position
-	/// </summary>
-	public Vector3 Center {
-		get {
-			return this._center;
-		}
-	}
-
-	/// <summary>
-	/// The obstacle's radius
-	/// </summary>
-	/// <value>
-	/// The radius.
-	/// </value>
-	public float Radius {
-		get {
-			return this._radius;
-		}
-	}
+public class SphericalObstacleData : DetectableObject {
 	
 	
 	void OnDrawGizmosSelected() {
