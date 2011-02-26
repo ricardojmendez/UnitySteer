@@ -143,6 +143,11 @@ public class DetectableObject: MonoBehaviour
 	/// Recalculates the vehicle's scaled radius and center
 	/// </summary>
 	protected virtual void RecalculateScaledValues() {
+		if (_transform == null)
+		{
+			// Since this value gets assigned on Awake, we need to assign it when on the editor
+			_transform = GetComponent<Transform>();
+		}
 		var scale  = _transform.lossyScale;
 		_scaledRadius = _radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
 		_scaledCenter = Vector3.Scale(_center, scale);
