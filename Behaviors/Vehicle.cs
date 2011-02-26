@@ -561,7 +561,38 @@ public class Vehicle: DetectableObject
 												  ref Vector3 ourPosition, 
 												  ref Vector3 hisPosition)
 	{
-		Vector3	   myTravel = _transform.forward 	   *	   Speed * time;
+		return ComputeNearestApproachPositions(other, time, ref ourPosition, ref hisPosition, _transform.forward);
+	}		
+	
+	/// <summary>
+	/// Given the time until nearest approach (predictNearestApproachTime)
+	/// determine position of each vehicle at that time, and the distance
+	/// between them
+	/// </summary>
+	/// <returns>
+	/// Distance between positions
+	/// </returns>
+	/// <param name='other'>
+	/// Other vehicle to compare against
+	/// </param>
+	/// <param name='time'>
+	/// Time to estimate.
+	/// </param>
+	/// <param name='ourPosition'>
+	/// Our position.
+	/// </param>
+	/// <param name='hisPosition'>
+	/// The other vehicle's position.
+	/// </param>
+	/// <param name='ourForward'>
+	/// Forward vector to use instead of the vehicle's.
+	/// </param>
+	public float ComputeNearestApproachPositions(Vehicle other, float time, 
+												  ref Vector3 ourPosition, 
+												  ref Vector3 hisPosition,
+	                                             Vector3 ourForward)
+	{
+		Vector3	   myTravel = ourForward 	   		   *	   Speed * time;
 		Vector3 otherTravel = other._transform.forward * other.Speed * time;
 
 		ourPosition = Position 		 + myTravel;
