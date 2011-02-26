@@ -561,7 +561,7 @@ public class Vehicle: DetectableObject
 												  ref Vector3 ourPosition, 
 												  ref Vector3 hisPosition)
 	{
-		return ComputeNearestApproachPositions(other, time, ref ourPosition, ref hisPosition, _transform.forward);
+		return ComputeNearestApproachPositions(other, time, ref ourPosition, ref hisPosition, Speed, _transform.forward);
 	}		
 	
 	/// <summary>
@@ -590,9 +590,10 @@ public class Vehicle: DetectableObject
 	public float ComputeNearestApproachPositions(Vehicle other, float time, 
 												  ref Vector3 ourPosition, 
 												  ref Vector3 hisPosition,
+	                                             float ourSpeed,
 	                                             Vector3 ourForward)
 	{
-		Vector3	   myTravel = ourForward 	   		   *	   Speed * time;
+		Vector3	   myTravel = ourForward 	   		   *	ourSpeed * time;
 		Vector3 otherTravel = other._transform.forward * other.Speed * time;
 
 		ourPosition = Position 		 + myTravel;
