@@ -49,8 +49,14 @@ public class SteerForPathSimplified : Steering
 			return Vector3.zero;
 		}
 		
+		// If the vehicle's speed is 0, use a low speed for future position
+		// calculation. Otherwise the vehicle will remain where it is if he
+		// starts within the path, because its current position matches its
+		// future path position
+		float speed = (Vehicle.Speed > 0) ? Vehicle.Speed : 1f;
+		
 		// our goal will be offset from our path distance by this amount
-		float pathDistanceOffset = _predictionTime * Vehicle.Speed;
+		float pathDistanceOffset = _predictionTime * speed;
 		
 		// measure distance along path of our current and predicted positions
 		float currentPathDistance = Path.MapPointToPathDistance (Vehicle.Position);
