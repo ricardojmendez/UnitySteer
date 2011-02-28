@@ -92,7 +92,24 @@ public class SteerForPathSimplified : Steering
 		 */
 		var seek = Vehicle.GetSeekVector(target, false);
 		
-
+		if (seek == Vector3.zero && targetPathDistance <= Path.TotalPathLength)
+		{
+			/*
+			 * If we should not displace but still have some distance to go,
+			 * that means that we've encountered an edge case: a relatively low
+			 * vehicle speed and short prediction range, combined with a path
+			 * that twists. In that case, it's possible that the predicted future
+			 * point just around the bend is still within the vehicle's arrival
+			 * radius.  In that case, aim a bit further beyond the vehicle's 
+			 * arrival radius so that it can continue moving.
+			 * 
+			 * TODO: Consider simply adding the arrivalradius displacement to
+			 * where we're aiming to from the get go. Might leave as is, considering
+			 * that this is supposed to be just a sample behavior.
+			 */
+			target = Path.MapPathDistanceToPoint(targetPathDistance + 1.5f * Vehicle.ArrivalRadius);
+			seek = Vehicle.GetSeekVector(target, false);
+		}
 		
 		return seek;
 	}
