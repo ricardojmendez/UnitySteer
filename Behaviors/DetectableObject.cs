@@ -54,6 +54,10 @@ public class DetectableObject: MonoBehaviour
 	/// by the vehicle center</remarks>
 	public Vector3 Position {
 		get {
+			if (_transform == null)
+			{
+				_transform = GetComponent<Transform>();
+			}
 			return _transform.position + _scaledCenter;
 		}
 	}
