@@ -16,6 +16,9 @@ public class Radar: MonoBehaviour, ITick {
 	SteeringEventHandler<Radar> _onDetected;
 	
 	[SerializeField]
+	bool _detectDisabledVehicles;
+	
+	[SerializeField]
 	Tick _tick;
 	
 	[SerializeField]
@@ -46,6 +49,19 @@ public class Radar: MonoBehaviour, ITick {
 		}
 	}
 	
+	/// <summary>
+	/// Indicates if the radar will detect disabled vehicles. 
+	/// </summary>
+	public bool DetectDisabledVehicles 
+	{
+		get {
+			return this._detectDisabledVehicles;
+		}
+		set {
+			_detectDisabledVehicles = value;
+		}
+	}
+
 	/// <summary>
 	/// List of obstacles detected by the radar
 	/// </summary>
@@ -165,7 +181,7 @@ public class Radar: MonoBehaviour, ITick {
 		foreach (var other in _detected)
 		{
 			var vehicle = other.gameObject.GetComponent<Vehicle>();
-			if (vehicle != null && other.gameObject != this.gameObject)
+			if (vehicle != null && (vehicle.enabled || _detectDisabledVehicles) && other.gameObject != this.gameObject)
 			{
 				_vehicles.Add(vehicle);
 			}
