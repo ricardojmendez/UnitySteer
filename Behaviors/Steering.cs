@@ -22,7 +22,7 @@ public class Steering : MonoBehaviour, ITick {
 	Tick _tick;
 	
 	[SerializeField]
-	float _weight = 1;
+	float _weight = 5;
 	#endregion
 	
 	
