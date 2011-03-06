@@ -14,6 +14,10 @@ public class SteerForPathSimplified : Steering
 	#region Private fields
 	[SerializeField]
 	float _predictionTime = 1f;
+	
+	[SerializeField]
+	float _minSpeedToConsider = 0.25f;
+	
 	#endregion
 	
 	
@@ -30,6 +34,20 @@ public class SteerForPathSimplified : Steering
 		}
 	}
 	
+	/// <summary>
+	/// Minimum speed to consider when predicting the future position. If the
+	/// vehicle's speed is under this value, estimates will instead be done
+	/// at this value plus the prediction time.
+	/// </summary>
+	public float MinSpeedToConsider {
+		get {
+			return this._minSpeedToConsider;
+		}
+		set {
+			_minSpeedToConsider = value;
+		}
+	}
+
 	/// <summary>
 	/// Path to follow
 	/// </summary>
@@ -53,7 +71,7 @@ public class SteerForPathSimplified : Steering
 		// calculation. Otherwise the vehicle will remain where it is if he
 		// starts within the path, because its current position matches its
 		// future path position
-		float speed = (Vehicle.Speed > 0) ? Vehicle.Speed : 1f;
+		float speed = (Vehicle.Speed > _minSpeedToConsider) ? Vehicle.Speed : _minSpeedToConsider + _predictionTime;
 		
 		// our goal will be offset from our path distance by this amount
 		float pathDistanceOffset = _predictionTime * speed;
