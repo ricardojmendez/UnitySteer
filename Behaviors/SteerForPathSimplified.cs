@@ -13,7 +13,7 @@ public class SteerForPathSimplified : Steering
 	
 	#region Private fields
 	[SerializeField]
-	float _predictionTime = 1f;
+	float _predictionTime = 1.5f;
 	
 	[SerializeField]
 	float _minSpeedToConsider = 0.25f;
