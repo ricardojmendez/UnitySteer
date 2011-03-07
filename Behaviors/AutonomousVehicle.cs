@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnitySteer;
+using System.Linq;
 
 /// <summary>
 /// Vehicle subclass which automatically applies the steering forces from
@@ -13,11 +14,7 @@ public class AutonomousVehicle: Vehicle
 	CharacterController _characterController;
 	
 	[SerializeField]
-	float _accelerationSmoothRate = 0.4f;
-	
-	Vector3 _lastRawForce = Vector3.zero;
-	Vector3 _lastAppliedVelocity = Vector3.zero;
-	
+	float _accelerationSmoothRate = 0.4f;	
 	#endregion
 	
 	/// <summary>
@@ -36,20 +33,11 @@ public class AutonomousVehicle: Vehicle
 		}
 	}
 	
+	public Vector3 DesiredVelocity { get; private set; }
 	
-	public Vector3 LastRawForce {
-		get {
-			return this._lastRawForce;
-		}
-	}	
+	public Vector3 LastRawForce  { get; private set; }
 	
-	
-	public Vector3 LastAppliedVelocity {
-		get {
-			return this._lastAppliedVelocity;
-		}
-	}
-
+	public Vector3 LastAppliedVelocity { get; private set; }
 
 	#region Methods
 	void Start()
@@ -67,15 +55,12 @@ public class AutonomousVehicle: Vehicle
 	{
 		var force = Vector3.zero;
 		Profiler.BeginSample("Calculating forces");
-		foreach (var steering in Steerings)
-		{
-			if (steering.enabled)
-			{
-				force += steering.WeighedForce;
-			}
-		}
-
+		
+		Steerings.Where( s => s.enabled && !s.IsPostProcess ).ForEach ( s => force += s.WeighedForce );
 		Profiler.EndSample();
+		
+		
+		
 		
 		// We still update the forces if the vehicle cannot move, as the
 		// calculations on those steering behaviors might be relevant for
@@ -114,7 +99,7 @@ public class AutonomousVehicle: Vehicle
 		{
 			force.y = 0;
 		}
-		_lastRawForce = force;
+		LastRawForce = force;
 		
 		// enforce limit on magnitude of steering force
 		Vector3 clippedForce = Vector3.ClampMagnitude(force, MaxForce);
@@ -127,8 +112,6 @@ public class AutonomousVehicle: Vehicle
 			Speed = 0;
 		}
 
-		Vector3 newVelocity = Velocity;
-		
 		/*
 			Damp out abrupt changes and oscillations in steering acceleration
 			(rate is proportional to time step, then clipped into useful range)
@@ -146,15 +129,32 @@ public class AutonomousVehicle: Vehicle
 		{
 			_smoothedAcceleration = newAcceleration;
 		}
-
+		
+		
+		
 		// Euler integrate (per frame) acceleration into velocity
-		newVelocity += _smoothedAcceleration * elapsedTime;
+		var newVelocity = Velocity + _smoothedAcceleration * elapsedTime;
 
 		// enforce speed limit
 		newVelocity = Vector3.ClampMagnitude(newVelocity, MaxSpeed);
+		
 
+		DesiredVelocity = newVelocity;
+		Vector3 adjustedVelocity = Vector3.zero;
+		Steerings.Where( s => s.enabled && s.IsPostProcess ).ForEach ( s => adjustedVelocity += s.WeighedForce );
+		if (adjustedVelocity == Vector3.zero)
+		{
+			adjustedVelocity = newVelocity;
+		}
+		adjustedVelocity = Vector3.ClampMagnitude(adjustedVelocity, MaxSpeed);
+
+		Debug.DrawLine(transform.position, transform.position + adjustedVelocity, Color.cyan);
+		Debug.DrawLine(transform.position, transform.position + newVelocity, Color.white);
+		
+		
+		newVelocity = adjustedVelocity;
 		// update Speed
-		_lastAppliedVelocity = newVelocity;
+		LastAppliedVelocity = newVelocity;
 		Speed = newVelocity.magnitude;
 		
 		// Euler integrate (per frame) velocity into position

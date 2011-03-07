@@ -23,6 +23,7 @@ public class Steering : MonoBehaviour, ITick {
 	
 	[SerializeField]
 	float _weight = 5;
+	
 	#endregion
 	
 	
@@ -57,6 +58,11 @@ public class Steering : MonoBehaviour, ITick {
 			}
 			return _force;
 		}
+	}
+	
+	public virtual bool IsPostProcess 
+	{ 
+		get { return false; }
 	}
 	
 
