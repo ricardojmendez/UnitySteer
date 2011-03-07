@@ -1,3 +1,4 @@
+#define TRACE_ADJUSTMENTS
 using UnityEngine;
 using UnitySteer;
 using System.Linq;
@@ -128,35 +129,35 @@ public class AutonomousVehicle: Vehicle
 			_smoothedAcceleration = newAcceleration;
 		}
 		
-		
-		
 		// Euler integrate (per frame) acceleration into velocity
 		var newVelocity = Velocity + _smoothedAcceleration * elapsedTime;
-
-		// enforce speed limit
+		// Enforce speed limit
 		newVelocity = Vector3.ClampMagnitude(newVelocity, MaxSpeed);
-		
 
 		DesiredVelocity = newVelocity;
+		
+		// Adjusts the velocity by applying the post-processing behaviors.
+		//
+		// This currently is not also considering the maximum force, nor 
+		// blending the new velocity into an accumulator. We *could* do that,
+		// but things are working just fine for now, and it seems like
+		// overkill. 
 		Vector3 adjustedVelocity = Vector3.zero;
 		Steerings.Where( s => s.enabled && s.IsPostProcess ).ForEach ( s => adjustedVelocity += s.WeighedForce );
-		if (adjustedVelocity == Vector3.zero)
+		if (adjustedVelocity != Vector3.zero)
 		{
-			adjustedVelocity = newVelocity;
+			adjustedVelocity = Vector3.ClampMagnitude(adjustedVelocity, MaxSpeed);
+			TraceDisplacement(adjustedVelocity, Color.cyan);
+			TraceDisplacement(newVelocity, Color.white);
+			newVelocity = adjustedVelocity;
 		}
-		adjustedVelocity = Vector3.ClampMagnitude(adjustedVelocity, MaxSpeed);
 
-		Debug.DrawLine(transform.position, transform.position + adjustedVelocity, Color.cyan);
-		Debug.DrawLine(transform.position, transform.position + newVelocity, Color.white);
 		
-		
-		newVelocity = adjustedVelocity;
-		// update Speed
+		// Update Speed
 		LastAppliedVelocity = newVelocity;
 		Speed = newVelocity.magnitude;
 		
 		// Euler integrate (per frame) velocity into position
-		// TODO: Change for a motor
 		Profiler.BeginSample("Applying displacement");
 		var delta = (newVelocity * elapsedTime);
 		if (_characterController != null) 
@@ -179,6 +180,12 @@ public class AutonomousVehicle: Vehicle
 		RegenerateLocalSpace (newVelocity);
 	}
 	#endregion
+	
+	[System.Diagnostics.Conditional("TRACE_ADJUSTMENTS")]
+	void TraceDisplacement(Vector3 delta, Color color)
+	{
+		Debug.DrawLine(transform.position, transform.position + delta, color);
+	}
 }
 
 
