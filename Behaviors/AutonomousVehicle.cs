@@ -33,8 +33,6 @@ public class AutonomousVehicle: Vehicle
 		}
 	}
 	
-	public Vector3 DesiredVelocity { get; private set; }
-	
 	public Vector3 LastRawForce  { get; private set; }
 	
 	public Vector3 LastAppliedVelocity { get; private set; }

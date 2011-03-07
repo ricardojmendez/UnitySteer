@@ -94,6 +94,13 @@ public class Vehicle: DetectableObject
 	}
 	
 	/// <summary>
+	/// The velocity desired by this vehicle, likely calculated by means 
+	/// similar to what AutonomousVehicle does
+	/// </summary>
+	public Vector3 DesiredVelocity { get; protected set; }
+	
+	
+	/// <summary>
 	/// Does the vehicle continue going when there's no force applied to it?
 	/// </summary>
 	public bool HasInertia {
