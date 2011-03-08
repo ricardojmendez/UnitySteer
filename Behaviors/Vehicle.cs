@@ -504,6 +504,11 @@ public class Vehicle: DetectableObject
 		_transform.forward = Vector3.forward;
 	}
 	
+	public float PredictNearestApproachTime(Vehicle other)
+	{
+		return PredictNearestApproachTime(other, Velocity);
+	}
+	
 	
     /// <summary>
     /// Predicts the time until nearest approach between this and another vehicle
@@ -514,11 +519,10 @@ public class Vehicle: DetectableObject
     /// <param name='other'>
     /// Other vehicle to compare against
     /// </param>
-	public float PredictNearestApproachTime (Vehicle other)
+	public float PredictNearestApproachTime (Vehicle other, Vector3 myVelocity)
 	{
 		// imagine we are at the origin with no velocity,
 		// compute the relative velocity of the other vehicle
-		Vector3 myVelocity = Velocity;
 		Vector3 otherVelocity = other.Velocity;
 		Vector3 relVelocity = otherVelocity - myVelocity;
 		float relSpeed = relVelocity.magnitude;
