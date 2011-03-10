@@ -21,6 +21,9 @@ public class Vehicle: DetectableObject
 	/// </summary>
 	static float MIN_FORCE_THRESHOLD = 0.01f;
 	
+	[SerializeField]
+	int _movementPriority = 0;	
+	
 	#region Private fields
 	Steering[] _steerings;
 	float _squaredArrivalRadius;
@@ -171,6 +174,12 @@ public class Vehicle: DetectableObject
 		}
 	}
 	
+	public int MovementPriority {
+		get { return _movementPriority; }
+	}
+	
+	
+	
 	/// <summary>
 	/// Indicates if the vehicle's InternalMass should override whatever 
 	/// value is configured for the rigidbody, as far as speed calculations
@@ -291,6 +300,10 @@ public class Vehicle: DetectableObject
 	{
 		base.Awake();
 		_steerings = GetComponents<Steering>();
+		if (_movementPriority == 0)
+		{
+			_movementPriority = gameObject.GetInstanceID();
+		}
 	}
 	
 	protected virtual void RegenerateLocalSpace (Vector3 newVelocity)
