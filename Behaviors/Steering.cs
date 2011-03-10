@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnitySteer.Helpers;
+using TickedPriorityQueue;
 
-public class Steering : MonoBehaviour, ITick {	
+public class Steering : MonoBehaviour {	
 	public const string STEERING_MESSAGE = "Steering";
 	public const string ACTION_RETRY = "retry";
 	
@@ -11,15 +12,17 @@ public class Steering : MonoBehaviour, ITick {
 	/// </summary>
 	Vector3 _force = Vector3.zero;
 	
+	[SerializeField]
+	float _tickLength = 0.1f;
+	
+	TickedObject _tickedObject;
+	UnityTickedQueue _steeringQueue;
 
 	
 	/// <summary>
 	/// Cached vehicle
 	/// </summary>
 	Vehicle _vehicle;
-	
-	[SerializeField]
-	Tick _tick;
 	
 	[SerializeField]
 	float _weight = 5;
@@ -35,10 +38,6 @@ public class Steering : MonoBehaviour, ITick {
 	{
 		get
 		{
-			if (Tick.ShouldTick())
-			{
-				_force = CalculateForce();
-			}
 			if (_force != Vector3.zero)
 			{
 				ReportedArrival = false;
@@ -59,6 +58,12 @@ public class Steering : MonoBehaviour, ITick {
 			return _force;
 		}
 	}
+	
+	protected virtual string QueueName 
+	{
+		get { return "Steering"; }
+	}	
+	
 	
 	public virtual bool IsPostProcess 
 	{ 
@@ -87,17 +92,6 @@ public class Steering : MonoBehaviour, ITick {
 			return Force * _weight;
 		}
 	}
-	
-	/// <summary>
-	/// Tick information
-	/// </summary>
-	public Tick Tick 
-	{
-		get 
-		{
-			return _tick;
-		}
-	}	
 	
 	/// <summary>
 	/// Vehicle that this behavior will influence
@@ -135,5 +129,27 @@ public class Steering : MonoBehaviour, ITick {
 	{
 		return Vector3.zero;
 	}
+	
+	void OnEnable()
+	{
+		_tickedObject = new TickedObject(OnUpdateSteering);
+		_tickedObject.TickLength = _tickLength;
+		_steeringQueue = UnityTickedQueue.GetInstance(QueueName);
+		_steeringQueue.Add(_tickedObject);
+	}
+	
+	void OnDisable()
+	{
+		if (_steeringQueue != null)
+		{
+			_steeringQueue.Remove(_tickedObject);
+		}
+	}
+	
+	protected void OnUpdateSteering(object obj)
+	{
+		_force = CalculateForce();
+	}
+
 	#endregion
 }

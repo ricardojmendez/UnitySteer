@@ -75,7 +75,6 @@ public class AutonomousVehicle: Vehicle
 		{
 			Speed = 0;
 		}
-			
 	}
 	
 	/// <summary>
