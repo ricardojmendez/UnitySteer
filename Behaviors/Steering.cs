@@ -117,6 +117,7 @@ public class Steering : MonoBehaviour, ITick {
 	protected void Start()
 	{
 		_vehicle = this.GetComponent<Vehicle>();
+		ReportedArrival = true; // Default to true to avoid unnecessary notifications
 	}
 	
 	/// <summary>
