@@ -150,7 +150,6 @@ public class AutonomousVehicle: Vehicle
 			TraceDisplacement(newVelocity, Color.white);
 			newVelocity = adjustedVelocity;
 		}
-
 		
 		// Update Speed
 		LastAppliedVelocity = newVelocity;

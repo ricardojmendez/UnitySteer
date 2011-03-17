@@ -181,7 +181,7 @@ public class Radar: MonoBehaviour, ITick {
 		foreach (var other in _detected)
 		{
 			var vehicle = other.gameObject.GetComponent<Vehicle>();
-			if (vehicle != null && (vehicle.enabled || _detectDisabledVehicles) && other.gameObject != this.gameObject)
+			if (vehicle != _vehicle && vehicle != null && (vehicle.enabled || _detectDisabledVehicles) && other.gameObject != this.gameObject)
 			{
 				_vehicles.Add(vehicle);
 			}

@@ -57,7 +57,6 @@ public class SteerForNeighborAvoidance : Steering {
 	}
 	#endregion
 	
-	
 
 	/// <summary>
 	/// Should the force be calculated?
@@ -67,15 +66,6 @@ public class SteerForNeighborAvoidance : Steering {
 	/// </returns>
 	protected override Vector3 CalculateForce()
 	{
-		/*
-		// first priority is to prevent immediate interpenetration
-		Vector3 separation = steerToAvoidCloseNeighbors (0, others);
-		if (separation != Vector3.zero) 
-		{
-			return separation;
-		}
-		*/
-
 		// otherwise, go on to consider potential future collisions
 		float steer = 0;
 		Vehicle threat = null;
