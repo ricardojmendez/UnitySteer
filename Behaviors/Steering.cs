@@ -3,8 +3,8 @@ using UnitySteer.Helpers;
 using TickedPriorityQueue;
 
 public class Steering : MonoBehaviour {	
-	public const string STEERING_MESSAGE = "Steering";
-	public const string ACTION_RETRY = "retry";
+	public static readonly string STEERING_MESSAGE = "Steering";
+	public static readonly string ACTION_RETRY = "retry";
 	
 	#region Private fields
 	/// <summary>
