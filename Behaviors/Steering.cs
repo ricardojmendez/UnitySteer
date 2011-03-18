@@ -12,13 +12,6 @@ public class Steering : MonoBehaviour {
 	/// </summary>
 	Vector3 _force = Vector3.zero;
 	
-	[SerializeField]
-	float _tickLength = 0.1f;
-	
-	TickedObject _tickedObject;
-	UnityTickedQueue _steeringQueue;
-
-	
 	/// <summary>
 	/// Cached vehicle
 	/// </summary>
@@ -38,6 +31,7 @@ public class Steering : MonoBehaviour {
 	{
 		get
 		{
+			_force = CalculateForce();
 			if (_force != Vector3.zero)
 			{
 				ReportedArrival = false;
@@ -58,19 +52,7 @@ public class Steering : MonoBehaviour {
 			return _force;
 		}
 	}
-	
-	protected virtual string QueueName 
-	{
-		get { return "Steering"; }
-	}	
-	
-	public UnityTickedQueue SteeringQueue {
-		get {
-			return this._steeringQueue;
-		}
-	}
-
-	
+		
 	public virtual bool IsPostProcess 
 	{ 
 		get { return false; }
@@ -136,27 +118,6 @@ public class Steering : MonoBehaviour {
 		return Vector3.zero;
 	}
 	
-	void OnEnable()
-	{
-		_tickedObject = new TickedObject(OnUpdateSteering);
-		_tickedObject.TickLength = _tickLength;
-		_tickedObject.Priority = IsPostProcess ? 100 : 0;
-		_steeringQueue = UnityTickedQueue.GetInstance(QueueName);
-		_steeringQueue.Add(_tickedObject);
-	}
-	
-	void OnDisable()
-	{
-		if (_steeringQueue != null)
-		{
-			_steeringQueue.Remove(_tickedObject);
-		}
-	}
-	
-	protected void OnUpdateSteering(object obj)
-	{
-		_force = CalculateForce();
-	}
 
 	#endregion
 }

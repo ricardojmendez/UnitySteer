@@ -25,7 +25,6 @@ public class VehicleLookAtOverride : MonoBehaviour {
 	[SerializeField]
 	float _smoothRate = 0.1f;
 	
-	
 	/// <summary>
 	/// Acceleration look-at smoothing rate.  The higher the value, the 
 	/// jerkier the turns are likely to be.

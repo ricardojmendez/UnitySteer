@@ -60,7 +60,8 @@ public class Vehicle: DetectableObject
 	/// to a desired target.  Unlike the radius, it is not scaled with the vehicle.</remarks>
 	[SerializeField]
 	float _arrivalRadius = 1;	
-
+	
+	
 	float _speed = 0;
 
 	[SerializeField]
@@ -79,6 +80,11 @@ public class Vehicle: DetectableObject
 	/// Cached Radar attached to the same gameobject
 	/// </summary>
 	Radar _radar;
+	
+	/// <summary>
+	/// Current vehicle velocity
+	/// </summary>
+	Vector3 _velocity;
 	
 	#endregion
 
@@ -243,12 +249,7 @@ public class Vehicle: DetectableObject
 	/// Current vehicle speed
 	/// </summary>
 	public float Speed {
-		get {
-			return _speed;
-		}
-		set {
-			_speed = Mathf.Clamp(value, 0, MaxSpeed);
-		}
+		get { return _speed; }
 	}
 	
 	/// <summary>
@@ -288,9 +289,11 @@ public class Vehicle: DetectableObject
 	/// </summary>
 	public Vector3 Velocity
 	{
-		get
-		{
-			return _transform.forward * _speed;
+		get { return _velocity; }
+		set 
+		{ 
+			_velocity = Vector3.ClampMagnitude(value, MaxSpeed);
+			_speed = _velocity.magnitude;
 		}
 	}
 	#endregion

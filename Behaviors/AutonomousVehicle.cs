@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnitySteer;
 using System.Linq;
+using TickedPriorityQueue;
 
 /// <summary>
 /// Vehicle subclass which automatically applies the steering forces from
@@ -13,7 +14,17 @@ public class AutonomousVehicle: Vehicle
 	Vector3 _smoothedAcceleration;
 	Rigidbody _rigidbody;
 	CharacterController _characterController;
+	TickedObject _tickedObject;
+	UnityTickedQueue _steeringQueue;
+	float _lastTickTime;
 	
+	[SerializeField]
+	string _queueName = "Steering";
+	
+	[SerializeField]
+	float _tickLength = 0.1f;	
+	
+		
 	[SerializeField]
 	bool _traceAdjustments = false;
 	
@@ -39,8 +50,35 @@ public class AutonomousVehicle: Vehicle
 	
 	public Vector3 LastRawForce  { get; private set; }
 	
-	public Vector3 LastAppliedVelocity { get; private set; }
+	
+	public string QueueName 
+	{
+		get { return _queueName; }
+		set { _queueName = value; }
+	}	
+	
 
+	/// <summary>
+	/// Ticked object for the vehicle, so that its owner can configure
+	/// the priority as desired.
+	/// </summary>
+	public TickedObject TickedObject {
+		get {
+			return this._tickedObject;
+		}
+	}	
+	
+	/// <summary>
+	/// Priority queue for this vehicle's updates
+	/// </summary>
+	public UnityTickedQueue SteeringQueue {
+		get {
+			return this._steeringQueue;
+		}
+	}
+
+	
+	
 	#region Methods
 	void Start()
 	{
@@ -50,52 +88,45 @@ public class AutonomousVehicle: Vehicle
 		{
 			Debug.LogError("AutonomousVehicle should not have HasInertia set to TRUE. See the release notes of UnitySteer 2.1 for details.");
 		}
+		_lastTickTime = 0;
 	}
-		
+
 	
-	void FixedUpdate()
+	void OnEnable()
 	{
-		var force = Vector3.zero;
-		Profiler.BeginSample("Calculating forces");
-		
-		Steerings.Where( s => s.enabled && !s.IsPostProcess ).ForEach ( s => force += s.WeighedForce );
-		Profiler.EndSample();
-		
-		
-		
-		
-		// We still update the forces if the vehicle cannot move, as the
-		// calculations on those steering behaviors might be relevant for
-		// other methods, but we don't apply it.  
-		//
-		// If you don't want to have the forces calculated at all, simply
-		// disable the vehicle.
-		if (CanMove)
+		_tickedObject = new TickedObject(OnUpdateSteering);
+		_tickedObject.TickLength = _tickLength;
+		_steeringQueue = UnityTickedQueue.GetInstance(QueueName);
+		_steeringQueue.Add(_tickedObject);
+	}
+	
+	void OnDisable()
+	{
+		if (_steeringQueue != null)
 		{
-			ApplySteeringForce(force, Time.fixedDeltaTime);
-		}
-		else 
-		{
-			Speed = 0;
+			_steeringQueue.Remove(_tickedObject);
 		}
 	}
 	
-	/// <summary>
-	/// Applies a steering force to this vehicle
-	/// </summary>
-	/// <param name="force">
-	/// A force vector to apply<see cref="Vector3"/>
-	/// </param>
-	/// <param name="elapsedTime">
-	/// How long has elapsed since the last update<see cref="System.Single"/>
-	/// </param>
-	private void ApplySteeringForce(Vector3 force, float elapsedTime)
+	protected void OnUpdateSteering(object obj)
 	{
-		if (MaxForce == 0 || MaxSpeed == 0 || elapsedTime == 0)
+		CalculateForces();
+	}
+	
+	
+	void CalculateForces()
+	{
+		if (MaxForce == 0 || MaxSpeed == 0)
 		{
 			return;
 		}
+		Profiler.BeginSample("Calculating vehicle forces");
 		
+		var force = Vector3.zero;
+		Steerings.Where( s => s.enabled && !s.IsPostProcess ).ForEach ( s => force += s.WeighedForce );
+		
+		var elapsedTime = Time.time - _lastTickTime;
+		_lastTickTime = Time.time;
 		if (IsPlanar)
 		{
 			force.y = 0;
@@ -110,7 +141,7 @@ public class AutonomousVehicle: Vehicle
 		
 		if (newAcceleration.sqrMagnitude == 0)
 		{
-			Speed = 0;
+			Velocity = Vector3.zero;
 		}
 
 		/*
@@ -119,7 +150,8 @@ public class AutonomousVehicle: Vehicle
 			
 			The lower the smoothRate parameter, the more noise there is
 			likely to be in the movement.
-		 */
+		*/
+		
 		if (_accelerationSmoothRate > 0)
 		{
 			_smoothedAcceleration = OpenSteerUtility.blendIntoAccumulator(_accelerationSmoothRate,
@@ -131,11 +163,11 @@ public class AutonomousVehicle: Vehicle
 			_smoothedAcceleration = newAcceleration;
 		}
 		
-		// Euler integrate (per frame) acceleration into velocity
+		// Euler integrate (per call time) acceleration into velocity
 		var newVelocity = Velocity + _smoothedAcceleration * elapsedTime;
-		// Enforce speed limit
-		newVelocity = Vector3.ClampMagnitude(newVelocity, MaxSpeed);
 
+		// Enforce speed limit
+		newVelocity = Vector3.ClampMagnitude(newAcceleration, MaxSpeed);
 		DesiredVelocity = newVelocity;
 		
 		// Adjusts the velocity by applying the post-processing behaviors.
@@ -154,13 +186,42 @@ public class AutonomousVehicle: Vehicle
 			newVelocity = adjustedVelocity;
 		}
 		
-		// Update Speed
-		LastAppliedVelocity = newVelocity;
-		Speed = newVelocity.magnitude;
+		// Update vehicle velocity
+		Velocity = newVelocity;
+		Profiler.EndSample();
+	}
+	
+	
+	void FixedUpdate()
+	{
 		
+		// We still update the forces if the vehicle cannot move, as the
+		// calculations on those steering behaviors might be relevant for
+		// other methods, but we don't apply it.  
+		//
+		// If you don't want to have the forces calculated at all, simply
+		// disable the vehicle.
+		if (CanMove)
+		{
+			ApplySteeringForce(Time.fixedDeltaTime);
+		}
+		else 
+		{
+			Velocity = Vector3.zero;
+		}
+	}
+	
+	/// <summary>
+	/// Applies a steering force to this vehicle
+	/// </summary>
+	/// <param name="elapsedTime">
+	/// How long has elapsed since the last update<see cref="System.Single"/>
+	/// </param>
+	private void ApplySteeringForce(float elapsedTime)
+	{
 		// Euler integrate (per frame) velocity into position
 		Profiler.BeginSample("Applying displacement");
-		var delta = (newVelocity * elapsedTime);
+		var delta = (Velocity * elapsedTime);
 		if (_characterController != null) 
 		{
 			_characterController.Move(delta);
@@ -174,11 +235,10 @@ public class AutonomousVehicle: Vehicle
 			_rigidbody.MovePosition (_rigidbody.position + delta);
 		}
 		Profiler.EndSample();
-		
 
 		// regenerate local space (by default: align vehicle's forward axis with
 		// new velocity, but this behavior may be overridden by derived classes.)
-		RegenerateLocalSpace (newVelocity);
+		RegenerateLocalSpace (Velocity);
 	}
 	#endregion
 	
