@@ -64,6 +64,12 @@ public class Steering : MonoBehaviour {
 		get { return "Steering"; }
 	}	
 	
+	public UnityTickedQueue SteeringQueue {
+		get {
+			return this._steeringQueue;
+		}
+	}
+
 	
 	public virtual bool IsPostProcess 
 	{ 
