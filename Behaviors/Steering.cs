@@ -140,6 +140,7 @@ public class Steering : MonoBehaviour {
 	{
 		_tickedObject = new TickedObject(OnUpdateSteering);
 		_tickedObject.TickLength = _tickLength;
+		_tickedObject.Priority = IsPostProcess ? 100 : 0;
 		_steeringQueue = UnityTickedQueue.GetInstance(QueueName);
 		_steeringQueue.Add(_tickedObject);
 	}
