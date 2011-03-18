@@ -15,6 +15,9 @@ public class AutonomousVehicle: Vehicle
 	CharacterController _characterController;
 	
 	[SerializeField]
+	bool _traceAdjustments = false;
+	
+	[SerializeField]
 	float _accelerationSmoothRate = 0.4f;	
 	#endregion
 	
@@ -182,7 +185,10 @@ public class AutonomousVehicle: Vehicle
 	[System.Diagnostics.Conditional("TRACE_ADJUSTMENTS")]
 	void TraceDisplacement(Vector3 delta, Color color)
 	{
-		Debug.DrawLine(transform.position, transform.position + delta, color);
+		if (_traceAdjustments)
+		{
+			Debug.DrawLine(transform.position, transform.position + delta, color);
+		}
 	}
 }
 
