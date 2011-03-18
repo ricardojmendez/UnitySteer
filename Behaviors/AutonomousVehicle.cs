@@ -220,7 +220,6 @@ public class AutonomousVehicle: Vehicle
 	private void ApplySteeringForce(float elapsedTime)
 	{
 		// Euler integrate (per frame) velocity into position
-		Profiler.BeginSample("Applying displacement");
 		var delta = (Velocity * elapsedTime);
 		if (_characterController != null) 
 		{
@@ -234,7 +233,6 @@ public class AutonomousVehicle: Vehicle
 		{
 			_rigidbody.MovePosition (_rigidbody.position + delta);
 		}
-		Profiler.EndSample();
 
 		// regenerate local space (by default: align vehicle's forward axis with
 		// new velocity, but this behavior may be overridden by derived classes.)
