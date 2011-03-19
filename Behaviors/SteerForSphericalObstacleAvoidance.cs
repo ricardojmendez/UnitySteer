@@ -1,4 +1,5 @@
 #define ANNOTATE_AVOIDOBSTACLES
+using System.Linq;
 using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
@@ -6,6 +7,12 @@ using UnitySteer.Helpers;
 /// <summary>
 /// Steers a vehicle to avoid stationary obstacles
 /// </summary>
+/// <remarks>
+/// THIS BEHAVIOR HAS NOT BEEN TESTED SINCE IT WAS CHANGED ON THE 
+/// EXPERIMENTAL BRANCH TO USE DetectableObjects.  
+/// 
+/// HERE BE DRAGONS!
+/// </remarks>
 public class SteerForSphericalObstacleAvoidance : Steering
 {
 	#region Structs
@@ -14,9 +21,9 @@ public class SteerForSphericalObstacleAvoidance : Steering
 		public bool intersect;
 		public float distance;
 
-		public SphericalObstacle obstacle;
+		public DetectableObject obstacle;
 		
-		public PathIntersection(SphericalObstacle obstacle)
+		public PathIntersection(DetectableObject obstacle)
 		{
 			this.obstacle = obstacle;
 			intersect = false;
@@ -65,7 +72,6 @@ public class SteerForSphericalObstacleAvoidance : Steering
 	protected new void Start()
 	{
 		base.Start();
-		Vehicle.Radar.ObstacleFactory = new ObstacleFactory(SphericalObstacle.GetObstacle);
 	}
 	
 	/// <summary>
@@ -83,7 +89,7 @@ public class SteerForSphericalObstacleAvoidance : Steering
 	protected override Vector3 CalculateForce()
 	{
 		Vector3 avoidance = Vector3.zero;
-		if (Vehicle.Radar.Obstacles == null || Vehicle.Radar.Obstacles.Count == 0)
+		if (!Vehicle.Radar.Obstacles.Any())
 		{
 			return avoidance;
 		}
@@ -102,8 +108,7 @@ public class SteerForSphericalObstacleAvoidance : Steering
 		Profiler.BeginSample("Find nearest intersection");
 		foreach (var o in Vehicle.Radar.Obstacles)
 		{
-			SphericalObstacle sphere = o as SphericalObstacle;
-			PathIntersection next = FindNextIntersectionWithSphere (sphere, line);
+			PathIntersection next = FindNextIntersectionWithSphere (o, line);
 			if (!nearest.intersect ||
 				(next.intersect &&
 				 next.distance < nearest.distance))
@@ -120,14 +125,14 @@ public class SteerForSphericalObstacleAvoidance : Steering
 			nearest.distance < line.magnitude)
 		{
 			#if ANNOTATE_AVOIDOBSTACLES
-			Debug.DrawLine(Vehicle.Position, nearest.obstacle.center, Color.red);
+			Debug.DrawLine(Vehicle.Position, nearest.obstacle.Center, Color.red);
 			#endif
 
 			// compute avoidance steering force: take offset from obstacle to me,
 			// take the component of that which is lateral (perpendicular to my
 			// forward direction), set length to maxForce, add a bit of forward
 			// component (in capture the flag, we never want to slow down)
-			Vector3 offset = Vehicle.Position - nearest.obstacle.center;
+			Vector3 offset = Vehicle.Position - nearest.obstacle.Center;
 			avoidance =	 OpenSteerUtility.perpendicularComponent(offset, transform.forward);
 
 			avoidance.Normalize();
@@ -151,7 +156,7 @@ public class SteerForSphericalObstacleAvoidance : Steering
 	/// <returns>
 	/// A PathIntersection with the intersection details <see cref="PathIntersection"/>
 	/// </returns>
-	public PathIntersection FindNextIntersectionWithSphere (SphericalObstacle obs, Vector3 line)
+	public PathIntersection FindNextIntersectionWithSphere (DetectableObject obs, Vector3 line)
 	{
 		/*
 		 * This routine is based on the Paul Bourke's derivation in:
@@ -162,23 +167,18 @@ public class SteerForSphericalObstacleAvoidance : Steering
 		 * 
 		 */
 		float a, b, c, bb4ac;
-		var toCenter = Vehicle.Position - obs.center;
+		var toCenter = Vehicle.Position - obs.ScaledCenter;
 
 		// initialize pathIntersection object
 		var intersection = new PathIntersection(obs);
 		
-		#if ANNOTATE_AVOIDOBSTACLES
-		obs.annotatePosition();
-		Debug.DrawLine(Vehicle.Position, Vehicle.Position + line, Color.cyan);
-		#endif
-		
 		// computer line-sphere intersection parameters
 		a = line.sqrMagnitude;
 		b = 2 * Vector3.Dot(line, toCenter);
-		c = obs.center.sqrMagnitude;
+		c = obs.ScaledCenter.sqrMagnitude;
 		c += Vehicle.Position.sqrMagnitude;
-		c -= 2 * Vector3.Dot(obs.center, Vehicle.Position); 
-		c -= Mathf.Pow(obs.radius + Vehicle.ScaledRadius, 2);
+		c -= 2 * Vector3.Dot(obs.ScaledCenter, Vehicle.Position); 
+		c -= Mathf.Pow(obs.ScaledRadius + Vehicle.ScaledRadius, 2);
 		bb4ac = b * b - 4 * a * c;
 
 		if (bb4ac >= 0)  {
@@ -220,12 +220,8 @@ public class SteerForSphericalObstacleAvoidance : Steering
 	{
 		if (Vehicle != null)
 		{
-			foreach (var o in Vehicle.Radar.Obstacles)
-			{
-				var sphere = o as SphericalObstacle;
-				Gizmos.color = Color.red;
-				Gizmos.DrawWireSphere(sphere.center, sphere.radius);
-			}
+			Gizmos.color = Color.red;
+			Vehicle.Radar.Obstacles.ForEach( s => Gizmos.DrawWireSphere(s.ScaledCenter, s.ScaledRadius) );
 		}
 	}
 	#endif
