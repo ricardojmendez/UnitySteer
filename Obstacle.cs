@@ -20,13 +20,7 @@ namespace UnitySteer
 		static Obstacle()
         {
             _obstacleCache = new Dictionary<int, Obstacle>();
-        }		
-		
-		
-		public virtual Vector3 steerToAvoid(SteeringVehicle v, float minTimeToCollision)
-		{
-			return Vector3.zero;
-		}
+        }
 
     }
 
@@ -121,20 +115,7 @@ namespace UnitySteer
 
     		return obstacle;
     	}
-
-        public void annotatePosition()
-        {
-            annotatePosition(Color.grey);
-        }
         
-        public void annotatePosition(Color color)
-        {
-			// Primitive sphere position indicator, since Unity lacks a 
-			// Debug.DrawSphere
-			Debug.DrawRay(center, Vector3.up * radius, color);
-			Debug.DrawRay(center, Vector3.forward * radius, color);
-			Debug.DrawRay(center, Vector3.right * radius, color);
-        }
     }
 }
 
