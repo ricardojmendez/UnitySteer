@@ -215,13 +215,7 @@ public class Vehicle: DetectableObject
 	/// Radar assigned to this vehicle
 	/// </summary>
 	public Radar Radar {
-		get {
-			if (this._radar == null)
-			{
-				_radar = this.GetComponent<Radar>();
-			}
-			return this._radar;
-		}
+		get { return this._radar; }
 	}
 
 
@@ -307,6 +301,7 @@ public class Vehicle: DetectableObject
 		{
 			_movementPriority = gameObject.GetInstanceID();
 		}
+		_radar = this.GetComponent<Radar>();
 	}
 	
 	protected virtual void RegenerateLocalSpace (Vector3 newVelocity)

@@ -11,14 +11,11 @@ using UnitySteer.Helpers;
 /// <remarks>Different radars will implement their own detection styles, from
 /// "pinging" every so often with Physics.OverlapSphere to handling visibility
 /// OnTriggerEnter/Exit</remarks>
-public class Radar: MonoBehaviour, ITick {
+public class Radar: MonoBehaviour {
 	#region Private properties
 	
 	[SerializeField]
 	bool _detectDisabledVehicles;
-	
-	[SerializeField]
-	Tick _tick;
 	
 	[SerializeField]
 	LayerMask _layersChecked;
@@ -40,11 +37,7 @@ public class Radar: MonoBehaviour, ITick {
 	/// </summary>
 	public IEnumerable<Collider> Detected 
 	{
-		get 
-		{
-			ExecuteRadar();
-			return _detected;
-		}
+		get { return _detected; }
 	}
 	
 	/// <summary>
@@ -64,10 +57,7 @@ public class Radar: MonoBehaviour, ITick {
 	/// List of obstacles detected by the radar
 	/// </summary>
 	public IEnumerable<DetectableObject> Obstacles {
-		get {
-			ExecuteRadar();
-			return _obstacles;
-		}
+		get { return _obstacles; }
 
 	}
 	
@@ -87,11 +77,7 @@ public class Radar: MonoBehaviour, ITick {
 	/// </summary>
 	public IEnumerable<Vehicle> Vehicles 
 	{
-		get 
-		{
-			ExecuteRadar();
-			return _vehicles;
-		}
+		get { return _vehicles; }
 	}
 
 	/// <summary>
@@ -105,15 +91,6 @@ public class Radar: MonoBehaviour, ITick {
 			_layersChecked = value;
 		}
 	}
-
-	/// <summary>
-	/// Tick information
-	/// </summary>
-	public Tick Tick {
-		get {
-			return this._tick;
-		}
-	}
 	#endregion
 	
 	#region Methods
@@ -121,15 +98,14 @@ public class Radar: MonoBehaviour, ITick {
 		_vehicle = GetComponent<Vehicle>();	
 	}
 	
-	void ExecuteRadar()
+	public void Update()
 	{
-		if (_tick.ShouldTick()) {
-			_detected = Detect();
-			FilterDetected();
-			if (OnDetected != null)
-				OnDetected(new SteeringEvent<Radar>(null, "detect", this));
-		}
+		_detected = Detect();
+		FilterDetected();
+		if (OnDetected != null)
+			OnDetected(new SteeringEvent<Radar>(null, "detect", this));
 	}
+		
 	
 	protected virtual IEnumerable<Collider> Detect()
 	{

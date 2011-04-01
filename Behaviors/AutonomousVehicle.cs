@@ -110,6 +110,10 @@ public class AutonomousVehicle: Vehicle
 	
 	protected void OnUpdateSteering(object obj)
 	{
+		if (Radar != null)
+		{
+			Radar.Update();
+		}
 		CalculateForces();
 	}
 	
