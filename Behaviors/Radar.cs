@@ -8,18 +8,25 @@ using UnitySteer.Helpers;
 /// <summary>
 /// Base class for radars
 /// </summary>
-/// <remarks>Different radars will implement their own detection styles, from
-/// "pinging" every so often with Physics.OverlapSphere to handling visibility
-/// OnTriggerEnter/Exit</remarks>
+/// <remarks>
+/// The base Radar class will "ping" an area using Physics.OverlapSphere, but
+/// different radars can implement their own detection styles (if for instance
+/// they wish to handle a proximity quadtre/octree themselves).
+/// </remarks>
 public class Radar: MonoBehaviour {
 	#region Private properties
+	
+	[SerializeField]
+	float _detectionRadius = 5;
 	
 	[SerializeField]
 	bool _detectDisabledVehicles;
 	
 	[SerializeField]
 	LayerMask _layersChecked;
-		
+	
+	[SerializeField]
+	bool _drawGizmos = false;
 	
 	IEnumerable<Collider> _detected;
 	IEnumerable<Vehicle> _vehicles = new List<Vehicle>();
@@ -39,6 +46,19 @@ public class Radar: MonoBehaviour {
 	{
 		get { return _detected; }
 	}
+	
+	/// <summary>
+	/// Radar ping detection radius
+	/// </summary>
+	public float DetectionRadius {
+		get {
+			return this._detectionRadius;
+		}
+		set {
+			_detectionRadius = value;
+		}
+	}
+	
 	
 	/// <summary>
 	/// Indicates if the radar will detect disabled vehicles. 
@@ -109,7 +129,7 @@ public class Radar: MonoBehaviour {
 	
 	protected virtual IEnumerable<Collider> Detect()
 	{
-		return new List<Collider>();
+		return Physics.OverlapSphere(Vehicle.Position, DetectionRadius, LayersChecked);
 	}
 	
 	protected virtual void FilterDetected()
@@ -149,5 +169,18 @@ public class Radar: MonoBehaviour {
 		}
 		return this;
 	}
+	#endregion
+	
+	#region Unity methods
+	void OnDrawGizmos()
+	{
+		if (_drawGizmos)
+		{
+			var pos = (Vehicle == null) ? transform.position : Vehicle.Position;
+			
+			Gizmos.color = Color.cyan;
+			Gizmos.DrawWireSphere(pos, DetectionRadius);
+		}
+	}	
 	#endregion
 }
