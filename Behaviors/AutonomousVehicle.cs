@@ -146,6 +146,7 @@ public class AutonomousVehicle: Vehicle
 		if (newAcceleration.sqrMagnitude == 0)
 		{
 			Velocity = Vector3.zero;
+			DesiredVelocity = Vector3.zero;
 		}
 
 		/*
