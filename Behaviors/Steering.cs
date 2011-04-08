@@ -34,11 +34,17 @@ public class Steering : MonoBehaviour {
 			_force = CalculateForce();
 			if (_force != Vector3.zero)
 			{
+				if (!ReportedMove && OnStartMoving != null)
+				{
+					OnStartMoving(new SteeringEvent<Vehicle>(this, "moving", Vehicle));
+				}
 				ReportedArrival = false;
+				ReportedMove = true;
 			}
 			else if (!ReportedArrival)
 			{
 				ReportedArrival = true;
+				ReportedMove = false;
 				if (OnArrival != null)
 				{
 					var message = new SteeringEvent<Vehicle>(this, "arrived", Vehicle);
@@ -66,9 +72,19 @@ public class Steering : MonoBehaviour {
 	public SteeringEventHandler<Vehicle> OnArrival { get; set; }
 	
 	/// <summary>
+	/// Steering event handler for arrival notification
+	/// </summary>
+	public SteeringEventHandler<Vehicle> OnStartMoving { get; set; }
+	
+	/// <summary>
 	/// Have we reported that we stopped moving?
 	/// </summary>
-	public bool ReportedArrival { get; protected set; }	
+	public bool ReportedArrival { get; protected set; }
+	
+	/// <summary>
+	/// Have we reported that we began moving?
+	/// </summary>
+	public bool ReportedMove { get; protected set; }
 	
 	
 	/// <summary>
