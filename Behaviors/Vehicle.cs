@@ -16,10 +16,9 @@ using UnitySteer;
 /// to whatever is doing the moving, like a CharacterMotor.</remarks>
 public class Vehicle: DetectableObject
 {
-	/// <summary>
-	/// Minimum force squared magnitude threshold
-	/// </summary>
-	static float MIN_FORCE_THRESHOLD = 0.01f;
+	
+	[SerializeField]
+	float _minSpeedForTurning = 0.1f;
 	
 	[SerializeField]
 	int _movementPriority = 0;	
@@ -29,7 +28,7 @@ public class Vehicle: DetectableObject
 	float _squaredArrivalRadius;
 	
 	[SerializeField]
-	float _speedFactorOnTurn = 1;
+	float _turnTime = 0.1f;
 	
 	[SerializeField]
 	bool _hasInertia = false;
@@ -85,6 +84,11 @@ public class Vehicle: DetectableObject
 	/// Current vehicle velocity
 	/// </summary>
 	Vector3 _velocity;
+	
+	/// <summary>
+	/// The vehicle's normalized velocity
+	/// </summary>
+	Vector3 _normalizedVelocity;
 	
 	#endregion
 
@@ -184,6 +188,11 @@ public class Vehicle: DetectableObject
 		get { return _movementPriority; }
 	}
 	
+	public float MinSpeedForTurning
+	{
+		get { return _minSpeedForTurning; }
+	}
+	
 	
 	
 	/// <summary>
@@ -247,25 +256,20 @@ public class Vehicle: DetectableObject
 	}
 	
 	/// <summary>
-	/// How much of the vehicle's speed should count against it when turning
+	/// How quickly does the vehicle turn toward a vector.
 	/// </summary>
 	/// <value>
-	/// The speed factor on turn.
+	/// The turn speed
 	/// </value>
-	/// <remarks>
-	/// By default, RegenerateLocalSpace divides the new velocity by the 
-	/// vehicle's speed.  This value will set if the full Speed should be
-	/// used as a divider (when set to 1) or a fraction of it.
-	/// </remarks>
-	public float SpeedFactorOnTurn 
+	public float TurnTime 
 	{
 		get 
 		{
-			return this._speedFactorOnTurn;
+			return this._turnTime;
 		}
 		set 
 		{
-			_speedFactorOnTurn = Mathf.Max(0, value);
+			_turnTime = Mathf.Max(0, value);
 		}
 	}
 
@@ -288,11 +292,12 @@ public class Vehicle: DetectableObject
 		{ 
 			_velocity = Vector3.ClampMagnitude(value, MaxSpeed);
 			_speed = _velocity.magnitude;
+			_normalizedVelocity = _velocity / _speed;
 		}
 	}
 	#endregion
 
-	#region Methods
+	#region Unity methods
 	protected override void Awake()
 	{
 		base.Awake();
@@ -303,17 +308,24 @@ public class Vehicle: DetectableObject
 		}
 		_radar = this.GetComponent<Radar>();
 	}
+	#endregion
 	
-	protected virtual void RegenerateLocalSpace (Vector3 newVelocity)
+	
+	#region Methods
+	protected virtual void LookTowardsVelocity (float elapsedTime)
 	{
 		/* 
 		 * Avoid adjusting if we aren't applying any velocity. We also
 		 * disregard very small velocities, to avoid jittery movement on
 		 * rounding errors.
 		 */
- 		if (Speed > 0 && newVelocity.sqrMagnitude > MIN_FORCE_THRESHOLD)
+ 		if (Speed > MinSpeedForTurning)
 		{
-			var newForward = (SpeedFactorOnTurn != 0) ? newVelocity / (Speed * SpeedFactorOnTurn) : newVelocity;
+			var newForward = _normalizedVelocity;
+			if (TurnTime != 0)
+			{
+				newForward = Vector3.Lerp(_transform.forward, newForward, elapsedTime / TurnTime);
+			}
 			newForward.y = IsPlanar ? _transform.forward.y : newForward.y;
 			
 			_transform.forward = newForward;

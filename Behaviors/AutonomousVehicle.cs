@@ -209,6 +209,7 @@ public class AutonomousVehicle: Vehicle
 		if (CanMove)
 		{
 			ApplySteeringForce(Time.fixedDeltaTime);
+			LookTowardsVelocity(Time.fixedDeltaTime);
 		}
 		else 
 		{
@@ -238,10 +239,6 @@ public class AutonomousVehicle: Vehicle
 		{
 			_rigidbody.MovePosition (_rigidbody.position + delta);
 		}
-
-		// regenerate local space (by default: align vehicle's forward axis with
-		// new velocity, but this behavior may be overridden by derived classes.)
-		RegenerateLocalSpace (Velocity);
 	}
 	#endregion
 	
