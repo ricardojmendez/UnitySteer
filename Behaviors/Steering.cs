@@ -22,7 +22,7 @@ public class Steering : MonoBehaviour, ITick {
 	Tick _tick;
 	
 	[SerializeField]
-	float _weight = 1;
+	float _weight = 5;
 	#endregion
 	
 	
@@ -117,6 +117,7 @@ public class Steering : MonoBehaviour, ITick {
 	protected void Start()
 	{
 		_vehicle = this.GetComponent<Vehicle>();
+		ReportedArrival = true; // Default to true to avoid unnecessary notifications
 	}
 	
 	/// <summary>

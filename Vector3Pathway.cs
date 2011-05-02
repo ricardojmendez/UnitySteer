@@ -257,5 +257,13 @@ namespace UnitySteer
             }
             return result;
         }
+		
+		public override void DrawGizmos ()
+		{
+			for (var i = 0; i < _points.Count - 1; i++)
+			{
+				Debug.DrawLine(_points[i], _points[i+1], Color.green);
+			}
+		}
     }
 }

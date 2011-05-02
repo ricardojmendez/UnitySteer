@@ -13,7 +13,11 @@ public class SteerForPathSimplified : Steering
 	
 	#region Private fields
 	[SerializeField]
-	float _predictionTime = 1f;
+	float _predictionTime = 1.5f;
+	
+	[SerializeField]
+	float _minSpeedToConsider = 0.25f;
+	
 	#endregion
 	
 	
@@ -30,6 +34,20 @@ public class SteerForPathSimplified : Steering
 		}
 	}
 	
+	/// <summary>
+	/// Minimum speed to consider when predicting the future position. If the
+	/// vehicle's speed is under this value, estimates will instead be done
+	/// at this value plus the prediction time.
+	/// </summary>
+	public float MinSpeedToConsider {
+		get {
+			return this._minSpeedToConsider;
+		}
+		set {
+			_minSpeedToConsider = value;
+		}
+	}
+
 	/// <summary>
 	/// Path to follow
 	/// </summary>
@@ -49,8 +67,14 @@ public class SteerForPathSimplified : Steering
 			return Vector3.zero;
 		}
 		
+		// If the vehicle's speed is 0, use a low speed for future position
+		// calculation. Otherwise the vehicle will remain where it is if he
+		// starts within the path, because its current position matches its
+		// future path position
+		float speed = (Vehicle.Speed > _minSpeedToConsider) ? Vehicle.Speed : _minSpeedToConsider + _predictionTime;
+		
 		// our goal will be offset from our path distance by this amount
-		float pathDistanceOffset = _predictionTime * Vehicle.Speed;
+		float pathDistanceOffset = _predictionTime * speed;
 		
 		// measure distance along path of our current and predicted positions
 		float currentPathDistance = Path.MapPointToPathDistance (Vehicle.Position);
@@ -86,8 +110,33 @@ public class SteerForPathSimplified : Steering
 		 */
 		var seek = Vehicle.GetSeekVector(target, false);
 		
-
+		if (seek == Vector3.zero && targetPathDistance <= Path.TotalPathLength)
+		{
+			/*
+			 * If we should not displace but still have some distance to go,
+			 * that means that we've encountered an edge case: a relatively low
+			 * vehicle speed and short prediction range, combined with a path
+			 * that twists. In that case, it's possible that the predicted future
+			 * point just around the bend is still within the vehicle's arrival
+			 * radius.  In that case, aim a bit further beyond the vehicle's 
+			 * arrival radius so that it can continue moving.
+			 * 
+			 * TODO: Consider simply adding the arrivalradius displacement to
+			 * where we're aiming to from the get go. Might leave as is, considering
+			 * that this is supposed to be just a sample behavior.
+			 */
+			target = Path.MapPathDistanceToPoint(targetPathDistance + 1.5f * Vehicle.ArrivalRadius);
+			seek = Vehicle.GetSeekVector(target, false);
+		}
 		
 		return seek;
+	}
+	
+	protected void OnDrawGizmosSelected()
+	{
+		if (Path != null)
+		{
+			Path.DrawGizmos();
+		}
 	}
 }
