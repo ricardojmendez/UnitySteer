@@ -116,6 +116,7 @@ public class Radar: MonoBehaviour {
 	#region Methods
 	protected virtual void Awake() {
 		_vehicle = GetComponent<Vehicle>();	
+		Ignore(_vehicle); // All radars ignore their own vehicle
 	}
 	
 	public void Update()
@@ -123,7 +124,9 @@ public class Radar: MonoBehaviour {
 		_detected = Detect();
 		FilterDetected();
 		if (OnDetected != null)
+		{
 			OnDetected(new SteeringEvent<Radar>(null, "detect", this));
+		}
 	}
 		
 	
@@ -134,8 +137,10 @@ public class Radar: MonoBehaviour {
 	
 	protected virtual void FilterDetected()
 	{
-		_vehicles = _detected.Select( c => c.gameObject.GetComponent<Vehicle>() ).Where( v => v != null && v != _vehicle && (v.enabled || _detectDisabledVehicles) && !_ignoredObjects.Contains(v));
-		_obstacles = _detected.Select( d => d.gameObject.GetComponent<DetectableObject>() ).Where( d => d != null && !(d is Vehicle) && !_ignoredObjects.Contains(d));
+		// Materialize the list so that we don't select it twice
+		var notIgnored =  _detected.Select( d => d.transform.root.GetComponentInChildren<DetectableObject>() ).Except(_ignoredObjects).ToList();
+		_vehicles = notIgnored.OfType<Vehicle>().Where( v => v != null && (v.enabled || _detectDisabledVehicles));
+		_obstacles = notIgnored.Where( d => d != null && !(d is Vehicle) );
 	}
 	
 	/// <summary>
