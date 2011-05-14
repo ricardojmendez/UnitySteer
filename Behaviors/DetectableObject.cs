@@ -5,7 +5,8 @@ using UnitySteer;
 /// Parent class for objects that vehicles can aim for, be it other vehicles or
 /// static objects.
 /// </summary>
-public class DetectableObject: MonoBehaviour
+[AddComponentMenu("UnitySteer/Detectables/DetectableObject")]
+public class DetectableObject : MonoBehaviour
 {
 	float _squaredRadius;
 

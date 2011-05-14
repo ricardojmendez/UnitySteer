@@ -5,6 +5,7 @@ using UnitySteer.Helpers;
 /// <summary>
 /// Steers a vehicle to wander around
 /// </summary>
+[AddComponentMenu("UnitySteer/Steer/... for Wander")]
 public class SteerForWander : Steering
 {
 	#region Private fields

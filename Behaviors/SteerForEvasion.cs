@@ -5,6 +5,7 @@ using UnitySteer.Helpers;
 /// <summary>
 /// Steers a vehicle to avoid another one
 /// </summary>
+[AddComponentMenu("UnitySteer/Steer/... for Evasion")]
 public class SteerForEvasion : Steering
 {
 	#region Private fields

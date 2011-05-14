@@ -19,6 +19,7 @@ using System.Collections;
 /// The vast majority of the functionality is now implemented as part of 
 /// DetectableObject. Retaining this class for backwards compatibility.
 /// </remarks>
+[AddComponentMenu("UnitySteer/Detectables/Spherical Obstacle Data")]
 public class SphericalObstacleData : DetectableObject {
 	
 	

@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnitySteer.Helpers;
 
-public class SteerForPoint: Steering
+[AddComponentMenu("UnitySteer/Steer/... for Point")]
+public class SteerForPoint : Steering
 {
 	
 	/// <summary>

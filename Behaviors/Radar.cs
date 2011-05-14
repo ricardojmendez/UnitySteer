@@ -11,7 +11,8 @@ using UnitySteer.Helpers;
 /// <remarks>Different radars will implement their own detection styles, from
 /// "pinging" every so often with Physics.OverlapSphere to handling visibility
 /// OnTriggerEnter/Exit</remarks>
-public class Radar: MonoBehaviour, ITick {
+[AddComponentMenu("UnitySteer/Radar/Radar")]
+public class Radar : MonoBehaviour, ITick {
 	#region Private properties
 	SteeringEventHandler<Radar> _onDetected;
 	

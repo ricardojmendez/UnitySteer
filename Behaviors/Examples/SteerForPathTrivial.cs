@@ -13,6 +13,7 @@ using UnitySteer;
 /// 
 /// Movement *will* look robotic due to its simplicity.
 /// </remarks>
+[AddComponentMenu("UnitySteer/Steer/... for Path - Trivial")]
 public class SteerForPathTrivial : Steering
 {
 	

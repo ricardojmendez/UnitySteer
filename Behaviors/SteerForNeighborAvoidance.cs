@@ -1,6 +1,7 @@
 #define ANNOTATE_AVOIDNEIGHBORS
 using UnityEngine;
 
+[AddComponentMenu("UnitySteer/Steer/... for Neighbor Avoidance")]
 public class SteerForNeighborAvoidance : Steering {
 	
 	#region Private fields

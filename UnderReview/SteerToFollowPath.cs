@@ -22,6 +22,7 @@ public enum FollowDirection: int {
 /// 
 /// See also SteerForPathSimplified.
 /// </remarks>
+[AddComponentMenu("UnitySteer/Steer/... to Follow Path")]
 public class SteerToFollowPath : Steering
 {
 	

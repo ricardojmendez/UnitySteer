@@ -6,6 +6,7 @@ using UnitySteer.Helpers;
 /// <summary>
 /// Steers a vehicle to avoid stationary obstacles
 /// </summary>
+[AddComponentMenu("UnitySteer/Steer/... for SphericalObstacleAvoidance")]
 public class SteerForSphericalObstacleAvoidance : Steering
 {
 	#region Structs

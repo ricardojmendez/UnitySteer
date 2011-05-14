@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[AddComponentMenu("UnitySteer/Steer/... for Target")]
 public class SteerForTarget : Steering {
 	
 	/// <summary>
