@@ -9,8 +9,10 @@ public class SteerForTarget : Steering {
 	public Transform Target;
 	
 	
-	void Awake()
+	public new void Start()
 	{
+		base.Start();
+		
 		if (Target == null)
 		{
 			Destroy(this);

@@ -29,8 +29,11 @@ public class SteerForPoint : Steering
 	}
 
 	
+	
+	public new void Start()
+	{
+		base.Start();
 		
-	void Awake() {
 		if (TargetPoint == Vector3.zero)
 		{
 			TargetPoint = transform.position;
