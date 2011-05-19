@@ -14,7 +14,8 @@ using UnitySteer;
 /// vehicles, at least for purposes of estimation, avoidance, pursuit, etc.
 /// In this case, the base Vehicle class can be used to provide an interface
 /// to whatever is doing the moving, like a CharacterMotor.</remarks>
-public class Vehicle: DetectableObject
+[AddComponentMenu("UnitySteer/Vehicle/Vehicle")]
+public class Vehicle : DetectableObject
 {
 	/// <summary>
 	/// Minimum force squared magnitude threshold

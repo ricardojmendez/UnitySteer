@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnitySteer.Helpers;
 
+[AddComponentMenu("UnitySteer/Steer/Steering")]
 public class Steering : MonoBehaviour, ITick {	
 	public const string STEERING_MESSAGE = "Steering";
 	public const string ACTION_RETRY = "retry";

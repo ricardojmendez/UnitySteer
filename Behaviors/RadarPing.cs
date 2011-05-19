@@ -5,7 +5,8 @@ using UnitySteer.Helpers;
 /// <summary>
 /// Detects neighbors by pinging an area with Physics.OverlapSphere
 /// </summary>
-public class RadarPing: Radar
+[AddComponentMenu("UnitySteer/Radar/Radar Ping")]
+public class RadarPing : Radar
 {
 	
 	#region Private properties
