@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[AddComponentMenu("UnitySteer/Steer/... for Target")]
 public class SteerForTarget : Steering {
 	
 	/// <summary>
@@ -8,8 +9,10 @@ public class SteerForTarget : Steering {
 	public Transform Target;
 	
 	
-	void Awake()
+	public new void Start()
 	{
+		base.Start();
+		
 		if (Target == null)
 		{
 			Destroy(this);
