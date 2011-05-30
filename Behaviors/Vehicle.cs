@@ -17,17 +17,16 @@ using UnitySteer;
 [AddComponentMenu("UnitySteer/Vehicle/Vehicle")]
 public class Vehicle : DetectableObject
 {
-	/// <summary>
-	/// Minimum force squared magnitude threshold
-	/// </summary>
-	static float MIN_FORCE_THRESHOLD = 0.01f;
+	
+	[SerializeField]
+	float _minSpeedForTurning = 0.1f;
 	
 	#region Private fields
 	Steering[] _steerings;
 	float _squaredArrivalRadius;
 	
 	[SerializeField]
-	float _speedFactorOnTurn = 1;
+	float _turnTime = 0.1f;
 	
 	[SerializeField]
 	bool _hasInertia = false;
@@ -77,6 +76,7 @@ public class Vehicle : DetectableObject
 	/// Cached Radar attached to the same gameobject
 	/// </summary>
 	Radar _radar;
+	
 	
 	#endregion
 
@@ -165,6 +165,12 @@ public class Vehicle : DetectableObject
 		}
 	}
 	
+	
+	public float MinSpeedForTurning
+	{
+		get { return _minSpeedForTurning; }
+	}
+	
 	/// <summary>
 	/// Indicates if the vehicle's InternalMass should override whatever 
 	/// value is configured for the rigidbody, as far as speed calculations
@@ -237,25 +243,20 @@ public class Vehicle : DetectableObject
 	}
 	
 	/// <summary>
-	/// How much of the vehicle's speed should count against it when turning
+	/// How quickly does the vehicle turn toward a vector.
 	/// </summary>
 	/// <value>
-	/// The speed factor on turn.
+	/// The turn speed
 	/// </value>
-	/// <remarks>
-	/// By default, RegenerateLocalSpace divides the new velocity by the 
-	/// vehicle's speed.  This value will set if the full Speed should be
-	/// used as a divider (when set to 1) or a fraction of it.
-	/// </remarks>
-	public float SpeedFactorOnTurn 
+	public float TurnTime 
 	{
 		get 
 		{
-			return this._speedFactorOnTurn;
+			return this._turnTime;
 		}
 		set 
 		{
-			_speedFactorOnTurn = Mathf.Max(0, value);
+			_turnTime = Mathf.Max(0, value);
 		}
 	}
 
@@ -280,23 +281,30 @@ public class Vehicle : DetectableObject
 	}
 	#endregion
 
-	#region Methods
+	#region Unity methods
 	protected override void Awake()
 	{
 		base.Awake();
 		_steerings = GetComponents<Steering>();
 	}
+	#endregion
 	
-	protected virtual void RegenerateLocalSpace (Vector3 newVelocity)
+	
+	#region Methods
+	protected virtual void LookTowardsVelocity (Vector3 velocity, float elapsedTime)
 	{
 		/* 
 		 * Avoid adjusting if we aren't applying any velocity. We also
 		 * disregard very small velocities, to avoid jittery movement on
 		 * rounding errors.
 		 */
- 		if (Speed > 0 && newVelocity.sqrMagnitude > MIN_FORCE_THRESHOLD)
+ 		if (Speed > MinSpeedForTurning)
 		{
-			var newForward = (SpeedFactorOnTurn != 0) ? newVelocity / (Speed * SpeedFactorOnTurn) : newVelocity;
+			var newForward = velocity;
+			if (TurnTime != 0)
+			{
+				newForward = Vector3.Lerp(_transform.forward, newForward, elapsedTime / TurnTime);
+			}
 			newForward.y = IsPlanar ? _transform.forward.y : newForward.y;
 			
 			_transform.forward = newForward;
