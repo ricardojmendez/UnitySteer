@@ -2,8 +2,14 @@ using UnityEngine;
 using UnitySteer.Helpers;
 using TickedPriorityQueue;
 
-[AddComponentMenu("UnitySteer/Steer/Steering")]
-public class Steering : MonoBehaviour {	
+/// <summary>
+/// Base Steering class from which other steering behaviors derive
+/// </summary>
+/// <remarks>
+/// This is an abstract class because it does not provide any steering
+/// itself.  It should be subclassed for your particular steering needs.
+/// </remarks>
+public abstract class Steering : MonoBehaviour {	
 	public static readonly string STEERING_MESSAGE = "Steering";
 	public static readonly string ACTION_RETRY = "retry";
 	
