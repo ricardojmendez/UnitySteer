@@ -3,6 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Steers a vehicle to keep separate from neighbors
 /// </summary>
+[AddComponentMenu("UnitySteer/Steer/... for Separation")]
 public class SteerForSeparation : SteerForNeighbors
 {
 	#region Methods

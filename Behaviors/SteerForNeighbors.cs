@@ -22,7 +22,7 @@ using UnitySteer.Helpers;
 /// public float cohesionAngle   =   99;
 /// public float cohesionWeight  =    8;   
 /// </remarks>
-public class SteerForNeighbors : Steering
+public abstract class SteerForNeighbors : Steering
 {
 	#region Private properties
 	[SerializeField]

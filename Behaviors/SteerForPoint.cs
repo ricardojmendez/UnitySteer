@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnitySteer.Helpers;
 
-public class SteerForPoint: Steering
+[AddComponentMenu("UnitySteer/Steer/... for Point")]
+public class SteerForPoint : Steering
 {
 	
 	/// <summary>
@@ -28,8 +29,11 @@ public class SteerForPoint: Steering
 	}
 
 	
+	
+	public new void Start()
+	{
+		base.Start();
 		
-	void Awake() {
 		if (TargetPoint == Vector3.zero)
 		{
 			TargetPoint = transform.position;

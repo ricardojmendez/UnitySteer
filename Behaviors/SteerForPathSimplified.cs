@@ -8,6 +8,7 @@ using UnitySteer;
 /// <remarks>
 /// Based on SteerToFollowPath.
 /// </remarks>
+[AddComponentMenu("UnitySteer/Steer/... for PathSimplified")]
 public class SteerForPathSimplified : Steering
 {
 	

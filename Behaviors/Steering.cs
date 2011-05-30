@@ -2,6 +2,7 @@ using UnityEngine;
 using UnitySteer.Helpers;
 using TickedPriorityQueue;
 
+[AddComponentMenu("UnitySteer/Steer/Steering")]
 public class Steering : MonoBehaviour {	
 	public static readonly string STEERING_MESSAGE = "Steering";
 	public static readonly string ACTION_RETRY = "retry";
@@ -121,6 +122,7 @@ public class Steering : MonoBehaviour {
 	protected void Start()
 	{
 		_vehicle = this.GetComponent<Vehicle>();
+		ReportedArrival = true; // Default to true to avoid unnecessary notifications
 	}
 	
 	/// <summary>

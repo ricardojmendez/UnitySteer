@@ -8,7 +8,8 @@ using TickedPriorityQueue;
 /// Vehicle subclass which automatically applies the steering forces from
 /// the components attached to the object.
 /// </summary>
-public class AutonomousVehicle: Vehicle
+[AddComponentMenu("UnitySteer/Vehicle/Autonomous")]
+public class AutonomousVehicle : Vehicle
 {
 	#region Internal state values
 	Vector3 _smoothedAcceleration;

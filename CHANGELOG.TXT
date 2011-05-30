@@ -1,5 +1,24 @@
 UnitySteer changelog
 
+v2.2
+----
+
+- Added DetectableObject as a Vehicle base class.  This will allow us to make some static targets in scenes approachable with the same routines as we would approach a vehicle, without the need to have the Vehicle overhead.
+- Removed outdated AngryAntPathway.  This was meant to be used with Path 1, which does not work with Unity 3.  For a draft Path 2 seeker, see https://gist.github.com/841909
+- Allowing 'speed' and 'forward' override on to Vehicle.ComputeNearestApproachPositions.  This override, as well as the previous one, will allow us to use this method to estimate the likelyhood of crashing into a vehicle at a future orientation and speed, which are not necessarily the same as the ones that our current vehicle has. This is something I am using on my RVO implementation.
+- SphericalObstacleData now expressed in terms of DetectableObject.
+- VehicleEditor now relies on DetectableObjectEditor.
+- SteerForPathSimplified bugfix. There was an issue when the character's path began on its position (ie, the character was already on the path) but the character's    speed was 0. In this case, the future path position estimated was the same as the current position, which caused the steering behavior to believe it had already arrived.
+- SteerForPathSimplified bugfix.  On very slow agents with a twisting path and a close prediction time, it's possible that the future predicted point will still be within the vehicle's radius, which caused it to believe it had arrived.
+- Setting cached transform on Position getter if necessary.
+- Radar will now disregard disabled vehicles by default. You can change this behavior by setting its DetectDisabledVehicles property to true.
+- Added property SteerForPathSimplified.MinSpeedToConsider for configuring the minimum estimation speed.
+- Increased default steering weight. The previous default weight of 1 could be too low in some cases.
+- Increased default prediction time on SteerForPathSimplified. The default value might have been too low for the default vehicle speed of 1, so I've increased it to allow people who are just starting to build up their own examples to get a better feel for the reaction.
+- Steering.ReportedArrival defaults to true on Start() to avoid unnecessary arrival notifications.
+- SteerForNeighbors is now an abstract class, to avoid confusion for users. Some people were trying to use it directly, instead of using the classes that implement it.
+
+
 v2.1
 ----
 

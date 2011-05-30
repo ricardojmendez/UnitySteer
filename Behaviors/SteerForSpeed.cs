@@ -3,6 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Behavior that will aim to achieve a constant speed along the vehicle's forward vector
 /// </summary>
+[AddComponentMenu("UnitySteer/Steer/... for Speed")]
 public class SteerForSpeed : Steering {
 	
 	/// <summary>

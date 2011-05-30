@@ -16,6 +16,7 @@ using UnitySteer;
 /// to do path following using the estimated position returned by 
 /// Vector3Pathway.MapPointToPath.
 /// </remarks>
+[AddComponentMenu("UnitySteer/Steer/... for Path - Predictive Trivial")]
 public class SteerForPathPredictiveTrivial : Steering
 {
 	

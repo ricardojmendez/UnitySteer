@@ -6,6 +6,7 @@ using UnitySteer.Helpers;
 /// <summary>
 /// Steers a vehicle to pursuit another one
 /// </summary>
+[AddComponentMenu("UnitySteer/Steer/... for Pursuit")]
 public class SteerForPursuit : Steering
 {
 	#region Private fields

@@ -13,6 +13,7 @@ using UnitySteer.Helpers;
 /// different radars can implement their own detection styles (if for instance
 /// they wish to handle a proximity quadtre/octree themselves).
 /// </remarks>
+[AddComponentMenu("UnitySteer/Radar/Radar")]
 public class Radar: MonoBehaviour {
 	#region Private properties
 	
