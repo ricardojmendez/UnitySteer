@@ -62,6 +62,9 @@ public class Vehicle : DetectableObject
 	float _arrivalRadius = 1;	
 	
 	
+	/// <summary>
+	/// The magnitude of the last velocity vector assigned to the vehicle 
+	/// </summary>
 	float _speed = 0;
 
 	[SerializeField]
@@ -90,6 +93,8 @@ public class Vehicle : DetectableObject
 	/// The vehicle's normalized velocity
 	/// </summary>
 	Vector3 _normalizedVelocity;
+	
+	Speedometer _speedometer;
 	
 	#endregion
 
@@ -125,7 +130,7 @@ public class Vehicle : DetectableObject
 			_hasInertia = value;
 		}
 	}
-
+	
 	/// <summary>
 	/// Does the vehicle move in Y space?
 	/// </summary>
@@ -227,6 +232,14 @@ public class Vehicle : DetectableObject
 	public Radar Radar {
 		get { return this._radar; }
 	}
+	
+	/// <summary>
+	/// Speedometer attached to the same object as this vehicle, if any
+	/// </summary>
+	public Speedometer Speedometer 
+	{
+		get { return this._speedometer; }
+	}
 
 
 	/// <summary>
@@ -252,8 +265,15 @@ public class Vehicle : DetectableObject
 	/// <summary>
 	/// Current vehicle speed
 	/// </summary>
+	/// <remarks>
+	/// If the vehicle has a speedometer, then we return the actual measured
+	/// value instead of simply the length of the velocity vector.
+	/// </remarks>
 	public float Speed {
-		get { return _speed; }
+		get 
+		{ 
+			return _speedometer == null ? _speed : _speedometer.Speed; 
+		}
 	}
 	
 	/// <summary>
@@ -296,6 +316,14 @@ public class Vehicle : DetectableObject
 			_normalizedVelocity = _velocity / _speed;
 		}
 	}
+	
+	/// <summary>
+	/// Normalized velocity vector of the vehicle
+	/// </summary>
+	public Vector3 NormalizedVelocity
+	{
+		get { return _normalizedVelocity; }
+	}
 	#endregion
 
 	#region Unity methods
@@ -308,6 +336,7 @@ public class Vehicle : DetectableObject
 			_movementPriority = gameObject.GetInstanceID();
 		}
 		_radar = this.GetComponent<Radar>();
+		_speedometer = this.GetComponent<Speedometer>();
 	}
 	#endregion
 	
