@@ -113,7 +113,7 @@ public class AutonomousVehicle : Vehicle
 	{
 		if (Radar != null)
 		{
-			Radar.Update();
+			Radar.OnUpdateRadar(this);
 		}
 		CalculateForces();
 	}

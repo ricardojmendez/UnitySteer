@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
+using TickedPriorityQueue;
 
 
 /// <summary>
@@ -17,6 +18,11 @@ using UnitySteer.Helpers;
 public class Radar: MonoBehaviour {
 	#region Private properties
 	
+	Transform _transform;
+	TickedObject _tickedObject;
+	UnityTickedQueue _steeringQueue;
+	
+	
 	[SerializeField]
 	float _detectionRadius = 5;
 	
@@ -28,6 +34,14 @@ public class Radar: MonoBehaviour {
 	
 	[SerializeField]
 	bool _drawGizmos = false;
+
+	/// <summary>
+	/// How often is the radar updated
+	/// </summary>
+	[SerializeField]
+	float _tickLength = 1;	
+	
+	
 	
 	IEnumerable<Collider> _detected;
 	IEnumerable<Vehicle> _vehicles = new List<Vehicle>();
@@ -82,6 +96,17 @@ public class Radar: MonoBehaviour {
 
 	}
 	
+	/// <summary>
+	/// Returns the radars position
+	/// </summary>
+	public Vector3 Position
+	{
+		get
+		{
+			return (Vehicle != null) ? Vehicle.Position : _transform.position;
+		}
+	}
+	
 	public SteeringEventHandler<Radar> OnDetected { get; set; }
 
 	/// <summary>
@@ -115,12 +140,35 @@ public class Radar: MonoBehaviour {
 	#endregion
 	
 	#region Methods
-	protected virtual void Awake() {
+	protected virtual void Awake() 
+	{
 		_vehicle = GetComponent<Vehicle>();	
+		_transform = transform;
 		Ignore(_vehicle); // All radars ignore their own vehicle
 	}
 	
-	public void Update()
+	
+	void OnEnable()
+	{
+		_tickedObject = new TickedObject(OnUpdateRadar);
+		_tickedObject.TickLength = _tickLength;
+		_steeringQueue = UnityTickedQueue.GetInstance("Radar");
+		_steeringQueue.Add(_tickedObject);
+		_steeringQueue.MaxProcessedPerUpdate = 50;
+	}
+
+	
+	void OnDisable()
+	{
+		if (_steeringQueue != null)
+		{
+			_steeringQueue.Remove(_tickedObject);
+		}
+	}
+	
+	
+	
+	public void OnUpdateRadar(object obj)
 	{
 		_detected = Detect();
 		FilterDetected();
@@ -133,7 +181,7 @@ public class Radar: MonoBehaviour {
 	
 	protected virtual IEnumerable<Collider> Detect()
 	{
-		return Physics.OverlapSphere(Vehicle.Position, DetectionRadius, LayersChecked);
+		return Physics.OverlapSphere(Position, DetectionRadius, LayersChecked);
 	}
 	
 	protected virtual void FilterDetected()
