@@ -87,6 +87,18 @@ public class Radar: MonoBehaviour {
 			_detectDisabledVehicles = value;
 		}
 	}
+	
+	/// <summary>
+	/// Should the radar draw its gizmos?
+	/// </summary>
+	public bool DrawGizmos {
+		get {
+			return this._drawGizmos;
+		}
+		set {
+			_drawGizmos = value;
+		}
+	}
 
 	/// <summary>
 	/// List of obstacles detected by the radar
@@ -176,6 +188,21 @@ public class Radar: MonoBehaviour {
 		{
 			OnDetected(new SteeringEvent<Radar>(null, "detect", this));
 		}
+#if TRACEDETECTED
+		if (DrawGizmos)
+		{
+			Debug.Log(gameObject.name+" detected at "+Time.time);
+			var sb = new System.Text.StringBuilder(); 
+			foreach (var v in Vehicles)
+			{
+				sb.Append(v.gameObject.name);
+				sb.Append(" ");
+				sb.Append(v.Position);
+				sb.Append(" ");
+			}
+			Debug.Log(sb.ToString());
+		}
+#endif
 	}
 		
 	
@@ -186,8 +213,22 @@ public class Radar: MonoBehaviour {
 	
 	protected virtual void FilterDetected()
 	{
-		// Materialize the list so that we don't select it twice
-		var notIgnored =  _detected.Select( d => d.transform.root.GetComponentInChildren<DetectableObject>() ).Except(_ignoredObjects).ToList();
+		/*
+		 * For each detected item, obtain all the DetectableObjects from its 
+		 * root transform. We do this because to allow people to have the
+		 * DetectableObject on a transform hierarchy which includes multiple
+		 * detectable objects.
+		 * 
+		 * Notice that this has two implications:
+		 * - All the detectable objects in a hierarchy are added to the radar
+		 * at once, even if they are beyond the detection radius
+		 * - Complex object hierarchies which include a detectable object
+		 * somewhere in them will likely slow down filtering, since the call
+		 * to GetComponentsInChildren will need to go through all of them.
+		 * 
+		 * We materialize the list so that we don't select it twice.
+		 */
+		var notIgnored =  _detected.SelectMany( d => d.transform.root.GetComponentsInChildren<DetectableObject>() ).Except(_ignoredObjects).ToList();
 		_vehicles = notIgnored.OfType<Vehicle>().Where( v => v != null && (v.enabled || _detectDisabledVehicles));
 		_obstacles = notIgnored.Where( d => d != null && !(d is Vehicle) );
 	}
