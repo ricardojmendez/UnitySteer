@@ -39,7 +39,7 @@ public class Radar: MonoBehaviour {
 	/// How often is the radar updated
 	/// </summary>
 	[SerializeField]
-	float _tickLength = 1;	
+	float _tickLength = 0.5f;
 	
 	
 	
