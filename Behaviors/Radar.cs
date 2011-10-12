@@ -13,6 +13,9 @@ using TickedPriorityQueue;
 /// The base Radar class will "ping" an area using Physics.OverlapSphere, but
 /// different radars can implement their own detection styles (if for instance
 /// they wish to handle a proximity quadtre/octree themselves).
+/// 
+/// It expects that every object to be added to the radar will have a 
+/// DetectableObject on its root.
 /// </remarks>
 [AddComponentMenu("UnitySteer/Radar/Radar")]
 public class Radar: MonoBehaviour {
@@ -214,23 +217,23 @@ public class Radar: MonoBehaviour {
 	protected virtual void FilterDetected()
 	{
 		/*
-		 * For each detected item, obtain all the DetectableObjects from its 
-		 * root transform. We do this because to allow people to have the
-		 * DetectableObject on a transform hierarchy which includes multiple
-		 * detectable objects.
+		 * For each detected item, obtain the DetectableObject on its root.
+		 * We could have allowed people to have multiple DetectableObjects 
+		 * on a transform hierarchy, but this ends up with us having to do
+		 * calls to GetComponentsInChildren, which gets really expensive.
 		 * 
-		 * Notice that this has two implications:
-		 * - All the detectable objects in a hierarchy are added to the radar
-		 * at once, even if they are beyond the detection radius
-		 * - Complex object hierarchies which include a detectable object
-		 * somewhere in them will likely slow down filtering, since the call
-		 * to GetComponentsInChildren will need to go through all of them.
+		 * I *do not* recommend changing this to GetComponentsInChildren.
+		 * As a reference, whenever the radar fired up near a complex object
+		 * (say, a character model) obtaining the list of DetectableObjects
+		 * took about 75% of the time used for the frame.
 		 * 
 		 * We materialize the list so that we don't select it twice.
 		 */
-		var notIgnored =  _detected.SelectMany( d => d.transform.root.GetComponentsInChildren<DetectableObject>() ).Except(_ignoredObjects).ToList();
+		Profiler.BeginSample("Base FilterDetected");
+		var notIgnored =  _detected.Select( d => d.transform.root.GetComponent<DetectableObject>() ).Except(_ignoredObjects).ToList();
 		_vehicles = notIgnored.OfType<Vehicle>().Where( v => v != null && (v.enabled || _detectDisabledVehicles));
 		_obstacles = notIgnored.Where( d => d != null && !(d is Vehicle) );
+		Profiler.EndSample();
 	}
 	
 	/// <summary>
