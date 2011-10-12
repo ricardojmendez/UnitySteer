@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnitySteer;
+using System.Linq;
 
 
 /// <summary>
@@ -25,7 +26,6 @@ public class Vehicle : DetectableObject
 	int _movementPriority = 0;	
 	
 	#region Private fields
-	Steering[] _steerings;
 	float _squaredArrivalRadius;
 	
 	[SerializeField]
@@ -297,11 +297,12 @@ public class Vehicle : DetectableObject
 	/// <summary>
 	/// Array of steering behaviors
 	/// </summary>
-	public Steering[] Steerings {
-		get {
-			return _steerings;
-		}
-	}
+	public Steering[] Steerings { get; private set; }
+	
+	/// <summary>
+	/// Array of steering post-processor behaviors
+	/// </summary>
+	public Steering[] SteeringPostprocessors { get; private set; }
 
 	/// <summary>
 	/// Current vehicle velocity
@@ -330,7 +331,10 @@ public class Vehicle : DetectableObject
 	protected override void Awake()
 	{
 		base.Awake();
-		_steerings = GetComponents<Steering>();
+		var allSteerings = GetComponents<Steering>();
+		Steerings = allSteerings.Where( x => !x.IsPostProcess ).ToArray();
+		SteeringPostprocessors = allSteerings.Where( x => x.IsPostProcess ).ToArray();
+		
 		if (_movementPriority == 0)
 		{
 			_movementPriority = gameObject.GetInstanceID();

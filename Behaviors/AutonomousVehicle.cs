@@ -119,14 +119,18 @@ public class AutonomousVehicle : Vehicle
 	
 	void CalculateForces()
 	{
-		if (MaxForce == 0 || MaxSpeed == 0)
+		if (!CanMove || MaxForce == 0 || MaxSpeed == 0)
 		{
 			return;
 		}
 		Profiler.BeginSample("Calculating vehicle forces");
 		
 		var force = Vector3.zero;
-		Steerings.Where( s => s.enabled && !s.IsPostProcess ).ForEach ( s => force += s.WeighedForce );
+		
+		Profiler.BeginSample("Adding up basic steerings");
+		Steerings.Where( s => s.enabled ).ForEach ( s => force += s.WeighedForce );
+
+		Profiler.EndSample();
 		
 		var elapsedTime = Time.time - _lastTickTime;
 		_lastTickTime = Time.time;
@@ -181,7 +185,9 @@ public class AutonomousVehicle : Vehicle
 		// but things are working just fine for now, and it seems like
 		// overkill. 
 		Vector3 adjustedVelocity = Vector3.zero;
-		Steerings.Where( s => s.enabled && s.IsPostProcess ).ForEach ( s => adjustedVelocity += s.WeighedForce );
+		Profiler.BeginSample("Adding up post-processing steerings");
+		SteeringPostprocessors.Where( s => s.enabled ).ForEach ( s => adjustedVelocity += s.WeighedForce );
+		Profiler.EndSample();
 		if (adjustedVelocity != Vector3.zero)
 		{
 			adjustedVelocity = Vector3.ClampMagnitude(adjustedVelocity, MaxSpeed);
