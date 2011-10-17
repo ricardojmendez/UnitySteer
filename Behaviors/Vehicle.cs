@@ -109,6 +109,10 @@ public class Vehicle : DetectableObject
 		}
 		set {
 			_canMove = value;
+			if (!_canMove)
+			{
+				Velocity = Vector3.zero;
+			}
 		}
 	}
 	
