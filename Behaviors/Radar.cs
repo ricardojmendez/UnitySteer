@@ -217,7 +217,7 @@ public class Radar: MonoBehaviour {
 	protected virtual void FilterDetected()
 	{
 		/*
-		 * For each detected item, obtain the DetectableObject on its root.
+		 * For each detected item, obtain the DetectableObject it has.
 		 * We could have allowed people to have multiple DetectableObjects 
 		 * on a transform hierarchy, but this ends up with us having to do
 		 * calls to GetComponentsInChildren, which gets really expensive.
@@ -230,7 +230,7 @@ public class Radar: MonoBehaviour {
 		 * We materialize the list so that we don't select it twice.
 		 */
 		Profiler.BeginSample("Base FilterDetected");
-		var notIgnored =  _detected.Select( d => d.transform.root.GetComponent<DetectableObject>() ).Except(_ignoredObjects).ToList();
+		var notIgnored =  _detected.Select( d => d.transform.GetComponent<DetectableObject>() ).Except(_ignoredObjects).ToList();
 		_vehicles = notIgnored.OfType<Vehicle>().Where( v => v != null && (v.enabled || _detectDisabledVehicles));
 		_obstacles = notIgnored.Where( d => d != null && !(d is Vehicle) );
 		Profiler.EndSample();

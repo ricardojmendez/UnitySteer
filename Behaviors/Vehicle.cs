@@ -491,24 +491,19 @@ public class Vehicle : DetectableObject
 			target.y = Position.y;
 		}
 		
-        float d = (Position - target).sqrMagnitude;
+		var difference = target - Position;
+        float d = difference.sqrMagnitude;
         if (d > SquaredArrivalRadius)
 		{
 			/*
 			 * But suppose we still have some distance to go. The first step
 			 * then would be calculating the steering force necessary to orient
-			 * ourselves to and walk to that point.  The steerForSeek function
-			 * takes into account values luke the MaxForce to apply and the 
-			 * vehicle's MaxSpeed, and returns a steering vector.
+			 * ourselves to and walk to that point.
 			 * 
 			 * It doesn't apply the steering itself, simply returns the value so
 			 * we can continue operating on it.
 			 */
-			force = target - Position;
-			if (considerVelocity)
-			{
-				force -= Velocity;
-			}
+			force = considerVelocity ?  difference - Velocity : difference;
 		}
 		return force;
 	}
