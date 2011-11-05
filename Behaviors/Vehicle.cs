@@ -364,8 +364,7 @@ public class Vehicle : DetectableObject
 			{
 				newForward = Vector3.Lerp(_transform.forward, newForward, elapsedTime / TurnTime);
 			}
-			newForward.y = IsPlanar ? _transform.forward.y : newForward.y;
-			
+			newForward.y = IsPlanar ? _transform.forward.y : newForward.y;			
 			_transform.forward = newForward;
 		}
 	}

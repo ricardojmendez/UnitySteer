@@ -99,6 +99,7 @@ public class AutonomousVehicle : Vehicle
 		_tickedObject.TickLength = _tickLength;
 		_steeringQueue = UnityTickedQueue.GetInstance(QueueName);
 		_steeringQueue.Add(_tickedObject);
+		Velocity = Vector3.zero;
 	}
 	
 	void OnDisable()
@@ -204,7 +205,6 @@ public class AutonomousVehicle : Vehicle
 	
 	void FixedUpdate()
 	{
-		
 		// We still update the forces if the vehicle cannot move, as the
 		// calculations on those steering behaviors might be relevant for
 		// other methods, but we don't apply it.  
