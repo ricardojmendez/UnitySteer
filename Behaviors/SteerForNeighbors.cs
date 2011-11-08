@@ -1,4 +1,4 @@
-#define DEBUG_DRAWNEIGHBORS
+//#define DEBUG_DRAWNEIGHBORS
 using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
@@ -113,10 +113,9 @@ public abstract class SteerForNeighbors : Steering
 		Vector3 steering = Vector3.zero;
 		int neighbors = 0;
 		
-		// for each of the other vehicles...
-		for (int i = 0; i < Vehicle.Radar.Vehicles.Count; i++)
+		
+		foreach (var other in Vehicle.Radar.Vehicles)
 		{
-			Vehicle other = Vehicle.Radar.Vehicles[i];
 			if ((1 << other.gameObject.layer & LayersChecked) != 0 &&
 				Vehicle.IsInNeighborhood (other, MinRadius, MaxRadius, AngleCos)) 
 			{

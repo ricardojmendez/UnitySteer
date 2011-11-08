@@ -25,7 +25,8 @@
 //
 // ----------------------------------------------------------------------------
 using UnityEngine;
-using C5;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace UnitySteer
 {
@@ -55,9 +56,9 @@ namespace UnitySteer
 		
         
         public Vector3Pathway () {
-			_points = new ArrayList<Vector3>(10);
-			_lengths = new ArrayList<float>(10);
-			_normals = new ArrayList<Vector3>(10);
+			_points = new List<Vector3>(10);
+			_lengths = new List<float>(10);
+			_normals = new List<Vector3>(10);
         }
 
 		
@@ -83,12 +84,12 @@ namespace UnitySteer
 
         protected override Vector3 GetFirstPoint()
         {
-            return _points.First;
+            return _points.FirstOrDefault();
         }
         
         protected override Vector3 GetLastPoint()
         {
-            return _points.Last;
+            return _points.LastOrDefault();
         }
         
         protected override float GetTotalPathLength()
@@ -127,9 +128,9 @@ namespace UnitySteer
             {
                 pointCount++;
             }
-            _points  = new ArrayList<Vector3>(pointCount);
-            _lengths = new ArrayList<float>(pointCount);
-            _normals = new ArrayList<Vector3>(pointCount);
+            _points  = new List<Vector3>(pointCount);
+            _lengths = new List<float>(pointCount);
+            _normals = new List<Vector3>(pointCount);
 
             // loop over all points
             for (int i = 0; i < pointCount; i++)
@@ -143,7 +144,7 @@ namespace UnitySteer
 		    if (_points.Count > 0)
             {
                 // compute the segment length
-				var normal = point - _points.Last;
+				var normal = point - _points.Last();
 				var length = normal.magnitude;
 				_lengths.Add(length);
 				_normals.Add(normal / length);
@@ -232,9 +233,9 @@ namespace UnitySteer
             else
             {
                 if (pathDistance < 0) 
-					return _points.First;
+					return _points.First();
                 if (pathDistance >= _totalPathLength) 
-					return _points.Last;
+					return _points.Last();
             }
 
             // step through segments, subtracting off segment lengths until

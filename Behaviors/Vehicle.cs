@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnitySteer;
+using System.Linq;
 
 
 /// <summary>
@@ -21,8 +22,10 @@ public class Vehicle : DetectableObject
 	[SerializeField]
 	float _minSpeedForTurning = 0.1f;
 	
+	[SerializeField]
+	int _movementPriority = 0;	
+	
 	#region Private fields
-	Steering[] _steerings;
 	float _squaredArrivalRadius;
 	
 	[SerializeField]
@@ -57,7 +60,11 @@ public class Vehicle : DetectableObject
 	/// to a desired target.  Unlike the radius, it is not scaled with the vehicle.</remarks>
 	[SerializeField]
 	float _arrivalRadius = 1;	
-
+	
+	
+	/// <summary>
+	/// The magnitude of the last velocity vector assigned to the vehicle 
+	/// </summary>
 	float _speed = 0;
 
 	[SerializeField]
@@ -77,6 +84,17 @@ public class Vehicle : DetectableObject
 	/// </summary>
 	Radar _radar;
 	
+	/// <summary>
+	/// Current vehicle velocity
+	/// </summary>
+	Vector3 _velocity;
+	
+	/// <summary>
+	/// The vehicle's normalized velocity
+	/// </summary>
+	Vector3 _normalizedVelocity;
+	
+	Speedometer _speedometer;
 	
 	#endregion
 
@@ -91,8 +109,19 @@ public class Vehicle : DetectableObject
 		}
 		set {
 			_canMove = value;
+			if (!_canMove)
+			{
+				Velocity = Vector3.zero;
+			}
 		}
 	}
+	
+	/// <summary>
+	/// The velocity desired by this vehicle, likely calculated by means 
+	/// similar to what AutonomousVehicle does
+	/// </summary>
+	public Vector3 DesiredVelocity { get; protected set; }
+	
 	
 	/// <summary>
 	/// Does the vehicle continue going when there's no force applied to it?
@@ -105,7 +134,7 @@ public class Vehicle : DetectableObject
 			_hasInertia = value;
 		}
 	}
-
+	
 	/// <summary>
 	/// Does the vehicle move in Y space?
 	/// </summary>
@@ -165,6 +194,9 @@ public class Vehicle : DetectableObject
 		}
 	}
 	
+	public int MovementPriority {
+		get { return _movementPriority; }
+	}
 	
 	public float MinSpeedForTurning
 	{
@@ -200,13 +232,15 @@ public class Vehicle : DetectableObject
 	/// Radar assigned to this vehicle
 	/// </summary>
 	public Radar Radar {
-		get {
-			if (this._radar == null)
-			{
-				_radar = this.GetComponent<Radar>();
-			}
-			return this._radar;
-		}
+		get { return this._radar; }
+	}
+	
+	/// <summary>
+	/// Speedometer attached to the same object as this vehicle, if any
+	/// </summary>
+	public Speedometer Speedometer 
+	{
+		get { return this._speedometer; }
 	}
 
 
@@ -233,12 +267,14 @@ public class Vehicle : DetectableObject
 	/// <summary>
 	/// Current vehicle speed
 	/// </summary>
+	/// <remarks>
+	/// If the vehicle has a speedometer, then we return the actual measured
+	/// value instead of simply the length of the velocity vector.
+	/// </remarks>
 	public float Speed {
-		get {
-			return _speed;
-		}
-		set {
-			_speed = Mathf.Clamp(value, 0, MaxSpeed);
+		get 
+		{ 
+			return _speedometer == null ? _speed : _speedometer.Speed; 
 		}
 	}
 	
@@ -263,21 +299,33 @@ public class Vehicle : DetectableObject
 	/// <summary>
 	/// Array of steering behaviors
 	/// </summary>
-	public Steering[] Steerings {
-		get {
-			return _steerings;
-		}
-	}
+	public Steering[] Steerings { get; private set; }
+	
+	/// <summary>
+	/// Array of steering post-processor behaviors
+	/// </summary>
+	public Steering[] SteeringPostprocessors { get; private set; }
 
 	/// <summary>
 	/// Current vehicle velocity
 	/// </summary>
 	public Vector3 Velocity
 	{
-		get
-		{
-			return _transform.forward * _speed;
+		get { return _velocity; }
+		set 
+		{ 
+			_velocity = Vector3.ClampMagnitude(value, MaxSpeed);
+			_speed = _velocity.magnitude;
+			_normalizedVelocity = _velocity / _speed;
 		}
+	}
+	
+	/// <summary>
+	/// Normalized velocity vector of the vehicle
+	/// </summary>
+	public Vector3 NormalizedVelocity
+	{
+		get { return _normalizedVelocity; }
 	}
 	#endregion
 
@@ -285,13 +333,22 @@ public class Vehicle : DetectableObject
 	protected override void Awake()
 	{
 		base.Awake();
-		_steerings = GetComponents<Steering>();
+		var allSteerings = GetComponents<Steering>();
+		Steerings = allSteerings.Where( x => !x.IsPostProcess ).ToArray();
+		SteeringPostprocessors = allSteerings.Where( x => x.IsPostProcess ).ToArray();
+		
+		if (_movementPriority == 0)
+		{
+			_movementPriority = gameObject.GetInstanceID();
+		}
+		_radar = this.GetComponent<Radar>();
+		_speedometer = this.GetComponent<Speedometer>();
 	}
 	#endregion
 	
 	
 	#region Methods
-	protected virtual void LookTowardsVelocity (Vector3 velocity, float elapsedTime)
+	protected virtual void LookTowardsVelocity (float elapsedTime)
 	{
 		/* 
 		 * Avoid adjusting if we aren't applying any velocity. We also
@@ -300,13 +357,12 @@ public class Vehicle : DetectableObject
 		 */
  		if (Speed > MinSpeedForTurning)
 		{
-			var newForward = velocity;
+			var newForward = _normalizedVelocity;
 			if (TurnTime != 0)
 			{
 				newForward = Vector3.Lerp(_transform.forward, newForward, elapsedTime / TurnTime);
 			}
-			newForward.y = IsPlanar ? _transform.forward.y : newForward.y;
-			
+			newForward.y = IsPlanar ? _transform.forward.y : newForward.y;			
 			_transform.forward = newForward;
 		}
 	}
@@ -436,24 +492,19 @@ public class Vehicle : DetectableObject
 			target.y = Position.y;
 		}
 		
-        float d = (Position - target).sqrMagnitude;
+		var difference = target - Position;
+        float d = difference.sqrMagnitude;
         if (d > SquaredArrivalRadius)
 		{
 			/*
 			 * But suppose we still have some distance to go. The first step
 			 * then would be calculating the steering force necessary to orient
-			 * ourselves to and walk to that point.  The steerForSeek function
-			 * takes into account values luke the MaxForce to apply and the 
-			 * vehicle's MaxSpeed, and returns a steering vector.
+			 * ourselves to and walk to that point.
 			 * 
 			 * It doesn't apply the steering itself, simply returns the value so
 			 * we can continue operating on it.
 			 */
-			force = target - Position;
-			if (considerVelocity)
-			{
-				force -= Velocity;
-			}
+			force = considerVelocity ?  difference - Velocity : difference;
 		}
 		return force;
 	}
@@ -506,6 +557,11 @@ public class Vehicle : DetectableObject
 		_transform.forward = Vector3.forward;
 	}
 	
+	public float PredictNearestApproachTime(Vehicle other)
+	{
+		return PredictNearestApproachTime(other, Velocity);
+	}
+	
 	
     /// <summary>
     /// Predicts the time until nearest approach between this and another vehicle
@@ -516,11 +572,10 @@ public class Vehicle : DetectableObject
     /// <param name='other'>
     /// Other vehicle to compare against
     /// </param>
-	public float PredictNearestApproachTime (Vehicle other)
+	public float PredictNearestApproachTime (Vehicle other, Vector3 myVelocity)
 	{
 		// imagine we are at the origin with no velocity,
 		// compute the relative velocity of the other vehicle
-		Vector3 myVelocity = Velocity;
 		Vector3 otherVelocity = other.Velocity;
 		Vector3 relVelocity = otherVelocity - myVelocity;
 		float relSpeed = relVelocity.magnitude;

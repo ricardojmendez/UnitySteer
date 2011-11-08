@@ -1,10 +1,17 @@
 using UnityEngine;
 using UnitySteer.Helpers;
+using TickedPriorityQueue;
 
-[AddComponentMenu("UnitySteer/Steer/Steering")]
-public class Steering : MonoBehaviour, ITick {	
-	public const string STEERING_MESSAGE = "Steering";
-	public const string ACTION_RETRY = "retry";
+/// <summary>
+/// Base Steering class from which other steering behaviors derive
+/// </summary>
+/// <remarks>
+/// This is an abstract class because it does not provide any steering
+/// itself.  It should be subclassed for your particular steering needs.
+/// </remarks>
+public abstract class Steering : MonoBehaviour {	
+	public static readonly string STEERING_MESSAGE = "Steering";
+	public static readonly string ACTION_RETRY = "retry";
 	
 	#region Private fields
 	/// <summary>
@@ -12,18 +19,14 @@ public class Steering : MonoBehaviour, ITick {
 	/// </summary>
 	Vector3 _force = Vector3.zero;
 	
-
-	
 	/// <summary>
 	/// Cached vehicle
 	/// </summary>
 	Vehicle _vehicle;
 	
 	[SerializeField]
-	Tick _tick;
-	
-	[SerializeField]
 	float _weight = 5;
+	
 	#endregion
 	
 	
@@ -35,17 +38,20 @@ public class Steering : MonoBehaviour, ITick {
 	{
 		get
 		{
-			if (Tick.ShouldTick())
-			{
-				_force = CalculateForce();
-			}
+			_force = CalculateForce();
 			if (_force != Vector3.zero)
 			{
+				if (!ReportedMove && OnStartMoving != null)
+				{
+					OnStartMoving(new SteeringEvent<Vehicle>(this, "moving", Vehicle));
+				}
 				ReportedArrival = false;
+				ReportedMove = true;
 			}
 			else if (!ReportedArrival)
 			{
 				ReportedArrival = true;
+				ReportedMove = false;
 				if (OnArrival != null)
 				{
 					var message = new SteeringEvent<Vehicle>(this, "arrived", Vehicle);
@@ -59,6 +65,11 @@ public class Steering : MonoBehaviour, ITick {
 			return _force;
 		}
 	}
+		
+	public virtual bool IsPostProcess 
+	{ 
+		get { return false; }
+	}
 	
 
 
@@ -68,9 +79,19 @@ public class Steering : MonoBehaviour, ITick {
 	public SteeringEventHandler<Vehicle> OnArrival { get; set; }
 	
 	/// <summary>
+	/// Steering event handler for arrival notification
+	/// </summary>
+	public SteeringEventHandler<Vehicle> OnStartMoving { get; set; }
+	
+	/// <summary>
 	/// Have we reported that we stopped moving?
 	/// </summary>
-	public bool ReportedArrival { get; protected set; }	
+	public bool ReportedArrival { get; protected set; }
+	
+	/// <summary>
+	/// Have we reported that we began moving?
+	/// </summary>
+	public bool ReportedMove { get; protected set; }
 	
 	
 	/// <summary>
@@ -82,17 +103,6 @@ public class Steering : MonoBehaviour, ITick {
 			return Force * _weight;
 		}
 	}
-	
-	/// <summary>
-	/// Tick information
-	/// </summary>
-	public Tick Tick 
-	{
-		get 
-		{
-			return _tick;
-		}
-	}	
 	
 	/// <summary>
 	/// Vehicle that this behavior will influence
@@ -131,5 +141,7 @@ public class Steering : MonoBehaviour, ITick {
 	{
 		return Vector3.zero;
 	}
+	
+
 	#endregion
 }
