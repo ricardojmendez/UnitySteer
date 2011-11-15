@@ -108,7 +108,7 @@ namespace UnitySteer
 		// ----------------------------------------------------------------------------
 		// Path Following behaviors
 
-		public Vector3 steerToStayOnPath(float predictionTime, Pathway path)
+		public Vector3 steerToStayOnPath(float predictionTime, IPathway path)
 		{
 			// predict our future position
 			Vector3 futurePosition = predictFuturePosition (predictionTime);

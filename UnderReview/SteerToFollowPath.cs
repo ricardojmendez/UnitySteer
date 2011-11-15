@@ -29,7 +29,7 @@ public class SteerToFollowPath : Steering
 	#region Private fields
 	FollowDirection _direction = FollowDirection.Forward;
 	float _predictionTime = 2f;
-	Pathway _path;
+	IPathway _path;
 	#endregion
 	
 	
@@ -61,7 +61,7 @@ public class SteerToFollowPath : Steering
 	/// <summary>
 	/// Path to follow
 	/// </summary>
-	public Pathway Path {
+	public IPathway Path {
 		get {
 			return this._path;
 		}
