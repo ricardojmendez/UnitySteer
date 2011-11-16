@@ -316,7 +316,7 @@ public class Vehicle : DetectableObject
 		{ 
 			_velocity = Vector3.ClampMagnitude(value, MaxSpeed);
 			_speed = _velocity.magnitude;
-			_normalizedVelocity = _velocity / _speed;
+			_normalizedVelocity = _speed != 0 ? _velocity / _speed : Vector3.zero;
 		}
 	}
 	
@@ -355,7 +355,7 @@ public class Vehicle : DetectableObject
 		 * disregard very small velocities, to avoid jittery movement on
 		 * rounding errors.
 		 */
- 		if (Speed > MinSpeedForTurning)
+ 		if (Speed > MinSpeedForTurning && Velocity != Vector3.zero)
 		{
 			var newForward = _normalizedVelocity;
 			if (TurnTime != 0)
