@@ -85,10 +85,6 @@ public class AutonomousVehicle : Vehicle
 	{
 		_rigidbody = GetComponent<Rigidbody>();
 		_characterController = GetComponent<CharacterController>();
-		if (HasInertia)
-		{
-			Debug.LogError("AutonomousVehicle should not have HasInertia set to TRUE. See the release notes of UnitySteer 2.1 for details.");
-		}
 		_lastTickTime = 0;
 	}
 

@@ -32,9 +32,6 @@ public class Vehicle : DetectableObject
 	float _turnTime = 0.1f;
 	
 	[SerializeField]
-	bool _hasInertia = false;
-
-	[SerializeField]
 	/// <summary>
 	/// Internally-assigned mass for the vehicle.
 	/// </summary>
@@ -122,18 +119,6 @@ public class Vehicle : DetectableObject
 	/// </summary>
 	public Vector3 DesiredVelocity { get; protected set; }
 	
-	
-	/// <summary>
-	/// Does the vehicle continue going when there's no force applied to it?
-	/// </summary>
-	public bool HasInertia {
-		get {
-			return this._hasInertia;
-		}
-		set {
-			_hasInertia = value;
-		}
-	}
 	
 	/// <summary>
 	/// Does the vehicle move in Y space?
