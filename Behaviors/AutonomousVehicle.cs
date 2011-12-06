@@ -125,7 +125,10 @@ public class AutonomousVehicle : Vehicle
 		var force = Vector3.zero;
 		
 		Profiler.BeginSample("Adding up basic steerings");
-		Steerings.Where( s => s.enabled ).ForEach ( s => force += s.WeighedForce );
+		foreach(var s in Steerings.Where( s => s.enabled ))
+		{
+			force += s.WeighedForce;
+		}
 
 		Profiler.EndSample();
 		
@@ -183,7 +186,10 @@ public class AutonomousVehicle : Vehicle
 		// overkill. 
 		Vector3 adjustedVelocity = Vector3.zero;
 		Profiler.BeginSample("Adding up post-processing steerings");
-		SteeringPostprocessors.Where( s => s.enabled ).ForEach ( s => adjustedVelocity += s.WeighedForce );
+		foreach (var s in SteeringPostprocessors.Where( s => s.enabled ))
+		{
+			adjustedVelocity += s.WeighedForce;
+		}
 		Profiler.EndSample();
 		if (adjustedVelocity != Vector3.zero)
 		{
