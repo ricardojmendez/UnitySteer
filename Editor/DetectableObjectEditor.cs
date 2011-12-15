@@ -10,13 +10,19 @@ public class DetectableObjectEditor: Editor {
 		EditorGUIUtility.LookLikeInspector();
 		var vehicle = target as DetectableObject;
 		var newCenter = centerEditor.DrawEditor(vehicle.Center);
-		if (newCenter != vehicle.Center)
+		if (newCenter != vehicle.Center) 
+		{
 			vehicle.Center = newCenter; // To avoid triggering the debugger.
+			EditorUtility.SetDirty(vehicle);
+		}
 		
 		
 		var newRadius = EditorGUILayout.FloatField("\tRadius", vehicle.Radius);
 		if (newRadius != vehicle.Radius)
+		{
 			vehicle.Radius = newRadius;
+			EditorUtility.SetDirty(vehicle);
+		}
 		
 		// Show default inspector property editor
 		DrawDefaultInspector();
