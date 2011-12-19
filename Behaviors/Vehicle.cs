@@ -343,7 +343,12 @@ public class Vehicle : DetectableObject
  		if (Speed > MinSpeedForTurning && Velocity != Vector3.zero)
 		{
 			var newForward = _normalizedVelocity;
-			newForward.y = IsPlanar ? _transform.forward.y : newForward.y;			
+			if (IsPlanar)
+			{
+				newForward.y = 0;
+				newForward.Normalize();
+			}
+			
 			if (TurnTime != 0)
 			{
 				newForward = Vector3.Slerp(_transform.forward, newForward, elapsedTime / TurnTime);
