@@ -16,9 +16,8 @@ using System.Linq;
 /// In this case, the base Vehicle class can be used to provide an interface
 /// to whatever is doing the moving, like a CharacterMotor.</remarks>
 [AddComponentMenu("UnitySteer/Vehicle/Vehicle")]
-public class Vehicle : DetectableObject
-{
-	
+public abstract class Vehicle : DetectableObject
+{	
 	[SerializeField]
 	float _minSpeedForTurning = 0.1f;
 	
@@ -59,11 +58,6 @@ public class Vehicle : DetectableObject
 	float _arrivalRadius = 1;	
 	
 	
-	/// <summary>
-	/// The magnitude of the last velocity vector assigned to the vehicle 
-	/// </summary>
-	float _speed = 0;
-
 	[SerializeField]
 	float _maxSpeed = 1;
 
@@ -81,18 +75,6 @@ public class Vehicle : DetectableObject
 	/// </summary>
 	Radar _radar;
 	
-	/// <summary>
-	/// Current vehicle velocity
-	/// </summary>
-	Vector3 _velocity;
-	
-	/// <summary>
-	/// The vehicle's normalized velocity
-	/// </summary>
-	Vector3 _normalizedVelocity;
-	
-	Speedometer _speedometer;
-	
 	#endregion
 
 
@@ -100,17 +82,10 @@ public class Vehicle : DetectableObject
 	/// <summary>
 	/// Indicates if the current vehicle can move
 	/// </summary>
-	public bool CanMove {
-		get {
-			return this._canMove;
-		}
-		set {
-			_canMove = value;
-			if (!_canMove)
-			{
-				Velocity = Vector3.zero;
-			}
-		}
+	public virtual bool CanMove 
+	{
+		get { return this._canMove; }
+		set { _canMove = value; }
 	}
 	
 	/// <summary>
@@ -123,13 +98,10 @@ public class Vehicle : DetectableObject
 	/// <summary>
 	/// Does the vehicle move in Y space?
 	/// </summary>
-	public bool IsPlanar {
-		get {
-			return this._isPlanar;
-		}
-		set {
-			_isPlanar = value;
-		}
+	public bool IsPlanar 
+	{
+		get { return this._isPlanar; }
+		set { _isPlanar = value; }
 	}
 
 	/// <summary>
@@ -179,7 +151,8 @@ public class Vehicle : DetectableObject
 		}
 	}
 	
-	public int MovementPriority {
+	public int MovementPriority 
+	{
 		get { return _movementPriority; }
 	}
 	
@@ -223,20 +196,16 @@ public class Vehicle : DetectableObject
 	/// <summary>
 	/// Speedometer attached to the same object as this vehicle, if any
 	/// </summary>
-	public Speedometer Speedometer 
-	{
-		get { return this._speedometer; }
-	}
+	public Speedometer Speedometer  { get; protected set; }
 
 
 	/// <summary>
 	/// Vehicle arrival radius
 	/// </summary>
 	public float ArrivalRadius {
-		get {
-			return _arrivalRadius;
-		}
-		set {
+		get { return _arrivalRadius; }
+		set 
+		{
 			_arrivalRadius = Mathf.Clamp(value, 0.01f, float.MaxValue);
 			RecalculateScaledValues();			
 		}
@@ -244,10 +213,14 @@ public class Vehicle : DetectableObject
 	
 	public float SquaredArrivalRadius 
 	{
-		get {
-			return this._squaredArrivalRadius;
-		}
+		get { return this._squaredArrivalRadius; }
 	}
+
+	/// <summary>
+	/// Last raw force applied to the vehicle. It is expected to be set 
+	/// by the subclases.
+	/// </summary>
+	public Vector3 LastRawForce { get; protected set; }
 
 	/// <summary>
 	/// Current vehicle speed
@@ -256,12 +229,7 @@ public class Vehicle : DetectableObject
 	/// If the vehicle has a speedometer, then we return the actual measured
 	/// value instead of simply the length of the velocity vector.
 	/// </remarks>
-	public float Speed {
-		get 
-		{ 
-			return _speedometer == null ? _speed : _speedometer.Speed; 
-		}
-	}
+	public abstract float Speed { get; set; }
 	
 	/// <summary>
 	/// How quickly does the vehicle turn toward a vector.
@@ -292,26 +260,11 @@ public class Vehicle : DetectableObject
 	public Steering[] SteeringPostprocessors { get; private set; }
 
 	/// <summary>
-	/// Current vehicle velocity
+	/// Current vehicle velocity. Subclasses are likely to only actually
+	/// implement one of the two methods.
 	/// </summary>
-	public Vector3 Velocity
-	{
-		get { return _velocity; }
-		set 
-		{ 
-			_velocity = Vector3.ClampMagnitude(value, MaxSpeed);
-			_speed = _velocity.magnitude;
-			_normalizedVelocity = _speed != 0 ? _velocity / _speed : Vector3.zero;
-		}
-	}
+	public abstract Vector3 Velocity { get; set; }
 	
-	/// <summary>
-	/// Normalized velocity vector of the vehicle
-	/// </summary>
-	public Vector3 NormalizedVelocity
-	{
-		get { return _normalizedVelocity; }
-	}
 	#endregion
 
 	#region Unity methods
@@ -327,36 +280,12 @@ public class Vehicle : DetectableObject
 			_movementPriority = gameObject.GetInstanceID();
 		}
 		_radar = this.GetComponent<Radar>();
-		_speedometer = this.GetComponent<Speedometer>();
+		Speedometer = this.GetComponent<Speedometer>();
 	}
 	#endregion
 	
 	
-	#region Methods
-	protected virtual void LookTowardsVelocity (float elapsedTime)
-	{
-		/* 
-		 * Avoid adjusting if we aren't applying any velocity. We also
-		 * disregard very small velocities, to avoid jittery movement on
-		 * rounding errors.
-		 */
- 		if (Speed > MinSpeedForTurning && Velocity != Vector3.zero)
-		{
-			var newForward = _normalizedVelocity;
-			if (IsPlanar)
-			{
-				newForward.y = 0;
-				newForward.Normalize();
-			}
-			
-			if (TurnTime != 0)
-			{
-				newForward = Vector3.Slerp(_transform.forward, newForward, elapsedTime / TurnTime);
-			}
-			_transform.forward = newForward;
-		}
-	}
-	
+	#region Methods	
 	/// <summary>
 	/// Adjust the steering force passed to ApplySteeringForce.
 	/// </summary>

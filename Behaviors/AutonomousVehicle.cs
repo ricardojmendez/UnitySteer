@@ -1,36 +1,40 @@
-#define TRACE_ADJUSTMENTS
 using UnityEngine;
 using UnitySteer;
-using System.Linq;
-using TickedPriorityQueue;
 
 /// <summary>
 /// Vehicle subclass which automatically applies the steering forces from
-/// the components attached to the object.
+/// the components attached to the object.  AutonomousVehicle is characterized
+/// for the vehicle always moving in the same direction as its forward vector,
+/// unlike Bipeds which are able to side-step.
 /// </summary>
+/// <remarks>
+/// This is a straight-up translation of the AutonomousVehicle class from
+/// ye olde 2.x UnitySteer. This means that it doesn't use TickedQueues,
+/// does not consider post-processing behaviors separately, among probably
+/// other things, and hasn't been fully tested yet since right now
+/// I'm working solely on Bipeds.  There is also some code duplication
+/// between it and Biped which needs to be refactored.  
+/// </remarks>
 [AddComponentMenu("UnitySteer/Vehicle/Autonomous")]
 public class AutonomousVehicle : Vehicle
 {
+	/// <summary>
+	/// Minimum force squared magnitude threshold
+	/// </summary>
+	static float MIN_FORCE_THRESHOLD = 0.01f;
+
+
 	#region Internal state values
 	Vector3 _smoothedAcceleration;
 	Rigidbody _rigidbody;
 	CharacterController _characterController;
-	TickedObject _tickedObject;
-	UnityTickedQueue _steeringQueue;
-	float _lastTickTime;
+	float _speed;
 	
 	[SerializeField]
-	string _queueName = "Steering";
+	float _accelerationSmoothRate = 0.4f;
 	
-	[SerializeField]
-	float _tickLength = 0.1f;	
+	Vector3 _lastAppliedVelocity = Vector3.zero;
 	
-		
-	[SerializeField]
-	bool _traceAdjustments = false;
-	
-	[SerializeField]
-	float _accelerationSmoothRate = 0.4f;	
 	#endregion
 	
 	/// <summary>
@@ -49,91 +53,106 @@ public class AutonomousVehicle : Vehicle
 		}
 	}
 	
-	public Vector3 LastRawForce  { get; private set; }
-	
-	
-	public string QueueName 
-	{
-		get { return _queueName; }
-		set { _queueName = value; }
-	}	
-	
-
-	/// <summary>
-	/// Ticked object for the vehicle, so that its owner can configure
-	/// the priority as desired.
-	/// </summary>
-	public TickedObject TickedObject {
+	public Vector3 LastAppliedVelocity {
 		get {
-			return this._tickedObject;
-		}
-	}	
-	
-	/// <summary>
-	/// Priority queue for this vehicle's updates
-	/// </summary>
-	public UnityTickedQueue SteeringQueue {
-		get {
-			return this._steeringQueue;
+			return this._lastAppliedVelocity;
 		}
 	}
 
-	
-	
+	public override float Speed
+	{
+		get { return _speed; }
+		set { _speed = Mathf.Clamp(value, 0, MaxSpeed); }
+	}
+
+	/// <summary>
+	/// Current vehicle velocity
+	/// </summary>
+	public override Vector3 Velocity
+	{
+		get
+		{
+			return _transform.forward * _speed;
+		}
+		set
+		{
+			throw new System.NotSupportedException("Cannot set the velocity directly on AutonomousVehicle");
+		}
+	}	
+
+
 	#region Methods
 	void Start()
 	{
 		_rigidbody = GetComponent<Rigidbody>();
 		_characterController = GetComponent<CharacterController>();
-		_lastTickTime = 0;
+	}
+		
+	
+	void FixedUpdate()
+	{
+		var force = Vector3.zero;
+		Profiler.BeginSample("Calculating forces");
+		foreach (var steering in Steerings)
+		{
+			if (steering.enabled)
+			{
+				force += steering.WeighedForce;
+			}
+		}
+		Profiler.EndSample();
+		
+		// We still update the forces if the vehicle cannot move, as the
+		// calculations on those steering behaviors might be relevant for
+		// other methods, but we don't apply it.  
+		//
+		// If you don't want to have the forces calculated at all, simply
+		// disable the vehicle.
+		if (CanMove)
+		{
+			ApplySteeringForce(force, Time.fixedDeltaTime);
+		}
+		else 
+		{
+			Speed = 0;
+		}
+			
 	}
 
-	
-	void OnEnable()
+	void RegenerateLocalSpace (Vector3 newVelocity)
 	{
-		_tickedObject = new TickedObject(OnUpdateSteering);
-		_tickedObject.TickLength = _tickLength;
-		_steeringQueue = UnityTickedQueue.GetInstance(QueueName);
-		_steeringQueue.Add(_tickedObject);
-		Velocity = Vector3.zero;
-	}
-	
-	void OnDisable()
-	{
-		if (_steeringQueue != null)
+		/* 
+		 * Avoid adjusting if we aren't applying any velocity. We also
+		 * disregard very small velocities, to avoid jittery movement on
+		 * rounding errors.
+		 */
+ 		if (Speed > 0 && newVelocity.sqrMagnitude > MIN_FORCE_THRESHOLD)
 		{
-			_steeringQueue.Remove(_tickedObject);
+			// TODO: Review is we still want SpeedFactorOnTurn
+			// var newForward = (SpeedFactorOnTurn != 0) ? newVelocity / (Speed * SpeedFactorOnTurn) : newVelocity;
+			var newForward = newVelocity;
+			newForward.y = IsPlanar ? _transform.forward.y : newForward.y;
+			
+			_transform.forward = newForward;
 		}
-	}
+	}	
 	
-	protected void OnUpdateSteering(object obj)
+	/// <summary>
+	/// Applies a steering force to this vehicle
+	/// </summary>
+	/// <param name="force">
+	/// A force vector to apply<see cref="Vector3"/>
+	/// </param>
+	/// <param name="elapsedTime">
+	/// How long has elapsed since the last update<see cref="System.Single"/>
+	/// </param>
+	void ApplySteeringForce(Vector3 force, float elapsedTime)
 	{
-		// We just calculate the forces, and expect the radar updates
-		// itself.
-		CalculateForces();
-	}
-	
-	
-	void CalculateForces()
-	{
-		if (!CanMove || MaxForce == 0 || MaxSpeed == 0)
+		if (MaxForce == 0 || MaxSpeed == 0 || elapsedTime == 0)
 		{
 			return;
 		}
-		Profiler.BeginSample("Calculating vehicle forces");
 		
-		var force = Vector3.zero;
-		
-		Profiler.BeginSample("Adding up basic steerings");
-		foreach(var s in Steerings.Where( s => s.enabled ))
-		{
-			force += s.WeighedForce;
-		}
-
-		Profiler.EndSample();
-		
-		var elapsedTime = Time.time - _lastTickTime;
-		_lastTickTime = Time.time;
 		if (IsPlanar)
 		{
 			force.y = 0;
@@ -148,18 +167,18 @@ public class AutonomousVehicle : Vehicle
 		
 		if (newAcceleration.sqrMagnitude == 0)
 		{
-			Velocity = Vector3.zero;
-			DesiredVelocity = Vector3.zero;
+			Speed = 0;
 		}
 
+		Vector3 newVelocity = Velocity;
+		
 		/*
 			Damp out abrupt changes and oscillations in steering acceleration
 			(rate is proportional to time step, then clipped into useful range)
 			
 			The lower the smoothRate parameter, the more noise there is
 			likely to be in the movement.
-		*/
-		
+		 */
 		if (_accelerationSmoothRate > 0)
 		{
 			_smoothedAcceleration = OpenSteerUtility.blendIntoAccumulator(_accelerationSmoothRate,
@@ -170,70 +189,21 @@ public class AutonomousVehicle : Vehicle
 		{
 			_smoothedAcceleration = newAcceleration;
 		}
-		
-		// Euler integrate (per call time) acceleration into velocity
-		var newVelocity = Velocity + _smoothedAcceleration * elapsedTime;
 
-		// Enforce speed limit
-		newVelocity = Vector3.ClampMagnitude(newAcceleration, MaxSpeed);
-		DesiredVelocity = newVelocity;
+		// Euler integrate (per frame) acceleration into velocity
+		newVelocity += _smoothedAcceleration * elapsedTime;
+
+		// enforce speed limit
+		newVelocity = Vector3.ClampMagnitude(newVelocity, MaxSpeed);
+
+		// update Speed
+		_lastAppliedVelocity = newVelocity;
+		Speed = newVelocity.magnitude;
 		
-		// Adjusts the velocity by applying the post-processing behaviors.
-		//
-		// This currently is not also considering the maximum force, nor 
-		// blending the new velocity into an accumulator. We *could* do that,
-		// but things are working just fine for now, and it seems like
-		// overkill. 
-		Vector3 adjustedVelocity = Vector3.zero;
-		Profiler.BeginSample("Adding up post-processing steerings");
-		foreach (var s in SteeringPostprocessors.Where( s => s.enabled ))
-		{
-			adjustedVelocity += s.WeighedForce;
-		}
-		Profiler.EndSample();
-		if (adjustedVelocity != Vector3.zero)
-		{
-			adjustedVelocity = Vector3.ClampMagnitude(adjustedVelocity, MaxSpeed);
-			TraceDisplacement(adjustedVelocity, Color.cyan);
-			TraceDisplacement(newVelocity, Color.white);
-			newVelocity = adjustedVelocity;
-		}
-		
-		// Update vehicle velocity
-		Velocity = newVelocity;
-		Profiler.EndSample();
-	}
-	
-	
-	void FixedUpdate()
-	{
-		// We still update the forces if the vehicle cannot move, as the
-		// calculations on those steering behaviors might be relevant for
-		// other methods, but we don't apply it.  
-		//
-		// If you don't want to have the forces calculated at all, simply
-		// disable the vehicle.
-		if (CanMove)
-		{
-			ApplySteeringForce(Time.fixedDeltaTime);
-			LookTowardsVelocity(Time.fixedDeltaTime);
-		}
-		else 
-		{
-			Velocity = Vector3.zero;
-		}
-	}
-	
-	/// <summary>
-	/// Applies a steering force to this vehicle
-	/// </summary>
-	/// <param name="elapsedTime">
-	/// How long has elapsed since the last update<see cref="System.Single"/>
-	/// </param>
-	private void ApplySteeringForce(float elapsedTime)
-	{
 		// Euler integrate (per frame) velocity into position
-		var delta = (Velocity * elapsedTime);
+		// TODO: Change for a motor
+		Profiler.BeginSample("Applying displacement");
+		var delta = (newVelocity * elapsedTime);
 		if (_characterController != null) 
 		{
 			_characterController.Move(delta);
@@ -246,17 +216,13 @@ public class AutonomousVehicle : Vehicle
 		{
 			_rigidbody.MovePosition (_rigidbody.position + delta);
 		}
+		Profiler.EndSample();
+		
+
+		// regenerate local space (by default: align vehicle's forward axis with
+		// new velocity, but this behavior may be overridden by derived classes.)
+		RegenerateLocalSpace (newVelocity);
 	}
 	#endregion
-	
-	[System.Diagnostics.Conditional("TRACE_ADJUSTMENTS")]
-	void TraceDisplacement(Vector3 delta, Color color)
-	{
-		if (_traceAdjustments)
-		{
-			Debug.DrawLine(transform.position, transform.position + delta, color);
-		}
-	}
 }
-
 
