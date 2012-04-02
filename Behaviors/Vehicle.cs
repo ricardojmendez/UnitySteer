@@ -28,7 +28,7 @@ public abstract class Vehicle : DetectableObject
 	float _squaredArrivalRadius;
 	
 	[SerializeField]
-	float _turnTime = 0.1f;
+	float _turnTime = 0.25f;
 	
 	[SerializeField]
 	/// <summary>
@@ -327,6 +327,20 @@ public abstract class Vehicle : DetectableObject
     {
         return _transform.position + (Velocity * predictionTime);
 	}
+
+	/// <summary>
+	/// Predicts where the vehicle wants to be at a point in the future
+	/// </summary>
+	/// <param name="predictionTime">
+	/// A time in seconds for the prediction <see cref="System.Single"/>
+	/// </param>
+	/// <returns>
+	/// Vehicle position<see cref="Vector3"/>
+	/// </returns>
+	public Vector3 PredictFutureDesiredPosition(float predictionTime)
+	{
+		return _transform.position + (DesiredVelocity * predictionTime);
+	}
 	
 	
 	/// <summary>
@@ -395,7 +409,7 @@ public abstract class Vehicle : DetectableObject
 	/// <returns>
 	/// Seek vector <see cref="Vector3"/>
 	/// </returns>
-	public Vector3 GetSeekVector(Vector3 target, bool considerVelocity)
+	public Vector3 GetSeekVector(Vector3 target, bool considerVelocity = true)
 	{
 		/*
 		 * First off, we calculate how far we are from the target, If this
@@ -427,14 +441,6 @@ public abstract class Vehicle : DetectableObject
 		}
 		return force;
 	}
-	
-	/// <summary>
-	/// Wrapper for GetSeekVector, necessary because MonoDevelop chokes on default parameters.
-	/// </summary>
-	public Vector3 GetSeekVector(Vector3 target)
-	{
-		return GetSeekVector(target, true);
-	}	
 	
 	/// <summary>
 	/// Returns a returns a maxForce-clipped steering force along the 

@@ -25,7 +25,7 @@ public abstract class Steering : MonoBehaviour {
 	Vehicle _vehicle;
 	
 	[SerializeField]
-	float _weight = 5;
+	float _weight = 1;
 	
 	#endregion
 	
