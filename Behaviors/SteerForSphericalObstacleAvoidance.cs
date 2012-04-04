@@ -13,16 +13,34 @@ public class SteerForSphericalObstacleAvoidance : Steering
 	#region Structs
 	public struct PathIntersection
 	{
-		public bool Intersect { get; set; }
-		public float Distance { get; set; }
+		bool _intersect;
+		float _distance;
+		DetectableObject _obstacle;
+		
+		public bool Intersect 
+		{ 
+			get { return _intersect; }
+			set { _intersect = value; }
+		}
+		
+		public float Distance 
+		{ 
+			get { return _distance; }
+			set { _distance = value; }
+		}
+		
 
-		public DetectableObject Obstacle { get; set; }
+		public DetectableObject Obstacle 
+		{ 
+			get { return _obstacle; } 
+			set { _obstacle = value; }
+		}
 		
 		public PathIntersection(DetectableObject obstacle)
 		{
-			Obstacle = obstacle;
-			Intersect = false;
-			Distance = float.MaxValue;
+			_obstacle = obstacle;
+			_intersect = false;
+			_distance = float.MaxValue;
 		}
 	};	
 	#endregion
