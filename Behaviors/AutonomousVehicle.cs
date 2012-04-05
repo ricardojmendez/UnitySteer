@@ -10,12 +10,6 @@ using UnitySteer;
 [AddComponentMenu("UnitySteer/Vehicle/Autonomous")]
 public class AutonomousVehicle : TickedVehicle
 {
-	/// <summary>
-	/// Minimum force squared magnitude threshold
-	/// </summary>
-	static float MIN_FORCE_THRESHOLD = 0.01f;
-
-
 	#region Internal state values
 	float _speed;
 	#endregion
