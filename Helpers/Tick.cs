@@ -67,7 +67,8 @@ namespace UnitySteer.Helpers
 		/// <remarks>
 		/// Setting the TickLapse value will reset the next tick value.
 		/// </remarks>
-		public float TickLapse {
+		public float TickLapse 
+		{
 			get {
 				return this._tickLapse;
 			}
@@ -88,15 +89,15 @@ namespace UnitySteer.Helpers
 		
 
 		/// <summary>
-		/// Will return true if we need to tick the current behavior
+		/// Will return true if we need to tick the current behavior and set the next tick time
 		/// </summary>
-		public bool ShouldTick() 
+		public bool TickBehavior() 
 		{
-			return ShouldTick(TickLapse);
+			return TickBehavior(TickLapse);
 		}
 		
 		/// <summary>
-		/// Will return true if we need to tick the current behavior
+		/// Will return true if we need to tick the current behavior and set the next tick time
 		/// </summary>
 		/// <returns>
 		/// True if we should tick, or false otherwise
@@ -105,15 +106,25 @@ namespace UnitySteer.Helpers
 		/// Value used to override the object's TickLapse property for the 
 		/// next tick, if the method returns true
 		/// </param>
-		public bool ShouldTick(float nextTickLapseOverride) 
+		public bool TickBehavior(float nextTickLapseOverride) 
 		{
-			var time = Time.time;
-			var result = _nextTick < time;
+			var result = CanTick();
 			if (result)
 			{
-				_nextTick = time + nextTickLapseOverride + Random.Range(_randomRangeMin, _randomRangeMax);
+				_nextTick = Time.time + nextTickLapseOverride + Random.Range(_randomRangeMin, _randomRangeMax);
 			}
 			return result;
+		}
+		
+		/// <summary>
+		/// Peeks into if we can tick the action, without affecting the next tick time
+		/// </summary>
+		/// <returns>
+		/// True if we can tick it, false otherwise <see cref="System.Boolean"/>
+		/// </returns>
+		public bool CanTick()
+		{
+			return _nextTick < Time.time;			
 		}
 		
 	}

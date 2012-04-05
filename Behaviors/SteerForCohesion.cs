@@ -8,8 +8,8 @@ public class SteerForCohesion : SteerForNeighbors
 {
 	protected override Vector3 CalculateNeighborContribution(Vehicle other)
 	{
-		// accumulate sum of neighbor's positions
-		return other.Position;
+		// accumulate sum of forces leading us towards neighbor's positions
+		return other.Position - Vehicle.Position;
 	}
 }
 

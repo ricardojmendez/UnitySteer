@@ -1,39 +1,56 @@
 using System.Linq;
-using C5;
+using System.Collections.Generic;
 using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
+using TickedPriorityQueue;
 
 
 /// <summary>
 /// Base class for radars
 /// </summary>
-/// <remarks>Different radars will implement their own detection styles, from
-/// "pinging" every so often with Physics.OverlapSphere to handling visibility
-/// OnTriggerEnter/Exit</remarks>
+/// <remarks>
+/// The base Radar class will "ping" an area using Physics.OverlapSphere, but
+/// different radars can implement their own detection styles (if for instance
+/// they wish to handle a proximity quadtre/octree themselves).
+/// 
+/// It expects that every object to be added to the radar will have a 
+/// DetectableObject on its root.
+/// </remarks>
 [AddComponentMenu("UnitySteer/Radar/Radar")]
-public class Radar : MonoBehaviour, ITick {
+public class Radar: MonoBehaviour {
 	#region Private properties
-	SteeringEventHandler<Radar> _onDetected;
+	
+	Transform _transform;
+	TickedObject _tickedObject;
+	UnityTickedQueue _steeringQueue;
+	
+	
+	[SerializeField]
+	float _detectionRadius = 5;
 	
 	[SerializeField]
 	bool _detectDisabledVehicles;
 	
 	[SerializeField]
-	Tick _tick;
-	
-	[SerializeField]
-	LayerMask _obstacleLayer;
-
-	[SerializeField]
 	LayerMask _layersChecked;
-		
 	
-	IList<Collider> _detected;
-	IList<Vehicle> _vehicles = new ArrayList<Vehicle>();
-	IList<Obstacle> _obstacles = new ArrayList<Obstacle>();
+	[SerializeField]
+	bool _drawGizmos = false;
+
+	/// <summary>
+	/// How often is the radar updated
+	/// </summary>
+	[SerializeField]
+	float _tickLength = 0.5f;
 	
-	ObstacleFactory _obstacleFactory = null;
+	
+	
+	IEnumerable<Collider> _detected;
+	IEnumerable<Vehicle> _vehicles = new List<Vehicle>();
+	IEnumerable<DetectableObject> _obstacles = new List<DetectableObject>();
+	IList<DetectableObject> _ignoredObjects = new List<DetectableObject>();
+	
 	
 	Vehicle _vehicle;
 	#endregion
@@ -43,12 +60,23 @@ public class Radar : MonoBehaviour, ITick {
 	/// <summary>
 	/// List of currently detected neighbors
 	/// </summary>
-	public IList<Collider> Detected {
+	public IEnumerable<Collider> Detected 
+	{
+		get { return _detected; }
+	}
+	
+	/// <summary>
+	/// Radar ping detection radius
+	/// </summary>
+	public float DetectionRadius {
 		get {
-			ExecuteRadar();
-			return _detected;
+			return this._detectionRadius;
+		}
+		set {
+			_detectionRadius = value;
 		}
 	}
+	
 	
 	/// <summary>
 	/// Indicates if the radar will detect disabled vehicles. 
@@ -62,26 +90,39 @@ public class Radar : MonoBehaviour, ITick {
 			_detectDisabledVehicles = value;
 		}
 	}
+	
+	/// <summary>
+	/// Should the radar draw its gizmos?
+	/// </summary>
+	public bool DrawGizmos {
+		get {
+			return this._drawGizmos;
+		}
+		set {
+			_drawGizmos = value;
+		}
+	}
 
 	/// <summary>
 	/// List of obstacles detected by the radar
 	/// </summary>
-	public IList<Obstacle> Obstacles {
-		get {
-			ExecuteRadar();
-			return new GuardedList<Obstacle>(_obstacles);
-		}
+	public IEnumerable<DetectableObject> Obstacles {
+		get { return _obstacles; }
 
 	}
 	
-	public SteeringEventHandler<Radar> OnDetected {
-		get {
-			return this._onDetected;
-		}
-		set {
-			_onDetected = value;
+	/// <summary>
+	/// Returns the radars position
+	/// </summary>
+	public Vector3 Position
+	{
+		get
+		{
+			return (Vehicle != null) ? Vehicle.Position : _transform.position;
 		}
 	}
+	
+	public SteeringEventHandler<Radar> OnDetected { get; set; }
 
 	/// <summary>
 	/// Gets the vehicle this radar is attached to
@@ -95,42 +136,10 @@ public class Radar : MonoBehaviour, ITick {
 	/// <summary>
 	/// List of vehicles detected among the colliders
 	/// </summary>
-	public IList<Vehicle> Vehicles {
-		get {
-			ExecuteRadar();
-			return new GuardedList<Vehicle>(_vehicles);
-		}
+	public IEnumerable<Vehicle> Vehicles 
+	{
+		get { return _vehicles; }
 	}
-
-	/// <summary>
-	/// Layers for objects considered obstacles
-	/// </summary>
-	public LayerMask ObstacleLayer {
-		get {
-			return this._obstacleLayer;
-		}
-		set {
-			_obstacleLayer = value;
-		}
-	}
-	
-	/// <summary>
-	/// Delegate for the method used to create obstacles
-	/// </summary>
-	/// <remarks>This delegate must be set by any steering behavior that
-	/// wishes to obtain a list of stationary obstacles to steer away from.
-	/// Notice that this means we can only have one type of obstacle detected,
-	/// which is just fine for now but we may want to review it in the future.
-	/// </remarks>
-	public ObstacleFactory ObstacleFactory {
-		get {
-			return this._obstacleFactory;
-		}
-		set {
-			_obstacleFactory = value;
-		}
-	}
-
 
 	/// <summary>
 	/// Layer mask for the object layers checked
@@ -143,55 +152,133 @@ public class Radar : MonoBehaviour, ITick {
 			_layersChecked = value;
 		}
 	}
-
-	/// <summary>
-	/// Tick information
-	/// </summary>
-	public Tick Tick {
-		get {
-			return this._tick;
-		}
-	}
 	#endregion
 	
 	#region Methods
-	protected virtual void Awake() {
+	protected virtual void Awake() 
+	{
 		_vehicle = GetComponent<Vehicle>();	
+		_transform = transform;
+		Ignore(_vehicle); // All radars ignore their own vehicle
 	}
 	
 	
-	void ExecuteRadar()
+	void OnEnable()
 	{
-		if (_tick.ShouldTick()) {
-			_detected = Detect();
-			FilterDetected();
-			if (_onDetected != null)
-				_onDetected(new SteeringEvent<Radar>(null, "detect", this));
+		_tickedObject = new TickedObject(OnUpdateRadar);
+		_tickedObject.TickLength = _tickLength;
+		_steeringQueue = UnityTickedQueue.GetInstance("Radar");
+		_steeringQueue.Add(_tickedObject);
+		_steeringQueue.MaxProcessedPerUpdate = 50;
+	}
+
+	
+	void OnDisable()
+	{
+		if (_steeringQueue != null)
+		{
+			_steeringQueue.Remove(_tickedObject);
 		}
 	}
 	
-	protected virtual IList<Collider> Detect()
+	
+	
+	public void OnUpdateRadar(object obj)
 	{
-		return new ArrayList<Collider>();
+		_detected = Detect();
+		FilterDetected();
+		if (OnDetected != null)
+		{
+			OnDetected(new SteeringEvent<Radar>(null, "detect", this));
+		}
+#if TRACEDETECTED
+		if (DrawGizmos)
+		{
+			Debug.Log(gameObject.name+" detected at "+Time.time);
+			var sb = new System.Text.StringBuilder(); 
+			foreach (var v in Vehicles)
+			{
+				sb.Append(v.gameObject.name);
+				sb.Append(" ");
+				sb.Append(v.Position);
+				sb.Append(" ");
+			}
+			Debug.Log(sb.ToString());
+		}
+#endif
+	}
+		
+	
+	protected virtual IEnumerable<Collider> Detect()
+	{
+		return Physics.OverlapSphere(Position, DetectionRadius, LayersChecked);
 	}
 	
 	protected virtual void FilterDetected()
 	{
-		_vehicles.Clear();
-		_obstacles.Clear();
-		foreach (var other in _detected)
-		{
-			var vehicle = other.gameObject.GetComponent<Vehicle>();
-			if (vehicle != null && (vehicle.enabled || _detectDisabledVehicles) && other.gameObject != this.gameObject)
-			{
-				_vehicles.Add(vehicle);
-			}
-			if (ObstacleFactory != null && ((1 << other.gameObject.layer & ObstacleLayer) > 0))
-			{
-				var obstacle = ObstacleFactory(other.gameObject);
-				_obstacles.Add (obstacle);
-			}
-		}
+		/*
+		 * For each detected item, obtain the DetectableObject it has.
+		 * We could have allowed people to have multiple DetectableObjects 
+		 * on a transform hierarchy, but this ends up with us having to do
+		 * calls to GetComponentsInChildren, which gets really expensive.
+		 * 
+		 * I *do not* recommend changing this to GetComponentsInChildren.
+		 * As a reference, whenever the radar fired up near a complex object
+		 * (say, a character model) obtaining the list of DetectableObjects
+		 * took about 75% of the time used for the frame.
+		 * 
+		 * We materialize the list so that we don't select it twice.
+		 */
+		Profiler.BeginSample("Base FilterDetected");
+		var notIgnored =  _detected.Select( d => d.transform.GetComponent<DetectableObject>() ).Except(_ignoredObjects).ToList();
+		_vehicles = notIgnored.OfType<Vehicle>().Where( v => v != null && (v.enabled || _detectDisabledVehicles));
+		_obstacles = notIgnored.Where( d => d != null && !(d is Vehicle) );
+		Profiler.EndSample();
 	}
+	
+	/// <summary>
+	/// Tells the radar to ignore the detectable object when filtering the vehicles or objects detected
+	/// </summary>
+	/// <param name="o">
+	/// An object to be ignored<see cref="DetectableObject"/>
+	/// </param>
+	/// <returns>The radar</returns>
+	public Radar Ignore(DetectableObject o)
+	{
+		if (o != null)
+		{
+			_ignoredObjects.Add(o);
+		}
+		return this;
+	}
+	
+	/// <summary>
+	/// Tells the radar to no longer ignore the detectable object when filtering the vehicles or objects detected
+	/// </summary>
+	/// <param name="o">
+	/// An object to remove from the ignore list<see cref="DetectableObject"/>
+	/// </param>
+	/// <returns>The radar</returns>
+	public Radar DontIgnore(DetectableObject o)
+	{
+		if (_ignoredObjects.Contains(o))
+		{
+			_ignoredObjects.Remove(o);
+		}
+		return this;
+	}
+	#endregion
+	
+	#region Unity methods
+	void OnDrawGizmos()
+	{
+		if (_drawGizmos)
+		{
+			var pos = (Vehicle == null) ? transform.position : Vehicle.Position;
+			
+			Gizmos.color = Color.cyan;
+			Gizmos.DrawWireSphere(pos, DetectionRadius);
+		}
+	}	
 	#endregion
 }

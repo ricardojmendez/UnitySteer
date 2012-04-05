@@ -1,5 +1,47 @@
 UnitySteer changelog
 
+v2.5 (currently beta 1)
+----
+
+UnitySteer 2.5 significantly changes the way that vehicles and radars behave internally, in order to provide both a more coherent structure and increased performance.  Read the change notes below before upgrading.
+
+
+Warning:
+
+Because of how the class/meta file references work and the way classes were renamed during development, you may have your previous AutonomousVehicle behaviors show up as Bipeds.  Make sure you verify.
+
+
+General changes:
+
+- UnitySteer now uses TickedPriorityQueue. Download it here: https://github.com/Garufortho/TickedPriorityQueue/downloads
+- Removed dependency on the C5 class libraries
+- Removed outdated classes which I'd kept under review for ages.
+- Implemented workarounds for Unity's deficiencies on AOT compilation. It should now work on iOS.
+
+Steering and vehicle changes:
+
+- Vehicles now update their desired velocity via a TickedPriorityQueue.
+- New Biped vehicle class. See http://www.arges-systems.com/articles/573/unitysteer-autonomous-vehicle-biped/
+- Vehicles now gradually turn towards their desired velocity, something that wasn't properly handled before
+- Separated the application of the velocity from the vehicle's turning. This is a subtle change, but will likely make it easier to make tank-like vehicles.
+- New OnStartMoving steering event
+- Added a Speedometer behavior, which is not UnitySteer-exclusive and can be attached to any object, and expanded Vehicle. If a Vehicle detects that its gameObject has a Speedometer, when its speed is requested it will return the value measured by the Speedometer instead of just using the Velocity's magnitude.
+- We can now have post-processing steering behaviors, which are evaluated after the regular behaviors and can return adjustments based on the vehicle's DesiredVelocity.
+- Re-did SteerForSphericalObstacleAvoidance.  
+- Removed legacy property HasInertia.
+- Optimizations.
+
+Radar changes: 
+
+- Radars are now updated via a TickedPriorityQueue, since we will almost never need to update them every frame. This means you can independently set some vehicles to update their radars more often than others.
+- Removed Radar.ObstacleLayer.  Any DetectableObject that is not a vehicle will be considered an obstacle.
+- Removed Radar.ObstacleFactory.  DetectableObjects should know how to create their own obstacles if they're not spherical.
+- Updated other behaviors to work with DetectableObjects.
+- Added methods to Radar to ignore a DetectableObject.
+- RadarPing is now there only for backwards compatibility reasons, and its functionality has been rolled into the base Radar class.
+
+
+
 v2.2
 ----
 

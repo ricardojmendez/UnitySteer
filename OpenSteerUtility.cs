@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UnitySteer
 {
-    public class OpenSteerUtility
+    public static class OpenSteerUtility
     {
         public static Vector3 RandomUnitVectorOnXZPlane ()
         {

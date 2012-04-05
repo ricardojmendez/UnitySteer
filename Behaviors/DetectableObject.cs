@@ -157,7 +157,7 @@ public class DetectableObject : MonoBehaviour
 		_scaledRadius = _radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
 		_scaledCenter = Vector3.Scale(_center, scale);
 		_squaredRadius = _scaledRadius * _scaledRadius;
-	}	
+	}
 	
 	protected virtual void OnDrawGizmos()
 	{
@@ -174,9 +174,5 @@ public class DetectableObject : MonoBehaviour
 		}
 	}
 	#endregion
-	
-	
-	
-
 }
 
