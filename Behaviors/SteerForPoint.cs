@@ -12,6 +12,7 @@ public class SteerForPoint : Steering
 	/// Declared as a separate value so that we can inspect it on Unity in 
 	/// debug mode.
 	/// </remarks>
+	[SerializeField]
 	Vector3 _targetPoint = Vector3.zero;
 
 	/// <summary>
@@ -20,6 +21,7 @@ public class SteerForPoint : Steering
 	/// <remarks>
 	/// If true, the vehicle will slow down as it approaches its target
 	/// </remarks>
+	[SerializeField]
 	bool _considerVelocity = false;
 	
 	
@@ -37,7 +39,13 @@ public class SteerForPoint : Steering
 	}
 
 
-	public bool ConsiderVelocity
+	/// <summary>
+	/// Should the vehicle's velocity be considered in the seek calculations?
+	/// </summary>
+	/// <remarks>
+	/// If true, the vehicle will slow down as it approaches its target
+	/// </remarks>
+ 		public bool ConsiderVelocity
 	{
 		get { return _considerVelocity; }
 		set { _considerVelocity = value; }
