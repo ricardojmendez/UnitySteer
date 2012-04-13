@@ -13,6 +13,14 @@ public class SteerForPoint : Steering
 	/// debug mode.
 	/// </remarks>
 	Vector3 _targetPoint = Vector3.zero;
+
+	/// <summary>
+	/// Should the vehicle's velocity be considered in the seek calculations?
+	/// </summary>
+	/// <remarks>
+	/// If true, the vehicle will slow down as it approaches its target
+	/// </remarks>
+	bool _considerVelocity = false;
 	
 	
 	/// <summary>
@@ -26,6 +34,13 @@ public class SteerForPoint : Steering
 			_targetPoint = value;
 			ReportedArrival = false;
 		}
+	}
+
+
+	public bool ConsiderVelocity
+	{
+		get { return _considerVelocity; }
+		set { _considerVelocity = value; }
 	}
 
 	
@@ -48,7 +63,7 @@ public class SteerForPoint : Steering
 	/// </returns>
 	protected override Vector3 CalculateForce()
 	{
-		return Vehicle.GetSeekVector(TargetPoint, false);
+		return Vehicle.GetSeekVector(TargetPoint, _considerVelocity);
 	}
 }
 
