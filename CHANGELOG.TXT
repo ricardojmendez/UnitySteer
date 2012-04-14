@@ -1,6 +1,6 @@
 UnitySteer changelog
 
-v2.5 (currently beta 1)
+v2.5 (currently beta 2)
 ----
 
 UnitySteer 2.5 significantly changes the way that vehicles and radars behave internally, in order to provide both a more coherent structure and increased performance.  Read the change notes below before upgrading.
@@ -21,6 +21,7 @@ General changes:
 Steering and vehicle changes:
 
 - Vehicles now update their desired velocity via a TickedPriorityQueue.
+- New trivial SteerToFollow implementation
 - New Biped vehicle class. See http://www.arges-systems.com/articles/573/unitysteer-autonomous-vehicle-biped/
 - Vehicles now gradually turn towards their desired velocity, something that wasn't properly handled before
 - Separated the application of the velocity from the vehicle's turning. This is a subtle change, but will likely make it easier to make tank-like vehicles.
