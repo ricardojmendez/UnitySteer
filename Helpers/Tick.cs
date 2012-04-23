@@ -86,6 +86,11 @@ namespace UnitySteer.Helpers
 		public Tick(float tickLapse) {
 			TickLapse = tickLapse;
 		}
+
+		public void Reset()
+		{
+			_nextTick = 0;
+		}
 		
 
 		/// <summary>
