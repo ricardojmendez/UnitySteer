@@ -152,7 +152,9 @@ public class SteerForSphericalObstacleAvoidance : Steering
 			// take the component of that which is lateral (perpendicular to my
 			// forward direction),  add a bit of forward component
 			Vector3 offset = Vehicle.Position - nearest.Obstacle.Position;
-			avoidance =	 OpenSteerUtility.perpendicularComponent(offset, transform.forward);
+			// derive where we're heading (Bipeds don't walk transform.forward)
+			Vector3 moveDirection = Vehicle.Velocity.normalized;
+			avoidance =	 OpenSteerUtility.perpendicularComponent(offset, moveDirection);
 
 			avoidance.Normalize();
 
@@ -160,7 +162,7 @@ public class SteerForSphericalObstacleAvoidance : Steering
 			Debug.DrawLine(Vehicle.Position, Vehicle.Position + avoidance, Color.white);
 			#endif
 
-			avoidance += transform.forward * Vehicle.MaxForce * _avoidanceForceFactor;
+			avoidance += moveDirection * Vehicle.MaxForce * _avoidanceForceFactor;
 
 			#if ANNOTATE_AVOIDOBSTACLES
 			Debug.DrawLine(Vehicle.Position, Vehicle.Position + avoidance, Color.yellow);
