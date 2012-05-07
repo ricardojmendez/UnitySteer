@@ -117,14 +117,18 @@ public class SteerForSphericalObstacleAvoidance : Steering
 		 */
 		Vector3 futurePosition = Vehicle.PredictFuturePosition(_minTimeToCollision);
 		Vector3 line = (futurePosition - Vehicle.Position);
-
+		
+		#if ANNOTATE_AVOIDOBSTACLES
+		Debug.DrawLine(Vehicle.Position, Vehicle.Position + line, Color.cyan);
+		#endif
+		
 		// test all obstacles for intersection with my forward axis,
 		// select the one whose point of intersection is nearest
 		Profiler.BeginSample("Find nearest intersection");
 		foreach (var o in Vehicle.Radar.Obstacles)
 		{
 			var sphere = o as DetectableObject;
-			PathIntersection next = FindNextIntersectionWithSphere (sphere, line);
+			PathIntersection next = FindNextIntersectionWithSphere(Vehicle.Position, futurePosition, sphere);
 			if (!nearest.Intersect ||
 				(next.Intersect &&
 				 next.Distance < nearest.Distance))
@@ -170,75 +174,77 @@ public class SteerForSphericalObstacleAvoidance : Steering
 	/// <summary>
 	/// Finds the vehicle's next intersection with a spherical obstacle
 	/// </summary>
-	/// <param name="obs">
-	/// A spherical obstacle to check against <see cref="DetectableObject"/>
+	/// <param name="vehiclePosition">
+	/// The current position of the vehicle
 	/// </param>
-	/// <param name="line">
-	/// Line that we expect we'll follow to our future destination
+	/// <param name="futureVehiclePosition">
+	/// The position where we expect the vehicle to be soon
+	/// </param>
+	/// <param name="obstacle">
+	/// A spherical obstacle to check against <see cref="DetectableObject"/>
 	/// </param>
 	/// <returns>
 	/// A PathIntersection with the intersection details <see cref="PathIntersection"/>
 	/// </returns>
-	public PathIntersection FindNextIntersectionWithSphere (DetectableObject obs, Vector3 line)
-	{
-		/*
-		 * This routine is based on the Paul Bourke's derivation in:
-		 *   Intersection of a Line and a Sphere (or circle)
-		 *   http://www.swin.edu.au/astronomy/pbourke/geometry/sphereline/
-		 *
-		 * Retaining the same variable values used in that description.
-		 * 
-		 */
-		float a, b, c, bb4ac;
-		var toCenter = Vehicle.Position - obs.Position;
-
-		// initialize pathIntersection object
-		var intersection = new PathIntersection(obs);
+	public PathIntersection FindNextIntersectionWithSphere(Vector3 vehiclePosition, Vector3 futureVehiclePosition, DetectableObject obstacle) {
+		// this mainly follows http://www.lighthouse3d.com/tutorials/maths/ray-sphere-intersection/
 		
-		#if ANNOTATE_AVOIDOBSTACLES
-		Debug.DrawLine(Vehicle.Position, Vehicle.Position + line, Color.cyan);
-		#endif
+		var intersection = new PathIntersection(obstacle);
 		
-		// computer line-sphere intersection parameters
-		a = line.magnitude;
-		b = 2 * Vector3.Dot(line, toCenter);
-		c = obs.Position.magnitude;
-		c += Vehicle.Position.magnitude;
-		c -= 2 * Vector3.Dot(obs.Position, Vehicle.Position); 
-		c -= Mathf.Pow(obs.ScaledRadius + Vehicle.ScaledRadius, 2);
-		bb4ac = b * b - 4 * a * c;
-
-		if (bb4ac >= 0)  {
-			intersection.Intersect = true;
-			Vector3 closest = Vector3.zero;
-			if (bb4ac == 0) {
-				// Only one intersection
-				var mu = -b / (2*a);
-				closest = mu * line;
-			}
-			else {
-				// More than one intersection
-				var mu1 = (-b + Mathf.Sqrt(bb4ac)) / (2*a);
-				var mu2 = (-b - Mathf.Sqrt(bb4ac)) / (2*a);
-				/*
-				 * If the results are negative, the obstacle is behind us.
-				 * 
-				 * If one result is negative and the other one positive,
-				 * that would indicate that one intersection is behind us while
-				 * the other one ahead of us, which would mean that we're 
-				 * just overlapping the obstacle, so we should still avoid.  
-				 */
-				if (mu1 < 0 && mu2 < 0)
-					intersection.Intersect = false;
-				else
-					closest = (Mathf.Abs(mu1) < Mathf.Abs (mu2)) ? mu1 * line : mu2 * line;
-			}
-			#if ANNOTATE_AVOIDOBSTACLES
-			Debug.DrawRay(Vehicle.Position, closest, Color.red);
-			#endif
-
-			intersection.Distance =  closest.magnitude;
+		float combinedRadius = Vehicle.ScaledRadius + obstacle.ScaledRadius;
+		var movement = futureVehiclePosition - vehiclePosition;
+		var direction = movement.normalized;
+		
+		var vehicleToObstacle = obstacle.Position - vehiclePosition;
+		
+		// this is the length of vehicleToObstacle projected onto direction
+		float projectionLength = Vector3.Dot(direction, vehicleToObstacle);
+		
+		// if the projected obstacle center lies further away than our movement + both radius, we're not going to collide
+		if (projectionLength > movement.magnitude + combinedRadius) {
+			//print("no collision - 1");
+			return intersection;
 		}
+		
+		// the foot of the perpendicular
+		var projectedObstacleCenter = vehiclePosition + projectionLength * direction;
+		
+		// distance of the obstacle to the pathe the vehicle is going to take
+		float obstacleDistanceToPath = (obstacle.Position - projectedObstacleCenter).magnitude;
+		//print("obstacleDistanceToPath: " + obstacleDistanceToPath);
+		
+		// if the obstacle is further away from the movement, than both radius, there's no collision
+		if (obstacleDistanceToPath > combinedRadius) {
+			//print("no collision - 2");
+			return intersection;
+		}
+
+		// use pythagorean theorem to calculate distance out of the sphere (if you do it 2D, the line through the circle would be a chord and we need half of its length)
+		float halfChord = Mathf.Sqrt(combinedRadius * combinedRadius + obstacleDistanceToPath * obstacleDistanceToPath);
+		
+		// if the projected obstacle center lies opposite to the movement direction (aka "behind")
+		if (projectionLength < 0) {
+			// behind and further away than both radius -> no collision (we already passed)
+			if (vehicleToObstacle.magnitude > combinedRadius)
+				return intersection;
+			
+			var intersectionPoint = projectedObstacleCenter - direction * halfChord;
+			intersection.Intersect = true;
+			intersection.Distance = (intersectionPoint - vehiclePosition).magnitude;
+			return intersection;
+		}
+		
+		// calculate both intersection points
+		var intersectionPoint1 = projectedObstacleCenter - direction * halfChord;
+		var intersectionPoint2 = projectedObstacleCenter + direction * halfChord;
+
+		// pick the closest one
+		float intersectionPoint1Distance = (intersectionPoint1 - vehiclePosition).magnitude;
+		float intersectionPoint2Distance = (intersectionPoint2 - vehiclePosition).magnitude;
+		
+		intersection.Intersect = true;
+		intersection.Distance = Mathf.Min(intersectionPoint1Distance, intersectionPoint2Distance);
+		
 		return intersection;
 	}
 	
