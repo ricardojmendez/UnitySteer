@@ -1,4 +1,4 @@
-#define ANNOTATE_AVOIDOBSTACLES
+//#define ANNOTATE_AVOIDOBSTACLES
 using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
@@ -111,15 +111,15 @@ public class SteerForSphericalObstacleAvoidance : Steering
 
 		PathIntersection nearest = new PathIntersection(null);
 		/*
-		 * While we could just calculate line as (Velocity * predictionTime) 
+		 * While we could just calculate movement as (Velocity * predictionTime) 
 		 * and save ourselves the substraction, this allows other vehicles to
 		 * override PredictFuturePosition for their own ends.
 		 */
 		Vector3 futurePosition = Vehicle.PredictFuturePosition(_minTimeToCollision);
-		Vector3 line = (futurePosition - Vehicle.Position);
+		Vector3 movement = futurePosition - Vehicle.Position;
 		
 		#if ANNOTATE_AVOIDOBSTACLES
-		Debug.DrawLine(Vehicle.Position, Vehicle.Position + line, Color.cyan);
+		Debug.DrawLine(Vehicle.Position, Vehicle.Position + movement, Color.cyan);
 		#endif
 		
 		// test all obstacles for intersection with my forward axis,
@@ -142,7 +142,7 @@ public class SteerForSphericalObstacleAvoidance : Steering
 		// when a nearest intersection was found
 		Profiler.BeginSample("Calculate avoidance");
 		if (nearest.Intersect &&
-			nearest.Distance < line.magnitude)
+			nearest.Distance < movement.magnitude)
 		{
 			#if ANNOTATE_AVOIDOBSTACLES
 			Debug.DrawLine(Vehicle.Position, nearest.Obstacle.Position, Color.red);
@@ -150,10 +150,9 @@ public class SteerForSphericalObstacleAvoidance : Steering
 
 			// compute avoidance steering force: take offset from obstacle to me,
 			// take the component of that which is lateral (perpendicular to my
-			// forward direction),  add a bit of forward component
+			// movement direction),  add a bit of forward component
 			Vector3 offset = Vehicle.Position - nearest.Obstacle.Position;
-			// derive where we're heading (Bipeds don't walk transform.forward)
-			Vector3 moveDirection = Vehicle.Velocity.normalized;
+			Vector3 moveDirection = movement.normalized;
 			avoidance =	 OpenSteerUtility.perpendicularComponent(offset, moveDirection);
 
 			avoidance.Normalize();
