@@ -256,7 +256,7 @@ public abstract class TickedVehicle : Vehicle
 		 * disregard very small velocities, to avoid jittery movement on
 		 * rounding errors.
 		 */
- 		if (Speed > MinSpeedForTurning && Velocity != Vector3.zero)
+ 		if (DesiredSpeed > MinSpeedForTurning && Velocity != Vector3.zero)
 		{
 			var newForward = OrientationVelocity;
 			if (IsPlanar)
@@ -267,7 +267,7 @@ public abstract class TickedVehicle : Vehicle
 			
 			if (TurnTime != 0)
 			{
-				newForward = Vector3.Slerp(_transform.forward, newForward, deltaTime / TurnTime);
+				newForward = Vector3.Lerp(_transform.forward, newForward, deltaTime / TurnTime);
 			}
 			_transform.forward = newForward;
 		}
