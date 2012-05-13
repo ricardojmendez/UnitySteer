@@ -20,6 +20,7 @@ public class AutonomousVehicle : TickedVehicle
 		set 
 		{ 
 			_speed = Mathf.Clamp(value, 0, MaxSpeed); 
+			DesiredSpeed = _speed;
 		}
 	}
 

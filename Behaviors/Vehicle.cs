@@ -264,6 +264,18 @@ public abstract class Vehicle : DetectableObject
 	/// implement one of the two methods.
 	/// </summary>
 	public abstract Vector3 Velocity { get; set; }
+
+	/// <summary>
+	/// Current magnitude for the vehicle's velocity.
+	/// </summary>
+	/// <remarks>
+	/// It is expected to be set at the same time that the Velocity is 
+	/// assigned in one of the descendent classes.  It may or may not
+	/// match the vehicle speed, depending on how that is calculated - 
+	/// for example, some subclasses can use a Speedometer to calculate
+	/// their speed.
+	/// </remarks>
+	public float DesiredSpeed { get; protected set; }
 	
 	#endregion
 
