@@ -1,3 +1,4 @@
+//#define TRACEDETECTED
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
@@ -203,6 +204,13 @@ public class Radar: MonoBehaviour {
 				sb.Append(v.Position);
 				sb.Append(" ");
 			}
+			foreach (var o in Obstacles)
+			{
+				sb.Append(o.gameObject.name);
+				sb.Append(" ");
+				sb.Append(o.Position);
+				sb.Append(" ");
+			}
 			Debug.Log(sb.ToString());
 		}
 #endif
@@ -278,6 +286,14 @@ public class Radar: MonoBehaviour {
 			
 			Gizmos.color = Color.cyan;
 			Gizmos.DrawWireSphere(pos, DetectionRadius);
+#if TRACEDETECTED
+			if (Application.isPlaying) {
+				foreach (var v in Vehicles)
+					Gizmos.DrawLine(pos, v.gameObject.transform.position);
+				foreach (var o in Obstacles)
+					Gizmos.DrawLine(pos, o.gameObject.transform.position);
+			}
+#endif
 		}
 	}	
 	#endregion

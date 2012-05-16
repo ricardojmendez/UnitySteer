@@ -125,10 +125,14 @@ public abstract class Steering : MonoBehaviour {
 	#endregion
 	
 	#region Methods
-	protected void Start()
+	protected virtual void Awake()
 	{
 		_vehicle = this.GetComponent<Vehicle>();
 		ReportedArrival = true; // Default to true to avoid unnecessary notifications
+	}
+	
+	protected virtual void Start()
+	{
 	}
 	
 	/// <summary>
