@@ -267,7 +267,7 @@ public abstract class TickedVehicle : Vehicle
 			
 			if (TurnTime != 0)
 			{
-				newForward = Vector3.Lerp(_transform.forward, newForward, deltaTime / TurnTime);
+				newForward = Vector3.Slerp(_transform.forward, newForward, deltaTime / TurnTime);
 			}
 			_transform.forward = newForward;
 		}
