@@ -35,6 +35,13 @@ public class Biped : TickedVehicle
 		}
 	}
 	
+	/// <summary>
+	/// Current vehicle speed
+	/// </summary>	
+	/// <remarks>
+	/// If the vehicle has a speedometer, then we return the actual measured
+	/// value instead of simply the length of the velocity vector.
+	/// </remarks>
 	public override float Speed
 	{
 		get

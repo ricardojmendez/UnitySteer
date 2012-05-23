@@ -225,10 +225,6 @@ public abstract class Vehicle : DetectableObject
 	/// <summary>
 	/// Current vehicle speed
 	/// </summary>
-	/// <remarks>
-	/// If the vehicle has a speedometer, then we return the actual measured
-	/// value instead of simply the length of the velocity vector.
-	/// </remarks>
 	public abstract float Speed { get; set; }
 	
 	/// <summary>
