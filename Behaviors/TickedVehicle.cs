@@ -229,19 +229,23 @@ public abstract class TickedVehicle : Vehicle
 	void ApplySteeringForce(float elapsedTime)
 	{
 		// Euler integrate (per frame) velocity into position
+        Profiler.BeginSample("ApplySteeringForce.CalculatePositionDelta");
 		var delta = CalculatePositionDelta(elapsedTime);
+        Profiler.EndSample();
+        Profiler.BeginSample("ApplySteeringForce.Displace");
 		if (CharacterController != null) 
 		{
 			CharacterController.Move(delta);
 		}
 		else if (Rigidbody == null || Rigidbody.isKinematic)
 		{
-			transform.position += delta;
+			_transform.position += delta;
 		}
 		else
 		{
 			Rigidbody.MovePosition (Rigidbody.position + delta);
 		}
+        Profiler.EndSample();
 	}	
 	
 	
@@ -251,6 +255,7 @@ public abstract class TickedVehicle : Vehicle
 	/// </summary>
 	protected virtual void AdjustOrientation(float deltaTime)
 	{
+        Profiler.BeginSample("AdustOrientation");
 		/* 
 		 * Avoid adjusting if we aren't applying any velocity. We also
 		 * disregard very small velocities, to avoid jittery movement on
@@ -271,6 +276,7 @@ public abstract class TickedVehicle : Vehicle
 			}
 			_transform.forward = newForward;
 		}
+        Profiler.EndSample();
 	}	
 
 	/// <summary>
@@ -289,7 +295,7 @@ public abstract class TickedVehicle : Vehicle
 	#endregion
 
 
-	void FixedUpdate()
+	void Update()
 	{
 		// We still update the forces if the vehicle cannot move, as the
 		// calculations on those steering behaviors might be relevant for
@@ -299,8 +305,8 @@ public abstract class TickedVehicle : Vehicle
 		// disable the vehicle.
 		if (CanMove)
 		{
-			ApplySteeringForce(Time.fixedDeltaTime);
-			AdjustOrientation(Time.fixedDeltaTime);
+			ApplySteeringForce(Time.deltaTime);
+			AdjustOrientation(Time.deltaTime);
 		}
 		else 
 		{
@@ -313,7 +319,7 @@ public abstract class TickedVehicle : Vehicle
 	{
 		if (_traceAdjustments)
 		{
-			Debug.DrawLine(transform.position, transform.position + delta, color);
+			Debug.DrawLine(_transform.position, _transform.position + delta, color);
 		}
 	}
 
