@@ -44,6 +44,9 @@ public class SteerForEvasion : Steering
 	
 	protected override Vector3 CalculateForce()
 	{
+        if (_menace == null) {
+            return Vector3.zero;
+        }
 		// offset from this to menace, that distance, unit vector toward menace
 		Vector3 offset = _menace.Position - Vehicle.Position;
 		float distance = offset.magnitude;
