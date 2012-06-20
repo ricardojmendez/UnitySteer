@@ -51,7 +51,7 @@ public abstract class TickedVehicle : Vehicle
 			base.CanMove = value;
 			if (!CanMove)
 			{
-				Velocity = Vector3.zero;
+                ZeroVelocity();
 			}
 		}
 	}
