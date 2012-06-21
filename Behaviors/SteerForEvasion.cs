@@ -55,7 +55,7 @@ public class SteerForEvasion : Steering
         }
         set {
             _safetyDistance = value;
-            _sqrSafetyDistance = _sqrSafetyDistance * _sqrSafetyDistance;
+            _sqrSafetyDistance = _safetyDistance * _safetyDistance;
         }
     }
 	#endregion
@@ -67,7 +67,7 @@ public class SteerForEvasion : Steering
 	
 	protected override Vector3 CalculateForce()
 	{
-        if (_menace == null || (Vehicle.Position - _menace.Position).sqrMagnitude > _safetyDistance * _sqrSafetyDistance) {
+        if (_menace == null || (Vehicle.Position - _menace.Position).sqrMagnitude > _sqrSafetyDistance) {
             return Vector3.zero;
         }
 		// offset from this to menace, that distance, unit vector toward menace
