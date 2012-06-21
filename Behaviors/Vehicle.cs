@@ -333,7 +333,7 @@ public abstract class Vehicle : DetectableObject
 	/// </returns>
 	public override Vector3 PredictFuturePosition(float predictionTime)
     {
-        return _transform.position + (Velocity * predictionTime);
+        return Transform.position + (Velocity * predictionTime);
 	}
 
 	/// <summary>
@@ -347,7 +347,7 @@ public abstract class Vehicle : DetectableObject
 	/// </returns>
 	public Vector3 PredictFutureDesiredPosition(float predictionTime)
 	{
-		return _transform.position + (DesiredVelocity * predictionTime);
+		return Transform.position + (DesiredVelocity * predictionTime);
 	}
 	
 	
@@ -397,7 +397,7 @@ public abstract class Vehicle : DetectableObject
 				{
 					// otherwise, test angular offset from forward axis
 					Vector3 unitOffset = offset / (float) Mathf.Sqrt (distanceSquared);
-					float forwardness = Vector3.Dot(_transform.forward, unitOffset);
+					float forwardness = Vector3.Dot(Transform.forward, unitOffset);
 					return forwardness > cosMaxAngle;
 				}
 			}
@@ -463,7 +463,7 @@ public abstract class Vehicle : DetectableObject
 	public Vector3 GetTargetSpeedVector(float targetSpeed) {
 		 float mf = MaxForce;
 		 float speedError = targetSpeed - Speed;
-		 return _transform.forward * Mathf.Clamp (speedError, -mf, +mf);		
+		 return Transform.forward * Mathf.Clamp (speedError, -mf, +mf);		
 	}
 	
 	
@@ -486,8 +486,8 @@ public abstract class Vehicle : DetectableObject
 	/// </summary>
 	public void ResetOrientation()
 	{
-		_transform.up = Vector3.up;
-		_transform.forward = Vector3.forward;
+		Transform.up = Vector3.up;
+		Transform.forward = Vector3.forward;
 	}
 	
 	public float PredictNearestApproachTime(Vehicle other)
@@ -558,7 +558,7 @@ public abstract class Vehicle : DetectableObject
 												  ref Vector3 ourPosition, 
 												  ref Vector3 hisPosition)
 	{
-		return ComputeNearestApproachPositions(other, time, ref ourPosition, ref hisPosition, Speed, _transform.forward);
+		return ComputeNearestApproachPositions(other, time, ref ourPosition, ref hisPosition, Speed, Transform.forward);
 	}		
 	
 	/// <summary>
@@ -591,7 +591,7 @@ public abstract class Vehicle : DetectableObject
 	                                             Vector3 ourForward)
 	{
 		Vector3	   myTravel = ourForward 	   		   *	ourSpeed * time;
-		Vector3 otherTravel = other._transform.forward * other.Speed * time;
+		Vector3 otherTravel = other.Transform.forward * other.Speed * time;
 
 		ourPosition = Position 		 + myTravel;
 		hisPosition = other.Position + otherTravel;

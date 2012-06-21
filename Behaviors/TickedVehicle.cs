@@ -239,7 +239,7 @@ public abstract class TickedVehicle : Vehicle
 		}
 		else if (Rigidbody == null || Rigidbody.isKinematic)
 		{
-			_transform.position += delta;
+			Transform.position += delta;
 		}
 		else
 		{
@@ -272,9 +272,9 @@ public abstract class TickedVehicle : Vehicle
 			
 			if (TurnTime != 0)
 			{
-				newForward = Vector3.Slerp(_transform.forward, newForward, deltaTime / TurnTime);
+				newForward = Vector3.Slerp(Transform.forward, newForward, deltaTime / TurnTime);
 			}
-			_transform.forward = newForward;
+			Transform.forward = newForward;
 		}
         Profiler.EndSample();
 	}	
@@ -319,7 +319,7 @@ public abstract class TickedVehicle : Vehicle
 	{
 		if (_traceAdjustments)
 		{
-			Debug.DrawLine(_transform.position, _transform.position + delta, color);
+			Debug.DrawLine(Transform.position, Transform.position + delta, color);
 		}
 	}
 

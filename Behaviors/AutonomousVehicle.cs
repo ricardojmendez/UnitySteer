@@ -31,7 +31,7 @@ public class AutonomousVehicle : TickedVehicle
 	{
 		get
 		{
-			return _transform.forward * _speed;
+			return Transform.forward * _speed;
 		}
 		set
 		{

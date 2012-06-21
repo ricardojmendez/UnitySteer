@@ -58,7 +58,7 @@ public class PassiveVehicle : Vehicle {
     /// </summary>
     public override Vector3 Velocity {
         get {
-            return _transform.forward * _speed;
+            return Transform.forward * _speed;
         }
         set {
             throw new System.NotSupportedException ("Cannot set the velocity directly on PassiveCehicle");

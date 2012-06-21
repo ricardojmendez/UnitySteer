@@ -10,11 +10,6 @@ public class DetectableObject : MonoBehaviour
 {
 	float _squaredRadius;
 
-	/// <summary>
-	/// Cached transform for this behaviour
-	/// </summary>
-	protected Transform _transform;
-	
 	[SerializeField]
 	protected bool _drawGizmos = false;
 	
@@ -55,11 +50,10 @@ public class DetectableObject : MonoBehaviour
 	/// by the vehicle center</remarks>
 	public Vector3 Position {
 		get {
-			if (_transform == null)
-			{
-				_transform = GetComponent<Transform>();
+			if (Transform == null) {
+				Transform = GetComponent<Transform>();
 			}
-			return _transform.position + _scaledCenter;
+			return Transform.position + _scaledCenter;
 		}
 	}
 	
@@ -120,12 +114,16 @@ public class DetectableObject : MonoBehaviour
 			return this._squaredRadius;
 		}
 	}
-	
+
+    /// <summary>
+    /// Cached transform for this behaviour
+    /// </summary>
+    public Transform Transform { get; private set; }
 	
 	#region Methods
 	protected virtual void Awake()
 	{
-		_transform = GetComponent<Transform>();
+		Transform = GetComponent<Transform>();
 		RecalculateScaledValues();
 	}
 	
@@ -140,20 +138,20 @@ public class DetectableObject : MonoBehaviour
 	/// </returns>
 	public virtual Vector3 PredictFuturePosition(float predictionTime)
     {
-        return _transform.position;
+        return Transform.position;
 	}
 	
 	
 	/// <summary>
-	/// Recalculates the vehicle's scaled radius and center
+	/// Recalculates the object's scaled radius and center
 	/// </summary>
 	protected virtual void RecalculateScaledValues() {
-		if (_transform == null)
+		if (Transform == null)
 		{
 			// Since this value gets assigned on Awake, we need to assign it when on the editor
-			_transform = GetComponent<Transform>();
+			Transform = GetComponent<Transform>();
 		}
-		var scale  = _transform.lossyScale;
+		var scale  = Transform.lossyScale;
 		_scaledRadius = _radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
 		_scaledCenter = Vector3.Scale(_center, scale);
 		_squaredRadius = _scaledRadius * _scaledRadius;
@@ -164,10 +162,10 @@ public class DetectableObject : MonoBehaviour
 		
 		if (_drawGizmos)
 		{
-			if (_transform == null)
+			if (Transform == null)
 			{
 				// Since this value gets assigned on Awake, we need to assign it when on the editor
-				_transform = GetComponent<Transform>();
+				Transform = GetComponent<Transform>();
 			}
 			Gizmos.color = Color.blue;
 			Gizmos.DrawWireSphere(Position, ScaledRadius);
