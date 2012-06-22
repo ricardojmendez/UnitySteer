@@ -141,10 +141,7 @@ public abstract class Steering : MonoBehaviour {
 	/// <returns>
 	/// A vector with the desired force <see cref="Vector3"/>
 	/// </returns>
-	protected virtual Vector3 CalculateForce()
-	{
-		return Vector3.zero;
-	}
+	protected abstract Vector3 CalculateForce();
 	
 
 	#endregion
