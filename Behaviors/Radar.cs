@@ -62,24 +62,20 @@ public class Radar: MonoBehaviour {
 	float _tickLength = 0.5f;
     
     [SerializeField]
-    int _detectLimit = 30;
+    int _preAllocateSize = 30;
 	
 	
 	
 	Collider[] _detectedColliders;
-    DetectableObject[] _detectedObjects;
-    Vehicle[] _vehicles;
-    DetectableObject[] _obstacles;
-	IList<DetectableObject> _ignoredObjects = new List<DetectableObject>();
+    List<DetectableObject> _detectedObjects;
+    List<Vehicle> _vehicles;
+    List<DetectableObject> _obstacles;
+	IList<DetectableObject> _ignoredObjects = new List<DetectableObject>(10);
 	
 	
 	Vehicle _vehicle;
 	#endregion
 	
-    
-    public int VehicleCount { get; private set; }
-    public int ObstacleCount { get; private set; }
-    public int DetectedCount { get; private set; }
     
 	
 	#region Public properties
@@ -133,7 +129,7 @@ public class Radar: MonoBehaviour {
 	/// List of obstacles detected by the radar
 	/// </summary>
 	public IEnumerable<DetectableObject> Obstacles {
-		get { return _obstacles.Where(x => x != null); }
+		get { return _obstacles; }
 
 	}
 	
@@ -164,7 +160,7 @@ public class Radar: MonoBehaviour {
 	/// </summary>
 	public IEnumerable<Vehicle> Vehicles 
 	{
-		get { return _vehicles.Where(x => x != null); }
+		get { return _vehicles; }
 	}
 
 	/// <summary>
@@ -186,11 +182,9 @@ public class Radar: MonoBehaviour {
 		_vehicle = GetComponent<Vehicle>();	
 		_transform = transform;
 		Ignore(_vehicle); // All radars ignore their own vehicle
-        _vehicles = new Vehicle[_detectLimit];
-        _obstacles = new DetectableObject[_detectLimit];
-        _detectedObjects = new DetectableObject[_detectLimit];
-        VehicleCount = 0;
-        ObstacleCount = 0;
+        _vehicles = new List<Vehicle>(_preAllocateSize);
+        _obstacles = new List<DetectableObject>(_preAllocateSize);
+        _detectedObjects = new List<DetectableObject>(_preAllocateSize);
 	}
 	
 	
@@ -271,38 +265,32 @@ public class Radar: MonoBehaviour {
          * 
 		 */
 		Profiler.BeginSample("Base FilterDetected");
-        
-        VehicleCount = 0;
-        ObstacleCount = 0;
-        DetectedCount = 0;
 
-        for (int i = 0; i < _detectLimit; i++) {
-            _vehicles[i] = null;
-            _obstacles[i] = null;
-            _detectedObjects[i] = null;
-        }
+        _vehicles.Clear();
+        _obstacles.Clear();
+        _detectedObjects.Clear();
         
         foreach(var x in _detectedColliders) {
             if (!_cachedDetectableObjects.ContainsKey(x)) {
                 _cachedDetectableObjects[x] = x.transform.GetComponent<DetectableObject>();
             }
             var detectable = _cachedDetectableObjects[x];
-            if (detectable != null && !_ignoredObjects.Contains(detectable) && DetectedCount < _detectLimit) {
-                _detectedObjects[DetectedCount++] = detectable;
+            if (detectable != null && !_ignoredObjects.Contains(detectable)) {
+                _detectedObjects.Add(detectable);
             }
         }
         
-        for (int i = 0; i < DetectedCount && VehicleCount < _detectLimit; i++) {
+        for (int i = 0; i < _detectedObjects.Count; i++) {
             var v = _detectedObjects[i] as Vehicle;
             if (v != null && (v.enabled || _detectDisabledVehicles)) {
-                _vehicles[VehicleCount++] = v;
+                _vehicles.Add(v);
             }
         }
         
-        for (int i = 0; i < DetectedCount && ObstacleCount < _detectLimit; i++) {
+        for (int i = 0; i < _detectedObjects.Count; i++) {
             var d = _detectedObjects[i] as DetectableObject;
             if (d != null && !(d is Vehicle)) {
-                _obstacles[ObstacleCount++] = d;
+                _obstacles.Add(d);
             }
         }
 		Profiler.EndSample();
