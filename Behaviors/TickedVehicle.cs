@@ -74,9 +74,6 @@ public abstract class TickedVehicle : Vehicle
 		set { _queueName = value; }
 	}	
 	
-
-	public Rigidbody Rigidbody { get; private set; }
-
 	/// <summary>
 	/// Priority queue for this vehicle's updates
 	/// </summary>
@@ -96,7 +93,6 @@ public abstract class TickedVehicle : Vehicle
 	#region Unity events
 	void Start()
 	{
-		Rigidbody = GetComponent<Rigidbody>();
 		CharacterController = GetComponent<CharacterController>();
 		LastTickTime = 0;
 	}

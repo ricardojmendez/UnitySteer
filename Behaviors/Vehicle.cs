@@ -112,13 +112,13 @@ public abstract class Vehicle : DetectableObject
 	public float Mass {
 		get
 		{
-			return (rigidbody != null && !_overrideRigidbodyMass) ? rigidbody.mass : _internalMass;
+			return (Rigidbody != null && !_overrideRigidbodyMass) ? Rigidbody.mass : _internalMass;
 		}
 		set
 		{
-			if(rigidbody != null && !_overrideRigidbodyMass)
+			if(Rigidbody != null && !_overrideRigidbodyMass)
 			{
-				rigidbody.mass = value;
+				Rigidbody.mass = value;
 			}
 			else
 			{
@@ -193,6 +193,8 @@ public abstract class Vehicle : DetectableObject
 		get { return this._radar; }
 	}
 	
+    public Rigidbody Rigidbody { get; private set; }
+    
 	/// <summary>
 	/// Speedometer attached to the same object as this vehicle, if any
 	/// </summary>
@@ -279,6 +281,7 @@ public abstract class Vehicle : DetectableObject
 	protected override void Awake()
 	{
 		base.Awake();
+        Rigidbody = GetComponent<Rigidbody>();        
 		var allSteerings = GetComponents<Steering>();
 		Steerings = allSteerings.Where( x => !x.IsPostProcess ).ToArray();
 		SteeringPostprocessors = allSteerings.Where( x => x.IsPostProcess ).ToArray();
