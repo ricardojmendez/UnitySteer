@@ -93,6 +93,8 @@ public abstract class Vehicle : DetectableObject
 	/// similar to what AutonomousVehicle does
 	/// </summary>
 	public Vector3 DesiredVelocity { get; protected set; }
+    
+    public GameObject GameObject { get; private set; }
 	
 	
 	/// <summary>
@@ -281,6 +283,7 @@ public abstract class Vehicle : DetectableObject
 	protected override void Awake()
 	{
 		base.Awake();
+        GameObject = gameObject;
         Rigidbody = GetComponent<Rigidbody>();        
 		var allSteerings = GetComponents<Steering>();
 		Steerings = allSteerings.Where( x => !x.IsPostProcess ).ToArray();
