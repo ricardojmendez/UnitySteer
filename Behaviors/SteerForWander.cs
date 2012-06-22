@@ -9,15 +9,20 @@ using UnitySteer.Helpers;
 public class SteerForWander : Steering
 {
 	#region Private fields
-	float _wanderSide;
-	float _wanderUp;
+	float _wanderSide = 0;
+	float _wanderUp = 0;
 	
 	[SerializeField]
 	float _maxLatitudeSide = 2;
 	[SerializeField]
 	float _maxLatitudeUp = 2;
+    
+    /// <summary>
+    /// The smooth rate on which the random walk values are blended. Set to 1 for no smoothing.
+    /// </summary>
+    [SerializeField]
+    float _smoothRate = 0.05f;
 	#endregion
-	
 	
 	#region Public properties
 	/// <summary>
@@ -50,12 +55,14 @@ public class SteerForWander : Steering
 	{
 		float speed = Vehicle.MaxSpeed;
 
-		// random walk WanderSide and WanderUp between -1 and +1
-		_wanderSide = OpenSteerUtility.scalarRandomWalk (_wanderSide, speed, -_maxLatitudeSide, _maxLatitudeSide);
-		_wanderUp   = OpenSteerUtility.scalarRandomWalk (_wanderUp,   speed, -_maxLatitudeUp,   _maxLatitudeUp);
-		
-		// return a pure lateral steering vector: (+/-Side) + (+/-Up)
-		Vector3	 result = (transform.right * _wanderSide) + (transform.up * _wanderUp);
+		// random walk WanderSide and WanderUp between -1 and +1        
+        var randomSide = OpenSteerUtility.scalarRandomWalk(_wanderSide, speed, -_maxLatitudeSide, _maxLatitudeSide);
+        var randomUp = OpenSteerUtility.scalarRandomWalk(_wanderUp, speed, -_maxLatitudeUp, _maxLatitudeUp);
+		_wanderSide = OpenSteerUtility.blendIntoAccumulator(_smoothRate, randomSide, _wanderSide);
+        _wanderUp = OpenSteerUtility.blendIntoAccumulator(_smoothRate, randomUp, _wanderUp);
+        
+        
+		Vector3	 result = (Vehicle.Transform.right * _wanderSide) + (Vehicle.Transform.up * _wanderUp) + Vehicle.Transform.forward;
 		return result;
 	}
 	
