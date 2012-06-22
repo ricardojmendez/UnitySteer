@@ -26,7 +26,21 @@ public class Radar: MonoBehaviour {
 	TickedObject _tickedObject;
 	UnityTickedQueue _steeringQueue;
 	
-	
+    [SerializeField]
+    string _queueName = "Radar";
+    
+    /// <summary>
+    /// The maximum number of radar update calls processed on the queue per update
+    /// </summary>
+    /// <remarks>
+    /// Notice that this is a limit shared across queue items of the same name, at
+    /// least until we have some queue settings, so whatever value is set last for 
+    /// the queue will win.  Make sure your settings are consistent for objects of
+    /// the same queue.
+    /// </remarks>
+    [SerializeField]
+    int _maxProcessedPerUpdate = 30;
+ 
 	[SerializeField]
 	float _detectionRadius = 5;
 	
@@ -44,6 +58,9 @@ public class Radar: MonoBehaviour {
 	/// </summary>
 	[SerializeField]
 	float _tickLength = 0.5f;
+    
+    [SerializeField]
+    int _detectLimit = 30;
 	
 	
 	
@@ -168,9 +185,9 @@ public class Radar: MonoBehaviour {
 	{
 		_tickedObject = new TickedObject(OnUpdateRadar);
 		_tickedObject.TickLength = _tickLength;
-		_steeringQueue = UnityTickedQueue.GetInstance("Radar");
+		_steeringQueue = UnityTickedQueue.GetInstance(_queueName);
 		_steeringQueue.Add(_tickedObject);
-		_steeringQueue.MaxProcessedPerUpdate = 50;
+		_steeringQueue.MaxProcessedPerUpdate = _maxProcessedPerUpdate;
 	}
 
 	
