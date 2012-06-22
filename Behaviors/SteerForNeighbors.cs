@@ -117,7 +117,7 @@ public abstract class SteerForNeighbors : Steering
 		foreach (var other in Vehicle.Radar.Vehicles)
 		{
 			if ((1 << other.gameObject.layer & LayersChecked) != 0 &&
-				Vehicle.IsInNeighborhood (other, MinRadius, MaxRadius, AngleCos)) 
+				Vehicle.IsInNeighborhood(other, MinRadius, MaxRadius, AngleCos)) 
 			{
 				#if DEBUG_DRAWNEIGHBORS
 				Debug.DrawLine(Vehicle.Position, other.Position, Color.magenta);
@@ -136,10 +136,7 @@ public abstract class SteerForNeighbors : Steering
 		return steering;
 	}
 	
-	protected virtual Vector3 CalculateNeighborContribution(Vehicle other)
-	{
-		return Vector3.zero;
-	}
+	protected abstract Vector3 CalculateNeighborContribution(Vehicle other);
 	#endregion
 	
 }
