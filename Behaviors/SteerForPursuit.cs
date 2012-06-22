@@ -10,6 +10,17 @@ using UnitySteer.Helpers;
 public class SteerForPursuit : Steering
 {
 	#region Private fields
+    /// <summary>
+    /// A distance at which we are 'close enough' to stop pursuing
+    /// </summary>
+    /// <remarks>
+    /// Notice that this is different from the vehicle's arrival radius,
+    /// since we may want to be able to have an attack distance that is
+    /// different from the radius used when moving to a point.
+    /// </remarks>
+    [SerializeField]
+    float _acceptableDistance = 0;
+    
 	[SerializeField]
 	DetectableObject _quarry;
 	
@@ -58,7 +69,7 @@ public class SteerForPursuit : Steering
 		var force    = Vector3.zero;
 		var offset	 = _quarry.Position - Vehicle.Position;
 		var distance = offset.magnitude;
-        var radius   = Vehicle.ScaledRadius + _quarry.ScaledRadius;
+        var radius   = Vehicle.ScaledRadius + _quarry.ScaledRadius + _acceptableDistance;
 
 		if (distance > radius)
 		{
