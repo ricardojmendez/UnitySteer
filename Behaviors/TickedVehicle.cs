@@ -104,6 +104,7 @@ public abstract class TickedVehicle : Vehicle
 		TickedObject.TickLength = _tickLength;
 		_steeringQueue = UnityTickedQueue.GetInstance(QueueName);
 		_steeringQueue.Add(TickedObject);
+        _steeringQueue.MaxProcessedPerUpdate = 10;
 	}
 	
 	protected virtual void OnDisable()
@@ -137,10 +138,12 @@ public abstract class TickedVehicle : Vehicle
 		var force = Vector3.zero;
 		
 		Profiler.BeginSample("Adding up basic steerings");
-		foreach(var s in Steerings.Where( s => s.enabled ))
-		{
-			force += s.WeighedForce;
-		}
+        for(int i = 0; i < Steerings.Length; i++) {
+            var s = Steerings[i];
+            if (s.enabled) {
+                force += s.WeighedForce;
+            }
+        }
 		Profiler.EndSample();
 		
 		var elapsedTime = Time.time - LastTickTime;
@@ -197,9 +200,11 @@ public abstract class TickedVehicle : Vehicle
 		// overkill. 
 		Vector3 adjustedVelocity = Vector3.zero;
 		Profiler.BeginSample("Adding up post-processing steerings");
-		foreach (var s in SteeringPostprocessors.Where( s => s.enabled ))
-		{
-			adjustedVelocity += s.WeighedForce;
+        for (int i = 0; i < SteeringPostprocessors.Length; i++) {
+            var s = SteeringPostprocessors[i];
+            if (s.enabled) {
+			    adjustedVelocity += s.WeighedForce;
+            }
 		}
 		Profiler.EndSample();
 		if (adjustedVelocity != Vector3.zero)

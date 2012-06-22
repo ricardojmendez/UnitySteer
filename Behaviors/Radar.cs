@@ -144,7 +144,7 @@ public class Radar: MonoBehaviour {
 		}
 	}
 	
-	public SteeringEventHandler<Radar> OnDetected { get; set; }
+	public System.Action<SteeringEvent<Radar>> OnDetected = delegate{};
 
 	/// <summary>
 	/// Gets the vehicle this radar is attached to

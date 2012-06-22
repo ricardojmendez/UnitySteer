@@ -76,12 +76,12 @@ public abstract class Steering : MonoBehaviour {
 	/// <summary>
 	/// Steering event handler for arrival notification
 	/// </summary>
-	public SteeringEventHandler<Vehicle> OnArrival { get; set; }
+	public System.Action<SteeringEvent<Vehicle>> OnArrival = delegate{};
 	
 	/// <summary>
 	/// Steering event handler for arrival notification
 	/// </summary>
-	public SteeringEventHandler<Vehicle> OnStartMoving { get; set; }
+	public System.Action<SteeringEvent<Vehicle>> OnStartMoving { get; set; }
 	
 	/// <summary>
 	/// Have we reported that we stopped moving?
