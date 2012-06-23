@@ -214,6 +214,7 @@ public class Radar: MonoBehaviour {
 	
 	public void OnUpdateRadar(object obj)
 	{
+        Profiler.BeginSample("OnUpdateRadar");
 		_detectedColliders = Detect();
 		FilterDetected();
 		if (OnDetected != null)
@@ -242,6 +243,7 @@ public class Radar: MonoBehaviour {
 			Debug.Log(sb.ToString());
 		}
 #endif
+        Profiler.EndSample();
 	}
 		
 	
