@@ -18,11 +18,29 @@ public abstract class TickedVehicle : Vehicle
 	[SerializeField]
 	float _accelerationSmoothRate = 0.4f;
 	
+    /// <summary>
+    /// The name of the steering queue for this ticked vehicle.
+    /// </summary>
 	[SerializeField]
 	string _queueName = "Steering";
 	
+    /// <summary>
+    /// How often will this Vehicle's steering calculations be ticked.
+    /// </summary>
 	[SerializeField]
 	float _tickLength = 0.1f;	
+    
+    /// <summary>
+    /// The maximum number of radar update calls processed on the queue per update
+    /// </summary>
+    /// <remarks>
+    /// Notice that this is a limit shared across queue items of the same name, at
+    /// least until we have some queue settings, so whatever value is set last for 
+    /// the queue will win.  Make sure your settings are consistent for objects of
+    /// the same queue.
+    /// </remarks>
+    [SerializeField]
+    int _maxQueueProcessedPerUpdate = 20;
 
 	[SerializeField]
 	bool _traceAdjustments = false;	
@@ -104,7 +122,7 @@ public abstract class TickedVehicle : Vehicle
 		TickedObject.TickLength = _tickLength;
 		_steeringQueue = UnityTickedQueue.GetInstance(QueueName);
 		_steeringQueue.Add(TickedObject);
-        _steeringQueue.MaxProcessedPerUpdate = 10;
+        _steeringQueue.MaxProcessedPerUpdate = _maxQueueProcessedPerUpdate;
 	}
 	
 	protected virtual void OnDisable()
