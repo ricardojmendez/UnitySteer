@@ -283,15 +283,12 @@ public class Radar: MonoBehaviour {
         }
         
         for (int i = 0; i < _detectedObjects.Count; i++) {
-            var v = _detectedObjects[i] as Vehicle;
+            var d = _detectedObjects[i];
+            var v = d as Vehicle;
             if (v != null && (v.enabled || _detectDisabledVehicles)) {
                 _vehicles.Add(v);
             }
-        }
-        
-        for (int i = 0; i < _detectedObjects.Count; i++) {
-            var d = _detectedObjects[i] as DetectableObject;
-            if (d != null && !(d is Vehicle)) {
+            else {
                 _obstacles.Add(d);
             }
         }
