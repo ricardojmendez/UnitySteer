@@ -78,7 +78,7 @@ public class Biped : TickedVehicle
 	}
 	
 	
-	protected override void RecordCalculatedVelocity(Vector3 velocity)
+	public override void UpdateOrientationVelocity(Vector3 velocity)
 	{
 		Velocity = velocity;
 	}

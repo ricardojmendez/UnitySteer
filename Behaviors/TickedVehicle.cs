@@ -234,7 +234,7 @@ public abstract class TickedVehicle : Vehicle
 		}
 		
 		// Update vehicle velocity
-		RecordCalculatedVelocity(newVelocity);
+		UpdateOrientationVelocity(newVelocity);
 		Profiler.EndSample();
 	}
 
@@ -302,7 +302,7 @@ public abstract class TickedVehicle : Vehicle
 	/// Records the velocity that was ust calculated by CalculateForces in a
 	/// manner that is specific to each subclass. 
 	/// </summary>
-	protected abstract void RecordCalculatedVelocity(Vector3 velocity);
+	public abstract void UpdateOrientationVelocity(Vector3 velocity);
 
 	/// <summary>
 	/// Calculates how much the agent's position should change in a manner that
