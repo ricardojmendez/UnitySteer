@@ -35,6 +35,13 @@ public class Biped : TickedVehicle
 		}
 	}
 	
+	/// <summary>
+	/// Current vehicle speed
+	/// </summary>	
+	/// <remarks>
+	/// If the vehicle has a speedometer, then we return the actual measured
+	/// value instead of simply the length of the velocity vector.
+	/// </remarks>
 	public override float Speed
 	{
 		get
@@ -57,6 +64,7 @@ public class Biped : TickedVehicle
 		{ 
 			_velocity = Vector3.ClampMagnitude(value, MaxSpeed);
 			_speed = _velocity.magnitude;
+			DesiredSpeed = _speed;
 			OrientationVelocity = _speed != 0 ? _velocity / _speed : Vector3.zero;
 		}
 	}
@@ -70,7 +78,7 @@ public class Biped : TickedVehicle
 	}
 	
 	
-	protected override void RecordCalculatedVelocity(Vector3 velocity)
+	public override void UpdateOrientationVelocity(Vector3 velocity)
 	{
 		Velocity = velocity;
 	}

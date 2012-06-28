@@ -76,12 +76,12 @@ public abstract class Steering : MonoBehaviour {
 	/// <summary>
 	/// Steering event handler for arrival notification
 	/// </summary>
-	public SteeringEventHandler<Vehicle> OnArrival { get; set; }
+	public System.Action<SteeringEvent<Vehicle>> OnArrival = delegate{};
 	
 	/// <summary>
 	/// Steering event handler for arrival notification
 	/// </summary>
-	public SteeringEventHandler<Vehicle> OnStartMoving { get; set; }
+	public System.Action<SteeringEvent<Vehicle>> OnStartMoving { get; set; }
 	
 	/// <summary>
 	/// Have we reported that we stopped moving?
@@ -125,10 +125,14 @@ public abstract class Steering : MonoBehaviour {
 	#endregion
 	
 	#region Methods
-	protected void Start()
+	protected virtual void Awake()
 	{
 		_vehicle = this.GetComponent<Vehicle>();
 		ReportedArrival = true; // Default to true to avoid unnecessary notifications
+	}
+	
+	protected virtual void Start()
+	{
 	}
 	
 	/// <summary>
@@ -137,10 +141,7 @@ public abstract class Steering : MonoBehaviour {
 	/// <returns>
 	/// A vector with the desired force <see cref="Vector3"/>
 	/// </returns>
-	protected virtual Vector3 CalculateForce()
-	{
-		return Vector3.zero;
-	}
+	protected abstract Vector3 CalculateForce();
 	
 
 	#endregion

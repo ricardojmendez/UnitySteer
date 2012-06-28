@@ -1,10 +1,9 @@
 UnitySteer changelog
 
-v2.5 (currently beta 1)
+v2.5 (currently beta 3)
 ----
 
 UnitySteer 2.5 significantly changes the way that vehicles and radars behave internally, in order to provide both a more coherent structure and increased performance.  Read the change notes below before upgrading.
-
 
 Warning:
 
@@ -13,7 +12,7 @@ Because of how the class/meta file references work and the way classes were rena
 
 General changes:
 
-- UnitySteer now uses TickedPriorityQueue. Download it here: https://github.com/Garufortho/TickedPriorityQueue/downloads
+- UnitySteer now uses Mike Garforth's TickedPriorityQueue.
 - Removed dependency on the C5 class libraries
 - Removed outdated classes which I'd kept under review for ages.
 - Implemented workarounds for Unity's deficiencies on AOT compilation. It should now work on iOS.
@@ -21,13 +20,18 @@ General changes:
 Steering and vehicle changes:
 
 - Vehicles now update their desired velocity via a TickedPriorityQueue.
+- New trivial SteerToFollow, SteerForForward implementations
+- Re-did SteerForSphericalObstacleAvoidance, then decided to mark it as Obsolete.
+- New SteerForSphericalObstacleRepulsion, which gives better results on areas with multiple spherical obstacles close together.
 - New Biped vehicle class. See http://www.arges-systems.com/articles/573/unitysteer-autonomous-vehicle-biped/
 - Vehicles now gradually turn towards their desired velocity, something that wasn't properly handled before
 - Separated the application of the velocity from the vehicle's turning. This is a subtle change, but will likely make it easier to make tank-like vehicles.
+- SteerForPursuit now has an acceptable distance on which the pursuer is considered "caught"
 - New OnStartMoving steering event
 - Added a Speedometer behavior, which is not UnitySteer-exclusive and can be attached to any object, and expanded Vehicle. If a Vehicle detects that its gameObject has a Speedometer, when its speed is requested it will return the value measured by the Speedometer instead of just using the Velocity's magnitude.
 - We can now have post-processing steering behaviors, which are evaluated after the regular behaviors and can return adjustments based on the vehicle's DesiredVelocity.
-- Re-did SteerForSphericalObstacleAvoidance.  
+- SteerForWander no longer returns a merely lateral vector.  
+- Added new PassiveVehicle, which can be attached to non-UnitySteer vehicles (say, a player-controller character) so that other UnitySteer behaviors can track it.
 - Removed legacy property HasInertia.
 - Optimizations.
 
@@ -38,7 +42,9 @@ Radar changes:
 - Removed Radar.ObstacleFactory.  DetectableObjects should know how to create their own obstacles if they're not spherical.
 - Updated other behaviors to work with DetectableObjects.
 - Added methods to Radar to ignore a DetectableObject.
-- RadarPing is now there only for backwards compatibility reasons, and its functionality has been rolled into the base Radar class.
+- RadarPing is now there only for backwards compatibility reasons, and its functionality has been rolled into the base Radar class.  I'll disappear in the future, so I recommend you change your component references for
+Radar ones.
+- Optimizations for both performance and to significantly reduce allocations.
 
 
 

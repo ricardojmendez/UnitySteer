@@ -20,6 +20,7 @@ public class AutonomousVehicle : TickedVehicle
 		set 
 		{ 
 			_speed = Mathf.Clamp(value, 0, MaxSpeed); 
+			DesiredSpeed = _speed;
 		}
 	}
 
@@ -30,7 +31,7 @@ public class AutonomousVehicle : TickedVehicle
 	{
 		get
 		{
-			return _transform.forward * _speed;
+			return Transform.forward * _speed;
 		}
 		set
 		{
@@ -39,10 +40,10 @@ public class AutonomousVehicle : TickedVehicle
 	}	
 	
 	#region Speed-related methods
-	protected override void RecordCalculatedVelocity(Vector3 velocity)
+	public override void UpdateOrientationVelocity(Vector3 velocity)
 	{
 		Speed = velocity.magnitude;
-		OrientationVelocity = _speed != 0 ? velocity / _speed : transform.forward;		
+		OrientationVelocity = _speed != 0 ? velocity / _speed : Transform.forward;		
 	}
 
 	protected override Vector3 CalculatePositionDelta(float deltaTime)

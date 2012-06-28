@@ -114,10 +114,11 @@ public abstract class SteerForNeighbors : Steering
 		int neighbors = 0;
 		
 		
-		foreach (var other in Vehicle.Radar.Vehicles)
-		{
-			if ((1 << other.gameObject.layer & LayersChecked) != 0 &&
-				Vehicle.IsInNeighborhood (other, MinRadius, MaxRadius, AngleCos)) 
+        for (int i = 0; i < Vehicle.Radar.Vehicles.Count; i++) {
+            var other  = Vehicle.Radar.Vehicles[i];
+			if (!other.GameObject.Equals(null) &&
+                (1 << other.GameObject.layer & LayersChecked) != 0 &&
+				Vehicle.IsInNeighborhood(other, MinRadius, MaxRadius, AngleCos)) 
 			{
 				#if DEBUG_DRAWNEIGHBORS
 				Debug.DrawLine(Vehicle.Position, other.Position, Color.magenta);
@@ -125,7 +126,7 @@ public abstract class SteerForNeighbors : Steering
 				steering += CalculateNeighborContribution(other);				
 				neighbors++;
 			}
-		}
+		};
 
 		// divide by neighbors, then normalize to pure direction
 		if (neighbors > 0) {
@@ -136,10 +137,7 @@ public abstract class SteerForNeighbors : Steering
 		return steering;
 	}
 	
-	protected virtual Vector3 CalculateNeighborContribution(Vehicle other)
-	{
-		return Vector3.zero;
-	}
+	protected abstract Vector3 CalculateNeighborContribution(Vehicle other);
 	#endregion
 	
 }

@@ -1,14 +1,30 @@
-//#define ANNOTATE_AVOIDOBSTACLES
+// #define ANNOTATE_AVOIDOBSTACLES
 using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
 using System.Linq;
 
 /// <summary>
-/// Steers a vehicle to avoid stationary obstacles
+/// Steers a vehicle to be repulsed by stationary obstacles
 /// </summary>
-[System.Obsolete("I recommend looking into SteerForSphericalObstacleRepulsion instead", false)]
-public class SteerForSphericalObstacleAvoidance : Steering
+/// <remarks>
+/// For every obstacle detected, this will:
+/// 1) Add up a repulsion vector that is the distance between the vehicle 
+/// and the obstacle, divided by the squared magnitude of the distance 
+/// between the obstacle and the vehicle's future intended position. This is
+/// done because the further an obstacle is from our desired position, the
+/// least we care about it (which could have side effects when dealing with
+/// very large obstacles which we don't happen to intersect, need to review).
+/// 2) If we would intersect this obstacle on our current path, then we 
+/// multiply this repulsion vector by a factor of the number of detected
+/// (since the others might just be to the side and we want to give it
+/// higher weight).
+/// 3) Divide the total by the number of obstacles.
+/// The final correction vector is the old desired velocity reflected 
+/// along the calculated avoidance vector.
+/// </remarks>
+[AddComponentMenu("UnitySteer/Steer/... for SphericalObstacleRepulsion")]
+public class SteerForSphericalObstacleRepulsion : Steering
 {
 	#region Structs
 	public struct PathIntersection
@@ -47,10 +63,7 @@ public class SteerForSphericalObstacleAvoidance : Steering
 	
 	#region Private fields
 	[SerializeField]
-	float _avoidanceForceFactor = 0.75f;
-
-	[SerializeField]
-	float _minTimeToCollision = 2;
+	float _estimationTime = 2;
 	#endregion
 
 
@@ -62,29 +75,14 @@ public class SteerForSphericalObstacleAvoidance : Steering
 	
 	#region Public properties
 	/// <summary>
-	/// Multiplier for the force applied on avoidance
+	/// How far in the future to estimate the vehicle position
 	/// </summary>
-	/// <remarks>If his value is set to 1, the behavior will return an
-	/// avoidance force that uses the full brunt of the vehicle's maximum
-	/// force.</remarks>
-	public float AvoidanceForceFactor {
+	public float EstimationTime {
 		get {
-			return this._avoidanceForceFactor;
+			return this._estimationTime;
 		}
 		set {
-			_avoidanceForceFactor = value;
-		}
-	}
-
-	/// <summary>
-	/// Minimum time to collision to consider
-	/// </summary>
-	public float MinTimeToCollision {
-		get {
-			return this._minTimeToCollision;
-		}
-		set {
-			_minTimeToCollision = value;
+			_estimationTime = value;
 		}
 	}
 	#endregion
@@ -97,9 +95,8 @@ public class SteerForSphericalObstacleAvoidance : Steering
 	/// </returns>
 	/// <remarks>
 	/// This method will iterate through all detected spherical obstacles that 
-	/// are within MinTimeToCollision, and steer to avoid the closest one to the 
-	/// vehicle.  It's not ideal, as that means the vehicle might crash into
-	/// another obstacle while avoiding the closest one, but it'll do.
+	/// are within MinTimeToCollision, and calculate a repulsion vector based
+	/// on them.
 	/// </remarks>
 	protected override Vector3 CalculateForce()
 	{
@@ -109,13 +106,12 @@ public class SteerForSphericalObstacleAvoidance : Steering
 			return avoidance;
 		}
 
-		PathIntersection nearest = new PathIntersection(null);
 		/*
 		 * While we could just calculate movement as (Velocity * predictionTime) 
 		 * and save ourselves the substraction, this allows other vehicles to
 		 * override PredictFuturePosition for their own ends.
 		 */
-		Vector3 futurePosition = Vehicle.PredictFutureDesiredPosition(_minTimeToCollision);
+		Vector3 futurePosition = Vehicle.PredictFutureDesiredPosition(_estimationTime);
 		Vector3 movement = futurePosition - Vehicle.Position;
 		
 		#if ANNOTATE_AVOIDOBSTACLES
@@ -124,52 +120,37 @@ public class SteerForSphericalObstacleAvoidance : Steering
 		
 		// test all obstacles for intersection with my forward axis,
 		// select the one whose point of intersection is nearest
-		Profiler.BeginSample("Find nearest intersection");
-		foreach (var o in Vehicle.Radar.Obstacles)
+		Profiler.BeginSample("Accumulate spherical obstacle influences");
+		for (int i = 0; i < Vehicle.Radar.Obstacles.Count; i++)
 		{
-			var sphere = o as DetectableObject;
+			var sphere = Vehicle.Radar.Obstacles[i];
 			PathIntersection next = FindNextIntersectionWithSphere(Vehicle.Position, futurePosition, sphere);
-			if (!nearest.Intersect ||
-				(next.Intersect &&
-				 next.Distance < nearest.Distance))
-			{
-				nearest = next;
+			float avoidanceMultiplier = 1;
+			if (next.Intersect) {
+				#if ANNOTATE_AVOIDOBSTACLES
+				Debug.DrawRay(Vehicle.Position, Vehicle.DesiredVelocity.normalized * next.Distance, Color.yellow);
+				#endif
+				avoidanceMultiplier = Vehicle.Radar.Obstacles.Count;
 			}
+
+			var distanceCurrent = Vehicle.Position - sphere.Position;
+			var distanceFuture = futurePosition - sphere.Position;
+			avoidance += avoidanceMultiplier * distanceCurrent / distanceFuture.sqrMagnitude;
 		}
 		Profiler.EndSample();
 
+		avoidance /= Vehicle.Radar.Obstacles.Count;
 
-		// when a nearest intersection was found
-		Profiler.BeginSample("Calculate avoidance");
-		if (nearest.Intersect &&
-			nearest.Distance < movement.magnitude)
-		{
-			#if ANNOTATE_AVOIDOBSTACLES
-			Debug.DrawLine(Vehicle.Position, nearest.Obstacle.Position, Color.red);
-			#endif
 
-			// compute avoidance steering force: take offset from obstacle to me,
-			// take the component of that which is lateral (perpendicular to my
-			// movement direction),  add a bit of forward component
-			Vector3 offset = Vehicle.Position - nearest.Obstacle.Position;
-			Vector3 moveDirection = movement.normalized;
-			avoidance =	 OpenSteerUtility.perpendicularComponent(offset, moveDirection);
+		var newDesired = Vector3.Reflect(Vehicle.DesiredVelocity, avoidance);
 
-			avoidance.Normalize();
+		#if ANNOTATE_AVOIDOBSTACLES
+		Debug.DrawLine(Vehicle.Position, Vehicle.Position + avoidance, Color.green);
+		Debug.DrawLine(Vehicle.Position, futurePosition, Color.blue);
+		Debug.DrawLine(Vehicle.Position, Vehicle.Position + newDesired, Color.white);
+		#endif
 
-			#if ANNOTATE_AVOIDOBSTACLES
-			Debug.DrawLine(Vehicle.Position, Vehicle.Position + avoidance, Color.white);
-			#endif
-
-			avoidance += moveDirection * Vehicle.MaxForce * _avoidanceForceFactor;
-
-			#if ANNOTATE_AVOIDOBSTACLES
-			Debug.DrawLine(Vehicle.Position, Vehicle.Position + avoidance, Color.yellow);
-			#endif
-		}
-		Profiler.EndSample();
-
-		return avoidance;
+		return newDesired;
 	}
 	
 	/// <summary>

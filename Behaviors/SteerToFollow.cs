@@ -1,19 +1,15 @@
 using UnityEngine;
 using UnitySteer.Helpers;
 
-[AddComponentMenu("UnitySteer/Steer/... for Point")]
-public class SteerForPoint : Steering
+[AddComponentMenu("UnitySteer/Steer/... to Follow")]
+public class SteerToFollow : Steering
 {
 	
 	/// <summary>
-	/// Target point
+	/// Target transform
 	/// </summary>
-	/// <remarks>
-	/// Declared as a separate value so that we can inspect it on Unity in 
-	/// debug mode.
-	/// </remarks>
 	[SerializeField]
-	Vector3 _targetPoint = Vector3.zero;
+	Transform _target;
 
 	/// <summary>
 	/// Should the vehicle's velocity be considered in the seek calculations?
@@ -22,18 +18,18 @@ public class SteerForPoint : Steering
 	/// If true, the vehicle will slow down as it approaches its target
 	/// </remarks>
 	[SerializeField]
-	bool _considerVelocity = false;
+	bool _considerVelocity = true;
 	
 	
 	/// <summary>
-	/// The target point.
+	/// The target.
 	/// </summary>
- 	public Vector3 TargetPoint
+ 	public Transform Target
 	{
-		get { return _targetPoint; }
+		get { return _target; }
 		set
 		{
-			_targetPoint = value;
+			_target = value;
 			ReportedArrival = false;
 		}
 	}
@@ -57,9 +53,9 @@ public class SteerForPoint : Steering
 	{
 		base.Start();
 		
-		if (TargetPoint == Vector3.zero)
+		if (Target == null)
 		{
-			TargetPoint = transform.position;
+			Target = transform;
 		}
 	}
 	
@@ -71,6 +67,8 @@ public class SteerForPoint : Steering
 	/// </returns>
 	protected override Vector3 CalculateForce()
 	{
-		return Vehicle.GetSeekVector(TargetPoint, _considerVelocity);
+		return Vehicle.GetSeekVector(Target.position, _considerVelocity);
 	}
 }
+
+

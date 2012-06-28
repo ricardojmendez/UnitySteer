@@ -18,11 +18,29 @@ public abstract class TickedVehicle : Vehicle
 	[SerializeField]
 	float _accelerationSmoothRate = 0.4f;
 	
+    /// <summary>
+    /// The name of the steering queue for this ticked vehicle.
+    /// </summary>
 	[SerializeField]
 	string _queueName = "Steering";
 	
+    /// <summary>
+    /// How often will this Vehicle's steering calculations be ticked.
+    /// </summary>
 	[SerializeField]
 	float _tickLength = 0.1f;	
+    
+    /// <summary>
+    /// The maximum number of radar update calls processed on the queue per update
+    /// </summary>
+    /// <remarks>
+    /// Notice that this is a limit shared across queue items of the same name, at
+    /// least until we have some queue settings, so whatever value is set last for 
+    /// the queue will win.  Make sure your settings are consistent for objects of
+    /// the same queue.
+    /// </remarks>
+    [SerializeField]
+    int _maxQueueProcessedPerUpdate = 20;
 
 	[SerializeField]
 	bool _traceAdjustments = false;	
@@ -51,7 +69,7 @@ public abstract class TickedVehicle : Vehicle
 			base.CanMove = value;
 			if (!CanMove)
 			{
-				Velocity = Vector3.zero;
+                ZeroVelocity();
 			}
 		}
 	}
@@ -74,9 +92,6 @@ public abstract class TickedVehicle : Vehicle
 		set { _queueName = value; }
 	}	
 	
-
-	public Rigidbody Rigidbody { get; private set; }
-
 	/// <summary>
 	/// Priority queue for this vehicle's updates
 	/// </summary>
@@ -96,7 +111,6 @@ public abstract class TickedVehicle : Vehicle
 	#region Unity events
 	void Start()
 	{
-		Rigidbody = GetComponent<Rigidbody>();
 		CharacterController = GetComponent<CharacterController>();
 		LastTickTime = 0;
 	}
@@ -108,6 +122,7 @@ public abstract class TickedVehicle : Vehicle
 		TickedObject.TickLength = _tickLength;
 		_steeringQueue = UnityTickedQueue.GetInstance(QueueName);
 		_steeringQueue.Add(TickedObject);
+        _steeringQueue.MaxProcessedPerUpdate = _maxQueueProcessedPerUpdate;
 	}
 	
 	protected virtual void OnDisable()
@@ -141,10 +156,12 @@ public abstract class TickedVehicle : Vehicle
 		var force = Vector3.zero;
 		
 		Profiler.BeginSample("Adding up basic steerings");
-		foreach(var s in Steerings.Where( s => s.enabled ))
-		{
-			force += s.WeighedForce;
-		}
+        for(int i = 0; i < Steerings.Length; i++) {
+            var s = Steerings[i];
+            if (s.enabled) {
+                force += s.WeighedForce;
+            }
+        }
 		Profiler.EndSample();
 		
 		var elapsedTime = Time.time - LastTickTime;
@@ -201,9 +218,11 @@ public abstract class TickedVehicle : Vehicle
 		// overkill. 
 		Vector3 adjustedVelocity = Vector3.zero;
 		Profiler.BeginSample("Adding up post-processing steerings");
-		foreach (var s in SteeringPostprocessors.Where( s => s.enabled ))
-		{
-			adjustedVelocity += s.WeighedForce;
+        for (int i = 0; i < SteeringPostprocessors.Length; i++) {
+            var s = SteeringPostprocessors[i];
+            if (s.enabled) {
+			    adjustedVelocity += s.WeighedForce;
+            }
 		}
 		Profiler.EndSample();
 		if (adjustedVelocity != Vector3.zero)
@@ -215,7 +234,7 @@ public abstract class TickedVehicle : Vehicle
 		}
 		
 		// Update vehicle velocity
-		RecordCalculatedVelocity(newVelocity);
+		UpdateOrientationVelocity(newVelocity);
 		Profiler.EndSample();
 	}
 
@@ -229,19 +248,23 @@ public abstract class TickedVehicle : Vehicle
 	void ApplySteeringForce(float elapsedTime)
 	{
 		// Euler integrate (per frame) velocity into position
+        Profiler.BeginSample("ApplySteeringForce.CalculatePositionDelta");
 		var delta = CalculatePositionDelta(elapsedTime);
+        Profiler.EndSample();
+        Profiler.BeginSample("ApplySteeringForce.Displace");
 		if (CharacterController != null) 
 		{
 			CharacterController.Move(delta);
 		}
 		else if (Rigidbody == null || Rigidbody.isKinematic)
 		{
-			transform.position += delta;
+			Transform.position += delta;
 		}
 		else
 		{
 			Rigidbody.MovePosition (Rigidbody.position + delta);
 		}
+        Profiler.EndSample();
 	}	
 	
 	
@@ -251,12 +274,13 @@ public abstract class TickedVehicle : Vehicle
 	/// </summary>
 	protected virtual void AdjustOrientation(float deltaTime)
 	{
+        Profiler.BeginSample("AdustOrientation");
 		/* 
 		 * Avoid adjusting if we aren't applying any velocity. We also
 		 * disregard very small velocities, to avoid jittery movement on
 		 * rounding errors.
 		 */
- 		if (Speed > MinSpeedForTurning && Velocity != Vector3.zero)
+ 		if (DesiredSpeed > MinSpeedForTurning && Velocity != Vector3.zero)
 		{
 			var newForward = OrientationVelocity;
 			if (IsPlanar)
@@ -267,17 +291,18 @@ public abstract class TickedVehicle : Vehicle
 			
 			if (TurnTime != 0)
 			{
-				newForward = Vector3.Slerp(_transform.forward, newForward, deltaTime / TurnTime);
+				newForward = Vector3.Slerp(Transform.forward, newForward, deltaTime / TurnTime);
 			}
-			_transform.forward = newForward;
+			Transform.forward = newForward;
 		}
+        Profiler.EndSample();
 	}	
 
 	/// <summary>
 	/// Records the velocity that was ust calculated by CalculateForces in a
 	/// manner that is specific to each subclass. 
 	/// </summary>
-	protected abstract void RecordCalculatedVelocity(Vector3 velocity);
+	public abstract void UpdateOrientationVelocity(Vector3 velocity);
 
 	/// <summary>
 	/// Calculates how much the agent's position should change in a manner that
@@ -289,7 +314,7 @@ public abstract class TickedVehicle : Vehicle
 	#endregion
 
 
-	void FixedUpdate()
+	void Update()
 	{
 		// We still update the forces if the vehicle cannot move, as the
 		// calculations on those steering behaviors might be relevant for
@@ -299,8 +324,8 @@ public abstract class TickedVehicle : Vehicle
 		// disable the vehicle.
 		if (CanMove)
 		{
-			ApplySteeringForce(Time.fixedDeltaTime);
-			AdjustOrientation(Time.fixedDeltaTime);
+			ApplySteeringForce(Time.deltaTime);
+			AdjustOrientation(Time.deltaTime);
 		}
 		else 
 		{
@@ -313,7 +338,7 @@ public abstract class TickedVehicle : Vehicle
 	{
 		if (_traceAdjustments)
 		{
-			Debug.DrawLine(transform.position, transform.position + delta, color);
+			Debug.DrawLine(Transform.position, Transform.position + delta, color);
 		}
 	}
 
