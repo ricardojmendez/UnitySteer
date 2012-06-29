@@ -112,7 +112,6 @@ public class SteerForSphericalObstacleRepulsion : Steering
 		 * override PredictFuturePosition for their own ends.
 		 */
 		Vector3 futurePosition = Vehicle.PredictFutureDesiredPosition(_estimationTime);
-		Vector3 movement = futurePosition - Vehicle.Position;
 		
 		#if ANNOTATE_AVOIDOBSTACLES
 		Debug.DrawLine(Vehicle.Position, futurePosition, Color.cyan);
