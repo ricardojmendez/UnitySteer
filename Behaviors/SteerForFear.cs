@@ -70,7 +70,6 @@ public class SteerForFear : Steering
 		Vector3 accumulator = Vector3.zero;
 		int totalCount = 0;
 		var now = Time.time;
-		var position = Vehicle.Position;
 		Vector3 futurePosition = Vehicle.PredictFutureDesiredPosition(_estimationTime);
 
 
