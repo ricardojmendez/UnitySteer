@@ -123,6 +123,7 @@ public class SteerForSphericalObstacleRepulsion : Steering
 		for (int i = 0; i < Vehicle.Radar.Obstacles.Count; i++)
 		{
 			var sphere = Vehicle.Radar.Obstacles[i];
+			if (sphere == null || sphere.Equals(null)) continue; // In case the object was destroyed since we cached it
 			PathIntersection next = FindNextIntersectionWithSphere(Vehicle.Position, futurePosition, sphere);
 			float avoidanceMultiplier = 1;
 			if (next.Intersect) {
