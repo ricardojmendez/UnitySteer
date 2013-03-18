@@ -277,7 +277,10 @@ public class Radar: MonoBehaviour {
                 _cachedDetectableObjects[x] = x.transform.GetComponent<DetectableObject>();
             }
             var detectable = _cachedDetectableObjects[x];
-            if (detectable != null && !_ignoredObjects.Contains(detectable)) {
+            // It's possible that d != null but that d.Equals(null) if the
+            // game object has been marked as destroyed by Unity between
+            // detection and filtering.
+            if (detectable != null && !detectable.Equals(null) && !_ignoredObjects.Contains(detectable)) {
                 _detectedObjects.Add(detectable);
             }
         }

@@ -1,6 +1,6 @@
 UnitySteer changelog
 
-v2.5 (currently beta 3)
+v2.5 (currently beta 4)
 ----
 
 UnitySteer 2.5 significantly changes the way that vehicles and radars behave internally, in order to provide both a more coherent structure and increased performance.  Read the change notes below before upgrading.
