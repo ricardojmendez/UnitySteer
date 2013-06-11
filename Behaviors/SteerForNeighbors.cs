@@ -128,11 +128,8 @@ public abstract class SteerForNeighbors : Steering
 			}
 		};
 
-		// divide by neighbors, then normalize to pure direction
-		if (neighbors > 0) {
-			steering = (steering / (float)neighbors);
-			steering.Normalize();
-		}
+		// Normalize for pure direction
+		steering.Normalize();
 		
 		return steering;
 	}
