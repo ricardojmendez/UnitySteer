@@ -19,6 +19,12 @@ public class SteerToFollow : Steering
 	/// </remarks>
 	[SerializeField]
 	bool _considerVelocity = true;
+
+	/// <summary>
+	/// How far behind we should follow the target
+	/// </summary>
+	[SerializeField]
+	Vector3 _distance;
 	
 	
 	/// <summary>
@@ -67,7 +73,9 @@ public class SteerToFollow : Steering
 	/// </returns>
 	protected override Vector3 CalculateForce()
 	{
-		return Vehicle.GetSeekVector(Target.position, _considerVelocity);
+		var difference = Target.forward;
+		difference.Scale(_distance);
+		return Vehicle.GetSeekVector(Target.position - difference, _considerVelocity);
 	}
 }
 
