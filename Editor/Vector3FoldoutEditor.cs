@@ -29,6 +29,9 @@ public class Vector3FoldoutEditor {
 			
 			vector = new Vector3(x, y, z);
 		}
+
+		EditorGUILayout.EndVertical();
+
 		return vector;
 	}
 }
