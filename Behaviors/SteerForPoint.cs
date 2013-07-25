@@ -51,7 +51,7 @@ public class SteerForPoint : Steering
 	/// <remarks>
 	/// If true, the vehicle will slow down as it approaches its target
 	/// </remarks>
- 		public bool ConsiderVelocity
+ 	public bool ConsiderVelocity
 	{
 		get { return _considerVelocity; }
 		set { _considerVelocity = value; }
@@ -65,7 +65,7 @@ public class SteerForPoint : Steering
 		
 		if (_defaultToCurrentPosition && TargetPoint == Vector3.zero)
 		{
-			TargetPoint = transform.position;
+			enabled = false;
 		}
 	}
 	
