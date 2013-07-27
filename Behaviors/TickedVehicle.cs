@@ -269,7 +269,7 @@ public abstract class TickedVehicle : Vehicle
 	
 	
 	/// <summary>
-	/// Turns the biped towards his velocity vector. Previously called
+	/// Turns the vehicle towards his velocity vector. Previously called
 	/// LookTowardsVelocity.
 	/// </summary>
 	protected virtual void AdjustOrientation(float deltaTime)
