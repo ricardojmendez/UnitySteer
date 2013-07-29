@@ -124,10 +124,7 @@ namespace UnitySteer
             // set data members, allocate arrays
             int pointCount = path.Count;
             _totalPathLength = 0;
-            if (cyclic) 
-            {
-                pointCount++;
-            }
+
             _points  = new List<Vector3>(pointCount);
             _lengths = new List<float>(pointCount);
             _normals = new List<Vector3>(pointCount);
@@ -135,8 +132,13 @@ namespace UnitySteer
             // loop over all points
             for (int i = 0; i < pointCount; i++)
             {
-				AddPoint(path[i]);
-            }
+				AddPoint(path[i]);         
+			}
+
+			if (cyclic)
+			{
+				AddPoint(path[0]);
+			}
         }
 		
 		public void AddPoint(Vector3 point)
