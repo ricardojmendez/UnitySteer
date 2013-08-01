@@ -378,11 +378,8 @@ public abstract class Vehicle : DetectableObject
 	/// <remarks>Originally SteerLibrary.inBoidNeighborhood</remarks>
 	public bool IsInNeighborhood (Vehicle other, float minDistance, float maxDistance, float cosMaxAngle)
 	{
-		if (other == this)
-		{
-			return false;
-		}
-		else
+		bool result = false;
+		if (other != this)
 		{
 			Vector3 offset = other.Position - Position;
 			float distanceSquared = offset.sqrMagnitude;
@@ -390,24 +387,25 @@ public abstract class Vehicle : DetectableObject
 			// definitely in neighborhood if inside minDistance sphere
 			if (distanceSquared < (minDistance * minDistance))
 			{
-				return true;
+				result = true;
 			}
 			else
 			{
 				// definitely not in neighborhood if outside maxDistance sphere
 				if (distanceSquared > (maxDistance * maxDistance))
 				{
-					return false;
+					result = false;
 				}
 				else
 				{
 					// otherwise, test angular offset from forward axis
 					Vector3 unitOffset = offset / (float) Mathf.Sqrt (distanceSquared);
 					float forwardness = Vector3.Dot(Transform.forward, unitOffset);
-					return forwardness > cosMaxAngle;
+					result = forwardness > cosMaxAngle;
 				}
 			}
 		}
+		return result;
 	}
 		
 	
