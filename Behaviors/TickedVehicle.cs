@@ -51,15 +51,14 @@ public abstract class TickedVehicle : Vehicle
 	/// </summary>
 	/// <value>
 	/// The acceleration smooth rate. The higher it is, the more abrupt 
-	/// the acceleration is likely to be.
+	/// the acceleration is likely to be.  A value of close to 0 causes 
+	/// the acceleration to change _very_ slowly. A value of either 0 
+	/// or 1 means that any acceleration changes will be directly applied.
 	/// </value>
-	public float AccelerationSmoothRate {
-		get {
-			return this._accelerationSmoothRate;
-		}
-		set {
-			_accelerationSmoothRate = value;
-		}
+	public float AccelerationSmoothRate 
+	{
+		get { return this._accelerationSmoothRate; 	}
+		set { _accelerationSmoothRate = value; 	}
 	}
 
 	public	override bool CanMove
@@ -188,7 +187,7 @@ public abstract class TickedVehicle : Vehicle
 			Damp out abrupt changes and oscillations in steering acceleration
 			(rate is proportional to time step, then clipped into useful range)
 			
-			The lower the smoothRate parameter, the more noise there is
+			The higher the smoothRate parameter, the more noise there is
 			likely to be in the movement.
 		*/
 		
@@ -269,7 +268,7 @@ public abstract class TickedVehicle : Vehicle
 	
 	
 	/// <summary>
-	/// Turns the biped towards his velocity vector. Previously called
+	/// Turns the vehicle towards his velocity vector. Previously called
 	/// LookTowardsVelocity.
 	/// </summary>
 	protected virtual void AdjustOrientation(float deltaTime)

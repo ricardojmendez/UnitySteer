@@ -13,7 +13,7 @@ public class UnityTickedQueue : MonoBehaviour
 	#region Instances
 	private static Dictionary<string, UnityTickedQueue> _instances;
 	private static UnityTickedQueue _instance;
-	
+
 	/// <summary>
 	/// Retrieves a default static instance for ease of use.
 	/// The name of the created GameObject will be Ticked Queue.
@@ -73,6 +73,17 @@ public class UnityTickedQueue : MonoBehaviour
 	#endregion
 	
 	private TickedQueue _queue = new TickedQueue();
+
+	public bool IsPaused {
+		get {
+			return _queue.IsPaused;
+		}
+		set {
+			_queue.IsPaused = value;
+
+			enabled = !value;
+		}
+	}
 		
 	public TickedQueue Queue {
 		get {

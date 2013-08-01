@@ -77,12 +77,12 @@ namespace UnitySteer
 
         public static Vector3 blendIntoAccumulator(float smoothRate, Vector3 newValue, Vector3 smoothedAccumulator)
         {
-            return Vector3.Lerp(smoothedAccumulator, newValue, Mathf.Clamp(smoothRate, 0, 1));
+            return Vector3.Lerp(smoothedAccumulator, newValue, smoothRate);
         }
 
         public static float blendIntoAccumulator(float smoothRate, float newValue, float smoothedAccumulator)
         {
-            return Mathf.Lerp(smoothedAccumulator, newValue, Mathf.Clamp(smoothRate, 0, 1));
+            return Mathf.Lerp(smoothedAccumulator, newValue, smoothRate);
         }
 
         public static Vector3 sphericalWrapAround (Vector3 source, Vector3 center, float radius)

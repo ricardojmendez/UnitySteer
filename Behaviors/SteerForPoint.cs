@@ -23,6 +23,12 @@ public class SteerForPoint : Steering
 	/// </remarks>
 	[SerializeField]
 	bool _considerVelocity = false;
+
+	/// <summary>
+	/// Should the target default to the vehicle current position if it's set to Vector3.zero?
+	/// </summary>
+	[SerializeField]
+	bool _defaultToCurrentPosition = true;
 	
 	
 	/// <summary>
@@ -45,7 +51,7 @@ public class SteerForPoint : Steering
 	/// <remarks>
 	/// If true, the vehicle will slow down as it approaches its target
 	/// </remarks>
- 		public bool ConsiderVelocity
+ 	public bool ConsiderVelocity
 	{
 		get { return _considerVelocity; }
 		set { _considerVelocity = value; }
@@ -57,9 +63,9 @@ public class SteerForPoint : Steering
 	{
 		base.Start();
 		
-		if (TargetPoint == Vector3.zero)
+		if (_defaultToCurrentPosition && TargetPoint == Vector3.zero)
 		{
-			TargetPoint = transform.position;
+			enabled = false;
 		}
 	}
 	

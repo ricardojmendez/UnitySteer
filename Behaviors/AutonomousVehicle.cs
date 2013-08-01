@@ -43,7 +43,7 @@ public class AutonomousVehicle : TickedVehicle
 	public override void UpdateOrientationVelocity(Vector3 velocity)
 	{
 		Speed = velocity.magnitude;
-		OrientationVelocity = _speed != 0 ? velocity / _speed : Transform.forward;		
+		OrientationVelocity = Mathf.Approximately(_speed, 0) ? Transform.forward : velocity / _speed;
 	}
 
 	protected override Vector3 CalculatePositionDelta(float deltaTime)
