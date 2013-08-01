@@ -5,6 +5,7 @@ using UnityEngine;
 /// Steers a vehicle to remain in cohesion with neighbors
 /// </summary>
 [AddComponentMenu("UnitySteer/Steer/... for Cohesion")]
+[RequireComponent(typeof(SteerForNeighborGroup))]
 public class SteerForCohesion : SteerForNeighbors
 {
 	float _comfortDistanceSquared;
@@ -27,7 +28,7 @@ public class SteerForCohesion : SteerForNeighbors
 		_comfortDistanceSquared = _comfortDistance * _comfortDistance;
 	}
 	
-	protected override Vector3 CalculateNeighborContribution(Vehicle other)
+	public override Vector3 CalculateNeighborContribution(Vehicle other)
 	{
 		// accumulate sum of forces leading us towards neighbor's positions
 		var distance = other.Position - Vehicle.Position;

@@ -4,10 +4,11 @@ using UnityEngine;
 /// Steers a vehicle to keep separate from neighbors
 /// </summary>
 [AddComponentMenu("UnitySteer/Steer/... for Separation")]
+[RequireComponent(typeof(SteerForNeighborGroup))]
 public class SteerForSeparation : SteerForNeighbors
 {
 	#region Methods
-	protected override Vector3 CalculateNeighborContribution(Vehicle other)
+	public override Vector3 CalculateNeighborContribution(Vehicle other)
 	{
 		// add in steering contribution
 		// (opposite of the offset direction, divided once by distance

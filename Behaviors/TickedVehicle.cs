@@ -247,7 +247,6 @@ public abstract class TickedVehicle : Vehicle
 		{
 			_smoothedAcceleration = delta;
 		}
-
         Profiler.EndSample();
         Profiler.BeginSample("ApplySteeringForce.Displace");
 		if (CharacterController != null) 
