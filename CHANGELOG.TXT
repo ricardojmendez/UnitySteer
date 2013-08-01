@@ -1,5 +1,17 @@
 UnitySteer changelog
 
+v2.6
+----
+
+This release contains a major change altering the way that acceleration is smoothed. 
+MAKE SURE YOU REVIEW THE NOTES BELOW BEFORE IMPORTING INTO YOUR PROJECT.
+
+While the vehicles still applied acceleration smoothing, they applied it to the result of the force calculation. However, force calculations don't necessarily take place every frame, whereas force application does. 
+
+From this release on, UnitySteer will smooth the displacement delta being applied to the object every frame, instead of smoothing the periodic speed calculation.
+
+
+
 v2.5.1
 ------
 

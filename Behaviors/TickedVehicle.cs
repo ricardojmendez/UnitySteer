@@ -11,7 +11,7 @@ using TickedPriorityQueue;
 public abstract class TickedVehicle : Vehicle
 {
 	#region Internal state values
-	Vector3 _smoothedAcceleration;
+	Vector3 _smoothedAcceleration = Vector3.zero;
 	TickedObject _tickedObject;
 	UnityTickedQueue _steeringQueue;
 
@@ -183,27 +183,7 @@ public abstract class TickedVehicle : Vehicle
 			DesiredVelocity = Vector3.zero;
 		}
 
-		/*
-			Damp out abrupt changes and oscillations in steering acceleration
-			(rate is proportional to time step, then clipped into useful range)
-			
-			The higher the smoothRate parameter, the more noise there is
-			likely to be in the movement.
-		*/
-		
-		if (_accelerationSmoothRate > 0)
-		{
-			_smoothedAcceleration = OpenSteerUtility.blendIntoAccumulator(_accelerationSmoothRate,
-										newAcceleration,
-										_smoothedAcceleration);
-		}
-		else
-		{
-			_smoothedAcceleration = newAcceleration;
-		}
-		
-		// Euler integrate (per call time) acceleration into velocity
-		var newVelocity = Velocity + _smoothedAcceleration * elapsedTime;
+		var newVelocity = Velocity + newAcceleration * elapsedTime;
 
 		// Enforce speed limit
 		newVelocity = Vector3.ClampMagnitude(newAcceleration, MaxSpeed);
@@ -249,19 +229,38 @@ public abstract class TickedVehicle : Vehicle
 		// Euler integrate (per frame) velocity into position
         Profiler.BeginSample("ApplySteeringForce.CalculatePositionDelta");
 		var delta = CalculatePositionDelta(elapsedTime);
+
+		/*
+			Damp out abrupt changes and oscillations in steering acceleration
+			(rate is proportional to time step, and clipped to [0,1])
+			
+			The higher the smoothRate parameter, the more noise there is
+			likely to be in the movement.
+		*/
+		if (_accelerationSmoothRate > 0)
+		{
+			_smoothedAcceleration = OpenSteerUtility.blendIntoAccumulator(_accelerationSmoothRate,
+			                                                              delta,
+			                                                              _smoothedAcceleration);
+		}
+		else
+		{
+			_smoothedAcceleration = delta;
+		}
+
         Profiler.EndSample();
         Profiler.BeginSample("ApplySteeringForce.Displace");
 		if (CharacterController != null) 
 		{
-			CharacterController.Move(delta);
+			CharacterController.Move(_smoothedAcceleration);
 		}
 		else if (Rigidbody == null || Rigidbody.isKinematic)
 		{
-			Transform.position += delta;
+			Transform.position += _smoothedAcceleration;
 		}
 		else
 		{
-			Rigidbody.MovePosition (Rigidbody.position + delta);
+			Rigidbody.MovePosition(Rigidbody.position + _smoothedAcceleration);
 		}
         Profiler.EndSample();
 	}	
