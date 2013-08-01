@@ -1,6 +1,22 @@
 UnitySteer changelog
 
-v2.5 (currently beta 4)
+v2.5.1
+------
+
+This will likely be the final minor release on 2.5, and I'm planning some relatively major changes which will end up on the development branch soon.  
+
+MAKE SURE YOU READ THE COMMENTS BEFORE UPGRADING TO THE DEVELOPMENT BRANCH AFTER THIS RELEASE.
+
+- Fixed a bug on Vector3Pathway when configuring cyclical paths
+- Exposed a radar method so that the owner vehicle (or other classes) can force it to update outside of its cycle
+- Updated Priority Queue to allow pausing
+- Improved documentation
+- Other minor improvements and fixes
+
+
+
+
+v2.5 
 ----
 
 UnitySteer 2.5 significantly changes the way that vehicles and radars behave internally, in order to provide both a more coherent structure and increased performance.  Read the change notes below before upgrading.
