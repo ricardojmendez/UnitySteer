@@ -8,7 +8,7 @@ using System.Collections;
 /// </summary>
 public class DegreeEditor {
 	string _label = "";
-	
+
 	public DegreeEditor(string label)
 	{
 		_label = label;
@@ -16,7 +16,7 @@ public class DegreeEditor {
 
 	public float DrawEditor (float  angle) {
 		EditorGUILayout.BeginVertical();
-		var newAngle = EditorGUILayout.FloatField("\t"+_label, angle);
+		var newAngle = EditorGUILayout.FloatField(_label, angle);
 		newAngle = Mathf.Clamp(newAngle, -360, 360);
 		EditorGUILayout.EndVertical();
 		return newAngle;
