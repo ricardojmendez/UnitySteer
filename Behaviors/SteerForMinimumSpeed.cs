@@ -20,6 +20,12 @@ public class SteerForMinimumSpeed : Steering
 		get { return true; }
 	}
 
+	public float MinimumSpeed 
+	{
+		get { return _minimumSpeed; }
+		set { _minimumSpeed = value; }
+	}
+
 
 	/// <summary>
 	/// Calculates the force to apply to the vehicle to reach a point
