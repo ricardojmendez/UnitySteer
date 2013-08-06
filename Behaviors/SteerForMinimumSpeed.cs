@@ -15,6 +15,9 @@ public class SteerForMinimumSpeed : Steering
 	[SerializeField]
 	float _minimumSpeed = 4;
 
+	[SerializeField]
+	bool _moveForwardWhenZero = true;
+
 	public override bool IsPostProcess 
 	{
 		get { return true; }
@@ -36,7 +39,11 @@ public class SteerForMinimumSpeed : Steering
 	protected override Vector3 CalculateForce()
 	{
 		Vector3 result = Vector3.zero;
-		if (Vehicle.DesiredSpeed < _minimumSpeed)
+		if (_moveForwardWhenZero && Mathf.Approximately(Vehicle.DesiredSpeed, 0))
+		{
+			result = Vehicle.Transform.forward * _minimumSpeed;
+		}
+		else if (Vehicle.DesiredSpeed < _minimumSpeed)
 		{
 			result = Vehicle.DesiredVelocity.normalized * _minimumSpeed;
 		}
