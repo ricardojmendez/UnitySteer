@@ -1,4 +1,5 @@
 //#define DEBUG_DRAWNEIGHBORS
+using System.Collections.Generic;
 using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
@@ -46,7 +47,12 @@ public class SteerForNeighborGroup : Steering
 	LayerMask _layersChecked;
 
 	SteerForNeighbors[] _behaviors;
+
+
+	List<Vehicle> _neighbors = new List<Vehicle>(20);
 	#endregion
+
+
 
 
 	#region Public properties
@@ -128,6 +134,38 @@ public class SteerForNeighborGroup : Steering
 			// Ensure UnitySteer does not call them
 			b.enabled = false;
 		}
+		Vehicle.Radar.OnDetected += HandleDetection;
+	}
+
+	void HandleDetection(SteeringEvent<Radar> message)
+	{
+		/*
+		 * Neighbors are cached on radar detection.
+		 * 
+		 * This means that IsInNeighborhood is evaluated when 
+		 * detected, not every time that the behavior is going to 
+		 * calculate its forces.  
+		 * 
+		 * This helps in lowering the processing load, but could 
+		 * lead to a case where a vehicle is beyond the set parameters 
+		 * but still considered a neighbor.
+		 * 
+		 * If this is a concern, make sure that vehicles are detected
+		 * as often as the vehicle updates is forces.
+		 * 
+		 */
+
+		_neighbors.Clear();
+		// I'd prefer an iterator, but trying to cut down on allocations
+		for (int i = 0; i < message.Parameter.Vehicles.Count; i++)
+		{
+			var other = message.Parameter.Vehicles[i];
+			if ((1 << other.GameObject.layer & LayersChecked) != 0 &&
+			    Vehicle.IsInNeighborhood(other, MinRadius, MaxRadius, AngleCos))
+			{
+				_neighbors.Add(other);
+			}
+		}
 	}
 
 	protected override Vector3 CalculateForce ()
@@ -135,11 +173,9 @@ public class SteerForNeighborGroup : Steering
 		// steering accumulator and count of neighbors, both initially zero
 		Vector3 steering = Vector3.zero;
 		Profiler.BeginSample("SteerForNeighborGroup.Looping over neighbors");
-		for (int i = 0; i < Vehicle.Radar.Vehicles.Count; i++) {
-			var other  = Vehicle.Radar.Vehicles[i];
-			if (!other.GameObject.Equals(null) &&
-			    (1 << other.GameObject.layer & LayersChecked) != 0 &&
-			    Vehicle.IsInNeighborhood(other, MinRadius, MaxRadius, AngleCos)) 
+		for (int i = 0; i < _neighbors.Count; i++) {
+			var other  = _neighbors[i];
+			if (!other.GameObject.Equals(null)) // Could be if the object was destroyed
 			{
 				#if DEBUG_DRAWNEIGHBORS
 				Debug.DrawLine(Vehicle.Position, other.Position, Color.magenta);
