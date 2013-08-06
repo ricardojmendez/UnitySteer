@@ -14,8 +14,7 @@ public class SteerForSeparation : SteerForNeighbors
 		// (opposite of the offset direction, divided once by distance
 		// to normalize, divided another time to get 1/d falloff)
 		Vector3 offset = other.Position - Vehicle.Position;
-		float distanceSquared = Vector3.Dot (offset, offset);
-		Vector3 steering = (offset / -distanceSquared);	
+		Vector3 steering = (offset / -offset.sqrMagnitude);	
 		return steering;
 	}
 	#endregion
