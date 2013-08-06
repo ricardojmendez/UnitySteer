@@ -10,6 +10,10 @@ public class SteerForCohesion : SteerForNeighbors
 {
 	float _comfortDistanceSquared;
 
+	/// <summary>
+	/// Any neighbor that is closer than the comfort distance will not be
+	/// considered for cohesion.
+	/// </summary>
 	[SerializeField]
 	float _comfortDistance = 1;
 
