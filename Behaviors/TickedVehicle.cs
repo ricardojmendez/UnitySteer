@@ -161,10 +161,7 @@ public abstract class TickedVehicle : Vehicle
 		LastRawForce = force;
 		
 		// enforce limit on magnitude of steering force
-		Vector3 clippedForce = Vector3.ClampMagnitude(force, MaxForce);
-
-		// compute acceleration and velocity
-		Vector3 newAcceleration = (clippedForce / Mass);
+		Vector3 newAcceleration = Vector3.ClampMagnitude(force / Mass, MaxForce);
 
 		if (newAcceleration.sqrMagnitude == 0)
 		{
@@ -281,7 +278,7 @@ public abstract class TickedVehicle : Vehicle
 			Transform.forward = newForward;
 		}
         Profiler.EndSample();
-	}	
+	}
 
 	/// <summary>
 	/// Records the velocity that was ust calculated by CalculateForces in a
