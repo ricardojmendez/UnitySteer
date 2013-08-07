@@ -77,9 +77,9 @@ public abstract class Vehicle : DetectableObject
 	/// <summary>
 	/// Indicates if the current vehicle can move
 	/// </summary>
-	public virtual bool CanMove 
+	public bool CanMove 
 	{
-		get { return this._canMove; }
+		get { return _canMove; }
 		set { _canMove = value; }
 	}
 	

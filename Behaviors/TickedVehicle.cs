@@ -60,18 +60,7 @@ public abstract class TickedVehicle : Vehicle
 		get { return this._accelerationSmoothRate; 	}
 		set { _accelerationSmoothRate = value; 	}
 	}
-
-	public	override bool CanMove
-	{
-		set 
-		{ 
-			base.CanMove = value;
-			if (!CanMove)
-			{
-                ZeroVelocity();
-			}
-		}
-	}
+	
 
 	public CharacterController CharacterController { get; private set; }
 
@@ -176,7 +165,7 @@ public abstract class TickedVehicle : Vehicle
 
 		// compute acceleration and velocity
 		Vector3 newAcceleration = (clippedForce / Mass);
-		
+
 		if (newAcceleration.sqrMagnitude == 0)
 		{
 			ZeroVelocity();
@@ -269,7 +258,7 @@ public abstract class TickedVehicle : Vehicle
 	/// Turns the vehicle towards his velocity vector. Previously called
 	/// LookTowardsVelocity.
 	/// </summary>
-	protected virtual void AdjustOrientation(float deltaTime)
+	protected void AdjustOrientation(float deltaTime)
 	{
         Profiler.BeginSample("AdustOrientation");
 		/* 
@@ -286,7 +275,7 @@ public abstract class TickedVehicle : Vehicle
 				newForward.Normalize();
 			}
 			
-			if (TurnTime != 0)
+			if (TurnTime > 0)
 			{
 				newForward = Vector3.Slerp(Transform.forward, newForward, deltaTime / TurnTime);
 			}

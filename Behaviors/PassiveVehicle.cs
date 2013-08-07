@@ -28,15 +28,6 @@ public class PassiveVehicle : Vehicle {
     Vector3 _velocity;
     #endregion
  
-    public  override bool CanMove {
-        set { 
-            base.CanMove = value;
-            if (!CanMove) {
-                Velocity = Vector3.zero;
-            }
-        }
-    }
- 
     /// <summary>
     /// Current vehicle speed
     /// </summary>  
@@ -64,6 +55,16 @@ public class PassiveVehicle : Vehicle {
             throw new System.NotSupportedException ("Cannot set the velocity directly on PassiveCehicle");
         }
     }
+
+	void Update()
+	{
+		if (!CanMove) 
+		{
+			Velocity = Vector3.zero;
+		}
+	}
+
+
 }
 
 
