@@ -272,7 +272,6 @@ public abstract class TickedVehicle : Vehicle
 			if (IsPlanar)
 			{
 				newForward.y = 0;
-				newForward.Normalize();
 			}
 			
 			if (TurnTime > 0)
