@@ -43,9 +43,7 @@ public class SteerForNeighborGroup : Steering
 	float _maxRadius = 7.5f;
 	[SerializeField]
 	float _angleCos = 0.7f;	
-	[SerializeField]
-	LayerMask _layersChecked;
-
+	
 	SteerForNeighbors[] _behaviors;
 
 
@@ -86,17 +84,6 @@ public class SteerForNeighborGroup : Steering
 		}
 	}	
 
-	/// <summary>
-	/// Indicates the vehicles on which layers are evaluated on this behavior
-	/// </summary>	
-	public LayerMask LayersChecked {
-		get {
-			return this._layersChecked;
-		}
-		set {
-			_layersChecked = value;
-		}
-	}
 
 	/// <summary>
 	/// Minimum radius in which another vehicle is definitely considered in the neighborhood
@@ -137,7 +124,7 @@ public class SteerForNeighborGroup : Steering
 		Vehicle.Radar.OnDetected += HandleDetection;
 	}
 
-	void HandleDetection(SteeringEvent<Radar> message)
+	void HandleDetection(Radar radar)
 	{
 		/*
 		 * Neighbors are cached on radar detection.
@@ -157,11 +144,10 @@ public class SteerForNeighborGroup : Steering
 
 		_neighbors.Clear();
 		// I'd prefer an iterator, but trying to cut down on allocations
-		for (int i = 0; i < message.Parameter.Vehicles.Count; i++)
+		for (int i = 0; i < radar.Vehicles.Count; i++)
 		{
-			var other = message.Parameter.Vehicles[i];
-			if ((1 << other.GameObject.layer & LayersChecked) != 0 &&
-			    Vehicle.IsInNeighborhood(other, MinRadius, MaxRadius, AngleCos))
+			var other = radar.Vehicles[i];
+			if (Vehicle.IsInNeighborhood(other, MinRadius, MaxRadius, AngleCos))
 			{
 				_neighbors.Add(other);
 			}

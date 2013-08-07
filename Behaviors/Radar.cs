@@ -144,7 +144,7 @@ public class Radar: MonoBehaviour {
 		}
 	}
 	
-	public System.Action<SteeringEvent<Radar>> OnDetected = delegate{};
+	public System.Action<Radar> OnDetected = delegate{};
 
 	/// <summary>
 	/// Gets the vehicle this radar is attached to
@@ -219,7 +219,9 @@ public class Radar: MonoBehaviour {
 		FilterDetected();
 		if (OnDetected != null)
 		{
-			OnDetected(new SteeringEvent<Radar>(null, "detect", this));
+			Profiler.BeginSample("Detection event handler");
+			OnDetected(this);
+			Profiler.EndSample();
 		}
 #if TRACEDETECTED
 		if (DrawGizmos)
