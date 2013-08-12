@@ -52,7 +52,6 @@ public class SteerForNeighborGroup : Steering
 
 
 
-
 	#region Public properties
 	/// <summary>
 	/// Cosine of the maximum angle
@@ -107,7 +106,17 @@ public class SteerForNeighborGroup : Steering
 		set {
 			_maxRadius = value;
 		}
-	}		
+	}	
+
+	/// <summary>
+	/// List of detected neighbors. I could have just returned a IEnumerable to 
+	/// effectively make it read-only, but would rather give the caller the
+	/// chance to avoid allocations.
+	/// </summary>
+	public List<Vehicle> Neighbors
+	{
+		get { return _neighbors; }
+	}
 	#endregion	
 
 
