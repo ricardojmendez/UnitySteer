@@ -65,11 +65,6 @@ public abstract class Vehicle : DetectableObject
 	[SerializeField]
 	bool _canMove = true;
 	
-	/// <summary>
-	/// Cached Radar attached to the same gameobject
-	/// </summary>
-	Radar _radar;
-	
 	#endregion
 
 
@@ -147,8 +142,9 @@ public abstract class Vehicle : DetectableObject
 	/// <summary>
 	/// Radar assigned to this vehicle
 	/// </summary>
-	public Radar Radar {
-		get { return this._radar; }
+	public Radar Radar 
+	{
+		get; private set;
 	}
 	
     public Rigidbody Rigidbody { get; private set; }
@@ -249,7 +245,7 @@ public abstract class Vehicle : DetectableObject
 		{
 			_movementPriority = gameObject.GetInstanceID();
 		}
-		_radar = this.GetComponent<Radar>();
+		Radar = this.GetComponent<Radar>();
 		Speedometer = this.GetComponent<Speedometer>();
 	}
 	#endregion
