@@ -34,6 +34,7 @@ using UnitySteer.Helpers;
 /// behavior.
 /// </remarks>
 [AddComponentMenu("UnitySteer/Steer/... for Neighbor Group")]
+[RequireComponent(typeof(Radar))]
 public class SteerForNeighborGroup : Steering
 {
 	#region Private properties
@@ -121,9 +122,9 @@ public class SteerForNeighborGroup : Steering
 
 
 	#region Methods
-	protected override void Awake()
+	protected override void Start()
 	{
-		base.Awake();
+		base.Start();
 		_behaviors = GetComponents<SteerForNeighbors>();
 		foreach(var b in _behaviors)
 		{
