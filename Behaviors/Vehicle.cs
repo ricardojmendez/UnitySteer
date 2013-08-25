@@ -236,7 +236,7 @@ public abstract class Vehicle : DetectableObject
 	{
 		base.Awake();
         GameObject = gameObject;
-        Rigidbody = GetComponent<Rigidbody>();        
+        Rigidbody = GetComponent<Rigidbody>();  
 		var allSteerings = GetComponents<Steering>();
 		Steerings = allSteerings.Where( x => !x.IsPostProcess ).ToArray();
 		SteeringPostprocessors = allSteerings.Where( x => x.IsPostProcess ).ToArray();
