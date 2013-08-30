@@ -292,20 +292,10 @@ public abstract class TickedVehicle : Vehicle
 
 	void Update()
 	{
-		// We still update the forces if the vehicle cannot move, as the
-		// calculations on those steering behaviors might be relevant for
-		// other methods, but we don't apply it.  
-		//
-		// If you don't want to have the forces calculated at all, simply
-		// disable the vehicle.
 		if (CanMove)
 		{
 			ApplySteeringForce(Time.deltaTime);
 			AdjustOrientation(Time.deltaTime);
-		}
-		else 
-		{
-			ZeroVelocity();
 		}
 	}
 
@@ -316,6 +306,12 @@ public abstract class TickedVehicle : Vehicle
 		{
 			Debug.DrawLine(Transform.position, Transform.position + delta, color);
 		}
+	}
+
+	public void Stop()
+	{
+		CanMove = false;
+		ZeroVelocity();
 	}
 
 
