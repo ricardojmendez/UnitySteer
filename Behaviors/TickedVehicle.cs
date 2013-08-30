@@ -213,7 +213,6 @@ public abstract class TickedVehicle : Vehicle
 	void ApplySteeringForce(float elapsedTime)
 	{
 		// Euler integrate (per frame) velocity into position
-        Profiler.BeginSample("ApplySteeringForce.CalculatePositionDelta");
 		var delta = CalculatePositionDelta(elapsedTime);
 
 		/*
@@ -233,8 +232,6 @@ public abstract class TickedVehicle : Vehicle
 		{
 			_smoothedAcceleration = delta;
 		}
-        Profiler.EndSample();
-        Profiler.BeginSample("ApplySteeringForce.Displace");
 		if (CharacterController != null) 
 		{
 			CharacterController.Move(_smoothedAcceleration);
@@ -247,7 +244,6 @@ public abstract class TickedVehicle : Vehicle
 		{
 			Rigidbody.MovePosition(Rigidbody.position + _smoothedAcceleration);
 		}
-        Profiler.EndSample();
 	}	
 	
 	
@@ -257,7 +253,6 @@ public abstract class TickedVehicle : Vehicle
 	/// </summary>
 	protected void AdjustOrientation(float deltaTime)
 	{
-        Profiler.BeginSample("AdustOrientation");
 		/* 
 		 * Avoid adjusting if we aren't applying any velocity. We also
 		 * disregard very small velocities, to avoid jittery movement on
@@ -277,7 +272,6 @@ public abstract class TickedVehicle : Vehicle
 			}
 			Transform.forward = newForward;
 		}
-        Profiler.EndSample();
 	}
 
 	/// <summary>
