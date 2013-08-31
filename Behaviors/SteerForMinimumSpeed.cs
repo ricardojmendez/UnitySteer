@@ -2,7 +2,7 @@
 using UnitySteer.Helpers;
 
 /// <summary>
-/// Post-processing beahavior that ensures that the vehicle always moves 
+/// Post-processing bahavior that ensures that the vehicle always moves 
 /// at at least a minimum speed
 /// </summary>
 /// <remarks>
