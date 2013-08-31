@@ -38,7 +38,7 @@ public class SteerForMinimumSpeed : Steering
 	/// </returns>
 	protected override Vector3 CalculateForce()
 	{
-		Vector3 result = Vector3.zero;
+		Vector3 result = Vehicle.DesiredVelocity;
 		if (_moveForwardWhenZero && Mathf.Approximately(Vehicle.DesiredSpeed, 0))
 		{
 			result = Vehicle.Transform.forward * _minimumSpeed;
