@@ -17,6 +17,8 @@ public class SteerForPathSimplified : Steering
 	
 	[SerializeField]
 	float _minSpeedToConsider = 0.25f;
+
+	IPathway _path;
 	#endregion
 	
 	
@@ -66,7 +68,15 @@ public class SteerForPathSimplified : Steering
 	/// <summary>
 	/// Path to follow
 	/// </summary>
-	public IPathway Path { get; set; }
+	public IPathway Path 
+	{ 
+		get { return _path; }
+		set 
+		{ 
+			_path = value;
+			DistanceAlongPath = 0;
+		}
+	}
 	#endregion
 
 	/// <summary>
