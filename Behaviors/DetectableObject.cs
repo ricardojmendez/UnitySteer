@@ -124,6 +124,12 @@ public class DetectableObject : MonoBehaviour
 	protected virtual void Awake()
 	{
 		Transform = GetComponent<Transform>();
+		if (Transform.parent != null)
+		{
+			Debug.LogWarning(string.Format("DetectableObject should be on the root. Unparenting {0}", this));
+			Transform.parent = null;
+		}
+
 		RecalculateScaledValues();
 	}
 	

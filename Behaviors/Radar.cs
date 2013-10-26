@@ -22,7 +22,7 @@ using TickedPriorityQueue;
 public class Radar: MonoBehaviour {
 	#region Private properties
     
-    static Dictionary<Collider, DetectableObject> _cachedDetectableObjects = new Dictionary<Collider, DetectableObject>();
+	static IDictionary<int, DetectableObject> _cachedDetectableObjects = new SortedDictionary<int, DetectableObject>();
 	
 	Transform _transform;
 	TickedObject _tickedObject;
@@ -72,8 +72,6 @@ public class Radar: MonoBehaviour {
     List<DetectableObject> _obstacles;
 	IList<DetectableObject> _ignoredObjects = new List<DetectableObject>(10);
 	
-	
-	Vehicle _vehicle;
 	#endregion
 	
     
@@ -144,16 +142,12 @@ public class Radar: MonoBehaviour {
 		}
 	}
 	
-	public System.Action<SteeringEvent<Radar>> OnDetected = delegate{};
+	public System.Action<Radar> OnDetected = delegate{};
 
 	/// <summary>
 	/// Gets the vehicle this radar is attached to
 	/// </summary>
-	public Vehicle Vehicle {
-		get {
-			return _vehicle;
-		}
-	}
+	public Vehicle Vehicle { get; private set; }
 
 	/// <summary>
 	/// List of vehicles detected among the colliders
@@ -179,16 +173,16 @@ public class Radar: MonoBehaviour {
 	#region Methods
 	protected virtual void Awake() 
 	{
-		_vehicle = GetComponent<Vehicle>();	
+		Vehicle = GetComponent<Vehicle>();	
 		_transform = transform;
-		Ignore(_vehicle); // All radars ignore their own vehicle
         _vehicles = new List<Vehicle>(_preAllocateSize);
         _obstacles = new List<DetectableObject>(_preAllocateSize);
-        _detectedObjects = new List<DetectableObject>(_preAllocateSize);
+        _detectedObjects = new List<DetectableObject>(_preAllocateSize * 3);
 	}
 	
 	
-    void OnLevelWasLoaded(int level) {
+    void OnLevelWasLoaded(int level) 
+	{
         _cachedDetectableObjects.Clear();
     }
     
@@ -219,7 +213,9 @@ public class Radar: MonoBehaviour {
 		FilterDetected();
 		if (OnDetected != null)
 		{
-			OnDetected(new SteeringEvent<Radar>(null, "detect", this));
+			Profiler.BeginSample("Detection event handler");
+			OnDetected(this);
+			Profiler.EndSample();
 		}
 #if TRACEDETECTED
 		if (DrawGizmos)
@@ -277,20 +273,32 @@ public class Radar: MonoBehaviour {
         _obstacles.Clear();
         _detectedObjects.Clear();
         
-        foreach(var x in _detectedColliders) {
-            if (!_cachedDetectableObjects.ContainsKey(x)) {
-                _cachedDetectableObjects[x] = x.transform.GetComponent<DetectableObject>();
+
+		Profiler.BeginSample("Initial detection");
+		for (int i = 0; i < _detectedColliders.Length; i++)
+		{
+			var x = _detectedColliders[i].GetInstanceID();
+            if (!_cachedDetectableObjects.ContainsKey(x)) 
+			{
+                _cachedDetectableObjects[x] = _detectedColliders[i].GetComponent<DetectableObject>();
             }
             var detectable = _cachedDetectableObjects[x];
             // It's possible that d != null but that d.Equals(null) if the
             // game object has been marked as destroyed by Unity between
             // detection and filtering.
-            if (detectable != null && !detectable.Equals(null) && !_ignoredObjects.Contains(detectable)) {
+            if (detectable != null && 
+			    detectable != Vehicle &&
+			    !detectable.Equals(null) && 
+			    !_ignoredObjects.Contains(detectable)) 
+			{
                 _detectedObjects.Add(detectable);
             }
         }
+		Profiler.EndSample();
         
-        for (int i = 0; i < _detectedObjects.Count; i++) {
+		Profiler.BeginSample("Filtering out vehicles");
+        for (int i = 0; i < _detectedObjects.Count; i++) 
+		{
             var d = _detectedObjects[i];
             var v = d as Vehicle;
             if (v != null && (v.enabled || _detectDisabledVehicles)) {
@@ -300,6 +308,7 @@ public class Radar: MonoBehaviour {
                 _obstacles.Add(d);
             }
         }
+		Profiler.EndSample();
 		Profiler.EndSample();
 	}
 	

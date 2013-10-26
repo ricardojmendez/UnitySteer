@@ -1,5 +1,27 @@
 UnitySteer changelog
 
+v2.7
+----
+
+Yet another release with major changes.  Make sure you read the notes below before updating!
+
+- MAJOR CHANGE: Reworked classes that descend from SteerForNeighbors, you'll now need a SteerForNeighborGroup.  See the description provided here: https://github.com/ricardojmendez/UnitySteer/issues/18
+- Exposing AcceptableDistance on SteerForPursuit.
+- Exposing minimum speed on SteerForMinimumSpeed
+- SteerForMinimumSpeed optionally moves forward by default
+- SteerForNeighborGroup optimization: Neighbors are cached on detection. This means that IsInNeighborhood is evaluated when detected, not every time that the behavior is going to calculate its forces.
+- SteerForSeparation optimization: v.sqrMagnitude is faster than Dot(v,v)
+- Improvement: SteerForAlignment wasn't using the cached Transform value
+- Unified layers checked on SteerForNeighborGroup and Radar.
+- MAJOR CHANGE: Vehicles will always use their own mass for calculations.  We will no longer consider the Rigidbody mass in calculations, just whatever value is set on the Vehicle. The property name changed from _internalMass to _mass, so you should make sure you note your previous values to avoid data loss.
+- Radar collider caching is now by id, so we can use a sorted dictionary to improve performance.
+- Force is now affected by mass before being clamped to MaxForce
+- New TickedVehicle.Stop method. See the description here: https://github.com/ricardojmendez/UnitySteer/commit/e6eca152f107c4c848e412bad73d853599f6b5f1
+- SteerForPathSimplified now expose properties for the distance along the path, as well as the total path percentage traversed.
+
+I've also removed some redundant and unnecessary methods, as well as the outdated RadarPing, which I deprecated a long while ago.
+
+
 v2.6
 ----
 

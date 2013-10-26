@@ -32,18 +32,13 @@ public abstract class Vehicle : DetectableObject
 	
 	[SerializeField]
 	/// <summary>
-	/// Internally-assigned mass for the vehicle.
+	/// Vehicle's mass
 	/// </summary>
 	/// <remarks>
-	/// This value will be disregarded if the object has a rigidbody, and
-	/// that rigidbody's mass value will be used instead.  You can change
-	/// this behavior by setting OverrideRigibodyMass to TRUE.
-	////remarks>
-	float _internalMass = 1;
+	/// This value will be used when applying forces to the vehicle.
+	/// <remarks>
+	float _mass = 1;
 	
-	[SerializeField]
-	bool _overrideRigidbodyMass = false;
-
 	[SerializeField]
 	bool _isPlanar = false;
 	
@@ -70,11 +65,6 @@ public abstract class Vehicle : DetectableObject
 	[SerializeField]
 	bool _canMove = true;
 	
-	/// <summary>
-	/// Cached Radar attached to the same gameobject
-	/// </summary>
-	Radar _radar;
-	
 	#endregion
 
 
@@ -82,9 +72,9 @@ public abstract class Vehicle : DetectableObject
 	/// <summary>
 	/// Indicates if the current vehicle can move
 	/// </summary>
-	public virtual bool CanMove 
+	public bool CanMove 
 	{
-		get { return this._canMove; }
+		get { return _canMove; }
 		set { _canMove = value; }
 	}
 	
@@ -109,24 +99,9 @@ public abstract class Vehicle : DetectableObject
 	/// <summary>
 	/// Mass for the vehicle
 	/// </summary>
-	/// <remarks>If the vehicle has a rigidbody, its mass will be updated if
-	/// this property is set.</remarks>
 	public float Mass {
-		get
-		{
-			return (Rigidbody != null && !_overrideRigidbodyMass) ? Rigidbody.mass : _internalMass;
-		}
-		set
-		{
-			if(Rigidbody != null && !_overrideRigidbodyMass)
-			{
-				Rigidbody.mass = value;
-			}
-			else
-			{
-				_internalMass = value;
-			}
-		}
+		get { return _mass; }
+		set { _mass = Mathf.Max(0, value); }
 	}
 
 	/// <summary>
@@ -162,37 +137,14 @@ public abstract class Vehicle : DetectableObject
 	{
 		get { return _minSpeedForTurning; }
 	}
-	
-	/// <summary>
-	/// Indicates if the vehicle's InternalMass should override whatever 
-	/// value is configured for the rigidbody, as far as speed calculations
-	/// go.
-	/// </summary>
-	/// <remarks>
-	/// Setting this value to TRUE will allow you to use the vehicle's 
-	/// InternalMass for speed calculations, while configuring the rigidbody's
-	/// independently for how the vehicle interacts with the physics engine.
-	/// 
-	/// Added when I encountered a case where I wanted to make it easier for 
-	/// an agent with a rigidbody to climb a slope, while still maintaining
-	/// the speed calculations.
-	/// 
-	/// The default is FALSE, to avoid breaking existing behavior.
-	/// </remarks>
-	public bool OverrideRigidbodyMass {
-		get {
-			return this._overrideRigidbodyMass;
-		}
-		set {
-			_overrideRigidbodyMass = value;
-		}
-	}
+
 
 	/// <summary>
 	/// Radar assigned to this vehicle
 	/// </summary>
-	public Radar Radar {
-		get { return this._radar; }
+	public Radar Radar 
+	{
+		get; private set;
 	}
 	
     public Rigidbody Rigidbody { get; private set; }
@@ -241,7 +193,7 @@ public abstract class Vehicle : DetectableObject
 	{
 		get 
 		{
-			return this._turnTime;
+			return _turnTime;
 		}
 		set 
 		{
@@ -284,7 +236,7 @@ public abstract class Vehicle : DetectableObject
 	{
 		base.Awake();
         GameObject = gameObject;
-        Rigidbody = GetComponent<Rigidbody>();        
+        Rigidbody = GetComponent<Rigidbody>();  
 		var allSteerings = GetComponents<Steering>();
 		Steerings = allSteerings.Where( x => !x.IsPostProcess ).ToArray();
 		SteeringPostprocessors = allSteerings.Where( x => x.IsPostProcess ).ToArray();
@@ -293,7 +245,7 @@ public abstract class Vehicle : DetectableObject
 		{
 			_movementPriority = gameObject.GetInstanceID();
 		}
-		_radar = this.GetComponent<Radar>();
+		Radar = this.GetComponent<Radar>();
 		Speedometer = this.GetComponent<Speedometer>();
 	}
 	#endregion

@@ -29,6 +29,12 @@ public class SteerForPursuit : Steering
 	#endregion
 	
 	#region Public properties
+	public float AcceptableDistance
+	{
+		get { return _acceptableDistance; }
+		set { _acceptableDistance = value; }
+	}
+
 	/// <summary>
 	/// Maximum time to look ahead for the prediction calculation
 	/// </summary>

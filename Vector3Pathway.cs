@@ -42,18 +42,32 @@ namespace UnitySteer
         private IList<Vector3> _normals;
         private IList<Vector3> _points;
         
-		/// <summary>
-		/// Minimum radius along the path.
-		/// </summary>
-        private float       _radius = 0.5f;
 		
-		
-		public IList<Vector3> Path {
-			get {
-				return _path;
-			}
+		public IList<Vector3> Path 
+		{
+			get { return _path; }
 		}
-		
+
+		public override Vector3 FirstPoint 
+		{
+			get { return _points.FirstOrDefault(); }
+		}
+
+		public override Vector3 LastPoint 
+		{
+			get { return _points.LastOrDefault(); }
+		}
+
+		public override float TotalPathLength 
+		{
+			get { return _totalPathLength; }
+		}
+
+		public override int SegmentCount 
+		{
+			get { return _points.Count; }
+		}
+
         
         public Vector3Pathway () {
 			_points = new List<Vector3>(10);
@@ -80,27 +94,7 @@ namespace UnitySteer
         public Vector3Pathway (IList<Vector3> path, float radius, bool cyclic)
         {
             Initialize(path, radius, cyclic);
-        }
-
-        protected override Vector3 GetFirstPoint()
-        {
-            return _points.FirstOrDefault();
-        }
-        
-        protected override Vector3 GetLastPoint()
-        {
-            return _points.LastOrDefault();
-        }
-        
-        protected override float GetTotalPathLength()
-        {
-            return _totalPathLength;
-        }
-		
-		protected override int GetSegmentCount()
-		{
-			return _points.Count;
-		}
+        }		    
         
 		/// <summary>
 		/// Constructs the Pathway from a list of Vector3
@@ -116,8 +110,8 @@ namespace UnitySteer
 		/// </param>
         public void Initialize (IList<Vector3> path, float radius, bool cyclic)
         {
-            this._path = path;
-            this._radius  = radius;
+            _path = path;
+            Radius  = radius;
 			// TODO: Disregard cyclic, acquire quick test
             this.IsCyclic = false;
             
@@ -187,7 +181,7 @@ namespace UnitySteer
             }
 
             // measure how far original point is outside the Pathway's "tube"
-            pathRelative.outside = (onPath - point).magnitude - _radius;
+            pathRelative.outside = (onPath - point).magnitude - Radius;
 			
 			// return point on path
             return onPath;

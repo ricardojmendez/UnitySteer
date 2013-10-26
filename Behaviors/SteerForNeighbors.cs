@@ -24,117 +24,16 @@ using UnitySteer.Helpers;
 /// </remarks>
 public abstract class SteerForNeighbors : Steering
 {
-	#region Private properties
-	[SerializeField]
-	float _minRadius = 3f;
-	[SerializeField]
-	float _maxRadius = 7.5f;
-	[SerializeField]
-	float _angleCos = 0.7f;	
-	[SerializeField]
-	LayerMask _layersChecked;
-	
-	#endregion
-	
-	
-	#region Public properties
-	/// <summary>
-	/// Cosine of the maximum angle
-	/// </summary>
-	/// <remarks>All boid-like behaviors have an angle that helps limit them.
-	/// We store the cosine of the angle for faster calculations</remarks>
-	public float AngleCos {
-		get {
-			return this._angleCos;
-		}
-		set {
-			_angleCos = Mathf.Clamp(value, -1.0f, 1.0f);
-		}
-	}
-	
-	/// <summary>
-	/// Degree accessor for the angle
-	/// </summary>
-	/// <remarks>The cosine is actually used in calculations for performance reasons</remarks>
-    public float AngleDegrees
-    {
-        get
-        {
-            return OpenSteerUtility.DegreesFromCos(_angleCos);;
-        }
-        set
-        {
-            _angleCos = OpenSteerUtility.CosFromDegrees(value);
-        }
-    }	
-	
-	/// <summary>
-	/// Indicates the vehicles on which layers are evaluated on this behavior
-	/// </summary>	
-	public LayerMask LayersChecked {
-		get {
-			return this._layersChecked;
-		}
-		set {
-			_layersChecked = value;
-		}
-	}
-
-	/// <summary>
-	/// Minimum radius in which another vehicle is definitely considered in the neighborhood
-	/// </summary>
-	public float MinRadius {
-		get {
-			return this._minRadius;
-		}
-		set {
-			_minRadius = value;
-		}
-	}	
-	
-	/// <summary>
-	/// Maximum neighborhood radius
-	/// </summary>
-	public float MaxRadius {
-		get {
-			return this._maxRadius;
-		}
-		set {
-			_maxRadius = value;
-		}
-	}		
-	#endregion	
-	
 	
 	#region Methods
 	protected override Vector3 CalculateForce ()
 	{
-		// steering accumulator and count of neighbors, both initially zero
-		Vector3 steering = Vector3.zero;
-		int neighbors = 0;
-		
-		
-        for (int i = 0; i < Vehicle.Radar.Vehicles.Count; i++) {
-            var other  = Vehicle.Radar.Vehicles[i];
-			if (!other.GameObject.Equals(null) &&
-                (1 << other.GameObject.layer & LayersChecked) != 0 &&
-				Vehicle.IsInNeighborhood(other, MinRadius, MaxRadius, AngleCos)) 
-			{
-				#if DEBUG_DRAWNEIGHBORS
-				Debug.DrawLine(Vehicle.Position, other.Position, Color.magenta);
-				#endif
-				steering += CalculateNeighborContribution(other);				
-				neighbors++;
-			}
-		};
-
-		// Normalize for pure direction
-		steering.Normalize();
-		
-		return steering;
+		// Return an empty value. Everything will be calculated
+		// by SteerForNeighborGroup.
+		return Vector3.zero;
 	}
 	
-	protected abstract Vector3 CalculateNeighborContribution(Vehicle other);
+	public abstract Vector3 CalculateNeighborContribution(Vehicle other);
 	#endregion
 	
 }

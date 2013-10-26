@@ -9,6 +9,7 @@ namespace UnitySteer
 		Vector3 FirstPoint { get; }
 		Vector3 LastPoint { get; }
 		int SegmentCount { get; }
+		float Radius { get; set; }
 
 		// Given an arbitrary point ("A"), returns the nearest point ("P") on
 		// this path.  Also returns, via output arguments, the path tangent at

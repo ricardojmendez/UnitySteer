@@ -22,19 +22,7 @@ public class Biped : TickedVehicle
 	/// </summary>
 	Vector3 _velocity;
 	#endregion
-	
-	public	override bool CanMove
-	{
-		set 
-		{ 
-			base.CanMove = value;
-			if (!CanMove)
-			{
-				Velocity = Vector3.zero;
-			}
-		}
-	}
-	
+
 	/// <summary>
 	/// Current vehicle speed
 	/// </summary>	

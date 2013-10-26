@@ -60,18 +60,7 @@ public abstract class TickedVehicle : Vehicle
 		get { return this._accelerationSmoothRate; 	}
 		set { _accelerationSmoothRate = value; 	}
 	}
-
-	public	override bool CanMove
-	{
-		set 
-		{ 
-			base.CanMove = value;
-			if (!CanMove)
-			{
-                ZeroVelocity();
-			}
-		}
-	}
+	
 
 	public CharacterController CharacterController { get; private set; }
 
@@ -172,11 +161,8 @@ public abstract class TickedVehicle : Vehicle
 		LastRawForce = force;
 		
 		// enforce limit on magnitude of steering force
-		Vector3 clippedForce = Vector3.ClampMagnitude(force, MaxForce);
+		Vector3 newAcceleration = Vector3.ClampMagnitude(force / Mass, MaxForce);
 
-		// compute acceleration and velocity
-		Vector3 newAcceleration = (clippedForce / Mass);
-		
 		if (newAcceleration.sqrMagnitude == 0)
 		{
 			ZeroVelocity();
@@ -227,7 +213,6 @@ public abstract class TickedVehicle : Vehicle
 	void ApplySteeringForce(float elapsedTime)
 	{
 		// Euler integrate (per frame) velocity into position
-        Profiler.BeginSample("ApplySteeringForce.CalculatePositionDelta");
 		var delta = CalculatePositionDelta(elapsedTime);
 
 		/*
@@ -247,9 +232,6 @@ public abstract class TickedVehicle : Vehicle
 		{
 			_smoothedAcceleration = delta;
 		}
-
-        Profiler.EndSample();
-        Profiler.BeginSample("ApplySteeringForce.Displace");
 		if (CharacterController != null) 
 		{
 			CharacterController.Move(_smoothedAcceleration);
@@ -262,7 +244,6 @@ public abstract class TickedVehicle : Vehicle
 		{
 			Rigidbody.MovePosition(Rigidbody.position + _smoothedAcceleration);
 		}
-        Profiler.EndSample();
 	}	
 	
 	
@@ -270,9 +251,8 @@ public abstract class TickedVehicle : Vehicle
 	/// Turns the vehicle towards his velocity vector. Previously called
 	/// LookTowardsVelocity.
 	/// </summary>
-	protected virtual void AdjustOrientation(float deltaTime)
+	protected void AdjustOrientation(float deltaTime)
 	{
-        Profiler.BeginSample("AdustOrientation");
 		/* 
 		 * Avoid adjusting if we aren't applying any velocity. We also
 		 * disregard very small velocities, to avoid jittery movement on
@@ -284,17 +264,15 @@ public abstract class TickedVehicle : Vehicle
 			if (IsPlanar)
 			{
 				newForward.y = 0;
-				newForward.Normalize();
 			}
 			
-			if (TurnTime != 0)
+			if (TurnTime > 0)
 			{
 				newForward = Vector3.Slerp(Transform.forward, newForward, deltaTime / TurnTime);
 			}
 			Transform.forward = newForward;
 		}
-        Profiler.EndSample();
-	}	
+	}
 
 	/// <summary>
 	/// Records the velocity that was ust calculated by CalculateForces in a
@@ -314,20 +292,10 @@ public abstract class TickedVehicle : Vehicle
 
 	void Update()
 	{
-		// We still update the forces if the vehicle cannot move, as the
-		// calculations on those steering behaviors might be relevant for
-		// other methods, but we don't apply it.  
-		//
-		// If you don't want to have the forces calculated at all, simply
-		// disable the vehicle.
 		if (CanMove)
 		{
 			ApplySteeringForce(Time.deltaTime);
 			AdjustOrientation(Time.deltaTime);
-		}
-		else 
-		{
-			ZeroVelocity();
 		}
 	}
 
@@ -338,6 +306,12 @@ public abstract class TickedVehicle : Vehicle
 		{
 			Debug.DrawLine(Transform.position, Transform.position + delta, color);
 		}
+	}
+
+	public void Stop()
+	{
+		CanMove = false;
+		ZeroVelocity();
 	}
 
 

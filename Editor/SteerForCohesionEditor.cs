@@ -3,6 +3,6 @@ using UnityEditor;
 
 
 [CustomEditor(typeof(SteerForCohesion))]
-public class SteerForCohesionEditor: SteerForNeighborsEditor {
+public class SteerForCohesionEditor: SteerForNeighborGroupEditor {
 
 }

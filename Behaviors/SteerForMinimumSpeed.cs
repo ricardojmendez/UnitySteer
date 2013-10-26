@@ -2,7 +2,7 @@
 using UnitySteer.Helpers;
 
 /// <summary>
-/// Post-processing beahavior that ensures that the vehicle always moves 
+/// Post-processing bahavior that ensures that the vehicle always moves 
 /// at at least a minimum speed
 /// </summary>
 /// <remarks>
@@ -15,9 +15,18 @@ public class SteerForMinimumSpeed : Steering
 	[SerializeField]
 	float _minimumSpeed = 4;
 
+	[SerializeField]
+	bool _moveForwardWhenZero = true;
+
 	public override bool IsPostProcess 
 	{
 		get { return true; }
+	}
+
+	public float MinimumSpeed 
+	{
+		get { return _minimumSpeed; }
+		set { _minimumSpeed = value; }
 	}
 
 
@@ -29,8 +38,12 @@ public class SteerForMinimumSpeed : Steering
 	/// </returns>
 	protected override Vector3 CalculateForce()
 	{
-		Vector3 result = Vector3.zero;
-		if (Vehicle.DesiredSpeed < _minimumSpeed)
+		Vector3 result = Vehicle.DesiredVelocity;
+		if (_moveForwardWhenZero && Mathf.Approximately(Vehicle.DesiredSpeed, 0))
+		{
+			result = Vehicle.Transform.forward * _minimumSpeed;
+		}
+		else if (Vehicle.DesiredSpeed < _minimumSpeed)
 		{
 			result = Vehicle.DesiredVelocity.normalized * _minimumSpeed;
 		}

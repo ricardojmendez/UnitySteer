@@ -48,100 +48,30 @@ namespace UnitySteer
 
     public abstract class Pathway : IPathway
     {
-        private bool _isCyclic;
+		public bool IsCyclic { get; protected set; }
         
-        public bool IsCyclic
-        {
-            get
-            {
-                return _isCyclic;
-            }
-			protected set 
-			{
-				_isCyclic = value;
-			}
-        }
+		public abstract float TotalPathLength { get; }
         
+		public abstract Vector3 FirstPoint { get; }
         
-        public float TotalPathLength
-        {
-            get
-            {
-                return GetTotalPathLength();
-            }
-        }
-        
-        public Vector3 FirstPoint
-        {
-            get
-            {
-                return GetFirstPoint();
-            }
-        }
-        
-        
-        public Vector3 LastPoint
-        {
-            get
-            {
-                return GetLastPoint();
-            }
-        }
-		
-		public int SegmentCount
-		{
-			get
-			{
-				return GetSegmentCount();
-			}
-		}
-        
-        
-        // Returns the total path length. It's expected to be overriden by the 
-        // actual implementations.
-        protected virtual float GetTotalPathLength()
-        {
-            return 0;
-        }
+		public abstract Vector3 LastPoint { get; }
 
-        /// <summary>
-        /// Returns the first point along the path
-        /// </summary>
-        /// <remarks>
-        /// Descendents are expected to override this method
-        /// </remarks>
-        protected virtual Vector3 GetFirstPoint()
-        {
-            return Vector3.zero;
-        }
-                
-        /// <summary>
-        /// Returns the last point along the path
-        /// </summary>
-        /// <remarks>
-        /// Descendents are expected to override this method
-        /// </remarks>
-        protected virtual Vector3 GetLastPoint()
-        {
-            return Vector3.zero;
-        }
-		
-		protected virtual int GetSegmentCount()
-		{
-			return 0;
-		}
+		public float Radius  { get; set; }
+				
+		public abstract int SegmentCount { get; }
+	    
         
         // Given an arbitrary point ("A"), returns the nearest point ("P") on
         // this path.  Also returns, via output arguments, the path tangent at
         // P and a measure of how far A is outside the Pathway's "tube".  Note
         // that a negative distance indicates A is inside the Pathway.
-        public virtual Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition tStruct) { return Vector3.zero; }
+		public abstract Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition tStruct);
 
         // given a distance along the path, convert it to a point on the path
-        public virtual Vector3 MapPathDistanceToPoint(float pathDistance) { return Vector3.zero; }
+		public abstract Vector3 MapPathDistanceToPoint(float pathDistance);
 
         // Given an arbitrary point, convert it to a distance along the path.
-        public virtual float MapPointToPathDistance(Vector3 point) { return 0; }
+		public abstract float MapPointToPathDistance(Vector3 point);
 
         // is the given point inside the path tube?
         public bool IsInsidePath(Vector3 point)

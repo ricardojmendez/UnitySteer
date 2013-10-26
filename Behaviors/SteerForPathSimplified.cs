@@ -10,15 +10,15 @@ using UnitySteer;
 /// </remarks>
 [AddComponentMenu("UnitySteer/Steer/... for PathSimplified")]
 public class SteerForPathSimplified : Steering
-{
-	
+{	
 	#region Private fields
 	[SerializeField]
 	float _predictionTime = 1.5f;
 	
 	[SerializeField]
 	float _minSpeedToConsider = 0.25f;
-	
+
+	IPathway _path;
 	#endregion
 	
 	
@@ -33,6 +33,22 @@ public class SteerForPathSimplified : Steering
 		set {
 			_predictionTime = value;
 		}
+	}
+
+	/// <summary>
+	/// How far along the path we were the last time we calculated forces?
+	/// </summary>
+	/// <value>The last path distance evaluated.</value>
+	public float DistanceAlongPath { get; private set; }
+
+
+	/// <summary>
+	/// What percentage of the path we had traversed when we last evaluated?
+	/// </summary>
+	/// <value>The last path percentage evaluated.</value>
+	public float PathPercentTraversed 
+	{ 
+		get { return (Path != null) ? DistanceAlongPath / Path.TotalPathLength : 0; }
 	}
 	
 	/// <summary>
@@ -52,7 +68,15 @@ public class SteerForPathSimplified : Steering
 	/// <summary>
 	/// Path to follow
 	/// </summary>
-	public IPathway Path { get; set; }
+	public IPathway Path 
+	{ 
+		get { return _path; }
+		set 
+		{ 
+			_path = value;
+			DistanceAlongPath = 0;
+		}
+	}
 	#endregion
 
 	/// <summary>
@@ -78,7 +102,7 @@ public class SteerForPathSimplified : Steering
 		float pathDistanceOffset = _predictionTime * speed;
 		
 		// measure distance along path of our current and predicted positions
-		float currentPathDistance = Path.MapPointToPathDistance (Vehicle.Position);
+		DistanceAlongPath = Path.MapPointToPathDistance (Vehicle.Position);
 		
 		/*
 		 * Otherwise we need to steer towards a target point obtained
@@ -97,7 +121,7 @@ public class SteerForPathSimplified : Steering
 		 * bends and turns and is not a straight vector projected away
 		 * from our position.
 		 */
-		float targetPathDistance = currentPathDistance + pathDistanceOffset;
+		float targetPathDistance = DistanceAlongPath + pathDistanceOffset;
 		var target = Path.MapPathDistanceToPoint (targetPathDistance);
 		
 		/*
