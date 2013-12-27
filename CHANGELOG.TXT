@@ -1,5 +1,11 @@
 UnitySteer changelog
 
+v.2.8 (WIP)
+-----------
+
+- Removed vestigial SphericalObstacleData. See DetectableObject.
+
+
 v2.7
 ----
 
