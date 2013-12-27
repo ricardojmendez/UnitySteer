@@ -4,6 +4,9 @@ using UnitySteer;
 using UnitySteer.Helpers;
 using System.Linq;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle to be repulsed by stationary obstacles
 /// </summary>
@@ -243,4 +246,6 @@ public class SteerForSphericalObstacleRepulsion : Steering
 		}
 	}
 	#endif
+}
+
 }

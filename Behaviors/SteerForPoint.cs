@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 [AddComponentMenu("UnitySteer/Steer/... for Point")]
 public class SteerForPoint : Steering
 {
@@ -79,4 +82,6 @@ public class SteerForPoint : Steering
 	{
 		return Vehicle.GetSeekVector(TargetPoint, _considerVelocity);
 	}
+}
+
 }

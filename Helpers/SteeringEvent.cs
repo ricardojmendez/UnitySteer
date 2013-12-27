@@ -1,4 +1,6 @@
 using System;
+using UnitySteer.Base;
+
 namespace UnitySteer.Helpers
 {
 	/// <summary>

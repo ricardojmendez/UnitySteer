@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnitySteer;
+using UnitySteer.Base;
 
+namespace UnitySteer.Helpers
+{
 
 /// <summary>
 /// Configures a detectable on the game object it is attached to, based
@@ -62,4 +65,6 @@ public class DetectableObjectCreator : MonoBehaviour
 		detectable.Center = Vector3.zero;
 		detectable.Radius = radius;
 	}
+}
+
 }

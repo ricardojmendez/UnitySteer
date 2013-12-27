@@ -4,6 +4,9 @@ using UnitySteer;
 using System.Linq;
 using TickedPriorityQueue;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Vehicle subclass oriented towards autonomous bipeds and vehicles, which 
 /// will be ticked automatically to calculate their direction.
@@ -313,7 +316,7 @@ public abstract class TickedVehicle : Vehicle
 		CanMove = false;
 		ZeroVelocity();
 	}
-
+}
 
 }
 

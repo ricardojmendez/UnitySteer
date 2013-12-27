@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using UnitySteer.Base;
+
+namespace UnitySteer.Base.Editors
+{
 
 [CustomEditor(typeof(DetectableObject))]
 public class DetectableObjectEditor: Editor {
@@ -27,4 +31,6 @@ public class DetectableObjectEditor: Editor {
 		// Show default inspector property editor
 		DrawDefaultInspector();
 	}
+}
+
 }

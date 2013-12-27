@@ -1,5 +1,8 @@
 using UnityEngine;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle in alignment with detected neighbors
 /// </summary>
@@ -12,4 +15,6 @@ public class SteerForAlignment : SteerForNeighbors
 		// accumulate sum of neighbor's heading
 		return other.Transform.forward;
 	}
+}
+
 }

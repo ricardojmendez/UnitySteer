@@ -5,6 +5,9 @@ using UnitySteer;
 using UnitySteer.Helpers;
 
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steering behavior which goes through all SteerForNeighbor behaviors
 /// attached to the object and calls their CalculateNeighborContribution
@@ -194,5 +197,6 @@ public class SteerForNeighborGroup : Steering
 		return steering;
 	}
 	#endregion
+}
 
 }

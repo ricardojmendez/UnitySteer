@@ -2,6 +2,9 @@ using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle to wander around
 /// </summary>
@@ -64,7 +67,8 @@ public class SteerForWander : Steering
         
 		Vector3	 result = (Vehicle.Transform.right * _wanderSide) + (Vehicle.Transform.up * _wanderUp) + Vehicle.Transform.forward;
 		return result;
-	}
-	
+	}	
+}
+
 }
 

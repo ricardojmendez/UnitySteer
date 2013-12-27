@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle to keep within a certain range of a point
 /// </summary>
@@ -51,3 +54,4 @@ public class SteerForTether : Steering
 	}
 }
 
+}

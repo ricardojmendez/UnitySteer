@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnitySteer.Base;
 
 public interface IRadarReceiver
 {

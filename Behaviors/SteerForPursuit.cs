@@ -3,6 +3,9 @@ using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle to pursuit another one
 /// </summary>
@@ -162,4 +165,6 @@ public class SteerForPursuit : Steering
 		
 		return force;
 	}
+}
+
 }

@@ -4,6 +4,9 @@ using UnitySteer;
 using System.Linq;
 using TickedPriorityQueue;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Vehicle subclass oriented towards vehicles that are controlled by
 /// an separate method, and meant to just provide an interface to obtain
@@ -63,7 +66,7 @@ public class PassiveVehicle : Vehicle {
 			Velocity = Vector3.zero;
 		}
 	}
-
+}
 
 }
 

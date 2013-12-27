@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
-/// Post-processing bahavior that ensures that the vehicle always moves 
+/// Post-processing behavior that ensures that the vehicle always moves 
 /// at at least a minimum speed
 /// </summary>
 /// <remarks>
@@ -49,4 +52,6 @@ public class SteerForMinimumSpeed : Steering
 		}
 		return result;
 	}
+}
+
 }

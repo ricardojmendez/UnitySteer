@@ -2,6 +2,9 @@ using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle to avoid another one
 /// </summary>
@@ -85,5 +88,6 @@ public class SteerForEvasion : Steering
 		Vector3 desiredVelocity = Vehicle.Position - target;
 		return desiredVelocity - Vehicle.Velocity;		
 	}
+}
 	
 }

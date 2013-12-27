@@ -4,6 +4,9 @@ using UnitySteer;
 using UnitySteer.Helpers;
 using System.Linq;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle to avoid stationary obstacles
 /// </summary>
@@ -262,4 +265,6 @@ public class SteerForSphericalObstacleAvoidance : Steering
 		}
 	}
 	#endif
+}
+
 }

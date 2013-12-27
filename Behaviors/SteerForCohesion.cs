@@ -1,6 +1,9 @@
 // #define DEBUG_COMFORT_DISTANCE
 using UnityEngine;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle to remain in cohesion with neighbors
 /// </summary>
@@ -51,3 +54,4 @@ public class SteerForCohesion : SteerForNeighbors
 	}
 }
 
+}

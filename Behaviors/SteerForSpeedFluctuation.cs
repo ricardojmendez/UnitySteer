@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Sample post-processing behavior that adds noise to the desired speed
 /// </summary>
@@ -30,4 +33,6 @@ public class SteerForSpeedFluctuation : Steering
 	{
 		return Vehicle.DesiredVelocity * _noiseImpact * (1.5f - Mathf.PerlinNoise(Time.time, Vehicle.MovementPriority));
 	}
+}
+
 }

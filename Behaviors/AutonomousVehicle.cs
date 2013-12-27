@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnitySteer;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Vehicle subclass which automatically applies the steering forces from
 /// the components attached to the object.  AutonomousVehicle is characterized
@@ -56,5 +59,6 @@ public class AutonomousVehicle : TickedVehicle
 		Speed = 0;
 	}
 	#endregion
-}
+}	
 
+}

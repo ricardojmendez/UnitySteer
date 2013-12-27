@@ -3,6 +3,8 @@ using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
 
 /// <summary>
 /// Base class for behaviors which steer a vehicle in relation to detected neighbors
@@ -34,6 +36,7 @@ public abstract class SteerForNeighbors : Steering
 	}
 	
 	public abstract Vector3 CalculateNeighborContribution(Vehicle other);
-	#endregion
-	
+	#endregion	
+}
+
 }

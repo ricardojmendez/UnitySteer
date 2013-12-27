@@ -1,5 +1,8 @@
 using UnityEngine;
 
+namespace UnitySteer.Base
+{
+
 [AddComponentMenu("UnitySteer/Steer/... for Target")]
 public class SteerForTarget : Steering {
 	
@@ -30,4 +33,6 @@ public class SteerForTarget : Steering {
 	{
 		return Vehicle.GetSeekVector(Target.position);
 	}
+}
+
 }

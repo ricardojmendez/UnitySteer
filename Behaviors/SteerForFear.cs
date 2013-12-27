@@ -3,6 +3,9 @@ using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Post-processing that steers a vehicle to be afraid of some points, and repulsed by them.
 /// </summary>
@@ -108,5 +111,6 @@ public class SteerForFear : Steering
 			_currentEventIndex = 0;
 		}
 	}
+}
 	
 }

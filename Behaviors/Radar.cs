@@ -6,6 +6,8 @@ using UnitySteer;
 using UnitySteer.Helpers;
 using TickedPriorityQueue;
 
+namespace UnitySteer.Base
+{
 
 /// <summary>
 /// Base class for radars
@@ -365,4 +367,6 @@ public class Radar: MonoBehaviour {
 		}
 	}	
 	#endregion
+}
+
 }

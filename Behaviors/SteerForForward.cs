@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Trivial example that simply makes the vehicle move towards its forward vector
 /// </summary>
@@ -35,4 +38,6 @@ public class SteerForForward : Steering
 	{
 		return  _overrideForward ? DesiredForward : Vehicle.Transform.forward;
 	}
+}
+
 }

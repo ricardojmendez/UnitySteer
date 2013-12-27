@@ -1,5 +1,8 @@
 using UnityEngine;
 
+namespace UnitySteer.Helpers
+{
+
 public class RandomizeStartPosition: MonoBehaviour
 {
 	public Vector3 Radius = Vector3.one;
@@ -26,4 +29,6 @@ public class RandomizeStartPosition: MonoBehaviour
 		}
 		Destroy(this);
 	}
+}
+
 }

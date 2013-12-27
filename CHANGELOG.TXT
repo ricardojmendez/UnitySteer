@@ -4,7 +4,7 @@ v.2.8 (WIP)
 -----------
 
 - Removed vestigial SphericalObstacleData. See DetectableObject.
-
+- Added namespaces to the behaviors.  Decided against adding indentation to minimize the number of lines changed in case someone's doing a diff and forgets to exclude whitespace differences.
 
 v2.7
 ----

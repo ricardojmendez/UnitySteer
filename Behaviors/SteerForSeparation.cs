@@ -1,5 +1,8 @@
 using UnityEngine;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle to keep separate from neighbors
 /// </summary>
@@ -61,3 +64,4 @@ public class SteerForSeparation : SteerForNeighbors
 	#endregion
 }
 
+}

@@ -3,6 +3,9 @@ using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle to stay on the navmesh
 /// Currently only supports the Default layer
@@ -200,4 +203,5 @@ public class SteerForNavmesh : Steering {
 		
 		return avoidance;
 	}	
+}
 }

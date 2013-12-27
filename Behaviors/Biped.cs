@@ -4,6 +4,9 @@ using UnitySteer;
 using System.Linq;
 using TickedPriorityQueue;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Vehicle subclass oriented towards autonomous bipeds, which have a movement
 /// vector which can be separate from their forward vector.   
@@ -82,6 +85,8 @@ public class Biped : TickedVehicle
 	}
 	#endregion
 	
+}
+
 }
 
 

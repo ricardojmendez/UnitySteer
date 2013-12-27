@@ -1,7 +1,9 @@
-using UnityEngine;
-using UnitySteer;
 using System.Linq;
+using UnityEngine;
+using UnitySteer.Tools;
 
+namespace UnitySteer.Base
+{
 
 /// <summary>
 /// Base class for vehicles. It does not move the objects, and instead 
@@ -566,4 +568,6 @@ public abstract class Vehicle : DetectableObject
 		}
 	}
 	#endregion
+}
+
 }

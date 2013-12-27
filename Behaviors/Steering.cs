@@ -2,6 +2,9 @@ using UnityEngine;
 using UnitySteer.Helpers;
 using TickedPriorityQueue;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Base Steering class from which other steering behaviors derive
 /// </summary>
@@ -145,4 +148,6 @@ public abstract class Steering : MonoBehaviour {
 	
 
 	#endregion
+}
+
 }

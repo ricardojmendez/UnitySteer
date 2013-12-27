@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using UnitySteer.Base;
+
+namespace UnitySteer.Base.Editors
+{
 
 [CustomEditor(typeof(SteerForNeighborGroup))]
 public class SteerForNeighborGroupEditor: Editor {
@@ -16,4 +20,6 @@ public class SteerForNeighborGroupEditor: Editor {
 		// Show default inspector property editor
 		DrawDefaultInspector();
 	}
+}
+
 }

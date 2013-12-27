@@ -2,6 +2,9 @@ using UnityEngine;
 using System.Collections;
 using TickedPriorityQueue;
 
+namespace UnitySteer.Tools
+{
+
 [AddComponentMenu("UnitySteer/Vehicle/Speedometer")]
 public class Speedometer : MonoBehaviour 
 {
@@ -112,4 +115,6 @@ public class Speedometer : MonoBehaviour
 		_squaredDistanceSamples[_lastSampleIndex] = (_transform.position - _lastRecordedPosition).sqrMagnitude;
 		_lastRecordedPosition = _transform.position;
 	}
+}
+
 }
