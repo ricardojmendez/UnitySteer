@@ -11,7 +11,6 @@ public class DetectableObjectEditor: Editor {
 	Vector3FoldoutEditor centerEditor = new Vector3FoldoutEditor("Center");
 	
 	public override void OnInspectorGUI() {
-		EditorGUIUtility.LookLikeInspector();
 		var vehicle = target as DetectableObject;
 		var newCenter = centerEditor.DrawEditor(vehicle.Center);
 		if (newCenter != vehicle.Center) 

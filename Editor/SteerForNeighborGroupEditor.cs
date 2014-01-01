@@ -11,7 +11,6 @@ public class SteerForNeighborGroupEditor: Editor {
 	DegreeEditor angleEditor = new DegreeEditor("Angle");
 	
 	public override void OnInspectorGUI() {
-		EditorGUIUtility.LookLikeInspector();
 		var steer = target as SteerForNeighborGroup;
 		if (steer != null)
 		{
