@@ -20,7 +20,7 @@ public class DetectableObjectEditor: Editor {
 		}
 		
 		
-		var newRadius = EditorGUILayout.FloatField("\tRadius", vehicle.Radius);
+		var newRadius = EditorGUILayout.FloatField("Radius", vehicle.Radius);
 		if (newRadius != vehicle.Radius)
 		{
 			vehicle.Radius = newRadius;
