@@ -13,9 +13,6 @@ namespace UnitySteer.Base
 /// itself.  It should be subclassed for your particular steering needs.
 /// </remarks>
 public abstract class Steering : MonoBehaviour {	
-	public static readonly string STEERING_MESSAGE = "Steering";
-	public static readonly string ACTION_RETRY = "retry";
-	
 	#region Private fields
 	/// <summary>
 	/// Last force calculated
@@ -46,7 +43,7 @@ public abstract class Steering : MonoBehaviour {
 			{
 				if (!ReportedMove && OnStartMoving != null)
 				{
-					OnStartMoving(new SteeringEvent<Vehicle>(this, "moving", Vehicle));
+					OnStartMoving(this);
 				}
 				ReportedArrival = false;
 				ReportedMove = true;
@@ -57,11 +54,13 @@ public abstract class Steering : MonoBehaviour {
 				ReportedMove = false;
 				if (OnArrival != null)
 				{
-					var message = new SteeringEvent<Vehicle>(this, "arrived", Vehicle);
-					OnArrival(message);
-					if (message.Action == ACTION_RETRY)
+					OnArrival(this);
+					// It's possible that any of the OnArrival handlers indicated we should recalculate
+					// our forces.
+					if (ShouldRetryForce)
 					{
 						_force = CalculateForce();
+						ShouldRetryForce = false;
 					}
 				}
 			}
@@ -79,12 +78,18 @@ public abstract class Steering : MonoBehaviour {
 	/// <summary>
 	/// Steering event handler for arrival notification
 	/// </summary>
-	public System.Action<SteeringEvent<Vehicle>> OnArrival = delegate{};
+	public System.Action<Steering> OnArrival = delegate{};
 	
 	/// <summary>
 	/// Steering event handler for arrival notification
 	/// </summary>
-	public System.Action<SteeringEvent<Vehicle>> OnStartMoving { get; set; }
+	public System.Action<Steering> OnStartMoving { get; set; }
+
+	/// <summary>
+	/// Gets or sets a value indicating whether this <see cref="UnitySteer.Base.Steering"/> should recalculate its force.
+	/// </summary>
+	/// <value><c>true</c> if recalculate force; otherwise, <c>false</c>.</value>
+	public bool ShouldRetryForce { get; protected set; }
 	
 	/// <summary>
 	/// Have we reported that we stopped moving?
