@@ -127,7 +127,7 @@ public class SteerForSphericalObstacleRepulsion : Steering
 		{
 			var sphere = Vehicle.Radar.Obstacles[i];
 			if (sphere == null || sphere.Equals(null)) continue; // In case the object was destroyed since we cached it
-			PathIntersection next = FindNextIntersectionWithSphere(Vehicle.Position, futurePosition, sphere);
+			PathIntersection next = FindNextIntersectionWithSphere(Vehicle, futurePosition, sphere);
 			float avoidanceMultiplier = 1;
 			if (next.Intersect) {
 				#if ANNOTATE_AVOIDOBSTACLES
@@ -157,10 +157,10 @@ public class SteerForSphericalObstacleRepulsion : Steering
 	}
 	
 	/// <summary>
-	/// Finds the vehicle's next intersection with a spherical obstacle
+	/// Finds a vehicle's next intersection with a spherical obstacle
 	/// </summary>
-	/// <param name="vehiclePosition">
-	/// The current position of the vehicle
+	/// <param name="vehicle">
+	/// The vehicle to evaluate.
 	/// </param>
 	/// <param name="futureVehiclePosition">
 	/// The position where we expect the vehicle to be soon
@@ -171,16 +171,17 @@ public class SteerForSphericalObstacleRepulsion : Steering
 	/// <returns>
 	/// A PathIntersection with the intersection details <see cref="PathIntersection"/>
 	/// </returns>
-	public PathIntersection FindNextIntersectionWithSphere(Vector3 vehiclePosition, Vector3 futureVehiclePosition, DetectableObject obstacle) {
+	/// <remarks>>We could probably spin out this function to an independent tool class</remarks>
+	public static PathIntersection FindNextIntersectionWithSphere(Vehicle vehicle, Vector3 futureVehiclePosition, DetectableObject obstacle) {
 		// this mainly follows http://www.lighthouse3d.com/tutorials/maths/ray-sphere-intersection/
 		
 		var intersection = new PathIntersection(obstacle);
 		
-		float combinedRadius = Vehicle.ScaledRadius + obstacle.ScaledRadius;
-		var movement = futureVehiclePosition - vehiclePosition;
+		float combinedRadius = vehicle.ScaledRadius + obstacle.ScaledRadius;
+		var movement = futureVehiclePosition - vehicle.Position;
 		var direction = movement.normalized;
 		
-		var vehicleToObstacle = obstacle.Position - vehiclePosition;
+		var vehicleToObstacle = obstacle.Position - vehicle.Position;
 		
 		// this is the length of vehicleToObstacle projected onto direction
 		float projectionLength = Vector3.Dot(direction, vehicleToObstacle);
@@ -192,7 +193,7 @@ public class SteerForSphericalObstacleRepulsion : Steering
 		}
 		
 		// the foot of the perpendicular
-		var projectedObstacleCenter = vehiclePosition + projectionLength * direction;
+		var projectedObstacleCenter = vehicle.Position + projectionLength * direction;
 		
 		// distance of the obstacle to the pathe the vehicle is going to take
 		float obstacleDistanceToPath = (obstacle.Position - projectedObstacleCenter).magnitude;
@@ -215,7 +216,7 @@ public class SteerForSphericalObstacleRepulsion : Steering
 			
 			var intersectionPoint = projectedObstacleCenter - direction * halfChord;
 			intersection.Intersect = true;
-			intersection.Distance = (intersectionPoint - vehiclePosition).magnitude;
+			intersection.Distance = (intersectionPoint - vehicle.Position).magnitude;
 			return intersection;
 		}
 		
@@ -224,12 +225,12 @@ public class SteerForSphericalObstacleRepulsion : Steering
 		var intersectionPoint2 = projectedObstacleCenter + direction * halfChord;
 
 		// pick the closest one
-		float intersectionPoint1Distance = (intersectionPoint1 - vehiclePosition).magnitude;
-		float intersectionPoint2Distance = (intersectionPoint2 - vehiclePosition).magnitude;
+		float intersectionPoint1Distance = (intersectionPoint1 - vehicle.Position).magnitude;
+		float intersectionPoint2Distance = (intersectionPoint2 - vehicle.Position).magnitude;
 		
 		intersection.Intersect = true;
 		intersection.Distance = Mathf.Min(intersectionPoint1Distance, intersectionPoint2Distance);
-		
+
 		return intersection;
 	}
 	
