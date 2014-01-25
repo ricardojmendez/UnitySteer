@@ -50,8 +50,6 @@ public abstract class Steering : MonoBehaviour {
 			}
 			else if (!ReportedArrival)
 			{
-				ReportedArrival = true;
-				ReportedMove = false;
 				if (OnArrival != null)
 				{
 					OnArrival(this);
@@ -62,6 +60,11 @@ public abstract class Steering : MonoBehaviour {
 						_force = CalculateForce();
 						ShouldRetryForce = false;
 					}
+				}
+				if (_force == Vector3.zero)
+				{
+					ReportedArrival = true;
+					ReportedMove = false;
 				}
 			}
 			return _force;
