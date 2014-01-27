@@ -5,6 +5,8 @@ v.2.8 (WIP)
 
 - Removed vestigial SphericalObstacleData. See DetectableObject.
 - Added namespaces to the behaviors.  Decided against adding indentation to minimize the number of lines changed in case someone's doing a diff and forgets to exclude whitespace differences.
+- Removed SteeringEvent. The class was unnecessary, we can just do everything with standard actions.
+- New property Steering.ShouldRetryForce, so that behaviors handling the OnArrival even can indicate to the steering if they should retry the force calculation before giving up (in case any parameters changed).  The previous implementation was somewhat hacky.
 
 v2.7
 ----
