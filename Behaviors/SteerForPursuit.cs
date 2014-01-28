@@ -23,6 +23,12 @@ public class SteerForPursuit : Steering
     /// </remarks>
     [SerializeField]
     float _acceptableDistance = 0;
+
+	/// <summary>
+	/// Should the vehicle consider its own speed when approaching the quarry?
+	/// </summary>
+	[SerializeField]
+	bool _slowDownOnApproach = false;
     
 	[SerializeField]
 	DetectableObject _quarry;
@@ -154,7 +160,7 @@ public class SteerForPursuit : Steering
 			// estimated position of quarry at intercept
 			Vector3 target = _quarry.PredictFuturePosition (etl);
 
-			force = Vehicle.GetSeekVector(target);
+			force = Vehicle.GetSeekVector(target, _slowDownOnApproach);
 			
 			#if ANNOTATE_PURSUIT
 			Debug.DrawRay(Vehicle.Position, force, Color.blue);
