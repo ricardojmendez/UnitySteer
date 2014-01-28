@@ -157,7 +157,7 @@ public class SteerForPursuit : Steering
 			force = Vehicle.GetSeekVector(target);
 			
 			#if ANNOTATE_PURSUIT
-			Debug.DrawLine(Vehicle.Position, force, Color.blue);
+			Debug.DrawRay(Vehicle.Position, force, Color.blue);
 			Debug.DrawLine(Quarry.Position, target, Color.cyan);
 			Debug.DrawRay(target, Vector3.up * 4, Color.cyan);
 			#endif
