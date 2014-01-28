@@ -28,6 +28,11 @@ public class SteerForEvasion : Steering
 	#endregion
 	
 	#region Public properties
+	public override bool IsPostProcess 
+	{
+		get { return true; }
+	}
+
 	/// <summary>
 	/// How many seconds to look ahead for position prediction
 	/// </summary>
@@ -74,7 +79,8 @@ public class SteerForEvasion : Steering
             return Vector3.zero;
         }
 		// offset from this to menace, that distance, unit vector toward menace
-		Vector3 offset = _menace.Position - Vehicle.Position;
+		var position = Vehicle.PredictFutureDesiredPosition(_predictionTime);
+		Vector3 offset = _menace.Position - position;
 		float distance = offset.magnitude;
 
 		float roughTime = distance / _menace.Speed;
@@ -85,8 +91,8 @@ public class SteerForEvasion : Steering
 		Vector3 target = _menace.PredictFuturePosition(predictionTime);
 
 		// This was the totality of SteerToFlee
-		Vector3 desiredVelocity = Vehicle.Position - target;
-		return desiredVelocity - Vehicle.Velocity;		
+		Vector3 desiredVelocity = position - target;
+		return desiredVelocity - Vehicle.DesiredVelocity;		
 	}
 }
 	

@@ -8,6 +8,7 @@ v.2.8 (WIP)
 - Removed SteeringEvent. The class was unnecessary, we can just do everything with standard actions.
 - New property Steering.ShouldRetryForce, so that behaviors handling the OnArrival even can indicate to the steering if they should retry the force calculation before giving up (in case any parameters changed).  The previous implementation was somewhat hacky.
 - SteerForTether is now a post-processing behavior. It now will also average between the impulse pulling it back and the desired velocity - I like that behavior better.
+- SteerForEvasion is now a post-processing behavior.  This helps overlay it with other behaviors in a more natural fashion, since we can steer the vehicle while still keeping away from a target.
 
 
 v2.7
