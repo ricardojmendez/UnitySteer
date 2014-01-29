@@ -12,6 +12,7 @@ v.2.8 (WIP)
 - SteerForPursuit has a new parameter to indicate if it should consider the vehicle's velocity on approach. It's false by default.
 - The setter for Vehicle.Speed is now protected to avoid confusion. In most cases chances are users want to adjust the maximum speed, and the only vehicle which currently lets you set the speed is AutonomousVehicle, where it would be promptly overwritten by the velocity calculations.
 - The setter for Vehicle.Velocity is now protected. See the case for Vehicle.Speed.
+- Updated TickedPriorityQueue.dll with bugfixes and new features.
 
 
 v2.7
