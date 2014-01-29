@@ -118,20 +118,45 @@ public abstract class TickedVehicle : Vehicle
 	
 	protected virtual void OnDisable()
 	{
-		if (_steeringQueue != null)
-		{
-			_steeringQueue.Remove(TickedObject);
-		}
+		DeQueue();
 	}
 	#endregion
 	
 
 	#region Velocity / Speed methods
+	void DeQueue()
+	{
+		if (_steeringQueue != null)
+		{
+			_steeringQueue.Remove(TickedObject);
+		}
+	}
+
 	protected void OnUpdateSteering(object obj)
 	{
-		// We just calculate the forces, and expect the radar updates
-		// itself.
-		CalculateForces();
+		if (enabled)
+		{
+			// We just calculate the forces, and expect the radar updates itself.
+			CalculateForces();
+		}
+		else
+		{
+			/*
+			 * This is an interesting edge case.
+			 * 
+			 * Because of the way TickedQueue iterates through its items, we may have
+			 * a case where:
+			 * - The vehicle's OnUpdateSteering is enqueued into the work queue
+			 * - An event previous to it being called causes it to be disabled, and de-queued
+			 * - When the ticked queue gets to it, it executes and re-enqueues it
+			 * 
+			 * Therefore we double check that we're not trying to tick it while disabled, and 
+			 * if so we de-queue it.  Must review TickedQueue to see if there's a way we can 
+			 * easily handle these sort of issues without a performance hit.
+			 */
+			DeQueue();
+			// Debug.LogError(string.Format("{0} HOLD YOUR HORSES. Disabled {1} being ticked", Time.time, this));
+		}
 	}
 
 
