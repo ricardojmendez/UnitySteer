@@ -10,6 +10,8 @@ v.2.8 (WIP)
 - SteerForTether is now a post-processing behavior. It now will also average between the impulse pulling it back and the desired velocity - I like that behavior better.
 - SteerForEvasion is now a post-processing behavior.  This helps overlay it with other behaviors in a more natural fashion, since we can steer the vehicle while still keeping away from a target.
 - SteerForPursuit has a new parameter to indicate if it should consider the vehicle's velocity on approach. It's false by default.
+- The setter for Vehicle.Speed is now protected to avoid confusion. In most cases chances are users want to adjust the maximum speed, and the only vehicle which currently lets you set the speed is AutonomousVehicle, where it would be promptly overwritten by the velocity calculations.
+- The setter for Vehicle.Velocity is now protected. See the case for Vehicle.Speed.
 
 
 v2.7

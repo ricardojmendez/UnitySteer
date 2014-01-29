@@ -39,7 +39,7 @@ public class Biped : TickedVehicle
 		{ 
 			return Speedometer == null ? _speed : Speedometer.Speed; 
 		}
-		set
+		protected set
 		{
 			throw new System.NotSupportedException("Cannot set the speed directly on Bipeds");
 		}
@@ -51,7 +51,7 @@ public class Biped : TickedVehicle
 	public override Vector3 Velocity
 	{
 		get { return _velocity; }
-		set 
+		protected set 
 		{ 
 			_velocity = Vector3.ClampMagnitude(value, MaxSpeed);
 			_speed = _velocity.magnitude;

@@ -20,7 +20,7 @@ public class AutonomousVehicle : TickedVehicle
 	public override float Speed
 	{
 		get { return _speed; }
-		set 
+		protected set 
 		{ 
 			_speed = Mathf.Clamp(value, 0, MaxSpeed); 
 			DesiredSpeed = _speed;
@@ -36,11 +36,11 @@ public class AutonomousVehicle : TickedVehicle
 		{
 			return Transform.forward * _speed;
 		}
-		set
+		protected set
 		{
 			throw new System.NotSupportedException("Cannot set the velocity directly on AutonomousVehicle");
 		}
-	}	
+	}
 	
 	#region Speed-related methods
 	public override void UpdateOrientationVelocity(Vector3 velocity)

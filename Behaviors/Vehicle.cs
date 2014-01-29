@@ -183,7 +183,7 @@ public abstract class Vehicle : DetectableObject
 	/// <summary>
 	/// Current vehicle speed
 	/// </summary>
-	public abstract float Speed { get; set; }
+	public abstract float Speed { get; protected set; }
 	
 	/// <summary>
 	/// How quickly does the vehicle turn toward a vector.
@@ -217,7 +217,7 @@ public abstract class Vehicle : DetectableObject
 	/// Current vehicle velocity. Subclasses are likely to only actually
 	/// implement one of the two methods.
 	/// </summary>
-	public abstract Vector3 Velocity { get; set; }
+	public abstract Vector3 Velocity { get; protected set; }
 
 	/// <summary>
 	/// Current magnitude for the vehicle's velocity.

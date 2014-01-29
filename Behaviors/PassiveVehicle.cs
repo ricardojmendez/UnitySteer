@@ -42,7 +42,7 @@ public class PassiveVehicle : Vehicle {
         get { 
             return Speedometer == null ? _speed : Speedometer.Speed; 
         }
-        set {
+		protected set {
             throw new System.NotSupportedException ("Cannot set the speed directly on PassiveVehicle");
         }
     }
@@ -54,7 +54,7 @@ public class PassiveVehicle : Vehicle {
         get {
             return Transform.forward * _speed;
         }
-        set {
+		protected set {
             throw new System.NotSupportedException ("Cannot set the velocity directly on PassiveCehicle");
         }
     }
