@@ -180,7 +180,6 @@ public abstract class TickedVehicle : Vehicle
         }
 		Profiler.EndSample();
 		
-		var elapsedTime = Time.time - LastTickTime;
 		LastTickTime = Time.time;
 		if (IsPlanar)
 		{
@@ -189,18 +188,17 @@ public abstract class TickedVehicle : Vehicle
 		LastRawForce = force;
 		
 		// enforce limit on magnitude of steering force
-		Vector3 newAcceleration = Vector3.ClampMagnitude(force / Mass, MaxForce);
+		Vector3 newVelocity = Vector3.ClampMagnitude(force / Mass, MaxForce);
 
-		if (newAcceleration.sqrMagnitude == 0)
+		if (newVelocity.sqrMagnitude == 0)
 		{
 			ZeroVelocity();
 			DesiredVelocity = Vector3.zero;
 		}
 
-		var newVelocity = Velocity + newAcceleration * elapsedTime;
-
-		// Enforce speed limit
-		newVelocity = Vector3.ClampMagnitude(newAcceleration, MaxSpeed);
+		// Enforce speed limit.  Steering behaviors are expected to return a
+		// final desired velocity, not a acceleration, so we apply them directly.
+		newVelocity = Vector3.ClampMagnitude(newVelocity, MaxSpeed);
 		DesiredVelocity = newVelocity;
 		
 		// Adjusts the velocity by applying the post-processing behaviors.
