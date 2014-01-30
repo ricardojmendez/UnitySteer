@@ -3,6 +3,16 @@ UnitySteer changelog
 v.2.8 (WIP)
 -----------
 
+MAJOR CHANGE: 
+
+- Removed TickedVehicle._accelerationSmoothRate.  This affects both Bipeds and AutonomousVehicles.
+- New properties on AutonomousVehicle to control the acceleration and deceleration rates.
+- Using the AutonomousVehicle's DesiredSpeed to indicate the speed we're aiming for, and Speed the one we're actually moving at.  Speed will gradually aim for DesiredSpeed at its acceleration/deceleration rates.
+
+You can read more about it here: http://arges-systems.com/blog/2014/01/30/unitysteer-acceleration-smoothing-changes/
+
+Also:
+
 - Removed vestigial SphericalObstacleData. See DetectableObject.
 - Added namespaces to the behaviors.  Decided against adding indentation to minimize the number of lines changed in case someone's doing a diff and forgets to exclude whitespace differences.
 - Removed SteeringEvent. The class was unnecessary, we can just do everything with standard actions.
@@ -10,9 +20,10 @@ v.2.8 (WIP)
 - SteerForTether is now a post-processing behavior. It now will also average between the impulse pulling it back and the desired velocity - I like that behavior better.
 - SteerForEvasion is now a post-processing behavior.  This helps overlay it with other behaviors in a more natural fashion, since we can steer the vehicle while still keeping away from a target.
 - SteerForPursuit has a new parameter to indicate if it should consider the vehicle's velocity on approach. It's false by default.
-- The setter for Vehicle.Speed is now protected to avoid confusion. In most cases chances are users want to adjust the maximum speed, and the only vehicle which currently lets you set the speed is AutonomousVehicle, where it would be promptly overwritten by the velocity calculations.
+- Vehicle.Speed no longer has a setter to avoid confusion. In most cases chances are users want to adjust the maximum speed, and the only vehicle which currently lets you set the speed is AutonomousVehicle, where it would be promptly overwritten by the velocity calculations.
 - The setter for Vehicle.Velocity is now protected. See the case for Vehicle.Speed.
 - Updated TickedPriorityQueue.dll with bugfixes and new features.
+
 
 
 v2.7

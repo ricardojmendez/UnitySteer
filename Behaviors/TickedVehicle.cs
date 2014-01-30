@@ -14,13 +14,9 @@ namespace UnitySteer.Base
 public abstract class TickedVehicle : Vehicle
 {
 	#region Internal state values
-	Vector3 _smoothedAcceleration = Vector3.zero;
 	TickedObject _tickedObject;
 	UnityTickedQueue _steeringQueue;
 
-	[SerializeField]
-	float _accelerationSmoothRate = 0.4f;
-	
     /// <summary>
     /// The name of the steering queue for this ticked vehicle.
     /// </summary>
@@ -48,22 +44,6 @@ public abstract class TickedVehicle : Vehicle
 	[SerializeField]
 	bool _traceAdjustments = false;	
 	#endregion
-	
-	/// <summary>
-	/// Gets or sets the acceleration smooth rate.
-	/// </summary>
-	/// <value>
-	/// The acceleration smooth rate. The higher it is, the more abrupt 
-	/// the acceleration is likely to be.  A value of close to 0 causes 
-	/// the acceleration to change _very_ slowly. A value of either 0 
-	/// or 1 means that any acceleration changes will be directly applied.
-	/// </value>
-	public float AccelerationSmoothRate 
-	{
-		get { return this._accelerationSmoothRate; 	}
-		set { _accelerationSmoothRate = value; 	}
-	}
-	
 
 	public CharacterController CharacterController { get; private set; }
 
@@ -225,7 +205,7 @@ public abstract class TickedVehicle : Vehicle
 		}
 		
 		// Update vehicle velocity
-		UpdateOrientationVelocity(newVelocity);
+		UpdateDesiredVelocity(newVelocity);
 		Profiler.EndSample();
 	}
 
@@ -239,36 +219,19 @@ public abstract class TickedVehicle : Vehicle
 	void ApplySteeringForce(float elapsedTime)
 	{
 		// Euler integrate (per frame) velocity into position
-		var delta = CalculatePositionDelta(elapsedTime);
+		var acceleration = CalculatePositionDelta(elapsedTime);
 
-		/*
-			Damp out abrupt changes and oscillations in steering acceleration
-			(rate is proportional to time step, and clipped to [0,1])
-			
-			The higher the smoothRate parameter, the more noise there is
-			likely to be in the movement.
-		*/
-		if (_accelerationSmoothRate > 0)
-		{
-			_smoothedAcceleration = OpenSteerUtility.blendIntoAccumulator(_accelerationSmoothRate,
-			                                                              delta,
-			                                                              _smoothedAcceleration);
-		}
-		else
-		{
-			_smoothedAcceleration = delta;
-		}
 		if (CharacterController != null) 
 		{
-			CharacterController.Move(_smoothedAcceleration);
+			CharacterController.Move(acceleration);
 		}
 		else if (Rigidbody == null || Rigidbody.isKinematic)
 		{
-			Transform.position += _smoothedAcceleration;
+			Transform.position += acceleration;
 		}
 		else
 		{
-			Rigidbody.MovePosition(Rigidbody.position + _smoothedAcceleration);
+			Rigidbody.MovePosition(Rigidbody.position + acceleration);
 		}
 	}	
 	
@@ -301,10 +264,11 @@ public abstract class TickedVehicle : Vehicle
 	}
 
 	/// <summary>
-	/// Records the velocity that was ust calculated by CalculateForces in a
+	/// Records the velocity that was just calculated by CalculateForces in a
 	/// manner that is specific to each subclass. 
 	/// </summary>
-	public abstract void UpdateOrientationVelocity(Vector3 velocity);
+	/// <param name="velocity">Newly calculated velocity</param>
+	public abstract void UpdateDesiredVelocity(Vector3 velocity);
 
 	/// <summary>
 	/// Calculates how much the agent's position should change in a manner that

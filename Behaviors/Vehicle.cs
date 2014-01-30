@@ -183,7 +183,7 @@ public abstract class Vehicle : DetectableObject
 	/// <summary>
 	/// Current vehicle speed
 	/// </summary>
-	public abstract float Speed { get; protected set; }
+	public abstract float Speed { get; }
 	
 	/// <summary>
 	/// How quickly does the vehicle turn toward a vector.

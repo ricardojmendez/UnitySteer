@@ -42,9 +42,6 @@ public class PassiveVehicle : Vehicle {
         get { 
             return Speedometer == null ? _speed : Speedometer.Speed; 
         }
-		protected set {
-            throw new System.NotSupportedException ("Cannot set the speed directly on PassiveVehicle");
-        }
     }
 
     /// <summary>

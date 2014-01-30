@@ -14,17 +14,34 @@ namespace UnitySteer.Base
 public class AutonomousVehicle : TickedVehicle
 {
 	#region Internal state values
-	float _speed;
+	float _speed = 0;
 	#endregion
+
+	/// <summary>
+	/// Acceleration in units per second
+	/// </summary>
+	/// <remarks>>
+	/// We could replace this with a curve in the future.  Then again, if you want
+	/// that sort of acceleration control you can probably write a post-processing
+	/// behavior to handle it.
+	/// </remarks>
+	[SerializeField]
+	float _accelerationRate = 5;
+
+	/// <summary>
+	/// Deceleration in units per second
+	/// </summary>
+	/// <remarks>>
+	/// We could replace this with a curve in the future.
+	/// </remarks>
+	[SerializeField]
+	float _decelerationRate = 8;
+
+
 	
 	public override float Speed
 	{
 		get { return _speed; }
-		protected set 
-		{ 
-			_speed = Mathf.Clamp(value, 0, MaxSpeed); 
-			DesiredSpeed = _speed;
-		}
 	}
 
 	/// <summary>
@@ -34,7 +51,7 @@ public class AutonomousVehicle : TickedVehicle
 	{
 		get
 		{
-			return Transform.forward * _speed;
+			return Transform.forward * Speed;
 		}
 		protected set
 		{
@@ -43,20 +60,36 @@ public class AutonomousVehicle : TickedVehicle
 	}
 	
 	#region Speed-related methods
-	public override void UpdateOrientationVelocity(Vector3 velocity)
+	public override void UpdateDesiredVelocity(Vector3 velocity)
 	{
-		Speed = velocity.magnitude;
+		DesiredSpeed = velocity.magnitude;
 		OrientationVelocity = Mathf.Approximately(_speed, 0) ? Transform.forward : velocity / _speed;
 	}
 
 	protected override Vector3 CalculatePositionDelta(float deltaTime)
 	{
+		/*
+		 * Notice that we clamp the target speed and not the speed itself, 
+		 * because the vehicle's maximum speed might just have been lowered
+		 * and we don't want its actual speed to suddenly drop.
+		 */
+		var targetSpeed = Mathf.Clamp(DesiredSpeed, 0, MaxSpeed);
+		if (Mathf.Approximately(_speed, targetSpeed))
+		{
+			_speed = targetSpeed;
+		}
+		else
+		{
+			var rate = DesiredSpeed > _speed ? _accelerationRate : _decelerationRate;
+			_speed = Mathf.Lerp(_speed, targetSpeed, deltaTime * rate);
+		}
+
 		return Velocity * deltaTime;
 	}
 
 	protected override void ZeroVelocity()
 	{
-		Speed = 0;
+		DesiredSpeed = 0;
 	}
 	#endregion
 }	
