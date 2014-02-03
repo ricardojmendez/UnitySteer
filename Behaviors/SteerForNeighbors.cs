@@ -28,11 +28,11 @@ public abstract class SteerForNeighbors : Steering
 {
 	
 	#region Methods
-	protected override Vector3 CalculateForce ()
+	protected sealed override Vector3 CalculateForce ()
 	{
 		// Return an empty value. Everything will be calculated
 		// by SteerForNeighborGroup.
-		return Vector3.zero;
+		throw new System.NotImplementedException("SteerForNeighbors.CalculateForce should never be called directly");
 	}
 	
 	public abstract Vector3 CalculateNeighborContribution(Vehicle other);

@@ -23,7 +23,7 @@ Also:
 - Vehicle.Speed no longer has a setter to avoid confusion. In most cases chances are users want to adjust the maximum speed, and the only vehicle which currently lets you set the speed is AutonomousVehicle, where it would be promptly overwritten by the velocity calculations.
 - The setter for Vehicle.Velocity is now protected. See the case for Vehicle.Speed.
 - Updated TickedPriorityQueue.dll with bugfixes and new features.
-
+- Sealing SteerForNeighbors.CalculateForce to make it absolutely clear subclasses should not override it.
 
 
 v2.7
