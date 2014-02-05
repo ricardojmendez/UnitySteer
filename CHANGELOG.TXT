@@ -25,6 +25,7 @@ Also:
 - Updated TickedPriorityQueue.dll with bugfixes and new features.
 - Sealing SteerForNeighbors.CalculateForce to make it absolutely clear subclasses should not override it.
 - New SteerForMatchingVelocity behavior.
+- Improvements and new properties on SteerForCohesion and SteerForSeparation.
 
 
 v2.7
