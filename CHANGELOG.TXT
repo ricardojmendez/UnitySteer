@@ -1,6 +1,6 @@
 UnitySteer changelog
 
-v.2.8 (WIP)
+v.3.0 (WIP)
 -----------
 
 MAJOR CHANGE: 
@@ -24,6 +24,7 @@ Also:
 - The setter for Vehicle.Velocity is now protected. See the case for Vehicle.Speed.
 - Updated TickedPriorityQueue.dll with bugfixes and new features.
 - Sealing SteerForNeighbors.CalculateForce to make it absolutely clear subclasses should not override it.
+- New SteerForMatchingVelocity behavior.
 
 
 v2.7
