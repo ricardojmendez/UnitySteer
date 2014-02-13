@@ -39,6 +39,10 @@ public abstract class Steering : MonoBehaviour {
 		get
 		{
 			_force = CalculateForce();
+			if (Vehicle.IsPlanar)
+			{
+				_force.y = 0;
+			}
 			if (_force != Vector3.zero)
 			{
 				if (!ReportedMove && OnStartMoving != null)
