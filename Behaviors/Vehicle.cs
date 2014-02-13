@@ -230,6 +230,17 @@ public abstract class Vehicle : DetectableObject
 	/// their speed.
 	/// </remarks>
 	public float DesiredSpeed { get; protected set; }
+
+	/// <summary>
+	/// The delta time used by this vehicle.
+	/// </summary>
+	/// <value>The delta time.</value>
+	/// <remarks>>
+	/// Vehicles aren't necessarily ticked every frame, so we keep a
+	/// DeltaTime property that steering behaviors can access when
+	/// their CalculateForce is called.
+	/// </remarks>
+	public virtual float DeltaTime { get { return Time.deltaTime; } }
 	
 	#endregion
 

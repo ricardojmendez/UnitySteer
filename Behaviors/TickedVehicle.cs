@@ -47,7 +47,27 @@ public abstract class TickedVehicle : Vehicle
 
 	public CharacterController CharacterController { get; private set; }
 
-	public float LastTickTime { get; private set; }
+	/// <summary>
+	/// Last time the vehicle's tick was completed.
+	/// </summary>
+	/// <value>The last tick time.</value>
+	public float PreviousTickTime { get; private set; }
+
+
+	/// <summary>
+	/// Current time that the tick was called.
+	/// </summary>
+	/// <value>The current tick time.</value>
+	public float CurrentTickTime { get; private set; }
+
+	/// <summary>
+	/// The time delta between now and when the vehicle's previous tick time and the current one.
+	/// </summary>
+	/// <value>The delta time.</value>
+	public override float DeltaTime 
+	{
+		get { return CurrentTickTime - PreviousTickTime; }
+	}
 	
 	/// <summary>
 	/// Velocity vector used to orient the agent.
@@ -83,7 +103,7 @@ public abstract class TickedVehicle : Vehicle
 	void Start()
 	{
 		CharacterController = GetComponent<CharacterController>();
-		LastTickTime = 0;
+		PreviousTickTime = 0;
 	}
 
 	
@@ -143,6 +163,9 @@ public abstract class TickedVehicle : Vehicle
 
 	protected void CalculateForces()
 	{
+		PreviousTickTime = CurrentTickTime;
+		CurrentTickTime = Time.time;
+
 		if (!CanMove || MaxForce == 0 || MaxSpeed == 0)
 		{
 			return;
@@ -158,9 +181,7 @@ public abstract class TickedVehicle : Vehicle
                 force += s.WeighedForce;
             }
         }
-		Profiler.EndSample();
-		
-		LastTickTime = Time.time;
+		Profiler.EndSample();		
 		LastRawForce = force;
 		
 		// Enforce speed limit.  Steering behaviors are expected to return a
