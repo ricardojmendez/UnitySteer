@@ -51,7 +51,7 @@ public class Biped : TickedVehicle
 		{ 
 			_velocity = Vector3.ClampMagnitude(value, MaxSpeed);
 			_speed = _velocity.magnitude;
-			DesiredSpeed = _speed;
+			TargetSpeed = _speed;
 			OrientationVelocity = _speed != 0 ? _velocity / _speed : Vector3.zero;
 		}
 	}
@@ -65,7 +65,7 @@ public class Biped : TickedVehicle
 	}
 	
 	
-	public override void UpdateDesiredVelocity(Vector3 velocity)
+	public override void UpdateOrientationVelocity(Vector3 velocity)
 	{
 		Velocity = velocity;
 	}

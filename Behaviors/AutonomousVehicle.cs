@@ -60,9 +60,9 @@ public class AutonomousVehicle : TickedVehicle
 	}
 	
 	#region Speed-related methods
-	public override void UpdateDesiredVelocity(Vector3 velocity)
+	public override void UpdateOrientationVelocity(Vector3 velocity)
 	{
-		DesiredSpeed = velocity.magnitude;
+		TargetSpeed = velocity.magnitude;
 		OrientationVelocity = Mathf.Approximately(_speed, 0) ? Transform.forward : velocity / _speed;
 	}
 
@@ -73,14 +73,14 @@ public class AutonomousVehicle : TickedVehicle
 		 * because the vehicle's maximum speed might just have been lowered
 		 * and we don't want its actual speed to suddenly drop.
 		 */
-		var targetSpeed = Mathf.Clamp(DesiredSpeed, 0, MaxSpeed);
+		var targetSpeed = Mathf.Clamp(TargetSpeed, 0, MaxSpeed);
 		if (Mathf.Approximately(_speed, targetSpeed))
 		{
 			_speed = targetSpeed;
 		}
 		else
 		{
-			var rate = DesiredSpeed > _speed ? _accelerationRate : _decelerationRate;
+			var rate = TargetSpeed > _speed ? _accelerationRate : _decelerationRate;
 			_speed = Mathf.Lerp(_speed, targetSpeed, deltaTime * rate);
 		}
 
@@ -89,7 +89,7 @@ public class AutonomousVehicle : TickedVehicle
 
 	protected override void ZeroVelocity()
 	{
-		DesiredSpeed = 0;
+		TargetSpeed = 0;
 	}
 	#endregion
 }	

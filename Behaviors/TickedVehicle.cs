@@ -222,9 +222,9 @@ public abstract class TickedVehicle : Vehicle
 			TraceDisplacement(newVelocity, Color.white);
 			newVelocity = adjustedVelocity;
 		}
-		
+
 		// Update vehicle velocity
-		UpdateDesiredVelocity(newVelocity);
+		UpdateOrientationVelocity(newVelocity);
 		Profiler.EndSample();
 	}
 
@@ -239,6 +239,7 @@ public abstract class TickedVehicle : Vehicle
 	{
 		// Euler integrate (per frame) velocity into position
 		var acceleration = CalculatePositionDelta(elapsedTime);
+		acceleration = Vector3.Scale(acceleration, AllowedMovementAxes);
 
 		if (CharacterController != null) 
 		{
@@ -266,14 +267,10 @@ public abstract class TickedVehicle : Vehicle
 		 * disregard very small velocities, to avoid jittery movement on
 		 * rounding errors.
 		 */
- 		if (DesiredSpeed > MinSpeedForTurning && Velocity != Vector3.zero)
+ 		if (TargetSpeed > MinSpeedForTurning && Velocity != Vector3.zero)
 		{
-			var newForward = OrientationVelocity;
-			if (IsPlanar)
-			{
-				newForward.y = 0;
-			}
-			
+			var newForward = Vector3.Scale(OrientationVelocity, AllowedMovementAxes);
+
 			if (TurnTime > 0)
 			{
 				newForward = Vector3.Slerp(Transform.forward, newForward, deltaTime / TurnTime);
@@ -287,7 +284,7 @@ public abstract class TickedVehicle : Vehicle
 	/// manner that is specific to each subclass. 
 	/// </summary>
 	/// <param name="velocity">Newly calculated velocity</param>
-	public abstract void UpdateDesiredVelocity(Vector3 velocity);
+	public abstract void UpdateOrientationVelocity(Vector3 velocity);
 
 	/// <summary>
 	/// Calculates how much the agent's position should change in a manner that

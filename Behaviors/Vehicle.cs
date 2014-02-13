@@ -20,6 +20,7 @@ namespace UnitySteer.Base
 [AddComponentMenu("UnitySteer/Vehicle/Vehicle")]
 public abstract class Vehicle : DetectableObject
 {	
+
 	[SerializeField]
 	float _minSpeedForTurning = 0.1f;
 	
@@ -41,8 +42,8 @@ public abstract class Vehicle : DetectableObject
 	/// <remarks>
 	float _mass = 1;
 	
-	[SerializeField]
-	bool _isPlanar = false;
+	[SerializeField, Vector3Toggle]
+	Vector3 _allowedMovementAxes = Vector3.one;
 	
 	/// <summary>
 	/// The vehicle's arrival radius.
@@ -71,6 +72,11 @@ public abstract class Vehicle : DetectableObject
 
 
 	#region Public properties
+	public Vector3 AllowedMovementAxes
+	{
+		get { return _allowedMovementAxes; }
+	}
+
 	/// <summary>
 	/// Indicates if the current vehicle can move
 	/// </summary>
@@ -84,19 +90,11 @@ public abstract class Vehicle : DetectableObject
 	/// The velocity desired by this vehicle, likely calculated by means 
 	/// similar to what AutonomousVehicle does
 	/// </summary>
-	public Vector3 DesiredVelocity { get; protected set; }
-    
+	public Vector3 DesiredVelocity	{ get; protected set; }
+
     public GameObject GameObject { get; private set; }
 	
-	
-	/// <summary>
-	/// Does the vehicle move in Y space?
-	/// </summary>
-	public bool IsPlanar 
-	{
-		get { return this._isPlanar; }
-		set { _isPlanar = value; }
-	}
+
 
 	/// <summary>
 	/// Mass for the vehicle
@@ -229,7 +227,7 @@ public abstract class Vehicle : DetectableObject
 	/// for example, some subclasses can use a Speedometer to calculate
 	/// their speed.
 	/// </remarks>
-	public float DesiredSpeed { get; protected set; }
+	public float TargetSpeed { get; protected set; }
 
 	/// <summary>
 	/// The delta time used by this vehicle.
@@ -394,14 +392,7 @@ public abstract class Vehicle : DetectableObject
 		 * the vehicle to stop.
 		 */
 		Vector3 force = Vector3.zero;
-		
-		// If we're dealing with a planar vehicle, disregard the target's 
-		// Y position from the calculation
-		if (IsPlanar)
-		{
-			target.y = Position.y;
-		}
-		
+				
 		var difference = target - Position;
         float d = difference.sqrMagnitude;
         if (d > SquaredArrivalRadius)
