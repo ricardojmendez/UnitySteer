@@ -45,7 +45,7 @@ public class SteerForNeighborGroup : Steering
 	float _minRadius = 3f;
 	[SerializeField]
 	float _maxRadius = 7.5f;
-	[SerializeField]
+	[SerializeField, AngleCosine(0, 360)]
 	float _angleCos = 0.7f;	
 	
 	SteerForNeighbors[] _behaviors;
