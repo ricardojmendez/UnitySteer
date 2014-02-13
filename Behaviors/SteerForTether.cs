@@ -45,7 +45,7 @@ public class SteerForTether : Steering
 	
 
 	
-	protected override Vector3 CalculateForce ()
+	protected override Vector3 CalculateForce()
 	{
 		Vector3 steering = Vector3.zero;
 		

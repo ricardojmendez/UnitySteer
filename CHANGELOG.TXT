@@ -3,11 +3,12 @@ UnitySteer changelog
 v.3.0 (WIP)
 -----------
 
-MAJOR CHANGE: 
+BREAKING CHANGES FROM UNITYSTEER 2.x: 
 
 - Removed TickedVehicle._accelerationSmoothRate.  This affects both Bipeds and AutonomousVehicles.
 - New properties on AutonomousVehicle to control the acceleration and deceleration rates.
 - Using the AutonomousVehicle's DesiredSpeed to indicate the speed we're aiming for, and Speed the one we're actually moving at.  Speed will gradually aim for DesiredSpeed at its acceleration/deceleration rates.
+- SteerForWander.SmoothRate is now an amount per second. This causes it to no longer be framerate-dependent.
 
 You can read more about it here: http://arges-systems.com/blog/2014/01/30/unitysteer-acceleration-smoothing-changes/
 
