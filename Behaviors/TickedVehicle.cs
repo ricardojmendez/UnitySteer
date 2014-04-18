@@ -4,6 +4,9 @@ using UnitySteer;
 using System.Linq;
 using TickedPriorityQueue;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Vehicle subclass oriented towards autonomous bipeds and vehicles, which 
 /// will be ticked automatically to calculate their direction.
@@ -11,13 +14,9 @@ using TickedPriorityQueue;
 public abstract class TickedVehicle : Vehicle
 {
 	#region Internal state values
-	Vector3 _smoothedAcceleration = Vector3.zero;
 	TickedObject _tickedObject;
 	UnityTickedQueue _steeringQueue;
 
-	[SerializeField]
-	float _accelerationSmoothRate = 0.4f;
-	
     /// <summary>
     /// The name of the steering queue for this ticked vehicle.
     /// </summary>
@@ -45,26 +44,30 @@ public abstract class TickedVehicle : Vehicle
 	[SerializeField]
 	bool _traceAdjustments = false;	
 	#endregion
-	
-	/// <summary>
-	/// Gets or sets the acceleration smooth rate.
-	/// </summary>
-	/// <value>
-	/// The acceleration smooth rate. The higher it is, the more abrupt 
-	/// the acceleration is likely to be.  A value of close to 0 causes 
-	/// the acceleration to change _very_ slowly. A value of either 0 
-	/// or 1 means that any acceleration changes will be directly applied.
-	/// </value>
-	public float AccelerationSmoothRate 
-	{
-		get { return this._accelerationSmoothRate; 	}
-		set { _accelerationSmoothRate = value; 	}
-	}
-	
 
 	public CharacterController CharacterController { get; private set; }
 
-	public float LastTickTime { get; private set; }
+	/// <summary>
+	/// Last time the vehicle's tick was completed.
+	/// </summary>
+	/// <value>The last tick time.</value>
+	public float PreviousTickTime { get; private set; }
+
+
+	/// <summary>
+	/// Current time that the tick was called.
+	/// </summary>
+	/// <value>The current tick time.</value>
+	public float CurrentTickTime { get; private set; }
+
+	/// <summary>
+	/// The time delta between now and when the vehicle's previous tick time and the current one.
+	/// </summary>
+	/// <value>The delta time.</value>
+	public override float DeltaTime 
+	{
+		get { return CurrentTickTime - PreviousTickTime; }
+	}
 	
 	/// <summary>
 	/// Velocity vector used to orient the agent.
@@ -100,7 +103,7 @@ public abstract class TickedVehicle : Vehicle
 	void Start()
 	{
 		CharacterController = GetComponent<CharacterController>();
-		LastTickTime = 0;
+		PreviousTickTime = 0;
 	}
 
 	
@@ -115,26 +118,54 @@ public abstract class TickedVehicle : Vehicle
 	
 	protected virtual void OnDisable()
 	{
-		if (_steeringQueue != null)
-		{
-			_steeringQueue.Remove(TickedObject);
-		}
+		DeQueue();
 	}
 	#endregion
 	
 
 	#region Velocity / Speed methods
+	void DeQueue()
+	{
+		if (_steeringQueue != null)
+		{
+			_steeringQueue.Remove(TickedObject);
+		}
+	}
+
 	protected void OnUpdateSteering(object obj)
 	{
-		// We just calculate the forces, and expect the radar updates
-		// itself.
-		CalculateForces();
+		if (enabled)
+		{
+			// We just calculate the forces, and expect the radar updates itself.
+			CalculateForces();
+		}
+		else
+		{
+			/*
+			 * This is an interesting edge case.
+			 * 
+			 * Because of the way TickedQueue iterates through its items, we may have
+			 * a case where:
+			 * - The vehicle's OnUpdateSteering is enqueued into the work queue
+			 * - An event previous to it being called causes it to be disabled, and de-queued
+			 * - When the ticked queue gets to it, it executes and re-enqueues it
+			 * 
+			 * Therefore we double check that we're not trying to tick it while disabled, and 
+			 * if so we de-queue it.  Must review TickedQueue to see if there's a way we can 
+			 * easily handle these sort of issues without a performance hit.
+			 */
+			DeQueue();
+			// Debug.LogError(string.Format("{0} HOLD YOUR HORSES. Disabled {1} being ticked", Time.time, this));
+		}
 	}
 
 
 
 	protected void CalculateForces()
 	{
+		PreviousTickTime = CurrentTickTime;
+		CurrentTickTime = Time.time;
+
 		if (!CanMove || MaxForce == 0 || MaxSpeed == 0)
 		{
 			return;
@@ -150,30 +181,22 @@ public abstract class TickedVehicle : Vehicle
                 force += s.WeighedForce;
             }
         }
-		Profiler.EndSample();
-		
-		var elapsedTime = Time.time - LastTickTime;
-		LastTickTime = Time.time;
-		if (IsPlanar)
-		{
-			force.y = 0;
-		}
+		Profiler.EndSample();		
 		LastRawForce = force;
 		
-		// enforce limit on magnitude of steering force
-		Vector3 newAcceleration = Vector3.ClampMagnitude(force / Mass, MaxForce);
+		// Enforce speed limit.  Steering behaviors are expected to return a
+		// final desired velocity, not a acceleration, so we apply them directly.
+		Vector3 newVelocity = Vector3.ClampMagnitude(force / Mass, MaxForce);
 
-		if (newAcceleration.sqrMagnitude == 0)
+		if (newVelocity.sqrMagnitude == 0)
 		{
 			ZeroVelocity();
 			DesiredVelocity = Vector3.zero;
 		}
-
-		var newVelocity = Velocity + newAcceleration * elapsedTime;
-
-		// Enforce speed limit
-		newVelocity = Vector3.ClampMagnitude(newAcceleration, MaxSpeed);
-		DesiredVelocity = newVelocity;
+		else
+		{
+			DesiredVelocity = newVelocity;
+		}
 		
 		// Adjusts the velocity by applying the post-processing behaviors.
 		//
@@ -190,6 +213,8 @@ public abstract class TickedVehicle : Vehicle
             }
 		}
 		Profiler.EndSample();
+
+
 		if (adjustedVelocity != Vector3.zero)
 		{
 			adjustedVelocity = Vector3.ClampMagnitude(adjustedVelocity, MaxSpeed);
@@ -197,7 +222,7 @@ public abstract class TickedVehicle : Vehicle
 			TraceDisplacement(newVelocity, Color.white);
 			newVelocity = adjustedVelocity;
 		}
-		
+
 		// Update vehicle velocity
 		UpdateOrientationVelocity(newVelocity);
 		Profiler.EndSample();
@@ -213,36 +238,20 @@ public abstract class TickedVehicle : Vehicle
 	void ApplySteeringForce(float elapsedTime)
 	{
 		// Euler integrate (per frame) velocity into position
-		var delta = CalculatePositionDelta(elapsedTime);
+		var acceleration = CalculatePositionDelta(elapsedTime);
+		acceleration = Vector3.Scale(acceleration, AllowedMovementAxes);
 
-		/*
-			Damp out abrupt changes and oscillations in steering acceleration
-			(rate is proportional to time step, and clipped to [0,1])
-			
-			The higher the smoothRate parameter, the more noise there is
-			likely to be in the movement.
-		*/
-		if (_accelerationSmoothRate > 0)
-		{
-			_smoothedAcceleration = OpenSteerUtility.blendIntoAccumulator(_accelerationSmoothRate,
-			                                                              delta,
-			                                                              _smoothedAcceleration);
-		}
-		else
-		{
-			_smoothedAcceleration = delta;
-		}
 		if (CharacterController != null) 
 		{
-			CharacterController.Move(_smoothedAcceleration);
+			CharacterController.Move(acceleration);
 		}
 		else if (Rigidbody == null || Rigidbody.isKinematic)
 		{
-			Transform.position += _smoothedAcceleration;
+			Transform.position += acceleration;
 		}
 		else
 		{
-			Rigidbody.MovePosition(Rigidbody.position + _smoothedAcceleration);
+			Rigidbody.MovePosition(Rigidbody.position + acceleration);
 		}
 	}	
 	
@@ -258,14 +267,10 @@ public abstract class TickedVehicle : Vehicle
 		 * disregard very small velocities, to avoid jittery movement on
 		 * rounding errors.
 		 */
- 		if (DesiredSpeed > MinSpeedForTurning && Velocity != Vector3.zero)
+ 		if (TargetSpeed > MinSpeedForTurning && Velocity != Vector3.zero)
 		{
-			var newForward = OrientationVelocity;
-			if (IsPlanar)
-			{
-				newForward.y = 0;
-			}
-			
+			var newForward = Vector3.Scale(OrientationVelocity, AllowedMovementAxes);
+
 			if (TurnTime > 0)
 			{
 				newForward = Vector3.Slerp(Transform.forward, newForward, deltaTime / TurnTime);
@@ -275,9 +280,10 @@ public abstract class TickedVehicle : Vehicle
 	}
 
 	/// <summary>
-	/// Records the velocity that was ust calculated by CalculateForces in a
+	/// Records the velocity that was just calculated by CalculateForces in a
 	/// manner that is specific to each subclass. 
 	/// </summary>
+	/// <param name="velocity">Newly calculated velocity</param>
 	public abstract void UpdateOrientationVelocity(Vector3 velocity);
 
 	/// <summary>
@@ -313,7 +319,7 @@ public abstract class TickedVehicle : Vehicle
 		CanMove = false;
 		ZeroVelocity();
 	}
-
+}
 
 }
 

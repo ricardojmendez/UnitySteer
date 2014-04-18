@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
-/// Post-processing bahavior that ensures that the vehicle always moves 
+/// Post-processing behavior that ensures that the vehicle always moves 
 /// at at least a minimum speed
 /// </summary>
 /// <remarks>
@@ -39,14 +42,16 @@ public class SteerForMinimumSpeed : Steering
 	protected override Vector3 CalculateForce()
 	{
 		Vector3 result = Vehicle.DesiredVelocity;
-		if (_moveForwardWhenZero && Mathf.Approximately(Vehicle.DesiredSpeed, 0))
+		if (_moveForwardWhenZero && Mathf.Approximately(Vehicle.TargetSpeed, 0))
 		{
 			result = Vehicle.Transform.forward * _minimumSpeed;
 		}
-		else if (Vehicle.DesiredSpeed < _minimumSpeed)
+		else if (Vehicle.TargetSpeed < _minimumSpeed)
 		{
 			result = Vehicle.DesiredVelocity.normalized * _minimumSpeed;
 		}
 		return result;
 	}
+}
+
 }

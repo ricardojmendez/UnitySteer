@@ -4,6 +4,9 @@ using UnitySteer;
 using System.Linq;
 using TickedPriorityQueue;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Vehicle subclass oriented towards vehicles that are controlled by
 /// an separate method, and meant to just provide an interface to obtain
@@ -39,9 +42,6 @@ public class PassiveVehicle : Vehicle {
         get { 
             return Speedometer == null ? _speed : Speedometer.Speed; 
         }
-        set {
-            throw new System.NotSupportedException ("Cannot set the speed directly on PassiveVehicle");
-        }
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ public class PassiveVehicle : Vehicle {
         get {
             return Transform.forward * _speed;
         }
-        set {
+		protected set {
             throw new System.NotSupportedException ("Cannot set the velocity directly on PassiveCehicle");
         }
     }
@@ -63,7 +63,7 @@ public class PassiveVehicle : Vehicle {
 			Velocity = Vector3.zero;
 		}
 	}
-
+}
 
 }
 

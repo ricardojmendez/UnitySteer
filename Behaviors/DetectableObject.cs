@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnitySteer;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Parent class for objects that vehicles can aim for, be it other vehicles or
 /// static objects.
@@ -178,5 +181,7 @@ public class DetectableObject : MonoBehaviour
 		}
 	}
 	#endregion
+}
+
 }
 

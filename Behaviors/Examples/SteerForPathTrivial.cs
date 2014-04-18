@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using UnitySteer;
 
+namespace UnitySteer.Base
+{
 
 /// <summary>
 /// Steers a vehicle to follow a path
@@ -105,4 +107,6 @@ public class SteerForPathTrivial : Steering
 		}
 		return closest;
 	}
+}
+
 }

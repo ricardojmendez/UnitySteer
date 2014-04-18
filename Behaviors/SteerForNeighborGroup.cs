@@ -5,6 +5,9 @@ using UnitySteer;
 using UnitySteer.Helpers;
 
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steering behavior which goes through all SteerForNeighbor behaviors
 /// attached to the object and calls their CalculateNeighborContribution
@@ -42,7 +45,7 @@ public class SteerForNeighborGroup : Steering
 	float _minRadius = 3f;
 	[SerializeField]
 	float _maxRadius = 7.5f;
-	[SerializeField]
+	[SerializeField, AngleCosine(0, 360)]
 	float _angleCos = 0.7f;	
 	
 	SteerForNeighbors[] _behaviors;
@@ -194,5 +197,6 @@ public class SteerForNeighborGroup : Steering
 		return steering;
 	}
 	#endregion
+}
 
 }

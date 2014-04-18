@@ -4,6 +4,9 @@ using UnitySteer;
 using System.Linq;
 using TickedPriorityQueue;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Vehicle subclass oriented towards autonomous bipeds, which have a movement
 /// vector which can be separate from their forward vector.   
@@ -36,10 +39,6 @@ public class Biped : TickedVehicle
 		{ 
 			return Speedometer == null ? _speed : Speedometer.Speed; 
 		}
-		set
-		{
-			throw new System.NotSupportedException("Cannot set the speed directly on Bipeds");
-		}
 	}
 
 	/// <summary>
@@ -48,11 +47,11 @@ public class Biped : TickedVehicle
 	public override Vector3 Velocity
 	{
 		get { return _velocity; }
-		set 
+		protected set 
 		{ 
 			_velocity = Vector3.ClampMagnitude(value, MaxSpeed);
 			_speed = _velocity.magnitude;
-			DesiredSpeed = _speed;
+			TargetSpeed = _speed;
 			OrientationVelocity = _speed != 0 ? _velocity / _speed : Vector3.zero;
 		}
 	}
@@ -82,6 +81,8 @@ public class Biped : TickedVehicle
 	}
 	#endregion
 	
+}
+
 }
 
 

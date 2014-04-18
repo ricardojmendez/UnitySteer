@@ -2,6 +2,9 @@ using UnityEngine;
 using UnitySteer;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle to avoid another CharacterController (very basic future position prediction)
 /// </summary>
@@ -59,5 +62,6 @@ public class SteerForCharacterEvasion : Steering
 		Vector3 desiredVelocity = Vehicle.Position - target;
 		return desiredVelocity - Vehicle.Velocity;		
 	}
-	
+}
+
 }

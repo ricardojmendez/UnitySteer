@@ -1,6 +1,9 @@
 // #define DEBUG_COMFORT_DISTANCE
 using UnityEngine;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle to remain in cohesion with neighbors
 /// </summary>
@@ -36,9 +39,14 @@ public class SteerForCohesion : SteerForNeighbors
 	{
 		// accumulate sum of forces leading us towards neighbor's positions
 		var distance = other.Position - Vehicle.Position;
-		if (distance.sqrMagnitude < _comfortDistanceSquared)
+		var sqrMag = distance.sqrMagnitude;
+		if (sqrMag < _comfortDistanceSquared)
 		{
 			distance = Vector3.zero;
+		}
+		else
+		{
+			distance *= 1 / sqrMag;
 		}
 		return distance;
 	}
@@ -51,3 +59,4 @@ public class SteerForCohesion : SteerForNeighbors
 	}
 }
 
+}

@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 [AddComponentMenu("UnitySteer/Steer/... to Follow")]
 public class SteerToFollow : Steering
 {
@@ -79,4 +82,5 @@ public class SteerToFollow : Steering
 	}
 }
 
+}
 

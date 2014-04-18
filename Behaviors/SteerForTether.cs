@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnitySteer.Helpers;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle to keep within a certain range of a point
 /// </summary>
@@ -16,6 +19,11 @@ public class SteerForTether : Steering
 	
 	
 	#region Public properties
+	public override bool IsPostProcess 
+	{
+		get { return true; }
+	}
+
 	public float MaximumDistance {
 		get {
 			return this._maximumDistance;
@@ -37,7 +45,7 @@ public class SteerForTether : Steering
 	
 
 	
-	protected override Vector3 CalculateForce ()
+	protected override Vector3 CalculateForce()
 	{
 		Vector3 steering = Vector3.zero;
 		
@@ -45,9 +53,10 @@ public class SteerForTether : Steering
 		var distance = difference.magnitude;
 		if (distance > _maximumDistance)
 		{
-			steering = difference - Vehicle.Velocity;
+			steering = (difference + Vehicle.DesiredVelocity) / 2;
 		}
 		return steering;
 	}
 }
 
+}

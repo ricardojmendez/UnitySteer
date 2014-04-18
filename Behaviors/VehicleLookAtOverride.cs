@@ -1,6 +1,9 @@
-using UnityEngine;
 using System.Collections;
-using UnitySteer;
+using UnityEngine;
+using UnitySteer.Base;
+
+namespace UnitySteer.Tools
+{
 
 /// <summary>
 /// Allows an override of the Vehicle's forward vector, based on the last 
@@ -66,4 +69,6 @@ public class VehicleLookAtOverride : MonoBehaviour {
 			transform.LookAt(transform.position + _smoothed);
 		}
 	}
+}
+
 }

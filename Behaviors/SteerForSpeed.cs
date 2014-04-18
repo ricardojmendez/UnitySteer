@@ -1,5 +1,9 @@
 using UnityEngine;
 
+
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Behavior that will aim to achieve a constant speed along the vehicle's forward vector
 /// </summary>
@@ -35,4 +39,6 @@ public class SteerForSpeed : Steering {
 	{
 		return Vehicle.GetTargetSpeedVector(TargetSpeed);
 	}
+}
+
 }

@@ -1,5 +1,8 @@
 using UnityEngine;
 
+namespace UnitySteer.Base
+{
+
 /// <summary>
 /// Steers a vehicle to keep separate from neighbors
 /// </summary>
@@ -23,7 +26,22 @@ public class SteerForSeparation : SteerForNeighbors
 	[SerializeField]
 	float _multiplierInsideComfortDistance = 1;
 
+	/// <summary>
+	/// The range beyond which we no longer apply any separation.
+	/// </summary>
+	[SerializeField]
+	float _maximumSeparation = 2f;
+
+	/// <summary>
+	/// How much impact the radius of the vehicles involved makes. If 0,
+	/// we return a direction vector, otherwise we scale it by the sum
+	/// of the radii multiplied by the impact.
+	/// </summary>
+	[SerializeField]
+	float _vehicleRadiusImpact = 2;
+
 	float _comfortDistanceSquared;
+	float _maximumSeparationSquared;
 
 
 	public float ComfortDistance
@@ -36,28 +54,51 @@ public class SteerForSeparation : SteerForNeighbors
 		}
 	}
 
+	public float MaximumSeparation
+	{
+		get { return _maximumSeparation; }
+		set
+		{
+			_maximumSeparation = value;
+			_maximumSeparationSquared = value * value;
+		}
+	}
+
 	protected override void Start()
 	{
 		_comfortDistanceSquared = _comfortDistance * _comfortDistance;
+		_maximumSeparationSquared = _maximumSeparation * _maximumSeparation;
 	}
 
 
 	#region Methods
 	public override Vector3 CalculateNeighborContribution(Vehicle other)
 	{
+		Vector3 steering = Vector3.zero;
+
 		// add in steering contribution
 		// (opposite of the offset direction, divided once by distance
 		// to normalize, divided another time to get 1/d falloff)
 		Vector3 offset = other.Position - Vehicle.Position;
 
 		var offsetSqrMag = offset.sqrMagnitude;
-		Vector3 steering = (offset / -offsetSqrMag);	
-		if (_multiplierInsideComfortDistance != 1 && offsetSqrMag < _comfortDistanceSquared)
+		if (offsetSqrMag <= _maximumSeparationSquared)
 		{
-			steering *= _multiplierInsideComfortDistance;
+			steering = (offset / -offsetSqrMag);
+			if (_multiplierInsideComfortDistance != 1 && offsetSqrMag < _comfortDistanceSquared)
+			{
+				steering *= _multiplierInsideComfortDistance;
+			}
+
+			if (_vehicleRadiusImpact > 0)
+			{
+				steering *= other.ScaledRadius * Vehicle.ScaledRadius * _vehicleRadiusImpact;
+			}
+
 		}
 		return steering;
 	}
 	#endregion
 }
 
+}
