@@ -110,8 +110,8 @@ public class SteerForPathSimplified : Steering
 		// calculation. Otherwise the vehicle will remain where it is if he
 		// starts within the path, because its current position matches its
 		// future path position
-		float speed = (Vehicle.Speed > _minSpeedToConsider) ? Vehicle.Speed : _minSpeedToConsider + _predictionTime;
-		
+		float speed = Mathf.Max(Vehicle.Speed, _minSpeedToConsider);
+
 		// our goal will be offset from our path distance by this amount
 		float pathDistanceOffset = _predictionTime * speed;
 		
