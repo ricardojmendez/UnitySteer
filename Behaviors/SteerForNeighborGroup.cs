@@ -45,6 +45,19 @@ public class SteerForNeighborGroup : Steering
 	float _minRadius = 3f;
 	[SerializeField]
 	float _maxRadius = 7.5f;
+
+	/// <summary>
+	/// Angle cosine for detected vehicle heading comparison
+	/// </summary>
+	/// <remarks>
+	/// Detected vehicles are evaluated in terms of orientation difference 
+	/// and distance from the owner vehicle.  Any vehicle closer than the
+	/// minimum radius is considered to be definitely a neighbor; any vehicle
+	/// beyond the maxium radius is disregarded.  Vehicles between both the
+	/// minimum and maximum radius are evaluated for their heading, and if
+	/// the difference in angles is lower than the one specified by the 
+	/// behavior's angleCos, they are considered neighbors.
+	/// </remarks>
 	[SerializeField, AngleCosine(0, 360)]
 	float _angleCos = 0.7f;	
 	
@@ -61,7 +74,8 @@ public class SteerForNeighborGroup : Steering
 	/// Cosine of the maximum angle
 	/// </summary>
 	/// <remarks>All boid-like behaviors have an angle that helps limit them.
-	/// We store the cosine of the angle for faster calculations</remarks>
+	/// We store the cosine of the angle for faster calculations
+	/// </remarks>
 	public float AngleCos {
 		get {
 			return this._angleCos;
@@ -89,7 +103,8 @@ public class SteerForNeighborGroup : Steering
 
 
 	/// <summary>
-	/// Minimum radius in which another vehicle is definitely considered in the neighborhood
+	/// Minimum radius in which another vehicle is definitely considered to be a neighbor,
+	/// regarding of their relative orientation to the that owns this behavior.
 	/// </summary>
 	public float MinRadius {
 		get {
@@ -101,7 +116,8 @@ public class SteerForNeighborGroup : Steering
 	}	
 
 	/// <summary>
-	/// Maximum neighborhood radius
+	/// Maximum radius for vehicles to be considered neighbors. Any vehicle beyond this
+	/// range will be disregarded for neighbor calculations.
 	/// </summary>
 	public float MaxRadius {
 		get {

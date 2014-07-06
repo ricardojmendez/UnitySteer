@@ -92,7 +92,7 @@ public abstract class Steering : MonoBehaviour {
 	/// Gets or sets a value indicating whether this <see cref="UnitySteer.Base.Steering"/> should recalculate its force.
 	/// </summary>
 	/// <value><c>true</c> if recalculate force; otherwise, <c>false</c>.</value>
-	public bool ShouldRetryForce { get; protected set; }
+	public bool ShouldRetryForce { get; set; }
 	
 	/// <summary>
 	/// Have we reported that we stopped moving?

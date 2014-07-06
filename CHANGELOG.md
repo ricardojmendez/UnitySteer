@@ -6,7 +6,7 @@ BREAKING CHANGES FROM UNITYSTEER 2.x:
 
 * Removed TickedVehicle._accelerationSmoothRate.  This affects both Bipeds and AutonomousVehicles.
 * New properties on AutonomousVehicle to control the acceleration and deceleration rates.
-* Using the AutonomousVehicle's DesiredSpeed to indicate the speed we're aiming for, and Speed the one we're actually moving at.  Speed will gradually aim for DesiredSpeed at its acceleration/deceleration rates.
+* Using the AutonomousVehicle's TargetSpeed to indicate the speed we're aiming for, and Speed the one we're actually moving at.  Speed will gradually aim for TargetSpeed at its acceleration/deceleration rates.
 * SteerForWander.SmoothRate is now an amount per second. This causes it to no longer be framerate-dependent.
 * Replaced IsPlanar with AllowedMovementAxes. We can now limit movement on any arbitrary axis, not only the Y.
 * Removed obsolete SteerForSphericalObstacleAvoidance.  SteerForSphericalObstacleRepulsion is now simply called SteerForSphericalObstacles.
@@ -27,6 +27,7 @@ Also:
 * Updated TickedPriorityQueue.dll with bugfixes and new features.
 * Sealing SteerForNeighbors.CalculateForce to make it absolutely clear subclasses should not override it.
 * New SteerForMatchingVelocity behavior.
+* Renamed DesiredSpeed to TargetSpeed, so that it's clear that it's not a function of DesiredVelocity.
 * Improvements and new properties on SteerForCohesion and SteerForSeparation.
 * New Vehicle.DeltaTime property.
 

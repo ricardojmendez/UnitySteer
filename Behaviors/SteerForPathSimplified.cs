@@ -9,15 +9,26 @@ namespace UnitySteer.Base
 /// Steers a vehicle to follow a path
 /// </summary>
 /// <remarks>
-/// Based on SteerToFollowPath.
+/// Based on SteerToFollowPath.  It won't necessarily stick to the straight 
+/// line defined by the path segments, but will instead estimate a future 
+/// path position based on the _predictionTime property and aim for that 
+/// position. This means the vehicle is likely to cut corners if the 
+/// prediction time is too far ahead (which could be useful for spaceships).
 /// </remarks>
 [AddComponentMenu("UnitySteer/Steer/... for PathSimplified")]
 public class SteerForPathSimplified : Steering
 {	
 	#region Private fields
+	/// <summary>
+	/// How many seconds ahead to predict the vehicle's position in the 
+	/// path in order to calculate the point to aim for.
+	/// </summary>
 	[SerializeField]
 	float _predictionTime = 1.5f;
-	
+
+	/// <summary>
+	/// Minimum vehicle speed to consider when estimating future position.
+	/// </summary>
 	[SerializeField]
 	float _minSpeedToConsider = 0.25f;
 
@@ -99,8 +110,8 @@ public class SteerForPathSimplified : Steering
 		// calculation. Otherwise the vehicle will remain where it is if he
 		// starts within the path, because its current position matches its
 		// future path position
-		float speed = (Vehicle.Speed > _minSpeedToConsider) ? Vehicle.Speed : _minSpeedToConsider + _predictionTime;
-		
+		float speed = Mathf.Max(Vehicle.Speed, _minSpeedToConsider);
+
 		// our goal will be offset from our path distance by this amount
 		float pathDistanceOffset = _predictionTime * speed;
 		

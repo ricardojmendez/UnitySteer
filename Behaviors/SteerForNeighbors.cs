@@ -32,7 +32,8 @@ public abstract class SteerForNeighbors : Steering
 	{
 		// Return an empty value. Everything will be calculated
 		// by SteerForNeighborGroup.
-		throw new System.NotImplementedException("SteerForNeighbors.CalculateForce should never be called directly");
+		throw new System.NotImplementedException("SteerForNeighbors.CalculateForce should never be called directly.  " +
+			"Did you enable a SteerForNeighbors subclass manually? They are disabled by SteerForNeighborGroup on Start.");
 	}
 	
 	public abstract Vector3 CalculateNeighborContribution(Vehicle other);
