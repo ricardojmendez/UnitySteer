@@ -103,7 +103,7 @@ public abstract class TickedVehicle : Vehicle
 	void Start()
 	{
 		CharacterController = GetComponent<CharacterController>();
-		PreviousTickTime = 0;
+		PreviousTickTime = Time.time;
 	}
 
 	
