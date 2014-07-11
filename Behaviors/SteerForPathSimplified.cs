@@ -164,7 +164,7 @@ public class SteerForPathSimplified : Steering
 			 * where we're aiming to from the get go. Might leave as is, considering
 			 * that this is supposed to be just a sample behavior.
 			 */
-			target = Path.MapPathDistanceToPoint(targetPathDistance + 1.5f * Vehicle.ArrivalRadius);
+			target = Path.MapPathDistanceToPoint(targetPathDistance);
 			seek = Vehicle.GetSeekVector(target, false);
 		}
 		
