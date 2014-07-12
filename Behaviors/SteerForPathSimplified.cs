@@ -40,13 +40,10 @@ public class SteerForPathSimplified : Steering
 	/// <summary>
 	/// How far ahead to estimate our position
 	/// </summary>
-	public float PredictionTime {
-		get {
-			return this._predictionTime;
-		}
-		set {
-			_predictionTime = value;
-		}
+	public float PredictionTime 
+    {
+		get { return this._predictionTime; }
+        set { _predictionTime = Mathf.Max(value, 0); }
 	}
 
 	/// <summary>
