@@ -62,7 +62,7 @@ public class SteerForPathSimplified : Steering
 	/// <value>The last path percentage evaluated.</value>
 	public float PathPercentTraversed 
 	{ 
-		get { return (Path != null) ? DistanceAlongPath / Path.TotalPathLength : 0; }
+		get { return (Path != null && Path.TotalPathLength > 0) ? DistanceAlongPath / Path.TotalPathLength : 0; }
 	}
 	
 	/// <summary>
