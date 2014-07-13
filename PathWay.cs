@@ -61,19 +61,36 @@ namespace UnitySteer
 		public abstract int SegmentCount { get; }
 	    
         
-        // Given an arbitrary point ("A"), returns the nearest point ("P") on
-        // this path.  Also returns, via output arguments, the path tangent at
-        // P and a measure of how far A is outside the Pathway's "tube".  Note
-        // that a negative distance indicates A is inside the Pathway.
-		public abstract Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition tStruct);
+        /// <summary>
+        /// Given an arbitrary point ("A"), returns the nearest point ("P") on
+        /// this path.  Subclasses will also fill in extra information about the
+        /// relative path position on the pathRelative structure.
+        /// </summary>
+        /// <param name="point">Reference point.</param>
+        /// <param name="pathRelative">Structure indicating the relative path position.</param>
+        /// <returns>The closest point to the received reference point.</returns>
+        public abstract Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative);
 
-        // given a distance along the path, convert it to a point on the path
-		public abstract Vector3 MapPathDistanceToPoint(float pathDistance);
+        /// <summary>
+        /// Given a distance along the path, convert it to a specific point on the path.
+        /// </summary>
+        /// <param name="pathDistance">Path distance to calculate corresponding point for.</param>
+        /// <returns>The corresponding path point to the path distance.</returns>
+        public abstract Vector3 MapPathDistanceToPoint(float pathDistance);
 
         // Given an arbitrary point, convert it to a distance along the path.
-		public abstract float MapPointToPathDistance(Vector3 point);
+        /// <summary>
+        /// Maps the reference point to a distance along the path.
+        /// </summary>
+        /// <param name="point">Reference point.</param>
+        /// <returns>The distance along the path for the point.</returns>
+        public abstract float MapPointToPathDistance(Vector3 point);
 
-        // is the given point inside the path tube?
+        /// <summary>
+        /// Determines whether the received point is inside the path.
+        /// </summary>
+        /// <param name="point">Point to evaluate.</param>
+        /// <returns><c>true</c> if the point is inside the path; otherwise, <c>false</c>.</returns>
         public bool IsInsidePath(Vector3 point)
         {
             var tStruct = new PathRelativePosition();
@@ -82,7 +99,11 @@ namespace UnitySteer
             return tStruct.outside < 0;
         }
 
-        // how far outside path tube is the given point?  (negative is inside)
+        /// <summary>
+        /// Calculates how far outside the path is the reference point.
+        /// </summary>
+        /// <param name="point">Reference point.</param>
+        /// <returns>How far outside the path is the reference point.</returns>
         public float HowFarOutsidePath(Vector3 point)
         {
             var tStruct = new PathRelativePosition();
@@ -92,8 +113,6 @@ namespace UnitySteer
         }
 		
 		
-		public virtual void DrawGizmos()
-		{
-		}
+        public abstract void DrawGizmos();
     }
 }
