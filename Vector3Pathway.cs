@@ -135,7 +135,7 @@ namespace UnitySteer
             }
         }
         
-        public void AddPoint(Vector3 point)
+        void AddPoint(Vector3 point)
         {
             if (_points.Count > 0)
             {
