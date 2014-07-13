@@ -39,7 +39,6 @@ namespace UnitySteer
         private float       _totalPathLength;
         
         private IList<float>   _lengths;
-        private IList<Vector3> _normals;
         private IList<Vector3> _points;
         
         
@@ -47,7 +46,9 @@ namespace UnitySteer
         {
             get { return _path; }
         }
-        
+
+        public IList<Vector3> Normals { get; private set; }
+
         public override Vector3 FirstPoint 
         {
             get { return _points.FirstOrDefault(); }
@@ -58,7 +59,7 @@ namespace UnitySteer
             get { return _points.LastOrDefault(); }
         }
         
-        public override float TotalPathLength 
+        public override float TotalPathLength
         {
             get { return _totalPathLength; }
         }
@@ -72,7 +73,7 @@ namespace UnitySteer
         public Vector3Pathway () {
             _points = new List<Vector3>(10);
             _lengths = new List<float>(10);
-            _normals = new List<Vector3>(10);
+            Normals = new List<Vector3>(10);
         }
         
         
@@ -108,7 +109,7 @@ namespace UnitySteer
         /// <param name="cyclic">
         /// Is the path cyclic?
         /// </param>
-        public void Initialize (IList<Vector3> path, float radius, bool cyclic)
+        public virtual void Initialize (IList<Vector3> path, float radius, bool cyclic)
         {
             _path = path;
             Radius  = radius;
@@ -121,7 +122,7 @@ namespace UnitySteer
             
             _points  = new List<Vector3>(pointCount);
             _lengths = new List<float>(pointCount);
-            _normals = new List<Vector3>(pointCount);
+            Normals = new List<Vector3>(pointCount);
             
             // loop over all points
             for (int i = 0; i < pointCount; i++)
@@ -143,13 +144,13 @@ namespace UnitySteer
                 var normal = point - _points.Last();
                 var length = normal.magnitude;
                 _lengths.Add(length);
-                _normals.Add(normal / length);
+                Normals.Add(normal / length);
                 // keep running total of segment lengths
                 _totalPathLength += length;
             }
             else
             {
-                _normals.Add(Vector3.zero);
+                Normals.Add(Vector3.zero);
                 _lengths.Add(0);
             }
             _points.Add(point);
@@ -175,7 +176,7 @@ namespace UnitySteer
             for (int i = 1; i < _points.Count; i++)
             {
                 float   segmentLength = _lengths[i];
-                Vector3 segmentNormal = _normals[i];
+                Vector3 segmentNormal = Normals[i];
                 Vector3 chosenPoint = Vector3.zero;
                 d = OpenSteerUtility.PointToSegmentDistance(point, _points[i-1], _points[i], 
                                                             segmentNormal, segmentLength,  
@@ -218,7 +219,7 @@ namespace UnitySteer
             {
                 float   segmentProjection = 0;
                 float   segmentLength = _lengths[i];
-                Vector3 segmentNormal = _normals[i];
+                Vector3 segmentNormal = Normals[i];
                 d = OpenSteerUtility.PointToSegmentDistance(point, _points[i-1], _points[i], 
                                                             segmentNormal, segmentLength, 
                                                             ref segmentProjection);
