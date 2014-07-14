@@ -57,10 +57,10 @@ public class SteerForWander : Steering
 		float speed = Vehicle.MaxSpeed;
 
 		// random walk WanderSide and WanderUp between -1 and +1        
-        var randomSide = OpenSteerUtility.scalarRandomWalk(_wanderSide, speed, -_maxLatitudeSide, _maxLatitudeSide);
-        var randomUp = OpenSteerUtility.scalarRandomWalk(_wanderUp, speed, -_maxLatitudeUp, _maxLatitudeUp);
-		_wanderSide = OpenSteerUtility.blendIntoAccumulator(_smoothRate * Vehicle.DeltaTime, randomSide, _wanderSide);
-		_wanderUp = OpenSteerUtility.blendIntoAccumulator(_smoothRate * Vehicle.DeltaTime, randomUp, _wanderUp);
+        var randomSide = OpenSteerUtility.ScalarRandomWalk(_wanderSide, speed, -_maxLatitudeSide, _maxLatitudeSide);
+        var randomUp = OpenSteerUtility.ScalarRandomWalk(_wanderUp, speed, -_maxLatitudeUp, _maxLatitudeUp);
+		_wanderSide = OpenSteerUtility.BlendIntoAccumulator(_smoothRate * Vehicle.DeltaTime, randomSide, _wanderSide);
+		_wanderUp = OpenSteerUtility.BlendIntoAccumulator(_smoothRate * Vehicle.DeltaTime, randomUp, _wanderUp);
         
         
 		Vector3	 result = (Vehicle.Transform.right * _wanderSide) + (Vehicle.Transform.up * _wanderUp) + Vehicle.Transform.forward;

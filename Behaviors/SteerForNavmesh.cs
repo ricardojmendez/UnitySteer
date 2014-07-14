@@ -181,7 +181,7 @@ public class SteerForNavmesh : Steering {
 		
 		Profiler.BeginSample("Calculate NavMesh avoidance");
 		var moveDirection = Vehicle.Velocity.normalized;
-		var avoidance =	 OpenSteerUtility.perpendicularComponent(hit.normal, moveDirection);
+		var avoidance =	 OpenSteerUtility.PerpendicularComponent(hit.normal, moveDirection);
 
 		avoidance.Normalize();
 

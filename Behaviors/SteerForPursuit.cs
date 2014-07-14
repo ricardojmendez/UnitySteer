@@ -97,8 +97,8 @@ public class SteerForPursuit : Steering
 			float forwardness = Vector3.Dot(transform.forward, unitOffset);
 
 			float directTravelTime = distance / Vehicle.Speed;
-			int f = OpenSteerUtility.intervalComparison (forwardness,  -0.707f, 0.707f);
-			int p = OpenSteerUtility.intervalComparison (parallelness, -0.707f, 0.707f);
+			int f = OpenSteerUtility.IntervalComparison (forwardness,  -0.707f, 0.707f);
+			int p = OpenSteerUtility.IntervalComparison (parallelness, -0.707f, 0.707f);
 
 			float timeFactor = 0;		// to be filled in below
 
