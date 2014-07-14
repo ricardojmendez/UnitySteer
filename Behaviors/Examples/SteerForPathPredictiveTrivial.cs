@@ -1,4 +1,5 @@
 #define TRACE_PATH
+using System;
 using UnityEngine;
 
 namespace UnitySteer.Base
@@ -17,6 +18,7 @@ namespace UnitySteer.Base
 /// Vector3Pathway.MapPointToPath.
 /// </remarks>
 [AddComponentMenu("UnitySteer/Steer/... for Path - Predictive Trivial")]
+[Obsolete("This is only a trivial sample behavior, using it is NOT recommended", true)]
 public class SteerForPathPredictiveTrivial : Steering
 {
 	

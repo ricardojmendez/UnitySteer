@@ -16,6 +16,7 @@ namespace UnitySteer.Base
 /// Movement *will* look robotic due to its simplicity.
 /// </remarks>
 [AddComponentMenu("UnitySteer/Steer/... for Path - Trivial")]
+[System.Obsolete("This is only a trivial sample behavior, using it is NOT recommended", true)]
 public class SteerForPathTrivial : Steering
 {
 	
