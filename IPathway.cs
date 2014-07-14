@@ -2,32 +2,53 @@ using UnityEngine;
 
 namespace UnitySteer
 {
-	public interface IPathway
-	{
-		float TotalPathLength { get; }
-		Vector3 FirstPoint { get; }
-		Vector3 LastPoint { get; }
-		int SegmentCount { get; }
-		float Radius { get; set; }
+    public interface IPathway
+    {
+        float TotalPathLength { get; }
+        Vector3 FirstPoint { get; }
+        Vector3 LastPoint { get; }
+        int SegmentCount { get; }
+        float Radius { get; set; }
 
-		// Given an arbitrary point ("A"), returns the nearest point ("P") on
-		// this path.  Also returns, via output arguments, the path tangent at
-		// P and a measure of how far A is outside the Pathway's "tube".  Note
-		// that a negative distance indicates A is inside the Pathway.
-		Vector3 MapPointToPath (Vector3 point, ref PathRelativePosition tStruct);
+        /// <summary>
+        /// Given an arbitrary point ("A"), returns the nearest point ("P") on
+        /// this path.  Also returns, via output arguments, the path tangent at
+        /// P and a measure of how far A is outside the Pathway's "tube".  Note
+        /// that a negative distance indicates A is inside the Pathway.
+        /// </summary>
+        /// <param name="point">Reference point.</param>
+        /// <param name="pathRelative">Structure indicating the relative path position.</param>
+        /// <returns>The closest point to the received reference point.</returns>
+        Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative);
 
-		// given a distance along the path, convert it to a point on the path
-		Vector3 MapPathDistanceToPoint (float pathDistance);
+        /// <summary>
+        /// Given a distance along the path, convert it to a specific point on the path.
+        /// </summary>
+        /// <param name="pathDistance">Path distance to calculate corresponding point for.</param>
+        /// <returns>The corresponding path point to the path distance.</returns>
+        Vector3 MapPathDistanceToPoint(float pathDistance);
 
-		// Given an arbitrary point, convert it to a distance along the path.
-		float MapPointToPathDistance (Vector3 point);
+        /// <summary>
+        /// Maps the reference point to a distance along the path.
+        /// </summary>
+        /// <param name="point">Reference point.</param>
+        /// <returns>The distance along the path for the point.</returns>
+        float MapPointToPathDistance(Vector3 point);
 
-		// is the given point inside the path tube?
-		bool IsInsidePath (Vector3 point);
+        /// <summary>
+        /// Determines whether the received point is inside the path.
+        /// </summary>
+        /// <param name="point">Point to evaluate.</param>
+        /// <returns><c>true</c> if the point is inside the path; otherwise, <c>false</c>.</returns>
+        bool IsInsidePath(Vector3 point);
 
-		// how far outside path tube is the given point?  (negative is inside)
-		float HowFarOutsidePath (Vector3 point);
+        /// <summary>
+        /// Calculates how far outside the path is the reference point.
+        /// </summary>
+        /// <param name="point">Reference point.</param>
+        /// <returns>How far outside the path is the reference point.</returns>
+        float HowFarOutsidePath(Vector3 point);
 
-		void DrawGizmos ();
-	}
+        void DrawGizmos();
+    }
 }
