@@ -34,10 +34,12 @@ namespace UnitySteer
     /// <summary>
     /// Represents a Pathway created from a list of Vector3s
     /// </summary>
-    public class Vector3Pathway : Pathway
+    public class Vector3Pathway : IPathway
     {
         private IList<float> _lengths;
         private float _totalPathLength;
+
+        public float Radius { get; set; }
 
         public Vector3Pathway()
         {
@@ -72,22 +74,22 @@ namespace UnitySteer
         public IList<Vector3> Path { get; private set; }
 
 
-        public override Vector3 FirstPoint
+        public Vector3 FirstPoint
         {
             get { return Path.FirstOrDefault(); }
         }
 
-        public override Vector3 LastPoint
+        public Vector3 LastPoint
         {
             get { return Path.LastOrDefault(); }
         }
 
-        public override float TotalPathLength
+        public float TotalPathLength
         {
             get { return _totalPathLength; }
         }
 
-        public override int SegmentCount
+        public int SegmentCount
         {
             get { return Path.Count; }
         }
@@ -150,7 +152,7 @@ namespace UnitySteer
         /// <param name="point">Reference point.</param>
         /// <param name="pathRelative">Structure indicating the relative path position.</param>
         /// <returns>The closest point to the received reference point.</returns>
-        public override Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative)
+        public virtual Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative)
         {
             var minDistance = float.MaxValue;
             var onPath = Vector3.zero;
@@ -187,7 +189,7 @@ namespace UnitySteer
         /// </summary>
         /// <param name="point">Reference point.</param>
         /// <returns>The distance along the path for the point.</returns>
-        public override float MapPointToPathDistance(Vector3 point)
+        public virtual float MapPointToPathDistance(Vector3 point)
         {
             if (Path.Count < 2)
                 return 0;
@@ -222,7 +224,7 @@ namespace UnitySteer
         /// </summary>
         /// <param name="pathDistance">Path distance to calculate corresponding point for.</param>
         /// <returns>The corresponding path point to the path distance.</returns>
-        public override Vector3 MapPathDistanceToPoint(float pathDistance)
+        public virtual Vector3 MapPathDistanceToPoint(float pathDistance)
         {
             // clip or wrap given path distance according to cyclic flag
             var remaining = pathDistance;
@@ -252,7 +254,34 @@ namespace UnitySteer
             return result;
         }
 
-        public override void DrawGizmos()
+        /// <summary>
+        /// Determines whether the received point is inside the path.
+        /// </summary>
+        /// <param name="point">Point to evaluate.</param>
+        /// <returns><c>true</c> if the point is inside the path; otherwise, <c>false</c>.</returns>
+        public bool IsInsidePath(Vector3 point)
+        {
+            var tStruct = new PathRelativePosition();
+
+            MapPointToPath(point, ref tStruct);
+            return tStruct.outside < 0;
+        }
+
+        /// <summary>
+        /// Calculates how far outside the path is the reference point.
+        /// </summary>
+        /// <param name="point">Reference point.</param>
+        /// <returns>How far outside the path is the reference point.</returns>
+        public float HowFarOutsidePath(Vector3 point)
+        {
+            var tStruct = new PathRelativePosition();
+
+            MapPointToPath(point, ref tStruct);
+            return tStruct.outside;
+        }
+
+
+        public void DrawGizmos()
         {
             for (var i = 0; i < Path.Count - 1; i++)
             {

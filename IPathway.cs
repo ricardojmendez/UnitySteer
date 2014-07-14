@@ -2,6 +2,13 @@ using UnityEngine;
 
 namespace UnitySteer
 {
+    public struct PathRelativePosition
+    {
+        public float outside;
+        public Vector3 tangent;
+        public int segmentIndex;
+    }
+
     public interface IPathway
     {
         float TotalPathLength { get; }

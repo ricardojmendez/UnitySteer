@@ -8,11 +8,12 @@ BREAKING CHANGES FROM UNITYSTEER 2.x:
 * New properties on AutonomousVehicle to control the acceleration and deceleration rates.
 * Using the AutonomousVehicle's TargetSpeed to indicate the speed we're aiming for, and Speed the one we're actually moving at.  Speed will gradually aim for TargetSpeed at its acceleration/deceleration rates.
 * SteerForWander.SmoothRate is now an amount per second. This causes it to no longer be framerate-dependent.
+* [You can read more about the acceleration smoothing chances here](http://arges-systems.com/blog/2014/01/30/unitysteer-acceleration-smoothing-changes/).
 * Replaced IsPlanar with AllowedMovementAxes. We can now limit movement on any arbitrary axis, not only the Y.
 * Removed obsolete SteerForSphericalObstacleAvoidance.  SteerForSphericalObstacleRepulsion is now simply called SteerForSphericalObstacles.
 * Pruned cyclic Vector3Pathways. It was never properly implemented, and they're just as doable by having an event handler for the arrival even of the path steering behavior.
+* Removed redundant Pathway. There were some vestigial methods there that are better done on Vector3Pathway.
 
-[You can read more about it here](http://arges-systems.com/blog/2014/01/30/unitysteer-acceleration-smoothing-changes/).
 
 Also:
 
