@@ -1,6 +1,4 @@
-using System.Collections;
 using UnityEngine;
-using UnitySteer;
 
 namespace UnitySteer.Base
 {
@@ -42,7 +40,7 @@ public class SteerForPathSimplified : Steering
 	/// </summary>
 	public float PredictionTime 
     {
-		get { return this._predictionTime; }
+		get { return _predictionTime; }
         set { _predictionTime = Mathf.Max(value, 0); }
 	}
 
@@ -69,7 +67,7 @@ public class SteerForPathSimplified : Steering
 	/// </summary>
 	public float MinSpeedToConsider {
 		get {
-			return this._minSpeedToConsider;
+			return _minSpeedToConsider;
 		}
 		set {
 			_minSpeedToConsider = value;

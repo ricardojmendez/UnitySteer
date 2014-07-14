@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnitySteer.Helpers;
 
 namespace UnitySteer.Base
 {
@@ -26,7 +25,7 @@ public class SteerForTether : Steering
 
 	public float MaximumDistance {
 		get {
-			return this._maximumDistance;
+			return _maximumDistance;
 		}
 		set {
 			_maximumDistance = Mathf.Clamp(value, 0, float.MaxValue);
@@ -35,7 +34,7 @@ public class SteerForTether : Steering
 
 	public Vector3 TetherPosition {
 		get {
-			return this._tetherPosition;
+			return _tetherPosition;
 		}
 		set {
 			_tetherPosition = value;

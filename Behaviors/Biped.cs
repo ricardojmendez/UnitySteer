@@ -1,8 +1,5 @@
 #define TRACE_ADJUSTMENTS
 using UnityEngine;
-using UnitySteer;
-using System.Linq;
-using TickedPriorityQueue;
 
 namespace UnitySteer.Base
 {

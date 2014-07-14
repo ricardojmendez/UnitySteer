@@ -1,9 +1,7 @@
 //#define DEBUG_DRAWNEIGHBORS
+
 using System.Collections.Generic;
 using UnityEngine;
-using UnitySteer;
-using UnitySteer.Helpers;
-
 
 namespace UnitySteer.Base
 {
@@ -64,7 +62,7 @@ public class SteerForNeighborGroup : Steering
 	SteerForNeighbors[] _behaviors;
 
 
-	List<Vehicle> _neighbors = new List<Vehicle>(20);
+    readonly List<Vehicle> _neighbors = new List<Vehicle>(20);
 	#endregion
 
 
@@ -78,7 +76,7 @@ public class SteerForNeighborGroup : Steering
 	/// </remarks>
 	public float AngleCos {
 		get {
-			return this._angleCos;
+			return _angleCos;
 		}
 		set {
 			_angleCos = Mathf.Clamp(value, -1.0f, 1.0f);
@@ -108,7 +106,7 @@ public class SteerForNeighborGroup : Steering
 	/// </summary>
 	public float MinRadius {
 		get {
-			return this._minRadius;
+			return _minRadius;
 		}
 		set {
 			_minRadius = value;
@@ -121,7 +119,7 @@ public class SteerForNeighborGroup : Steering
 	/// </summary>
 	public float MaxRadius {
 		get {
-			return this._maxRadius;
+			return _maxRadius;
 		}
 		set {
 			_maxRadius = value;
@@ -173,7 +171,7 @@ public class SteerForNeighborGroup : Steering
 
 		_neighbors.Clear();
 		// I'd prefer an iterator, but trying to cut down on allocations
-		for (int i = 0; i < radar.Vehicles.Count; i++)
+		for (var i = 0; i < radar.Vehicles.Count; i++)
 		{
 			var other = radar.Vehicles[i];
 			if (Vehicle.IsInNeighborhood(other, MinRadius, MaxRadius, AngleCos))
@@ -186,9 +184,9 @@ public class SteerForNeighborGroup : Steering
 	protected override Vector3 CalculateForce ()
 	{
 		// steering accumulator and count of neighbors, both initially zero
-		Vector3 steering = Vector3.zero;
+		var steering = Vector3.zero;
 		Profiler.BeginSample("SteerForNeighborGroup.Looping over neighbors");
-		for (int i = 0; i < _neighbors.Count; i++) {
+		for (var i = 0; i < _neighbors.Count; i++) {
 			var other  = _neighbors[i];
 			if (!other.GameObject.Equals(null)) // Could be if the object was destroyed
 			{
@@ -196,7 +194,7 @@ public class SteerForNeighborGroup : Steering
 				Debug.DrawLine(Vehicle.Position, other.Position, Color.magenta);
 				#endif
 				Profiler.BeginSample("SteerForNeighborGroup.Adding");
-				for(int bi = 0; bi < _behaviors.Length; bi++)
+				for(var bi = 0; bi < _behaviors.Length; bi++)
 				{
 					steering += _behaviors[bi].CalculateNeighborContribution(other) * _behaviors[bi].Weight;
 				}

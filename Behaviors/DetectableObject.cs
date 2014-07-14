@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnitySteer;
 
 namespace UnitySteer.Base
 {
@@ -11,37 +10,31 @@ namespace UnitySteer.Base
 [AddComponentMenu("UnitySteer/Detectables/DetectableObject")]
 public class DetectableObject : MonoBehaviour
 {
-	float _squaredRadius;
-
-	[SerializeField]
+    [SerializeField]
 	protected bool _drawGizmos = false;
 	
 	/// <summary>
 	/// The vehicle's center in the transform
 	/// </summary>
-	[SerializeField]
-	[HideInInspector]
+	[SerializeField, HideInInspector]
 	Vector3 _center;
 	
 	/// <summary>
 	/// The vehicle's center in the transform, scaled to by the transform's lossyScale
 	/// </summary>
-	[SerializeField]
-	[HideInInspector]
+	[SerializeField, HideInInspector]
 	Vector3 _scaledCenter;
 	
 	/// <summary>
 	/// The vehicle's radius, scaled by the maximum of the transform's lossyScale values
 	/// </summary>
-	[SerializeField]
-	[HideInInspector]
+	[SerializeField, HideInInspector]
 	float _scaledRadius = 1;
 
 	/// <summary>
 	/// The vehicle's radius.
 	/// </summary>
-	[SerializeField]
-	[HideInInspector]
+	[SerializeField, HideInInspector]
 	float _radius = 1;
 	
 
@@ -52,7 +45,8 @@ public class DetectableObject : MonoBehaviour
 	/// <remarks>The vehicle's position is the transform's position displaced 
 	/// by the vehicle center</remarks>
 	public Vector3 Position {
-		get {
+		get 
+        {
 			if (Transform == null) {
 				Transform = GetComponent<Transform>();
 			}
@@ -67,11 +61,11 @@ public class DetectableObject : MonoBehaviour
 	/// This property's setter recalculates a temporary value, so it's
 	/// advised you don't re-scale the vehicle's transform after it has been set
 	/// </remarks>
-	public Vector3 Center {
-		get {
-			return this._center;
-		}
-		set {
+	public Vector3 Center 
+    {
+		get { return _center; }
+		set 
+        {
 			_center = value;
 			RecalculateScaledValues();
 		}
@@ -84,11 +78,11 @@ public class DetectableObject : MonoBehaviour
 	/// This property's setter recalculates a temporary value, so it's
 	/// advised you don't re-scale the vehicle's transform after it has been set
 	/// </remarks>
-	public float Radius {
-		get {
-			return _radius;
-		}
-		set {
+	public float Radius 
+    {
+		get { return _radius; }
+		set 
+        {
 			_radius = Mathf.Clamp(value, 0.01f, float.MaxValue);
 			RecalculateScaledValues();			
 		}
@@ -97,26 +91,23 @@ public class DetectableObject : MonoBehaviour
 	/// <summary>
 	/// The vehicle's center in the transform, scaled to by the transform's lossyScale
 	/// </summary>
-	public Vector3 ScaledCenter {
-		get {
-			return this._scaledCenter;
-		}
+	public Vector3 ScaledCenter 
+    {
+		get { return _scaledCenter; }
 	}
 	
 	/// <summary>
 	/// The vehicle's radius, scaled by the maximum of the transform's lossyScale values
 	/// </summary>
-	public float ScaledRadius {
-		get {
-			return this._scaledRadius;
-		}
+	public float ScaledRadius 
+    {
+		get { return _scaledRadius; }
 	}
 
-	public float SquaredRadius {
-		get {
-			return this._squaredRadius;
-		}
-	}
+    /// <summary>
+    /// Calculated squared object radius
+    /// </summary>
+    public float SquaredRadius { get; private set; }
 
     /// <summary>
     /// Cached transform for this behaviour
@@ -129,7 +120,7 @@ public class DetectableObject : MonoBehaviour
 		Transform = GetComponent<Transform>();
 		if (Transform.parent != null)
 		{
-			Debug.LogWarning(string.Format("DetectableObject should be on the root. Unparenting {0}", this));
+			Debug.LogWarning(string.Format("DetectableObject should be on the transform root. Unparenting {0}", this));
 			Transform.parent = null;
 		}
 
@@ -140,10 +131,11 @@ public class DetectableObject : MonoBehaviour
 	/// Predicts where the vehicle will be at a point in the future
 	/// </summary>
 	/// <param name="predictionTime">
-	/// A time in seconds for the prediction <see cref="System.Single"/>. Disregarded on the base function.
+	/// A time in seconds for the prediction <see cref="System.Single"/>. 
+	/// Disregarded on the base function since obstacles do not move.
 	/// </param>
 	/// <returns>
-	/// Vehicle position<see cref="Vector3"/>
+	/// Object position<see cref="Vector3"/>
 	/// </returns>
 	public virtual Vector3 PredictFuturePosition(float predictionTime)
     {
@@ -163,22 +155,19 @@ public class DetectableObject : MonoBehaviour
 		var scale  = Transform.lossyScale;
 		_scaledRadius = _radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
 		_scaledCenter = Vector3.Scale(_center, scale);
-		_squaredRadius = _scaledRadius * _scaledRadius;
+		SquaredRadius = _scaledRadius * _scaledRadius;
 	}
 	
 	protected virtual void OnDrawGizmos()
 	{
-		
-		if (_drawGizmos)
-		{
-			if (Transform == null)
-			{
-				// Since this value gets assigned on Awake, we need to assign it when on the editor
-				Transform = GetComponent<Transform>();
-			}
-			Gizmos.color = Color.blue;
-			Gizmos.DrawWireSphere(Position, ScaledRadius);
-		}
+	    if (!_drawGizmos) return;
+	    if (Transform == null)
+	    {
+	        // Since this value gets assigned on Awake, we need to assign it when on the editor
+	        Transform = GetComponent<Transform>();
+	    }
+	    Gizmos.color = Color.blue;
+	    Gizmos.DrawWireSphere(Position, ScaledRadius);
 	}
 	#endregion
 }

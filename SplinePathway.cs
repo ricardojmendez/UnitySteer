@@ -111,7 +111,7 @@ namespace UnitySteer
             // Approximate the closest path point on a linear path
             var onPath = base.MapPointToPath(point, ref pathRelative);
             
-            var distance = MapPointToPathDistance(onPath) / base.TotalPathLength;
+            var distance = MapPointToPathDistance(onPath) / TotalPathLength;
             var splinePoint = GetPathPoint (distance);
             
             // return point on path
@@ -127,7 +127,7 @@ namespace UnitySteer
         {
             int numSections = _splineNodes.Length - 3;
             int currentNode = Mathf.Min( Mathf.FloorToInt( t * (float)numSections ), numSections - 1 );
-            float u = t * (float)numSections - (float)currentNode;
+            float u = t * numSections - currentNode;
             
             Vector3 a = _splineNodes[currentNode];
             Vector3 b = _splineNodes[currentNode + 1];

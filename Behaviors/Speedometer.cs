@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using TickedPriorityQueue;
 
 namespace UnitySteer.Tools

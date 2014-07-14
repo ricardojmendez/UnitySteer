@@ -1,7 +1,5 @@
 #define TRACE_PATH
-using System.Collections;
 using UnityEngine;
-using UnitySteer;
 
 namespace UnitySteer.Base
 {
@@ -37,7 +35,7 @@ public class SteerForPathPredictiveTrivial : Steering
 	/// </summary>
 	public float PredictionTime {
 		get {
-			return this._predictionTime;
+			return _predictionTime;
 		}
 		set {
 			_predictionTime = value;
@@ -49,7 +47,7 @@ public class SteerForPathPredictiveTrivial : Steering
 	/// </summary>
 	public Vector3Pathway Path {
 		get {
-			return this._path;
+			return _path;
 		}
 		set {
 			_path = value;

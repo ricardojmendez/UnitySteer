@@ -1,7 +1,5 @@
 #define ANNOTATE_PURSUIT
 using UnityEngine;
-using UnitySteer;
-using UnitySteer.Helpers;
 
 namespace UnitySteer.Base
 {
@@ -49,7 +47,7 @@ public class SteerForPursuit : Steering
 	/// </summary>
 	public float MaxPredictionTime {
 		get {
-			return this._maxPredictionTime;
+			return _maxPredictionTime;
 		}
 		set {
 			_maxPredictionTime = value;
@@ -62,7 +60,7 @@ public class SteerForPursuit : Steering
 	/// <remarks>When set, it will clear the flag that indicates we've already reported that we arrived</remarks>
 	public DetectableObject Quarry {
 		get {
-			return this._quarry;
+			return _quarry;
 		}
 		set {
 			if (_quarry != value) 
@@ -77,7 +75,7 @@ public class SteerForPursuit : Steering
 	protected override Vector3 CalculateForce ()
 	{
 		if (_quarry == null) {
-			this.enabled = false;
+			enabled = false;
 			return Vector3.zero;
 		}
 		

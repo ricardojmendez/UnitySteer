@@ -21,7 +21,7 @@ public class SteerForSpeed : Steering {
 	{
 		get 
 		{
-			return this._targetSpeed;
+			return _targetSpeed;
 		}
 		set 
 		{

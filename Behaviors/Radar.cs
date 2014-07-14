@@ -1,9 +1,6 @@
 //#define TRACEDETECTED
-using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using UnitySteer;
-using UnitySteer.Helpers;
 using TickedPriorityQueue;
 
 namespace UnitySteer.Base
@@ -92,7 +89,7 @@ public class Radar: MonoBehaviour {
 	/// </summary>
 	public float DetectionRadius {
 		get {
-			return this._detectionRadius;
+			return _detectionRadius;
 		}
 		set {
 			_detectionRadius = value;
@@ -106,7 +103,7 @@ public class Radar: MonoBehaviour {
 	public bool DetectDisabledVehicles 
 	{
 		get {
-			return this._detectDisabledVehicles;
+			return _detectDisabledVehicles;
 		}
 		set {
 			_detectDisabledVehicles = value;
@@ -118,7 +115,7 @@ public class Radar: MonoBehaviour {
 	/// </summary>
 	public bool DrawGizmos {
 		get {
-			return this._drawGizmos;
+			return _drawGizmos;
 		}
 		set {
 			_drawGizmos = value;
@@ -164,7 +161,7 @@ public class Radar: MonoBehaviour {
 	/// </summary>
 	public LayerMask LayersChecked {
 		get {
-			return this._layersChecked;
+			return _layersChecked;
 		}
 		set {
 			_layersChecked = value;

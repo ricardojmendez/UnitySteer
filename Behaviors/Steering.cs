@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnitySteer.Helpers;
-using TickedPriorityQueue;
 
 namespace UnitySteer.Base
 {
@@ -127,7 +125,7 @@ public abstract class Steering : MonoBehaviour {
 	/// </summary>
 	public float Weight {
 		get {
-			return this._weight;
+			return _weight;
 		}
 		set {
 			_weight = value;
@@ -138,7 +136,7 @@ public abstract class Steering : MonoBehaviour {
 	#region Methods
 	protected virtual void Awake()
 	{
-		_vehicle = this.GetComponent<Vehicle>();
+		_vehicle = GetComponent<Vehicle>();
 		ReportedArrival = true; // Default to true to avoid unnecessary notifications
 	}
 	

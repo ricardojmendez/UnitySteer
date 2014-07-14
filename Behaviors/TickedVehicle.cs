@@ -1,7 +1,5 @@
 #define TRACE_ADJUSTMENTS
 using UnityEngine;
-using UnitySteer;
-using System.Linq;
 using TickedPriorityQueue;
 
 namespace UnitySteer.Base
@@ -88,7 +86,7 @@ public abstract class TickedVehicle : Vehicle
 	/// </summary>
 	public UnityTickedQueue SteeringQueue 
 	{
-		get { return this._steeringQueue; }
+		get { return _steeringQueue; }
 	}
 
 

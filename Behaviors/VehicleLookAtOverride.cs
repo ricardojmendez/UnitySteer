@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnitySteer.Base;
 
@@ -40,7 +39,7 @@ public class VehicleLookAtOverride : MonoBehaviour {
 	{
 		get 
 		{
-			return this._smoothRate;
+			return _smoothRate;
 		}
 		set 
 		{

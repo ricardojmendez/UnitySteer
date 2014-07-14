@@ -109,7 +109,7 @@ public abstract class Vehicle : DetectableObject
 	/// </summary>
 	public float MaxForce {
 		get {
-			return this._maxForce;
+			return _maxForce;
 		}
 		set {
 			_maxForce = Mathf.Clamp(value, 0, float.MaxValue);
@@ -121,7 +121,7 @@ public abstract class Vehicle : DetectableObject
 	/// </summary>
 	public float MaxSpeed {
 		get {
-			return this._maxSpeed;
+			return _maxSpeed;
 		}
 		set {
 			_maxSpeed = Mathf.Clamp(value, 0, float.MaxValue);
@@ -169,7 +169,7 @@ public abstract class Vehicle : DetectableObject
 	
 	public float SquaredArrivalRadius 
 	{
-		get { return this._squaredArrivalRadius; }
+		get { return _squaredArrivalRadius; }
 	}
 
 	/// <summary>
@@ -256,8 +256,8 @@ public abstract class Vehicle : DetectableObject
 		{
 			_movementPriority = gameObject.GetInstanceID();
 		}
-		Radar = this.GetComponent<Radar>();
-		Speedometer = this.GetComponent<Speedometer>();
+		Radar = GetComponent<Radar>();
+		Speedometer = GetComponent<Speedometer>();
 	}
 	#endregion
 	
@@ -355,14 +355,10 @@ public abstract class Vehicle : DetectableObject
 			else
 			{
 				// definitely not in neighborhood if outside maxDistance sphere
-				if (distanceSquared > (maxDistance * maxDistance))
-				{
-					result = false;
-				}
-				else
+				if (distanceSquared <= (maxDistance * maxDistance))
 				{
 					// otherwise, test angular offset from forward axis
-					Vector3 unitOffset = offset / (float) Mathf.Sqrt (distanceSquared);
+					Vector3 unitOffset = offset / Mathf.Sqrt (distanceSquared);
 					float forwardness = Vector3.Dot(Transform.forward, unitOffset);
 					result = forwardness > cosMaxAngle;
 				}
@@ -545,8 +541,8 @@ public abstract class Vehicle : DetectableObject
 	/// Forward vector to use instead of the vehicle's.
 	/// </param>
 	public float ComputeNearestApproachPositions(Vehicle other, float time, 
-												  ref Vector3 ourPosition, 
-												  ref Vector3 hisPosition,
+												 ref Vector3 ourPosition, 
+												 ref Vector3 hisPosition,
 	                                             float ourSpeed,
 	                                             Vector3 ourForward)
 	{

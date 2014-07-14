@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnitySteer;
 
 namespace UnitySteer.Base
 {

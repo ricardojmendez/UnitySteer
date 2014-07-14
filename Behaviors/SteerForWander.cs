@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnitySteer;
-using UnitySteer.Helpers;
 
 namespace UnitySteer.Base
 {
@@ -33,7 +31,7 @@ public class SteerForWander : Steering
 	/// </summary>
 	public float MaxLatitudeSide {
 		get {
-			return this._maxLatitudeSide;
+			return _maxLatitudeSide;
 		}
 		set {
 			_maxLatitudeSide = value;
@@ -45,7 +43,7 @@ public class SteerForWander : Steering
 	/// </summary>
 	public float MaxLatitudeUp {
 		get {
-			return this._maxLatitudeUp;
+			return _maxLatitudeUp;
 		}
 		set {
 			_maxLatitudeUp = value;

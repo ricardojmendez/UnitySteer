@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class AngleCosineAttribute: RangeAttribute 
+﻿public class AngleCosineAttribute: RangeAttribute 
 {
 	public AngleCosineAttribute(): base(-360, 360)
 	{

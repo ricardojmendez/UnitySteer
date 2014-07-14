@@ -1,7 +1,5 @@
 //#define DEBUG_DRAWNEIGHBORS
 using UnityEngine;
-using UnitySteer;
-using UnitySteer.Helpers;
 
 namespace UnitySteer.Base
 {

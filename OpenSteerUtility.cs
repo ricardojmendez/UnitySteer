@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Text;
 using UnityEngine;
 
 namespace UnitySteer
@@ -90,16 +88,14 @@ namespace UnitySteer
             Vector3 offset = source - center;
             float r = offset.magnitude;
 
-            if (r > radius)
-                return source + ((offset / r) * radius * -2);
-            else
-                return source;
+            var result = (r > radius) ? source + ((offset/r)*radius*-2) : source;
+            return result;
         }
 		
 
 		public static float scalarRandomWalk (float initial, float walkspeed, float min, float max)
 		{
-			float next = initial + ((UnityEngine.Random.value * 2 - 1) * walkspeed);
+			float next = initial + ((Random.value * 2 - 1) * walkspeed);
 			next = Mathf.Clamp(next, min, max);
 			return next;
 		}		
