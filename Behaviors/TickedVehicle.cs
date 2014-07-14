@@ -282,7 +282,7 @@ public abstract class TickedVehicle : Vehicle
 	/// manner that is specific to each subclass. 
 	/// </summary>
 	/// <param name="velocity">Newly calculated velocity</param>
-	public abstract void UpdateOrientationVelocity(Vector3 velocity);
+	protected abstract void UpdateOrientationVelocity(Vector3 velocity);
 
 	/// <summary>
 	/// Calculates how much the agent's position should change in a manner that
