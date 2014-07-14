@@ -47,9 +47,7 @@ namespace UnitySteer
 	}
 
     public abstract class Pathway : IPathway
-    {
-		public bool IsCyclic { get; protected set; }
-        
+    {        
 		public abstract float TotalPathLength { get; }
         
 		public abstract Vector3 FirstPoint { get; }

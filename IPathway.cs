@@ -4,7 +4,6 @@ namespace UnitySteer
 {
 	public interface IPathway
 	{
-		bool IsCyclic { get; }
 		float TotalPathLength { get; }
 		Vector3 FirstPoint { get; }
 		Vector3 LastPoint { get; }

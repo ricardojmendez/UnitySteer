@@ -62,13 +62,10 @@ namespace UnitySteer
         /// <param name="radius">
         /// Radius to use for the connections <see cref="System.Single"/>
         /// </param>
-        /// <param name="cyclic">
-        /// Is the path cyclic? <see cref="System.Boolean"/>
-        /// </param>
         /// <remarks>The current implementation assumes that all pathways will 
         /// have the same radius.
         /// </remarks>
-        public SplinePathway (IList<Vector3> path, float radius, bool cyclic):base(path, radius, cyclic)
+        public SplinePathway (IList<Vector3> path, float radius):base(path, radius)
         {
         }
         
@@ -81,12 +78,9 @@ namespace UnitySteer
         /// <param name="radius">
         /// Radius to use for the connections<see cref="System.Single"/>
         /// </param>
-        /// <param name="cyclic">
-        /// Is the path cyclic?
-        /// </param>
-        public override void Initialize (IList<Vector3> path, float radius, bool cyclic)
+        public override void Initialize (IList<Vector3> path, float radius)
         {
-            base.Initialize(path, radius, cyclic);
+            base.Initialize(path, radius);
             // Place the two control nodes
             _splineNodes = new Vector3[path.Count + 2];
             _splineNodes[0] = path.First() - Normals[1] * 2;

@@ -10,11 +10,13 @@ BREAKING CHANGES FROM UNITYSTEER 2.x:
 * SteerForWander.SmoothRate is now an amount per second. This causes it to no longer be framerate-dependent.
 * Replaced IsPlanar with AllowedMovementAxes. We can now limit movement on any arbitrary axis, not only the Y.
 * Removed obsolete SteerForSphericalObstacleAvoidance.  SteerForSphericalObstacleRepulsion is now simply called SteerForSphericalObstacles.
+* Pruned cyclic Vector3Pathways. It was never properly implemented, and they're just as doable by having an event handler for the arrival even of the path steering behavior.
 
 [You can read more about it here](http://arges-systems.com/blog/2014/01/30/unitysteer-acceleration-smoothing-changes/).
 
 Also:
 
+* New SplinePathway.  Takes a list of Vector3s and uses them to create a spline for a path. Chances are this is not what you want to use to create a pathway for bipeds dealing with spatial constraints (say, following a navmesh).  I'm using it to get smoother turning on a group of flying agents.
 * Removed vestigial SphericalObstacleData. See DetectableObject.
 * Added namespaces to the behaviors.  Decided against adding indentation to minimize the number of lines changed in case someone's doing a diff and forgets to exclude whitespace differences.
 * Removed SteeringEvent. The class was unnecessary, we can just do everything with standard actions.
