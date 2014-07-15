@@ -33,6 +33,7 @@ Also:
 * Renamed DesiredSpeed to TargetSpeed, so that it's clear that it's not a function of DesiredVelocity.
 * Improvements and new properties on SteerForCohesion and SteerForSeparation.
 * New Vehicle.DeltaTime property.
+* Removed old, unsupported sample path steering behaviors to avoid confusion. You can find them as gists here: [SteerForPathTrivial](https://gist.github.com/ricardojmendez/88488a8550ea62bfa119), [SteerForPathPredictiveTrivial](https://gist.github.com/ricardojmendez/f4fff18b34faa0ce17bd).
 
 
 ## v2.7
