@@ -281,7 +281,7 @@ namespace UnitySteer
         }
 
 
-        public void DrawGizmos()
+        public virtual void DrawGizmos()
         {
             for (var i = 0; i < Path.Count - 1; i++)
             {
