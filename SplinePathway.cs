@@ -1,10 +1,7 @@
-﻿//#define USE_GOKIT
-// ----------------------------------------------------------------------------
+﻿// ----------------------------------------------------------------------------
 //
 // Written by Ricardo J. Mendez http://www.arges-systems.com/ based on 
-// OpenSteer's PolylinePathway.  Contains code from GoKit's Catmull-Rom
-// spline solver (https://github.com/prime31/GoKit)
-//
+// OpenSteer's PolylinePathway.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -69,26 +66,18 @@ namespace UnitySteer
         {
         }
         
-        /// <summary>
-        /// Constructs the Pathway from a list of Vector3
-        /// </summary>
-        /// <param name="path">
-        /// A list of Vector3 defining the path points in world space<see cref="Vector3"/>
-        /// </param>
-        /// <param name="radius">
-        /// Radius to use for the connections<see cref="System.Single"/>
-        /// </param>
-        public override void Initialize (IList<Vector3> path, float radius)
+        protected override void PrecalculatePathData()
         {
-            base.Initialize(path, radius);
+            base.PrecalculatePathData();
             // Place the two control nodes
-            _splineNodes = new Vector3[path.Count + 2];
-            _splineNodes[0] = path.First() - Normals[1] * 2;
-            for (int i = 0; i < path.Count; i++)
+            var splineNodeLength = Path.Count + 2;
+            _splineNodes = new Vector3[splineNodeLength];
+            _splineNodes[0] = Path[0] - Normals[1] * 2;
+            for (int i = 0; i < Path.Count; i++)
             {
-                _splineNodes[i+1] = path[i];
+                _splineNodes[i+1] = Path[i];
             }
-            _splineNodes[path.Count] = path.Last() + Normals.Last() * 2;
+            _splineNodes[splineNodeLength - 1] = Path.Last() + Normals.Last() * 4;
         }
         
         /// <summary>
@@ -106,43 +95,84 @@ namespace UnitySteer
             var onPath = base.MapPointToPath(point, ref pathRelative);
             
             var distance = MapPointToPathDistance(onPath) / TotalPathLength;
-            var splinePoint = GetPathPoint (distance);
+            var splinePoint = CalculateCatmullRomPoint(1, distance);
             
             // return point on path
             return splinePoint;
         }
-        
+
         public override Vector3 MapPathDistanceToPoint(float pathDistance)
         {
-            return (_splineNodes.Length < 5) ? base.MapPathDistanceToPoint(pathDistance) : GetPathPoint(pathDistance / TotalPathLength);
-        }
-        
-        public Vector3 GetPathPoint(float t)
-        {
-            int numSections = _splineNodes.Length - 3;
-            int currentNode = Mathf.Min( Mathf.FloorToInt( t * (float)numSections ), numSections - 1 );
-            float u = t * numSections - currentNode;
-            
-            Vector3 a = _splineNodes[currentNode];
-            Vector3 b = _splineNodes[currentNode + 1];
-            Vector3 c = _splineNodes[currentNode + 2];
-            Vector3 d = _splineNodes[currentNode + 3];
-            
-            return .5f *
-                (
-                    ( -a + 3f * b - 3f * c + d ) * ( u * u * u )
-                    + ( 2f * a - 5f * b + 4f * c - d ) * ( u * u )
-                    + ( -a + c ) * u
-                    + 2f * b
-                    );
+            if (_splineNodes.Length < 5)
+            {
+                return base.MapPathDistanceToPoint(pathDistance);
+            }
+
+            pathDistance = Mathf.Min(TotalPathLength, pathDistance);
+
+            var nodeForDistance = 0;
+            var lastTotal = 0f;
+            var totalLength = 0f;
+            // We skip the first node because its length will always be zero,
+            // and besides weĺl pass this to GetPathPoint which has one extra
+            // node
+            for (int i = 1; i < Lengths.Count && nodeForDistance == 0; i++)
+            {
+                lastTotal = totalLength;
+                totalLength += Lengths[i];
+                if (totalLength >= pathDistance)
+                {
+                    nodeForDistance = i;
+                }
+            }
+
+            var segmentLength = Lengths[nodeForDistance];
+            var remainingLength = pathDistance - lastTotal;
+            var pctComplete = (segmentLength == 0) ? 1 : (remainingLength / segmentLength);
+
+            return CalculateCatmullRomPoint(nodeForDistance, pctComplete);
         }
 
-#if USE_GOKIT
+        /// <summary>
+        /// Calculates a catmull-rom point for a spline defined by a set of spline nodes,
+        /// based on a current node index
+        /// </summary>
+        /// <returns>The catmull rom point.</returns>
+        /// <param name="currentNode">Current node. Index 0 is the initial control point, index 1 the first actual path node.</param>
+        /// <param name="percentComplete">Percent complete for this segment.</param>
+        public Vector3 CalculateCatmullRomPoint(int currentNode, float percentComplete)
+        {
+
+            var percentCompleteSquared = percentComplete * percentComplete;
+            var percentCompleteCubed = percentCompleteSquared * percentComplete;
+
+            var start = _splineNodes[currentNode];
+            var end = _splineNodes[currentNode+1];
+            var previous = _splineNodes[currentNode-1];
+            var next = _splineNodes[currentNode+2];
+            
+            return previous * (-0.5f*percentCompleteCubed + percentCompleteSquared - 0.5f*percentComplete) +
+                    start * (1.5f*percentCompleteCubed -2.5f*percentCompleteSquared + 1.0f) +
+                    end * (-1.5f*percentCompleteCubed + 2.0f*percentCompleteSquared + 0.5f*percentComplete) +
+                    next * (0.5f*percentCompleteCubed - 0.5f*percentCompleteSquared);
+        }
+
         public override void DrawGizmos()
         {
-            GoKit.GoSpline.drawGizmos(_splineNodes, 50);
-            base.DrawGizmos();
+            Debug.DrawLine(_splineNodes[0], Path[0], Color.gray);
+            var lastPosition = Path[0];
+            for (var i = 0; i < Path.Count - 1; i++)
+            {
+                // Debug.DrawLine(Path[i], Path[i + 1], Color.green);
+                var segments = 50;
+                for (int segment = 0; segment < segments; segment++)
+                {
+                    var nextPosition = CalculateCatmullRomPoint(i+1, segment / (float) segments);
+                    Debug.DrawLine(lastPosition, nextPosition, Color.green);
+                    lastPosition = nextPosition;
+                }
+            }
+            Debug.DrawLine(lastPosition, _splineNodes.Last(), Color.gray);
         }
-#endif
     }
 }

@@ -36,15 +36,46 @@ namespace UnitySteer
     /// </summary>
     public class Vector3Pathway : IPathway
     {
-        private IList<float> _lengths;
-        private float _totalPathLength;
+        #region Properties
+        /// <summary>
+        /// List of segment lengths
+        /// </summary>
+        /// <value>The segment lengths.</value>
+        protected IList<float> Lengths { get; private set; }
+
+        /// <summary>
+        /// List of calculated normals between points.
+        /// </summary>
+        protected IList<Vector3> Normals { get; private set; }
+        
+        public IList<Vector3> Path { get; protected set; }
+        
+        
+        public Vector3 FirstPoint
+        {
+            get { return Path.FirstOrDefault(); }
+        }
+        
+        public Vector3 LastPoint
+        {
+            get { return Path.LastOrDefault(); }
+        }
+        
+        public float TotalPathLength { get; protected set; }
+
+        public int SegmentCount
+        {
+            get { return Path.Count; }
+        }
 
         public float Radius { get; set; }
+        #endregion
+
 
         public Vector3Pathway()
         {
-            _lengths = new List<float>(10);
-            Normals = new List<Vector3>(10);
+            Lengths = null;
+            Normals = null;
         }
 
 
@@ -67,35 +98,6 @@ namespace UnitySteer
         }
 
         /// <summary>
-        /// List of calculated normals between points.
-        /// </summary>
-        protected IList<Vector3> Normals { get; private set; }
-
-        public IList<Vector3> Path { get; private set; }
-
-
-        public Vector3 FirstPoint
-        {
-            get { return Path.FirstOrDefault(); }
-        }
-
-        public Vector3 LastPoint
-        {
-            get { return Path.LastOrDefault(); }
-        }
-
-        public float TotalPathLength
-        {
-            get { return _totalPathLength; }
-        }
-
-        public int SegmentCount
-        {
-            get { return Path.Count; }
-        }
-
-
-        /// <summary>
         /// Constructs the Pathway from a list of Vector3
         /// </summary>
         /// <param name="path">
@@ -106,41 +108,37 @@ namespace UnitySteer
         /// </param>
         public virtual void Initialize(IList<Vector3> path, float radius)
         {
-            Path = new List<Vector3>();
+            Path = new List<Vector3>(path);
             Radius = radius;
 
-            // set data members, allocate arrays
-            var pointCount = path.Count;
-            _totalPathLength = 0;
-
-            _lengths = new List<float>(pointCount);
-            Normals = new List<Vector3>(pointCount);
-
-            // loop over all points
-            for (var i = 0; i < pointCount; i++)
-            {
-                AddPoint(path[i]);
-            }
+            PrecalculatePathData();
         }
 
-        private void AddPoint(Vector3 point)
+        /// <summary>
+        /// Precalculates any necessary path data, such as segment normals.
+        /// </summary>
+        protected virtual void PrecalculatePathData()
         {
-            if (Path.Count > 0)
+            // set data members, allocate arrays
+            var pointCount = Path.Count;
+            TotalPathLength = 0;
+            
+            Lengths = new List<float>(pointCount);
+            Normals = new List<Vector3>(pointCount);
+
+            Lengths.Add(0);
+            Normals.Add(Vector3.zero);
+            
+            // loop over all points
+            for (var i = 1; i < pointCount; i++)
             {
                 // compute the segment length
-                var normal = point - Path.Last();
+                var normal = Path[i] - Path[i-1];
                 var length = normal.magnitude;
-                _lengths.Add(length);
+                Lengths.Add(length);
                 Normals.Add(normal/length);
-                // keep running total of segment lengths
-                _totalPathLength += length;
+                TotalPathLength += length;
             }
-            else
-            {
-                Normals.Add(Vector3.zero);
-                _lengths.Add(0);
-            }
-            Path.Add(point);
         }
 
         /// <summary>
@@ -161,7 +159,7 @@ namespace UnitySteer
             // loop over all segments, find the one nearest to the given point
             for (var i = 1; i < Path.Count; i++)
             {
-                var segmentLength = _lengths[i];
+                var segmentLength = Lengths[i];
                 var segmentNormal = Normals[i];
                 var chosenPoint = Vector3.zero;
                 var d = OpenSteerUtility.PointToSegmentDistance(point, Path[i - 1], Path[i],
@@ -201,7 +199,7 @@ namespace UnitySteer
             for (var i = 1; i < Path.Count; i++)
             {
                 var segmentProjection = 0f;
-                var segmentLength = _lengths[i];
+                var segmentLength = Lengths[i];
                 var segmentNormal = Normals[i];
                 var d = OpenSteerUtility.PointToSegmentDistance(point, Path[i - 1], Path[i],
                     segmentNormal, segmentLength,
@@ -230,7 +228,7 @@ namespace UnitySteer
             var remaining = pathDistance;
             if (pathDistance < 0)
                 return Path.First();
-            if (pathDistance >= _totalPathLength)
+            if (pathDistance >= TotalPathLength)
                 return Path.Last();
 
             // step through segments, subtracting off segment lengths until
@@ -239,7 +237,7 @@ namespace UnitySteer
             var result = Vector3.zero;
             for (var i = 1; i < Path.Count; i++)
             {
-                var segmentLength = _lengths[i];
+                var segmentLength = Lengths[i];
                 if (segmentLength < remaining)
                 {
                     remaining -= segmentLength;
