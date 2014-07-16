@@ -62,16 +62,28 @@ public class Biped : TickedVehicle
 	}
 	
 	
+    /// <summary>
+    /// Assigns a new velocity vector to the biped.
+    /// </summary>
+    /// <param name="velocity">Newly calculated velocity</param>
 	protected override void UpdateOrientationVelocity(Vector3 velocity)
 	{
 		Velocity = velocity;
 	}
 
+    /// <summary>
+    /// Calculates how much the agent's position should change in a manner that
+    /// is specific to the vehicle's implementation.
+    /// </summary>
+    /// <param name="deltaTime">Time delta to use in position calculations</param>
 	protected override Vector3 CalculatePositionDelta(float deltaTime)
 	{
 		return Velocity * deltaTime;
 	}
 
+    /// <summary>
+    /// Zeros this vehicle's velocity vector.
+    /// </summary>
 	protected override void ZeroVelocity()
 	{
 		Velocity = Vector3.zero;

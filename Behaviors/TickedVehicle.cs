@@ -258,6 +258,7 @@ public abstract class TickedVehicle : Vehicle
 	/// Turns the vehicle towards his velocity vector. Previously called
 	/// LookTowardsVelocity.
 	/// </summary>
+    /// <param name="deltaTime">Time delta to use for turn calculations</param>
 	protected void AdjustOrientation(float deltaTime)
 	{
 		/* 
@@ -288,8 +289,15 @@ public abstract class TickedVehicle : Vehicle
 	/// Calculates how much the agent's position should change in a manner that
 	/// is specific to the vehicle's implementation.
 	/// </summary>
+    /// <param name="deltaTime">Time delta to use in position calculations</param>
 	protected abstract Vector3 CalculatePositionDelta(float deltaTime);
 
+    /// <summary>
+    /// Zeros this vehicle's velocity.
+    /// </summary>
+    /// <remarks>
+    /// Implementation details are left up to the subclasses.
+    /// </remarks>
 	protected abstract void ZeroVelocity();
 	#endregion
 

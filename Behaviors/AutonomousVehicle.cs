@@ -37,7 +37,9 @@ public class AutonomousVehicle : TickedVehicle
 	float _decelerationRate = 8;
 
 
-	
+	/// <summary>
+    /// Current vehicle speed
+    /// </summary>
 	public override float Speed
 	{
 		get { return _speed; }
@@ -59,12 +61,22 @@ public class AutonomousVehicle : TickedVehicle
 	}
 	
 	#region Speed-related methods
+    /// <summary>
+    /// Uses a desired velocity vector to adjust the vehicle's target speed and 
+    /// orientation velocity.
+    /// </summary>
+    /// <param name="velocity">Newly calculated velocity</param>
 	protected override void UpdateOrientationVelocity(Vector3 velocity)
 	{
 		TargetSpeed = velocity.magnitude;
 		OrientationVelocity = Mathf.Approximately(_speed, 0) ? Transform.forward : velocity / _speed;
 	}
 
+    /// <summary>
+    /// Calculates how much the agent's position should change in a manner that
+    /// is specific to the vehicle's implementation.
+    /// </summary>
+    /// <param name="deltaTime">Time delta to use in position calculations</param>
 	protected override Vector3 CalculatePositionDelta(float deltaTime)
 	{
 		/*
@@ -86,6 +98,10 @@ public class AutonomousVehicle : TickedVehicle
 		return Velocity * deltaTime;
 	}
 
+    /// <summary>
+    /// Zeros this vehicle's target speed, which results on its desired velocity
+    /// being zero.
+    /// </summary>
 	protected override void ZeroVelocity()
 	{
 		TargetSpeed = 0;
