@@ -445,13 +445,7 @@ public abstract class Vehicle : DetectableObject
 		Transform.up = Vector3.up;
 		Transform.forward = Vector3.forward;
 	}
-	
-	public float PredictNearestApproachTime(Vehicle other)
-	{
-		return PredictNearestApproachTime(other, Velocity);
-	}
-	
-	
+
     /// <summary>
     /// Predicts the time until nearest approach between this and another vehicle
     /// </summary>
@@ -461,39 +455,38 @@ public abstract class Vehicle : DetectableObject
     /// <param name='other'>
     /// Other vehicle to compare against
     /// </param>
-	public float PredictNearestApproachTime (Vehicle other, Vector3 myVelocity)
+	public float PredictNearestApproachTime(Vehicle other)
 	{
-        // TODO: No reason to have a separate PredictNearestApproachTime method, since it already depends on position
-		// imagine we are at the origin with no velocity,
-		// compute the relative velocity of the other vehicle
-		Vector3 otherVelocity = other.Velocity;
-		Vector3 relVelocity = otherVelocity - myVelocity;
-		float relSpeed = relVelocity.magnitude;
+        // imagine we are at the origin with no velocity,
+        // compute the relative velocity of the other vehicle
+        var otherVelocity = other.Velocity;
+        var relVelocity = otherVelocity - Velocity;
+        var relSpeed = relVelocity.magnitude;
 
-		// for parallel paths, the vehicles will always be at the same distance,
-		// so return 0 (aka "now") since "there is no time like the present"
+        // for parallel paths, the vehicles will always be at the same distance,
+        // so return 0 (aka "now") since "there is no time like the present"
         if (Mathf.Approximately(relSpeed, 0))
         {
             return 0;
         }
 
-		// Now consider the path of the other vehicle in this relative
-		// space, a line defined by the relative position and velocity.
-		// The distance from the origin (our vehicle) to that line is
-		// the nearest approach.
+        // Now consider the path of the other vehicle in this relative
+        // space, a line defined by the relative position and velocity.
+        // The distance from the origin (our vehicle) to that line is
+        // the nearest approach.
 
-		// Take the unit tangent along the other vehicle's path
-		Vector3 relTangent = relVelocity / relSpeed;
+        // Take the unit tangent along the other vehicle's path
+        var relTangent = relVelocity / relSpeed;
 
-		// find distance from its path to origin (compute offset from
-		// other to us, find length of projection onto path)
-		Vector3 relPosition = Position - other.Position;
-		float projection = Vector3.Dot(relTangent, relPosition);
+        // find distance from its path to origin (compute offset from
+        // other to us, find length of projection onto path)
+        var relPosition = Position - other.Position;
+        var projection = Vector3.Dot(relTangent, relPosition);
 
-		return projection / relSpeed;
-	}
-	
-	
+        return projection / relSpeed;
+    }
+
+
 	/// <summary>
 	/// Given the time until nearest approach (predictNearestApproachTime)
 	/// determine position of each vehicle at that time, and the distance
