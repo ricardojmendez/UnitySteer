@@ -14,7 +14,7 @@ public class DetectableObject : MonoBehaviour
 
     [SerializeField]
 	protected bool _drawGizmos = false;
-	
+
 	/// <summary>
 	/// The vehicle's center in the transform
 	/// </summary>
@@ -116,7 +116,7 @@ public class DetectableObject : MonoBehaviour
 	#region Methods
 	protected virtual void Awake()
 	{
-		if (Transform.parent != null)
+		if (collider && Transform.parent != null)
 		{
 			Debug.LogWarning(string.Format("DetectableObject should be on the transform root. Unparenting {0}", this));
 			Transform.parent = null;
