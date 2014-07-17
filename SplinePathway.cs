@@ -82,8 +82,8 @@ namespace UnitySteer
         
         /// <summary>
         /// Given an arbitrary point ("A"), returns the nearest point ("P") on
-        /// this path.  Also returns, via output arguments, the path tangent at
-        /// P and a measure of how far A is outside the Pathway's "tube".  Note
+        /// this path.  Also returns, via output arguments, the path Tangent at
+        /// P and a measure of how far A is Outside the Pathway's "tube".  Note
         /// that a negative distance indicates A is inside the Pathway.
         /// </summary>
         /// <param name="point">Reference point.</param>
@@ -128,7 +128,7 @@ namespace UnitySteer
 
             var segmentLength = Lengths[nodeForDistance];
             var remainingLength = pathDistance - lastTotal;
-            var pctComplete = (segmentLength == 0) ? 1 : (remainingLength / segmentLength);
+            var pctComplete = Mathf.Approximately(segmentLength, 0) ? 1 : (remainingLength / segmentLength);
 
             return CalculateCatmullRomPoint(nodeForDistance, pctComplete);
         }
@@ -140,7 +140,7 @@ namespace UnitySteer
         /// <returns>The catmull rom point.</returns>
         /// <param name="currentNode">Current node. Index 0 is the initial control point, index 1 the first actual path node.</param>
         /// <param name="percentComplete">Percent complete for this segment.</param>
-        public Vector3 CalculateCatmullRomPoint(int currentNode, float percentComplete)
+        private Vector3 CalculateCatmullRomPoint(int currentNode, float percentComplete)
         {
 
             var percentCompleteSquared = percentComplete * percentComplete;

@@ -15,7 +15,7 @@ public class Biped : TickedVehicle
 	/// <summary>
 	/// The magnitude of the last velocity vector assigned to the vehicle 
 	/// </summary>
-	float _speed = 0;
+	float _speed;
 
 	/// <summary>
 	/// The biped's current velocity vector
@@ -49,7 +49,7 @@ public class Biped : TickedVehicle
 			_velocity = Vector3.ClampMagnitude(value, MaxSpeed);
 			_speed = _velocity.magnitude;
 			TargetSpeed = _speed;
-			OrientationVelocity = _speed != 0 ? _velocity / _speed : Vector3.zero;
+			OrientationVelocity = !Mathf.Approximately(_speed, 0) ? _velocity / _speed : Vector3.zero;
 		}
 	}
 

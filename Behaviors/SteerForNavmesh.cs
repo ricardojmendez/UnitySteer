@@ -38,7 +38,7 @@ public class SteerForNavmesh : Steering {
 	/// force.</remarks>
 	public float AvoidanceForceFactor {
 		get {
-			return this._avoidanceForceFactor;
+			return _avoidanceForceFactor;
 		}
 		set {
 			_avoidanceForceFactor = value;
@@ -50,7 +50,7 @@ public class SteerForNavmesh : Steering {
 	/// </summary>
 	public float MinTimeToCollision {
 		get {
-			return this._minTimeToCollision;
+			return _minTimeToCollision;
 		}
 		set {
 			_minTimeToCollision = value;
@@ -80,7 +80,7 @@ public class SteerForNavmesh : Steering {
 	/// </remarks>
 	public Vector3 ProbePositionOffset {
 		get { 
-			return this._probePositionOffset;
+			return _probePositionOffset;
 		}
 		set {
 			_probePositionOffset = value;
@@ -96,7 +96,7 @@ public class SteerForNavmesh : Steering {
 	/// </remarks>
 	public float ProbeRadius {
 		get {
-			return this._probeRadius;
+			return _probeRadius;
 		}
 		set {
 			_probeRadius = value;

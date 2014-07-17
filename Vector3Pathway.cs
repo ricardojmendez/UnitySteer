@@ -50,7 +50,6 @@ namespace UnitySteer
         
         public IList<Vector3> Path { get; protected set; }
         
-        
         public Vector3 FirstPoint
         {
             get { return Path.FirstOrDefault(); }
@@ -108,6 +107,7 @@ namespace UnitySteer
         /// </param>
         public virtual void Initialize(IList<Vector3> path, float radius)
         {
+            // TODO: Decide if I want to keep this virtual, PrecalculatePathData could be enough
             Path = new List<Vector3>(path);
             Radius = radius;
 
@@ -143,8 +143,8 @@ namespace UnitySteer
 
         /// <summary>
         /// Given an arbitrary point ("A"), returns the nearest point ("P") on
-        /// this path.  Also returns, via output arguments, the path tangent at
-        /// P and a measure of how far A is outside the Pathway's "tube".  Note
+        /// this path.  Also returns, via output arguments, the path Tangent at
+        /// P and a measure of how far A is Outside the Pathway's "tube".  Note
         /// that a negative distance indicates A is inside the Pathway.
         /// </summary>
         /// <param name="point">Reference point.</param>
@@ -155,7 +155,7 @@ namespace UnitySteer
             var minDistance = float.MaxValue;
             var onPath = Vector3.zero;
 
-            pathRelative.segmentIndex = -1;
+            pathRelative.SegmentIndex = -1;
             // loop over all segments, find the one nearest to the given point
             for (var i = 1; i < Path.Count; i++)
             {
@@ -169,13 +169,13 @@ namespace UnitySteer
                 {
                     minDistance = d;
                     onPath = chosenPoint;
-                    pathRelative.tangent = segmentNormal;
-                    pathRelative.segmentIndex = i;
+                    pathRelative.Tangent = segmentNormal;
+                    pathRelative.SegmentIndex = i;
                 }
             }
 
-            // measure how far original point is outside the Pathway's "tube"
-            pathRelative.outside = (onPath - point).magnitude - Radius;
+            // measure how far original point is Outside the Pathway's "tube"
+            pathRelative.Outside = (onPath - point).magnitude - Radius;
 
             // return point on path
             return onPath;
@@ -262,20 +262,20 @@ namespace UnitySteer
             var tStruct = new PathRelativePosition();
 
             MapPointToPath(point, ref tStruct);
-            return tStruct.outside < 0;
+            return tStruct.Outside < 0;
         }
 
         /// <summary>
-        /// Calculates how far outside the path is the reference point.
+        /// Calculates how far Outside the path is the reference point.
         /// </summary>
         /// <param name="point">Reference point.</param>
-        /// <returns>How far outside the path is the reference point.</returns>
+        /// <returns>How far Outside the path is the reference point.</returns>
         public float HowFarOutsidePath(Vector3 point)
         {
             var tStruct = new PathRelativePosition();
 
             MapPointToPath(point, ref tStruct);
-            return tStruct.outside;
+            return tStruct.Outside;
         }
 
 

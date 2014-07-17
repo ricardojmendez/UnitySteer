@@ -91,7 +91,7 @@ public class SteerForNeighborGroup : Steering
 	{
 		get
 		{
-			return OpenSteerUtility.DegreesFromCos(_angleCos);;
+			return OpenSteerUtility.DegreesFromCos(_angleCos);
 		}
 		set
 		{
@@ -186,6 +186,7 @@ public class SteerForNeighborGroup : Steering
 		// steering accumulator and count of neighbors, both initially zero
 		var steering = Vector3.zero;
 		Profiler.BeginSample("SteerForNeighborGroup.Looping over neighbors");
+        // I'd prefer an iterator, but trying to cut down on allocations
 		for (var i = 0; i < _neighbors.Count; i++) {
 			var other  = _neighbors[i];
 			if (!other.GameObject.Equals(null)) // Could be if the object was destroyed
@@ -194,7 +195,7 @@ public class SteerForNeighborGroup : Steering
 				Debug.DrawLine(Vehicle.Position, other.Position, Color.magenta);
 				#endif
 				Profiler.BeginSample("SteerForNeighborGroup.Adding");
-				for(var bi = 0; bi < _behaviors.Length; bi++)
+				for (var bi = 0; bi < _behaviors.Length; bi++)
 				{
 					steering += _behaviors[bi].CalculateNeighborContribution(other) * _behaviors[bi].Weight;
 				}

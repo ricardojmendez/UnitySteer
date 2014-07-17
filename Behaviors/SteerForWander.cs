@@ -10,8 +10,8 @@ namespace UnitySteer.Base
 public class SteerForWander : Steering
 {
 	#region Private fields
-	float _wanderSide = 0;
-	float _wanderUp = 0;
+	float _wanderSide;
+	float _wanderUp;
 	
 	[SerializeField]
 	float _maxLatitudeSide = 2;

@@ -21,18 +21,16 @@ public class DetectableObjectCreator : MonoBehaviour
 
 	void CreateDetectableObject()
 	{
-		Component[] colliders;
-		float radius = 0.0f, currentRadius;
+		float radius = 0.0f;
 
-		colliders = gameObject.GetComponentsInChildren<Collider>();
-
+		var colliders = gameObject.GetComponentsInChildren<Collider>();
 		if( colliders == null )
 		{
 			Debug.LogError(string.Format("Obstacle {0} has no colliders", gameObject.name));
 			return;
 		}
 
-		foreach(Collider collider in colliders)
+		foreach (var collider in colliders)
 		{
 			if(collider.isTrigger)
 			{
@@ -50,7 +48,7 @@ public class DetectableObjectCreator : MonoBehaviour
 		     * bounding rectangle.
 		     */
 		    float distanceToCollider = Vector3.Distance(gameObject.transform.position, collider.bounds.center);
-            currentRadius = distanceToCollider + maxExtents;
+            var currentRadius = distanceToCollider + maxExtents;
 			if( currentRadius > radius )
 			{
 				radius = currentRadius;

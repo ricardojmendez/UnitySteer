@@ -85,7 +85,7 @@ public class SteerForSeparation : SteerForNeighbors
 		if (offsetSqrMag <= _maximumSeparationSquared)
 		{
 			steering = (offset / -offsetSqrMag);
-			if (_multiplierInsideComfortDistance != 1 && offsetSqrMag < _comfortDistanceSquared)
+			if (!Mathf.Approximately(_multiplierInsideComfortDistance, 1) && offsetSqrMag < _comfortDistanceSquared)
 			{
 				steering *= _multiplierInsideComfortDistance;
 			}

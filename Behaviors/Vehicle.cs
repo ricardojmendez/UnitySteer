@@ -25,7 +25,7 @@ public abstract class Vehicle : DetectableObject
 	float _minSpeedForTurning = 0.1f;
 	
 	[SerializeField]
-	int _movementPriority = 0;	
+	int _movementPriority;	
 	
 	#region Private fields
 	float _squaredArrivalRadius;
@@ -33,14 +33,14 @@ public abstract class Vehicle : DetectableObject
 	[SerializeField]
 	float _turnTime = 0.25f;
 	
-	[SerializeField]
 	/// <summary>
 	/// Vehicle's mass
 	/// </summary>
 	/// <remarks>
 	/// This value will be used when applying forces to the vehicle.
-	/// <remarks>
-	float _mass = 1;
+	/// </remarks>
+    [SerializeField]
+    float _mass = 1;
 	
 	[SerializeField, Vector3Toggle]
 	Vector3 _allowedMovementAxes = Vector3.one;
@@ -463,6 +463,7 @@ public abstract class Vehicle : DetectableObject
     /// </param>
 	public float PredictNearestApproachTime (Vehicle other, Vector3 myVelocity)
 	{
+        // TODO: No reason to have a separate PredictNearestApproachTime method, since it already depends on position
 		// imagine we are at the origin with no velocity,
 		// compute the relative velocity of the other vehicle
 		Vector3 otherVelocity = other.Velocity;
@@ -471,7 +472,10 @@ public abstract class Vehicle : DetectableObject
 
 		// for parallel paths, the vehicles will always be at the same distance,
 		// so return 0 (aka "now") since "there is no time like the present"
-		if (relSpeed == 0) return 0;
+        if (Mathf.Approximately(relSpeed, 0))
+        {
+            return 0;
+        }
 
 		// Now consider the path of the other vehicle in this relative
 		// space, a line defined by the relative position and velocity.
@@ -537,6 +541,7 @@ public abstract class Vehicle : DetectableObject
 	/// <param name='hisPosition'>
 	/// The other vehicle's position.
 	/// </param>
+	/// <param name="ourSpeed">Our speed to use for the calculations</param>
 	/// <param name='ourForward'>
 	/// Forward vector to use instead of the vehicle's.
 	/// </param>

@@ -15,9 +15,9 @@ namespace UnitySteer.Base
 public class SteerForFear : Steering
 {
 	#region Private fields
-	int _currentEventIndex = 0;
+	int _currentEventIndex;
 
-	float _minDistanceForFearSqr = 0;
+	float _minDistanceForFearSqr;
 
     /// <summary>
     /// Where were the repulsive events located

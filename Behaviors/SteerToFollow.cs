@@ -26,7 +26,7 @@ public class SteerToFollow : Steering
 	/// How far behind we should follow the target
 	/// </summary>
 	[SerializeField]
-	Vector3 _distance;
+	Vector3 _distance; // TODO: We may want to change this to just be an absolute distance
 	
 	
 	/// <summary>

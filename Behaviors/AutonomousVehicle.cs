@@ -13,7 +13,7 @@ namespace UnitySteer.Base
 public class AutonomousVehicle : TickedVehicle
 {
 	#region Internal state values
-	float _speed = 0;
+	float _speed;
 	#endregion
 
 	/// <summary>

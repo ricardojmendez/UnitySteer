@@ -24,7 +24,7 @@ public class SteerForPoint : Steering
 	/// If true, the vehicle will slow down as it approaches its target
 	/// </remarks>
 	[SerializeField]
-	bool _considerVelocity = false;
+	bool _considerVelocity;
 
 	/// <summary>
 	/// Should the target default to the vehicle current position if it's set to Vector3.zero?

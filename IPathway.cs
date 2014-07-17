@@ -4,9 +4,9 @@ namespace UnitySteer
 {
     public struct PathRelativePosition
     {
-        public float outside;
-        public Vector3 tangent;
-        public int segmentIndex;
+        public float Outside;
+        public Vector3 Tangent;
+        public int SegmentIndex;
     }
 
     public interface IPathway
@@ -19,8 +19,8 @@ namespace UnitySteer
 
         /// <summary>
         /// Given an arbitrary point ("A"), returns the nearest point ("P") on
-        /// this path.  Also returns, via output arguments, the path tangent at
-        /// P and a measure of how far A is outside the Pathway's "tube".  Note
+        /// this path.  Also returns, via output arguments, the path Tangent at
+        /// P and a measure of how far A is Outside the Pathway's "tube".  Note
         /// that a negative distance indicates A is inside the Pathway.
         /// </summary>
         /// <param name="point">Reference point.</param>
@@ -50,10 +50,10 @@ namespace UnitySteer
         bool IsInsidePath(Vector3 point);
 
         /// <summary>
-        /// Calculates how far outside the path is the reference point.
+        /// Calculates how far Outside the path is the reference point.
         /// </summary>
         /// <param name="point">Reference point.</param>
-        /// <returns>How far outside the path is the reference point.</returns>
+        /// <returns>How far Outside the path is the reference point.</returns>
         float HowFarOutsidePath(Vector3 point);
 
         void DrawGizmos();

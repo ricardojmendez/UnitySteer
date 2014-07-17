@@ -20,13 +20,13 @@ public class SteerForPursuit : Steering
     /// different from the radius used when moving to a point.
     /// </remarks>
     [SerializeField]
-    float _acceptableDistance = 0;
+    float _acceptableDistance;
 
 	/// <summary>
 	/// Should the vehicle consider its own speed when approaching the quarry?
 	/// </summary>
 	[SerializeField]
-	bool _slowDownOnApproach = false;
+	bool _slowDownOnApproach;
     
 	[SerializeField]
 	DetectableObject _quarry;
