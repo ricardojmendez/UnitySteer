@@ -10,6 +10,8 @@ namespace UnitySteer.Base
 [AddComponentMenu("UnitySteer/Detectables/DetectableObject")]
 public class DetectableObject : MonoBehaviour
 {
+    private Transform _transform;
+
     [SerializeField]
 	protected bool _drawGizmos = false;
 	
@@ -45,13 +47,7 @@ public class DetectableObject : MonoBehaviour
 	/// <remarks>The vehicle's position is the transform's position displaced 
 	/// by the vehicle center</remarks>
 	public Vector3 Position {
-		get 
-        {
-			if (Transform == null) {
-				Transform = GetComponent<Transform>();
-			}
-			return Transform.position + _scaledCenter;
-		}
+	    get { return Transform.position + _scaledCenter; }
 	}
 	
 	/// <summary>
@@ -112,12 +108,14 @@ public class DetectableObject : MonoBehaviour
     /// <summary>
     /// Cached transform for this behaviour
     /// </summary>
-    public Transform Transform { get; private set; }
+    public Transform Transform
+    {
+        get { return _transform ?? (_transform = transform); }
+    }
 	
 	#region Methods
 	protected virtual void Awake()
 	{
-		Transform = GetComponent<Transform>();
 		if (Transform.parent != null)
 		{
 			Debug.LogWarning(string.Format("DetectableObject should be on the transform root. Unparenting {0}", this));
@@ -146,12 +144,8 @@ public class DetectableObject : MonoBehaviour
 	/// <summary>
 	/// Recalculates the object's scaled radius and center
 	/// </summary>
-	protected virtual void RecalculateScaledValues() {
-		if (Transform == null)
-		{
-			// Since this value gets assigned on Awake, we need to assign it when on the editor
-			Transform = GetComponent<Transform>();
-		}
+	protected virtual void RecalculateScaledValues() 
+    {
 		var scale  = Transform.lossyScale;
 		_scaledRadius = _radius * Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z));
 		_scaledCenter = Vector3.Scale(_center, scale);
@@ -161,11 +155,6 @@ public class DetectableObject : MonoBehaviour
 	protected virtual void OnDrawGizmos()
 	{
 	    if (!_drawGizmos) return;
-	    if (Transform == null)
-	    {
-	        // Since this value gets assigned on Awake, we need to assign it when on the editor
-	        Transform = GetComponent<Transform>();
-	    }
 	    Gizmos.color = Color.blue;
 	    Gizmos.DrawWireSphere(Position, ScaledRadius);
 	}
