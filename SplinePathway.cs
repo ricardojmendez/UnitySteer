@@ -23,9 +23,9 @@
 //
 //
 // ----------------------------------------------------------------------------
-using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace UnitySteer
 {
@@ -44,6 +44,11 @@ namespace UnitySteer
     public class SplinePathway : Vector3Pathway
     {
         Vector3[] _splineNodes;
+
+        /// <summary>
+        /// Number of segments to use when drawing the spline
+        /// </summary>
+        [SerializeField] private int _pathDrawResolution = 50;
         
         public SplinePathway(): base()
         {
@@ -73,7 +78,7 @@ namespace UnitySteer
             var splineNodeLength = Path.Count + 2;
             _splineNodes = new Vector3[splineNodeLength];
             _splineNodes[0] = Path[0] - Normals[1] * 2;
-            for (int i = 0; i < Path.Count; i++)
+            for (var i = 0; i < Path.Count; i++)
             {
                 _splineNodes[i+1] = Path[i];
             }
@@ -116,7 +121,7 @@ namespace UnitySteer
             // We skip the first node because its length will always be zero,
             // and besides weĺl pass this to GetPathPoint which has one extra
             // node
-            for (int i = 1; i < Lengths.Count && nodeForDistance == 0; i++)
+            for (var i = 1; i < Lengths.Count && nodeForDistance == 0; i++)
             {
                 lastTotal = totalLength;
                 totalLength += Lengths[i];
@@ -163,11 +168,9 @@ namespace UnitySteer
             var lastPosition = Path[0];
             for (var i = 0; i < Path.Count - 1; i++)
             {
-                // Debug.DrawLine(Path[i], Path[i + 1], Color.green);
-                var segments = 50;
-                for (int segment = 0; segment < segments; segment++)
+                for (var segment = 0; segment < _pathDrawResolution; segment++)
                 {
-                    var nextPosition = CalculateCatmullRomPoint(i+1, segment / (float) segments);
+                    var nextPosition = CalculateCatmullRomPoint(i+1, segment / (float) _pathDrawResolution);
                     Debug.DrawLine(lastPosition, nextPosition, Color.green);
                     lastPosition = nextPosition;
                 }
