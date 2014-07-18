@@ -64,7 +64,7 @@ public class VehicleLookAtOverride : MonoBehaviour {
 	{
 		if (_vehicle.CanMove && _vehicle.LastRawForce != Vector3.zero)
 		{
-			_smoothed = OpenSteerUtility.BlendIntoAccumulator(_smoothRate, _vehicle.LastRawForce, _smoothed);
+            _smoothed = Vector3.Lerp(_smoothed, _vehicle.LastRawForce, _smoothRate);
 			transform.LookAt(transform.position + _smoothed);
 		}
 	}

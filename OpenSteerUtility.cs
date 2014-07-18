@@ -90,17 +90,7 @@ namespace UnitySteer
         {
             return source - ParallelComponent(source, unitBasis);
         }
-
-        public static Vector3 BlendIntoAccumulator(float smoothRate, Vector3 newValue, Vector3 smoothedAccumulator)
-        {
-            return Vector3.Lerp(smoothedAccumulator, newValue, smoothRate);
-        }
-
-        public static float BlendIntoAccumulator(float smoothRate, float newValue, float smoothedAccumulator)
-        {
-            return Mathf.Lerp(smoothedAccumulator, newValue, smoothRate);
-        }
-
+        
         public static Vector3 SphericalWrapAround(Vector3 source, Vector3 center, float radius)
         {
             var offset = source - center;

@@ -14,7 +14,6 @@ BREAKING CHANGES FROM UNITYSTEER 2.x:
 * Pruned cyclic Vector3Pathways. It was never properly implemented, and they're just as doable by having an event handler for the arrival even of the path steering behavior.
 * Removed redundant Pathway. There were some vestigial methods there that are better done on Vector3Pathway.
 
-
 Also:
 
 * New SplinePathway.  Takes a list of Vector3s and uses them to create a spline for a path. Chances are this is not what you want to use to create a pathway for bipeds dealing with spatial constraints (say, following a navmesh).  I'm using it to get smoother turning on a group of flying agents.
@@ -34,6 +33,7 @@ Also:
 * Improvements and new properties on SteerForCohesion and SteerForSeparation.
 * New Vehicle.DeltaTime property.
 * Removed old, unsupported sample path steering behaviors to avoid confusion. You can find them as gists here: [SteerForPathTrivial](https://gist.github.com/ricardojmendez/88488a8550ea62bfa119), [SteerForPathPredictiveTrivial](https://gist.github.com/ricardojmendez/f4fff18b34faa0ce17bd).
+* (Possibly breaking change). Removed redundant BlendIntoAccumulator methods from OpenSteerUtility - they were doing nothing but wrap Lerp variants. No need to have an extra call with parameters in a non-standard order.
 
 
 ## v2.7
