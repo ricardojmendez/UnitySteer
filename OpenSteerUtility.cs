@@ -6,6 +6,10 @@ namespace UnitySteer
 {
     public static class OpenSteerUtility
     {
+        /// <summary>
+        /// Returns a random unit-length vector on the X/Z plane.
+        /// </summary>
+        /// <returns>The unit vector on XZ plane.</returns>
         public static Vector3 RandomUnitVectorOnXZPlane()
         {
             var tVector = Random.insideUnitSphere;
@@ -63,14 +67,25 @@ namespace UnitySteer
             return (c0 + c1) * sourceLength;
         }
 
+        /// <summary>
+        /// Returns the parallel component to a vector.
+        /// </summary>
+        /// <returns>The parallel component.</returns>
+        /// <param name="source">Source.</param>
+        /// <param name="unitBasis">Unit basis vector.</param>
         public static Vector3 ParallelComponent(Vector3 source, Vector3 unitBasis)
         {
             var projection = Vector3.Dot(source, unitBasis);
             return unitBasis * projection;
         }
 
-        // return component of vector perpendicular to a unit basis vector
-        // (IMPORTANT NOTE: assumes "basis" has unit magnitude (length==1))
+
+        /// <summary>
+        /// Returns the component of vector perpendicular to a unit basis vector.
+        /// </summary>
+        /// <returns>The component.</returns>
+        /// <param name="source">Source vector.</param>
+        /// <param name="unitBasis">Basis. Should be a unit vector.</param>
         public static Vector3 PerpendicularComponent(Vector3 source, Vector3 unitBasis)
         {
             return source - ParallelComponent(source, unitBasis);
@@ -95,14 +110,28 @@ namespace UnitySteer
             return result;
         }
 
-
-        public static float ScalarRandomWalk(float initial, float walkspeed, float min, float max)
+        /// <summary>
+        /// Does a scalar random walk from an initial value, within boundaries.
+        /// </summary>
+        /// <returns>The next random walk value.</returns>
+        /// <param name="initial">Value to work from.</param>
+        /// <param name="walkSpeed">Walk speed.</param>
+        /// <param name="min">Minimum for the next value.</param>
+        /// <param name="max">Maximum for the next value.</param>
+        public static float ScalarRandomWalk(float initial, float walkSpeed, float min, float max)
         {
-            var next = initial + ((Random.value * 2 - 1) * walkspeed);
+            var next = initial + ((Random.value * 2 - 1) * walkSpeed);
             next = Mathf.Clamp(next, min, max);
             return next;
         }
 
+        /// <summary>
+        /// Compares x with an interfal and returns a comparison value.
+        /// </summary>
+        /// <returns>-1 if x is below the lower bound, +1 if above it, and 0 if it is in the described interval.</returns>
+        /// <param name="x">Amount to compare.</param>
+        /// <param name="lowerBound">Lower bound.</param>
+        /// <param name="upperBound">Upper bound.</param>
         public static int IntervalComparison(float x, float lowerBound, float upperBound)
         {
             if (x < lowerBound) return -1;
@@ -110,14 +139,19 @@ namespace UnitySteer
             return 0;
         }
 
-        // ----------------------------------------------------------------------------
-        // Computes distance from a point to a line segment 
-        //
-        // Whenever possible the segment's normal and length should be calculated 
-        // in advance for performance reasons, if we're dealing with a known point 
-        // sequence in a path, but we provide for the case where the values aren't
-        // sent.
-        //
+        /// <summary>
+        /// Computes distance from a point to a line segment 
+        ///
+        /// Whenever possible the segment's normal and length should be calculated 
+        /// in advance for performance reasons, if we're dealing with a known point 
+        /// sequence in a path, but we provide for the case where the values aren't
+        /// sent.
+        /// </summary>
+        /// <returns>The distance from the point to the one chosen along the segment.</returns>
+        /// <param name="point">Point to calculate the distance from</param>
+        /// <param name="ep0">Segment start</param>
+        /// <param name="ep1">Segment end</param>
+        /// <param name="segmentProjection">Segment projection.</param>
         public static float PointToSegmentDistance(Vector3 point, Vector3 ep0, Vector3 ep1,
             ref float segmentProjection)
         {
@@ -125,6 +159,23 @@ namespace UnitySteer
             return PointToSegmentDistance(point, ep0, ep1, ref cp, ref segmentProjection);
         }
 
+        /// <summary>
+        /// Computes distance from a point to a line segment and fills in the
+        /// information for the closest chosen point along the segment.
+        ///
+        /// Whenever possible the segment's normal and length should be calculated 
+        /// in advance for performance reasons, if we're dealing with a known point 
+        /// sequence in a path, but we provide for the case where the values aren't
+        /// sent.
+        /// </summary>
+        /// <param name="point">Point to calculate the distance from</param>
+        /// <param name="ep0">Segment start</param>
+        /// <param name="ep1">Segment end</param>
+        /// <param name="chosenPoint">Chosen closest point along the segment</param>
+        /// <remarks>Not crazy about having the segment length as a separate
+        /// parameter, since it could introduce bugs where the wrong length is
+        /// passed, but it allows us to have the segments pre-calculated</remarks>
+        /// <returns>The distance from the point to the one chosen along the segment.</returns>
         public static float PointToSegmentDistance(Vector3 point, Vector3 ep0, Vector3 ep1,
             ref Vector3 chosenPoint)
         {
@@ -132,6 +183,24 @@ namespace UnitySteer
             return PointToSegmentDistance(point, ep0, ep1, ref chosenPoint, ref sp);
         }
 
+        /// <summary>
+        /// Computes distance from a point to a line segment and fills in the
+        /// information for both the closest chosen point along the segment, and 
+        /// the segment projection.
+        ///
+        /// Whenever possible the segment's normal and length should be calculated 
+        /// in advance for performance reasons, if we're dealing with a known point 
+        /// sequence in a path, but we provide for the case where the values aren't
+        /// sent.
+        /// </summary>
+        /// <param name="point">Point to calculate the distance from</param>
+        /// <param name="ep0">Segment start</param>
+        /// <param name="ep1">Segment end</param>
+        /// <param name="segmentNormal">Segment normal</param>
+        /// <param name="segmentLength">Segment length</param>
+        /// <param name="chosenPoint">Chosen closest point along the segment</param>
+        /// <param name="segmentProjection">Segment projection.</param>
+        /// <returns>The distance from the point to the one chosen along the segment.</returns>
         public static float PointToSegmentDistance(Vector3 point, Vector3 ep0, Vector3 ep1,
             ref Vector3 chosenPoint,
             ref float segmentProjection)
@@ -144,6 +213,26 @@ namespace UnitySteer
                 ref chosenPoint, ref segmentProjection);
         }
 
+        /// <summary>
+        /// Computes distance from a point to a line segment and fills in the
+        /// information for the segment projection for the closest point along
+        /// the line segment.   
+        ///
+        /// Whenever possible the segment's normal and length should be calculated 
+        /// in advance for performance reasons, if we're dealing with a known point 
+        /// sequence in a path, but we provide for the case where the values aren't
+        /// sent.
+        /// </summary>
+        /// <param name="point">Point to calculate the distance from</param>
+        /// <param name="ep0">Segment start</param>
+        /// <param name="ep1">Segment end</param>
+        /// <param name="segmentNormal">Segment normal</param>
+        /// <param name="segmentLength">Segment length</param>
+        /// <param name="chosenPoint">Chosen closest point along the segment</param>
+        /// <remarks>Not crazy about having the segment length as a separate
+        /// parameter, since it could introduce bugs where the wrong length is
+        /// passed, but it allows us to have the segments pre-calculated</remarks>
+        /// <returns>The distance from the point to the one chosen along the segment.</returns>
         public static float PointToSegmentDistance(Vector3 point, Vector3 ep0, Vector3 ep1,
             Vector3 segmentNormal, float segmentLength,
             ref float segmentProjection)
@@ -153,6 +242,20 @@ namespace UnitySteer
                 ref cp, ref segmentProjection);
         }
 
+        /// <summary>
+        /// Computes distance from a point to a line segment and fills in the
+        /// information for the closest chosen point along the segment.
+        /// </summary>
+        /// <param name="point">Point to calculate the distance from</param>
+        /// <param name="ep0">Segment start</param>
+        /// <param name="ep1">Segment end</param>
+        /// <param name="segmentNormal">Segment normal</param>
+        /// <param name="segmentLength">Segment length</param>
+        /// <param name="chosenPoint">Chosen closest point along the segment</param>
+        /// <remarks>Not crazy about having the segment length as a separate
+        /// parameter, since it could introduce bugs where the wrong length is
+        /// passed, but it allows us to have the segments pre-calculated</remarks>
+        /// <returns>The distance from the point to the one chosen along the segment.</returns>
         public static float PointToSegmentDistance(Vector3 point, Vector3 ep0, Vector3 ep1,
             Vector3 segmentNormal, float segmentLength,
             ref Vector3 chosenPoint)
@@ -163,6 +266,22 @@ namespace UnitySteer
         }
 
 
+        /// <summary>
+        /// Computes distance from a point to a line segment and fills in the
+        /// information for both the closest chosen point along the segment, and 
+        /// the segment projection.
+        /// </summary>
+        /// <param name="point">Point to calculate the distance from</param>
+        /// <param name="ep0">Segment start</param>
+        /// <param name="ep1">Segment end</param>
+        /// <param name="segmentNormal">Segment normal</param>
+        /// <param name="segmentLength">Segment length</param>
+        /// <param name="chosenPoint">Chosen closest point along the segment</param>
+        /// <param name="segmentProjection">Segment projection.</param>
+        /// <remarks>Not crazy about having the segment length as a separate
+        /// parameter, since it could introduce bugs where the wrong length is
+        /// passed, but it allows us to have the segments pre-calculated</remarks>
+        /// <returns>The distance from the point to the one chosen along the segment.</returns>
         public static float PointToSegmentDistance(Vector3 point, Vector3 ep0, Vector3 ep1,
             Vector3 segmentNormal, float segmentLength,
             ref Vector3 chosenPoint,
@@ -196,11 +315,21 @@ namespace UnitySteer
         }
 
 
+        /// <summary>
+        /// Returns the cosine for an angle in degrees
+        /// </summary>
+        /// <returns>Cosine.</returns>
+        /// <param name="angle">Angle in degrees.</param>
         public static float CosFromDegrees(float angle)
         {
             return Mathf.Cos(angle * Mathf.Deg2Rad);
         }
 
+        /// <summary>
+        /// Returns an angle in degrees from a cosine
+        /// </summary>
+        /// <returns>Corresonding angle in degrees.</returns>
+        /// <param name="cos">Cosine.</param>
         public static float DegreesFromCos(float cos)
         {
             return Mathf.Rad2Deg * Mathf.Acos(cos);
