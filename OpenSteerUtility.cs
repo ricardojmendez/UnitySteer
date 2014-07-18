@@ -186,8 +186,6 @@ namespace UnitySteer
         /// <param name="point">Point to calculate the distance from</param>
         /// <param name="ep0">Segment start</param>
         /// <param name="ep1">Segment end</param>
-        /// <param name="segmentNormal">Segment normal</param>
-        /// <param name="segmentLength">Segment length</param>
         /// <param name="chosenPoint">Chosen closest point along the segment</param>
         /// <param name="segmentProjection">Segment projection.</param>
         /// <returns>The distance from the point to the one chosen along the segment.</returns>
@@ -218,7 +216,7 @@ namespace UnitySteer
         /// <param name="ep1">Segment end</param>
         /// <param name="segmentNormal">Segment normal</param>
         /// <param name="segmentLength">Segment length</param>
-        /// <param name="chosenPoint">Chosen closest point along the segment</param>
+        /// <param name="segmentProjection">Segment projection for the closest point</param>
         /// <remarks>Not crazy about having the segment length as a separate
         /// parameter, since it could introduce bugs where the wrong length is
         /// passed, but it allows us to have the segments pre-calculated</remarks>
