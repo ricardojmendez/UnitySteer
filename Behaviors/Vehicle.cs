@@ -12,7 +12,7 @@ namespace UnitySteer.Base
 /// </summary>
 /// <remarks>The main reasoning behind having a base vehicle class that is not
 /// autonomous in a library geared towards autonomous vehicles, is that in
-/// some circumstances we want to treat agents such as the player (wihch is not
+/// some circumstances we want to treat agents such as the player (which is not
 /// controlled by our automated steering functions) the same as other 
 /// vehicles, at least for purposes of estimation, avoidance, pursuit, etc.
 /// In this case, the base Vehicle class can be used to provide an interface
@@ -24,12 +24,25 @@ public abstract class Vehicle : DetectableObject
 	[SerializeField]
 	float _minSpeedForTurning = 0.1f;
 	
+    /// <summary>
+    /// The vehicle movement priority.
+    /// </summary>
+    /// <remarks>Used only by some behaviors to determine if a vehicle should
+    /// be given priority before another one. You may disregard if you aren't
+    /// using any behavior like that.</remarks>
 	[SerializeField]
 	int _movementPriority;	
 	
 	#region Private fields
 	float _squaredArrivalRadius;
 	
+    /// <summary>
+    /// Across how many seconds is the vehicle's forward orientation smoothed
+    /// </summary>
+    /// <remarks>
+    /// ForwardSmoothing would be a better name, but changing it now would mean
+    /// anyone with a vehicle prefab would lose their current settings.
+    /// </remarks>
 	[SerializeField]
 	float _turnTime = 0.25f;
 	
@@ -37,11 +50,20 @@ public abstract class Vehicle : DetectableObject
 	/// Vehicle's mass
 	/// </summary>
 	/// <remarks>
-	/// This value will be used when applying forces to the vehicle.
+	/// The total force from the steering behaviors will be divided by the 
+    /// vehicle mass before applying.
 	/// </remarks>
     [SerializeField]
     float _mass = 1;
 	
+    /// <summary>
+    /// Indicates which axes a vehicle is allowed to move on
+    /// </summary>
+    /// <remarks>
+    /// A 0 on the X/Y/Z value means the vehicle is not allowed to move on that
+    /// axis, a 1 indicates it can.  We use Vector3Toggle to set it on the 
+    /// editor as a helper.
+    /// </remarks>
 	[SerializeField, Vector3Toggle]
 	Vector3 _allowedMovementAxes = Vector3.one;
 	
@@ -105,29 +127,29 @@ public abstract class Vehicle : DetectableObject
 	}
 
 	/// <summary>
-	/// Maximum force that can be applied to the vehicle
+	/// Maximum force that can be applied to the vehicle.  The sum of weighed
+    /// steering forces will have its magnitude clamped to this value.
 	/// </summary>
-	public float MaxForce {
-		get {
-			return _maxForce;
-		}
-		set {
-			_maxForce = Mathf.Clamp(value, 0, float.MaxValue);
-		}
+	public float MaxForce 
+    {
+        get { return _maxForce; }
+		set { _maxForce = Mathf.Clamp(value, 0, float.MaxValue); }
 	}
 
 	/// <summary>
 	/// The vehicle's maximum speed
 	/// </summary>
 	public float MaxSpeed {
-		get {
-			return _maxSpeed;
-		}
-		set {
-			_maxSpeed = Mathf.Clamp(value, 0, float.MaxValue);
-		}
+		get { return _maxSpeed; }
+		set { _maxSpeed = Mathf.Clamp(value, 0, float.MaxValue); }
 	}
 	
+    /// <summary>
+    /// The vehicle movement priority.
+    /// </summary>
+    /// <remarks>Used only by some behaviors to determine if a vehicle should
+    /// be given priority before another one. You may disregard if you aren't
+    /// using any behavior like that.</remarks>
 	public int MovementPriority 
 	{
 		get { return _movementPriority; }
@@ -184,21 +206,15 @@ public abstract class Vehicle : DetectableObject
 	public abstract float Speed { get; }
 	
 	/// <summary>
-	/// How quickly does the vehicle turn toward a vector.
+    /// Across how many seconds is the vehicle's forward orientation smoothed.
 	/// </summary>
 	/// <value>
 	/// The turn speed
 	/// </value>
 	public float TurnTime 
 	{
-		get 
-		{
-			return _turnTime;
-		}
-		set 
-		{
-			_turnTime = Mathf.Max(0, value);
-		}
+		get { return _turnTime; }
+		set { _turnTime = Mathf.Max(0, value); 	}
 	}
 
 	/// <summary>
