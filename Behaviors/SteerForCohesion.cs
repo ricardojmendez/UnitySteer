@@ -14,8 +14,9 @@ public class SteerForCohesion : SteerForNeighbors
 	float _comfortDistanceSquared;
 
 	/// <summary>
-	/// Any neighbor that is closer than the comfort distance will not be
-	/// considered for cohesion.
+	/// Any neighbor that is closer than the comfort distance will have its
+    /// cohesion force multiplied by the inverse of the squared magnitude of the
+    /// distance to the vehicle.
 	/// </summary>
 	[SerializeField]
 	float _comfortDistance = 1;
@@ -46,6 +47,8 @@ public class SteerForCohesion : SteerForNeighbors
 		}
 		else
 		{
+            // Provide some contribution, but diminished by the distance to 
+            // the vehicle.
 			distance *= 1 / sqrMag;
 		}
 		return distance;

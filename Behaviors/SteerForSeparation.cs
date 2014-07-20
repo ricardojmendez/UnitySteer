@@ -27,7 +27,7 @@ public class SteerForSeparation : SteerForNeighbors
 	float _multiplierInsideComfortDistance = 1;
 
 	/// <summary>
-	/// The range beyond which we no longer apply any separation.
+	/// The range beyond which we no longer apply any separation force.
 	/// </summary>
 	[SerializeField]
 	float _maximumSeparation = 2f;
@@ -44,7 +44,11 @@ public class SteerForSeparation : SteerForNeighbors
 	float _maximumSeparationSquared;
 
 
-	public float ComfortDistance
+    /// <summary>
+    /// The comfort distance. Any neighbors closer than this will be hit with an
+    /// extra penalty.
+    /// </summary>
+    public float ComfortDistance
 	{
 		get { return _comfortDistance; }
 		set 
@@ -54,6 +58,9 @@ public class SteerForSeparation : SteerForNeighbors
 		}
 	}
 
+    /// <summary>
+    /// The range beyond which we no longer apply any separation force.
+    /// </summary>
 	public float MaximumSeparation
 	{
 		get { return _maximumSeparation; }

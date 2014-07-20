@@ -10,22 +10,6 @@ namespace UnitySteer.Base
 /// Steering behavior which goes through all SteerForNeighbor behaviors
 /// attached to the object and calls their CalculateNeighborContribution
 /// method for each neighbor.
-/// </summary>
-/// <remarks>
-/// Sample values to user for flocking boids (angles are in degrees):
-/// 
-/// public float separationRadius =   5;
-/// public float separationAngle  = 135;
-/// public float separationWeight =  12;
-/// 
-/// public float alignmentRadius =    7.5f;
-/// public float alignmentAngle  =   45;
-/// public float alignmentWeight =    8;
-/// 
-/// public float cohesionRadius  =    9;
-/// public float cohesionAngle   =   99;
-/// public float cohesionWeight  =    8;
-/// 
 /// 
 /// This behavior will return a pure direction vector, which is the normalized
 /// aggregation of the force vectors of each of the SteerForNeigbhors descendants
@@ -33,6 +17,19 @@ namespace UnitySteer.Base
 /// steering's weight in relation to the others, but the final resulting
 /// force depends entirely on the weight of the SteerForNeighborGroup 
 /// behavior.
+/// </summary>
+/// <remarks>
+/// Previous versions of SteerFor Neighbors used to take into account separate
+/// values for filtering if a boid was an neighbor or not, which added flexibility
+/// but had the downside that we needed to evaluate the distance and alignment 
+/// of every potential neighbor as many times as we had neighbor-related 
+/// behaviors.
+/// 
+/// The current implementation only takes one set of neighbor-filtering values
+/// and applies them on detection to other vehicles in order to filter them
+/// before passing them to the attached SteerForNeighbor behaviors for them
+/// to calculate the contribution for each - on a typical boid scenario, it 
+/// cuts the checks down to a third.
 /// </remarks>
 [AddComponentMenu("UnitySteer/Steer/... for Neighbor Group")]
 [RequireComponent(typeof(Radar))]
