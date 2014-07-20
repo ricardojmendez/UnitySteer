@@ -20,6 +20,7 @@ namespace UnitySteer.Tools
 /// </summary>
 [RequireComponent(typeof(AutonomousVehicle))]
 [AddComponentMenu("UnitySteer/Vehicle/Vehicle Look-At Override")]
+[System.Obsolete("Unused and outdated behavior, likely to be removed soon.", true)] 
 public class VehicleLookAtOverride : MonoBehaviour {
 	
 	AutonomousVehicle _vehicle;
