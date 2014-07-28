@@ -1,7 +1,7 @@
 // #define DEBUG_COMFORT_DISTANCE
 using UnityEngine;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>

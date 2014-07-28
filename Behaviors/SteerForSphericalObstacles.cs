@@ -2,7 +2,7 @@
 using UnityEngine;
 using System.Linq;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>

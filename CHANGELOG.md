@@ -4,6 +4,7 @@
 
 BREAKING CHANGES FROM UNITYSTEER 2.x: 
 
+* Namespace reorganization.
 * Removed TickedVehicle._accelerationSmoothRate.  This affects both Bipeds and AutonomousVehicles.
 * New properties on AutonomousVehicle to control the acceleration and deceleration rates.
 * Using the AutonomousVehicle's TargetSpeed to indicate the speed we're aiming for, and Speed the one we're actually moving at.  Speed will gradually aim for TargetSpeed at its acceleration/deceleration rates.

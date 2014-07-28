@@ -2,8 +2,9 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using UnitySteer.Attributes;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>

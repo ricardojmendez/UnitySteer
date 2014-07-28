@@ -1,8 +1,9 @@
 using System.Linq;
 using UnityEngine;
+using UnitySteer.Attributes;
 using UnitySteer.Tools;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace UnitySteer.Base.Editors
+namespace UnitySteer.Behaviors.Editors
 {
 
 [CustomEditor(typeof(DetectableObject))]

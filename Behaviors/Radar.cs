@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TickedPriorityQueue;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>

@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnitySteer.Base;
+using UnitySteer.Behaviors;
 
 namespace UnitySteer.Helpers
 {

@@ -1,7 +1,7 @@
 #define ANNOTATE_PURSUIT
 using UnityEngine;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 /// <summary>
 /// Steers a vehicle to pursue another one

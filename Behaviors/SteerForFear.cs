@@ -1,7 +1,7 @@
 //#define ANNOTATE_REPULSION
 using UnityEngine;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>

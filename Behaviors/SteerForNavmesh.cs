@@ -1,7 +1,7 @@
 #define ANNOTATE_NAVMESH
 using UnityEngine;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
