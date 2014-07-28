@@ -1,8 +1,7 @@
 UnitySteer -- Unity port of OpenSteer
 
-Ported to Unity and expanded by:
-    - Ricardo J. Mendez <ricardo@arges-systems.com>
-    - Emil Johansen <emil@eej.dk>
+Developed and maintained by Ricardo J. Méndez <ricardo@arges-systems.com>
+and other contributors.
 
 UnitySteer is open source software distributed in accordance with the MIT
 License (http://www.opensource.org/licenses/mit-license.php). Full text 
