@@ -1,9 +1,12 @@
 using UnityEngine;
 using UnitySteer.Attributes;
 
-namespace UnitySteer.Helpers
+namespace UnitySteer.Behaviors
 {
 
+/// <summary>
+/// Randomizes a transform's position (and possibly rotation) on start, then self-destructs.
+/// </summary>
 public class RandomizeStartPosition: MonoBehaviour
 {
 	public Vector3 Radius = Vector3.one;
