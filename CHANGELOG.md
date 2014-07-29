@@ -35,7 +35,7 @@ Also:
 * New Vehicle.DeltaTime property.
 * Removed old, unsupported sample path steering behaviors to avoid confusion. You can find them as gists here: [SteerForPathTrivial](https://gist.github.com/ricardojmendez/88488a8550ea62bfa119), [SteerForPathPredictiveTrivial](https://gist.github.com/ricardojmendez/f4fff18b34faa0ce17bd).
 * (Possibly breaking change). Removed redundant BlendIntoAccumulator methods from OpenSteerUtility - they were doing nothing but wrap Lerp variants. No need to have an extra call with parameters in a non-standard order.
-
+* Removed VehicleLookAtOverride behavior. It was unused ever since I separated vehicles into Biped and AutonomousVehicle.
 
 ## v2.7
 
