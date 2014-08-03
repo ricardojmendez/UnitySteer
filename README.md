@@ -1,13 +1,13 @@
-# UnitySteer 3.0 alpha
+# UnitySteer 3.0 beta
 
 
 ## General notes
 
-UnitySteer is a toolkit to help build steering behaviors for autonomous agents in Unity.  Initially based on OpenSteer, UnitySteer has been significanly reworked since it was first translated - the concepts and some of the code remain the same, but it follows a more Unity-like component-oriented philosophy. 
+UnitySteer is a toolkit to help build steering behaviors for autonomous agents in Unity.  Initially based on OpenSteer, UnitySteer has been significantly reworked since it was first translated - the concepts and some of the code remain the same, but it follows a more Unity-like component-oriented philosophy. 
 
 Please read License.txt before using in your projects.  It's short, sweet and up to the point.
 
-You are currently looking at UnitySteer 3.0 *alpha*. Make sure you catch up with [the latest UnitySteer blogposts](http://arges-systems.com/blog/category/unitysteer/), as well as reading the changelog, to be aware of the latest changes.
+You are currently looking at UnitySteer 3.0 *beta*. Make sure you catch up with [the latest UnitySteer blogposts](http://arges-systems.com/blog/category/unitysteer/), as well as reading the changelog, to be aware of the latest changes.
 
 
 ## Main repository
