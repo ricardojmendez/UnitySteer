@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnitySteer;
-using UnitySteer.Helpers;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
@@ -12,8 +10,8 @@ namespace UnitySteer.Base
 public class SteerForWander : Steering
 {
 	#region Private fields
-	float _wanderSide = 0;
-	float _wanderUp = 0;
+	float _wanderSide;
+	float _wanderUp;
 	
 	[SerializeField]
 	float _maxLatitudeSide = 2;
@@ -33,7 +31,7 @@ public class SteerForWander : Steering
 	/// </summary>
 	public float MaxLatitudeSide {
 		get {
-			return this._maxLatitudeSide;
+			return _maxLatitudeSide;
 		}
 		set {
 			_maxLatitudeSide = value;
@@ -45,7 +43,7 @@ public class SteerForWander : Steering
 	/// </summary>
 	public float MaxLatitudeUp {
 		get {
-			return this._maxLatitudeUp;
+			return _maxLatitudeUp;
 		}
 		set {
 			_maxLatitudeUp = value;
@@ -58,13 +56,12 @@ public class SteerForWander : Steering
 	{
 		float speed = Vehicle.MaxSpeed;
 
-		// random walk WanderSide and WanderUp between -1 and +1        
-        var randomSide = OpenSteerUtility.scalarRandomWalk(_wanderSide, speed, -_maxLatitudeSide, _maxLatitudeSide);
-        var randomUp = OpenSteerUtility.scalarRandomWalk(_wanderUp, speed, -_maxLatitudeUp, _maxLatitudeUp);
-		_wanderSide = OpenSteerUtility.blendIntoAccumulator(_smoothRate * Vehicle.DeltaTime, randomSide, _wanderSide);
-		_wanderUp = OpenSteerUtility.blendIntoAccumulator(_smoothRate * Vehicle.DeltaTime, randomUp, _wanderUp);
-        
-        
+		// random walk WanderSide and WanderUp between the specified latitude
+        var randomSide = OpenSteerUtility.ScalarRandomWalk(_wanderSide, speed, -_maxLatitudeSide, _maxLatitudeSide);
+        var randomUp = OpenSteerUtility.ScalarRandomWalk(_wanderUp, speed, -_maxLatitudeUp, _maxLatitudeUp);
+        _wanderSide = Mathf.Lerp(_wanderSide, randomSide, _smoothRate * Vehicle.DeltaTime);
+        _wanderUp = Mathf.Lerp(_wanderUp, randomUp, _smoothRate * Vehicle.DeltaTime);
+
 		Vector3	 result = (Vehicle.Transform.right * _wanderSide) + (Vehicle.Transform.up * _wanderUp) + Vehicle.Transform.forward;
 		return result;
 	}	

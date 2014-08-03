@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using UnitySteer;
+using UnitySteer.Attributes;
 
 [CustomPropertyDrawer(typeof(AngleCosineAttribute))]
 public class AngleCosineDrawer: PropertyDrawer

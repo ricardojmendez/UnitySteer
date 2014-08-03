@@ -1,10 +1,7 @@
 #define TRACE_ADJUSTMENTS
 using UnityEngine;
-using UnitySteer;
-using System.Linq;
-using TickedPriorityQueue;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
@@ -18,7 +15,7 @@ public class Biped : TickedVehicle
 	/// <summary>
 	/// The magnitude of the last velocity vector assigned to the vehicle 
 	/// </summary>
-	float _speed = 0;
+	float _speed;
 
 	/// <summary>
 	/// The biped's current velocity vector
@@ -52,7 +49,7 @@ public class Biped : TickedVehicle
 			_velocity = Vector3.ClampMagnitude(value, MaxSpeed);
 			_speed = _velocity.magnitude;
 			TargetSpeed = _speed;
-			OrientationVelocity = _speed != 0 ? _velocity / _speed : Vector3.zero;
+			OrientationVelocity = !Mathf.Approximately(_speed, 0) ? _velocity / _speed : Vector3.zero;
 		}
 	}
 
@@ -65,16 +62,28 @@ public class Biped : TickedVehicle
 	}
 	
 	
-	public override void UpdateOrientationVelocity(Vector3 velocity)
+    /// <summary>
+    /// Assigns a new velocity vector to the biped.
+    /// </summary>
+    /// <param name="velocity">Newly calculated velocity</param>
+	protected override void UpdateOrientationVelocity(Vector3 velocity)
 	{
 		Velocity = velocity;
 	}
 
+    /// <summary>
+    /// Calculates how much the agent's position should change in a manner that
+    /// is specific to the vehicle's implementation.
+    /// </summary>
+    /// <param name="deltaTime">Time delta to use in position calculations</param>
 	protected override Vector3 CalculatePositionDelta(float deltaTime)
 	{
 		return Velocity * deltaTime;
 	}
 
+    /// <summary>
+    /// Zeros this vehicle's velocity vector.
+    /// </summary>
 	protected override void ZeroVelocity()
 	{
 		Velocity = Vector3.zero;

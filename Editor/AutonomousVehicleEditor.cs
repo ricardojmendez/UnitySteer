@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
-using UnitySteer.Base;
+using UnitySteer.Behaviors;
 
-namespace UnitySteer.Base.Editors
+namespace UnitySteer.Behaviors.Editors
 {
 
 [CustomEditor(typeof(AutonomousVehicle))]

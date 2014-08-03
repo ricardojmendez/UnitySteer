@@ -1,10 +1,8 @@
 #define TRACE_ADJUSTMENTS
 using UnityEngine;
-using UnitySteer;
-using System.Linq;
 using TickedPriorityQueue;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
@@ -88,7 +86,7 @@ public abstract class TickedVehicle : Vehicle
 	/// </summary>
 	public UnityTickedQueue SteeringQueue 
 	{
-		get { return this._steeringQueue; }
+		get { return _steeringQueue; }
 	}
 
 
@@ -103,7 +101,7 @@ public abstract class TickedVehicle : Vehicle
 	void Start()
 	{
 		CharacterController = GetComponent<CharacterController>();
-		PreviousTickTime = 0;
+		PreviousTickTime = Time.time;
 	}
 
 	
@@ -166,7 +164,7 @@ public abstract class TickedVehicle : Vehicle
 		PreviousTickTime = CurrentTickTime;
 		CurrentTickTime = Time.time;
 
-		if (!CanMove || MaxForce == 0 || MaxSpeed == 0)
+		if (!CanMove || Mathf.Approximately(MaxForce, 0) || Mathf.Approximately(MaxSpeed, 0))
 		{
 			return;
 		}
@@ -175,7 +173,8 @@ public abstract class TickedVehicle : Vehicle
 		var force = Vector3.zero;
 		
 		Profiler.BeginSample("Adding up basic steerings");
-        for(int i = 0; i < Steerings.Length; i++) {
+        for (var i = 0; i < Steerings.Length; i++) 
+        {
             var s = Steerings[i];
             if (s.enabled) {
                 force += s.WeighedForce;
@@ -186,7 +185,7 @@ public abstract class TickedVehicle : Vehicle
 		
 		// Enforce speed limit.  Steering behaviors are expected to return a
 		// final desired velocity, not a acceleration, so we apply them directly.
-		Vector3 newVelocity = Vector3.ClampMagnitude(force / Mass, MaxForce);
+		var newVelocity = Vector3.ClampMagnitude(force / Mass, MaxForce);
 
 		if (newVelocity.sqrMagnitude == 0)
 		{
@@ -204,9 +203,9 @@ public abstract class TickedVehicle : Vehicle
 		// blending the new velocity into an accumulator. We *could* do that,
 		// but things are working just fine for now, and it seems like
 		// overkill. 
-		Vector3 adjustedVelocity = Vector3.zero;
+		var adjustedVelocity = Vector3.zero;
 		Profiler.BeginSample("Adding up post-processing steerings");
-        for (int i = 0; i < SteeringPostprocessors.Length; i++) {
+        for (var i = 0; i < SteeringPostprocessors.Length; i++) {
             var s = SteeringPostprocessors[i];
             if (s.enabled) {
 			    adjustedVelocity += s.WeighedForce;
@@ -260,6 +259,7 @@ public abstract class TickedVehicle : Vehicle
 	/// Turns the vehicle towards his velocity vector. Previously called
 	/// LookTowardsVelocity.
 	/// </summary>
+    /// <param name="deltaTime">Time delta to use for turn calculations</param>
 	protected void AdjustOrientation(float deltaTime)
 	{
 		/* 
@@ -284,14 +284,21 @@ public abstract class TickedVehicle : Vehicle
 	/// manner that is specific to each subclass. 
 	/// </summary>
 	/// <param name="velocity">Newly calculated velocity</param>
-	public abstract void UpdateOrientationVelocity(Vector3 velocity);
+	protected abstract void UpdateOrientationVelocity(Vector3 velocity);
 
 	/// <summary>
 	/// Calculates how much the agent's position should change in a manner that
 	/// is specific to the vehicle's implementation.
 	/// </summary>
+    /// <param name="deltaTime">Time delta to use in position calculations</param>
 	protected abstract Vector3 CalculatePositionDelta(float deltaTime);
 
+    /// <summary>
+    /// Zeros this vehicle's velocity.
+    /// </summary>
+    /// <remarks>
+    /// Implementation details are left up to the subclasses.
+    /// </remarks>
 	protected abstract void ZeroVelocity();
 	#endregion
 

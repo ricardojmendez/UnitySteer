@@ -1,33 +1,16 @@
 //#define DEBUG_DRAWNEIGHBORS
+
 using System.Collections.Generic;
 using UnityEngine;
-using UnitySteer;
-using UnitySteer.Helpers;
+using UnitySteer.Attributes;
 
-
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
 /// Steering behavior which goes through all SteerForNeighbor behaviors
 /// attached to the object and calls their CalculateNeighborContribution
 /// method for each neighbor.
-/// </summary>
-/// <remarks>
-/// Sample values to user for flocking boids (angles are in degrees):
-/// 
-/// public float separationRadius =   5;
-/// public float separationAngle  = 135;
-/// public float separationWeight =  12;
-/// 
-/// public float alignmentRadius =    7.5f;
-/// public float alignmentAngle  =   45;
-/// public float alignmentWeight =    8;
-/// 
-/// public float cohesionRadius  =    9;
-/// public float cohesionAngle   =   99;
-/// public float cohesionWeight  =    8;
-/// 
 /// 
 /// This behavior will return a pure direction vector, which is the normalized
 /// aggregation of the force vectors of each of the SteerForNeigbhors descendants
@@ -35,6 +18,19 @@ namespace UnitySteer.Base
 /// steering's weight in relation to the others, but the final resulting
 /// force depends entirely on the weight of the SteerForNeighborGroup 
 /// behavior.
+/// </summary>
+/// <remarks>
+/// Previous versions of SteerFor Neighbors used to take into account separate
+/// values for filtering if a boid was an neighbor or not, which added flexibility
+/// but had the downside that we needed to evaluate the distance and alignment 
+/// of every potential neighbor as many times as we had neighbor-related 
+/// behaviors.
+/// 
+/// The current implementation only takes one set of neighbor-filtering values
+/// and applies them on detection to other vehicles in order to filter them
+/// before passing them to the attached SteerForNeighbor behaviors for them
+/// to calculate the contribution for each - on a typical boid scenario, it 
+/// cuts the checks down to a third.
 /// </remarks>
 [AddComponentMenu("UnitySteer/Steer/... for Neighbor Group")]
 [RequireComponent(typeof(Radar))]
@@ -64,7 +60,7 @@ public class SteerForNeighborGroup : Steering
 	SteerForNeighbors[] _behaviors;
 
 
-	List<Vehicle> _neighbors = new List<Vehicle>(20);
+    readonly List<Vehicle> _neighbors = new List<Vehicle>(20);
 	#endregion
 
 
@@ -78,7 +74,7 @@ public class SteerForNeighborGroup : Steering
 	/// </remarks>
 	public float AngleCos {
 		get {
-			return this._angleCos;
+			return _angleCos;
 		}
 		set {
 			_angleCos = Mathf.Clamp(value, -1.0f, 1.0f);
@@ -93,7 +89,7 @@ public class SteerForNeighborGroup : Steering
 	{
 		get
 		{
-			return OpenSteerUtility.DegreesFromCos(_angleCos);;
+			return OpenSteerUtility.DegreesFromCos(_angleCos);
 		}
 		set
 		{
@@ -108,7 +104,7 @@ public class SteerForNeighborGroup : Steering
 	/// </summary>
 	public float MinRadius {
 		get {
-			return this._minRadius;
+			return _minRadius;
 		}
 		set {
 			_minRadius = value;
@@ -121,7 +117,7 @@ public class SteerForNeighborGroup : Steering
 	/// </summary>
 	public float MaxRadius {
 		get {
-			return this._maxRadius;
+			return _maxRadius;
 		}
 		set {
 			_maxRadius = value;
@@ -173,7 +169,7 @@ public class SteerForNeighborGroup : Steering
 
 		_neighbors.Clear();
 		// I'd prefer an iterator, but trying to cut down on allocations
-		for (int i = 0; i < radar.Vehicles.Count; i++)
+		for (var i = 0; i < radar.Vehicles.Count; i++)
 		{
 			var other = radar.Vehicles[i];
 			if (Vehicle.IsInNeighborhood(other, MinRadius, MaxRadius, AngleCos))
@@ -186,9 +182,10 @@ public class SteerForNeighborGroup : Steering
 	protected override Vector3 CalculateForce ()
 	{
 		// steering accumulator and count of neighbors, both initially zero
-		Vector3 steering = Vector3.zero;
+		var steering = Vector3.zero;
 		Profiler.BeginSample("SteerForNeighborGroup.Looping over neighbors");
-		for (int i = 0; i < _neighbors.Count; i++) {
+        // I'd prefer an iterator, but trying to cut down on allocations
+		for (var i = 0; i < _neighbors.Count; i++) {
 			var other  = _neighbors[i];
 			if (!other.GameObject.Equals(null)) // Could be if the object was destroyed
 			{
@@ -196,7 +193,7 @@ public class SteerForNeighborGroup : Steering
 				Debug.DrawLine(Vehicle.Position, other.Position, Color.magenta);
 				#endif
 				Profiler.BeginSample("SteerForNeighborGroup.Adding");
-				for(int bi = 0; bi < _behaviors.Length; bi++)
+				for (var bi = 0; bi < _behaviors.Length; bi++)
 				{
 					steering += _behaviors[bi].CalculateNeighborContribution(other) * _behaviors[bi].Weight;
 				}

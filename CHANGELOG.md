@@ -4,17 +4,20 @@
 
 BREAKING CHANGES FROM UNITYSTEER 2.x: 
 
+* Namespace reorganization.
 * Removed TickedVehicle._accelerationSmoothRate.  This affects both Bipeds and AutonomousVehicles.
 * New properties on AutonomousVehicle to control the acceleration and deceleration rates.
 * Using the AutonomousVehicle's TargetSpeed to indicate the speed we're aiming for, and Speed the one we're actually moving at.  Speed will gradually aim for TargetSpeed at its acceleration/deceleration rates.
 * SteerForWander.SmoothRate is now an amount per second. This causes it to no longer be framerate-dependent.
+* [You can read more about the acceleration smoothing chances here](http://arges-systems.com/blog/2014/01/30/unitysteer-acceleration-smoothing-changes/).
 * Replaced IsPlanar with AllowedMovementAxes. We can now limit movement on any arbitrary axis, not only the Y.
 * Removed obsolete SteerForSphericalObstacleAvoidance.  SteerForSphericalObstacleRepulsion is now simply called SteerForSphericalObstacles.
-
-[You can read more about it here](http://arges-systems.com/blog/2014/01/30/unitysteer-acceleration-smoothing-changes/).
+* Pruned cyclic Vector3Pathways. It was never properly implemented, and they're just as doable by having an event handler for the arrival even of the path steering behavior.
+* Removed redundant Pathway. There were some vestigial methods there that are better done on Vector3Pathway.
 
 Also:
 
+* New SplinePathway.  Takes a list of Vector3s and uses them to create a spline for a path. Chances are this is not what you want to use to create a pathway for bipeds dealing with spatial constraints (say, following a navmesh).  I'm using it to get smoother turning on a group of flying agents.
 * Removed vestigial SphericalObstacleData. See DetectableObject.
 * Added namespaces to the behaviors.  Decided against adding indentation to minimize the number of lines changed in case someone's doing a diff and forgets to exclude whitespace differences.
 * Removed SteeringEvent. The class was unnecessary, we can just do everything with standard actions.
@@ -30,7 +33,9 @@ Also:
 * Renamed DesiredSpeed to TargetSpeed, so that it's clear that it's not a function of DesiredVelocity.
 * Improvements and new properties on SteerForCohesion and SteerForSeparation.
 * New Vehicle.DeltaTime property.
-
+* Removed old, unsupported sample path steering behaviors to avoid confusion. You can find them as gists here: [SteerForPathTrivial](https://gist.github.com/ricardojmendez/88488a8550ea62bfa119), [SteerForPathPredictiveTrivial](https://gist.github.com/ricardojmendez/f4fff18b34faa0ce17bd).
+* (Possibly breaking change). Removed redundant BlendIntoAccumulator methods from OpenSteerUtility - they were doing nothing but wrap Lerp variants. No need to have an extra call with parameters in a non-standard order.
+* Removed VehicleLookAtOverride behavior. It was unused ever since I separated vehicles into Biped and AutonomousVehicle.
 
 ## v2.7
 

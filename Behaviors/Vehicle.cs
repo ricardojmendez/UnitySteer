@@ -1,8 +1,9 @@
 using System.Linq;
 using UnityEngine;
+using UnitySteer.Attributes;
 using UnitySteer.Tools;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
@@ -12,7 +13,7 @@ namespace UnitySteer.Base
 /// </summary>
 /// <remarks>The main reasoning behind having a base vehicle class that is not
 /// autonomous in a library geared towards autonomous vehicles, is that in
-/// some circumstances we want to treat agents such as the player (wihch is not
+/// some circumstances we want to treat agents such as the player (which is not
 /// controlled by our automated steering functions) the same as other 
 /// vehicles, at least for purposes of estimation, avoidance, pursuit, etc.
 /// In this case, the base Vehicle class can be used to provide an interface
@@ -24,24 +25,46 @@ public abstract class Vehicle : DetectableObject
 	[SerializeField]
 	float _minSpeedForTurning = 0.1f;
 	
+    /// <summary>
+    /// The vehicle movement priority.
+    /// </summary>
+    /// <remarks>Used only by some behaviors to determine if a vehicle should
+    /// be given priority before another one. You may disregard if you aren't
+    /// using any behavior like that.</remarks>
 	[SerializeField]
-	int _movementPriority = 0;	
+	int _movementPriority;	
 	
 	#region Private fields
 	float _squaredArrivalRadius;
 	
+    /// <summary>
+    /// Across how many seconds is the vehicle's forward orientation smoothed
+    /// </summary>
+    /// <remarks>
+    /// ForwardSmoothing would be a better name, but changing it now would mean
+    /// anyone with a vehicle prefab would lose their current settings.
+    /// </remarks>
 	[SerializeField]
 	float _turnTime = 0.25f;
 	
-	[SerializeField]
 	/// <summary>
 	/// Vehicle's mass
 	/// </summary>
 	/// <remarks>
-	/// This value will be used when applying forces to the vehicle.
-	/// <remarks>
-	float _mass = 1;
+	/// The total force from the steering behaviors will be divided by the 
+    /// vehicle mass before applying.
+	/// </remarks>
+    [SerializeField]
+    float _mass = 1;
 	
+    /// <summary>
+    /// Indicates which axes a vehicle is allowed to move on
+    /// </summary>
+    /// <remarks>
+    /// A 0 on the X/Y/Z value means the vehicle is not allowed to move on that
+    /// axis, a 1 indicates it can.  We use Vector3Toggle to set it on the 
+    /// editor as a helper.
+    /// </remarks>
 	[SerializeField, Vector3Toggle]
 	Vector3 _allowedMovementAxes = Vector3.one;
 	
@@ -105,29 +128,29 @@ public abstract class Vehicle : DetectableObject
 	}
 
 	/// <summary>
-	/// Maximum force that can be applied to the vehicle
+	/// Maximum force that can be applied to the vehicle.  The sum of weighed
+    /// steering forces will have its magnitude clamped to this value.
 	/// </summary>
-	public float MaxForce {
-		get {
-			return this._maxForce;
-		}
-		set {
-			_maxForce = Mathf.Clamp(value, 0, float.MaxValue);
-		}
+	public float MaxForce 
+    {
+        get { return _maxForce; }
+		set { _maxForce = Mathf.Clamp(value, 0, float.MaxValue); }
 	}
 
 	/// <summary>
 	/// The vehicle's maximum speed
 	/// </summary>
 	public float MaxSpeed {
-		get {
-			return this._maxSpeed;
-		}
-		set {
-			_maxSpeed = Mathf.Clamp(value, 0, float.MaxValue);
-		}
+		get { return _maxSpeed; }
+		set { _maxSpeed = Mathf.Clamp(value, 0, float.MaxValue); }
 	}
 	
+    /// <summary>
+    /// The vehicle movement priority.
+    /// </summary>
+    /// <remarks>Used only by some behaviors to determine if a vehicle should
+    /// be given priority before another one. You may disregard if you aren't
+    /// using any behavior like that.</remarks>
 	public int MovementPriority 
 	{
 		get { return _movementPriority; }
@@ -169,7 +192,7 @@ public abstract class Vehicle : DetectableObject
 	
 	public float SquaredArrivalRadius 
 	{
-		get { return this._squaredArrivalRadius; }
+		get { return _squaredArrivalRadius; }
 	}
 
 	/// <summary>
@@ -184,21 +207,15 @@ public abstract class Vehicle : DetectableObject
 	public abstract float Speed { get; }
 	
 	/// <summary>
-	/// How quickly does the vehicle turn toward a vector.
+    /// Across how many seconds is the vehicle's forward orientation smoothed.
 	/// </summary>
 	/// <value>
 	/// The turn speed
 	/// </value>
 	public float TurnTime 
 	{
-		get 
-		{
-			return _turnTime;
-		}
-		set 
-		{
-			_turnTime = Mathf.Max(0, value);
-		}
+		get { return _turnTime; }
+		set { _turnTime = Mathf.Max(0, value); 	}
 	}
 
 	/// <summary>
@@ -256,8 +273,8 @@ public abstract class Vehicle : DetectableObject
 		{
 			_movementPriority = gameObject.GetInstanceID();
 		}
-		Radar = this.GetComponent<Radar>();
-		Speedometer = this.GetComponent<Speedometer>();
+		Radar = GetComponent<Radar>();
+		Speedometer = GetComponent<Speedometer>();
 	}
 	#endregion
 	
@@ -355,14 +372,10 @@ public abstract class Vehicle : DetectableObject
 			else
 			{
 				// definitely not in neighborhood if outside maxDistance sphere
-				if (distanceSquared > (maxDistance * maxDistance))
-				{
-					result = false;
-				}
-				else
+				if (distanceSquared <= (maxDistance * maxDistance))
 				{
 					// otherwise, test angular offset from forward axis
-					Vector3 unitOffset = offset / (float) Mathf.Sqrt (distanceSquared);
+					Vector3 unitOffset = offset / Mathf.Sqrt (distanceSquared);
 					float forwardness = Vector3.Dot(Transform.forward, unitOffset);
 					result = forwardness > cosMaxAngle;
 				}
@@ -449,13 +462,7 @@ public abstract class Vehicle : DetectableObject
 		Transform.up = Vector3.up;
 		Transform.forward = Vector3.forward;
 	}
-	
-	public float PredictNearestApproachTime(Vehicle other)
-	{
-		return PredictNearestApproachTime(other, Velocity);
-	}
-	
-	
+
     /// <summary>
     /// Predicts the time until nearest approach between this and another vehicle
     /// </summary>
@@ -465,35 +472,38 @@ public abstract class Vehicle : DetectableObject
     /// <param name='other'>
     /// Other vehicle to compare against
     /// </param>
-	public float PredictNearestApproachTime (Vehicle other, Vector3 myVelocity)
+	public float PredictNearestApproachTime(Vehicle other)
 	{
-		// imagine we are at the origin with no velocity,
-		// compute the relative velocity of the other vehicle
-		Vector3 otherVelocity = other.Velocity;
-		Vector3 relVelocity = otherVelocity - myVelocity;
-		float relSpeed = relVelocity.magnitude;
+        // imagine we are at the origin with no velocity,
+        // compute the relative velocity of the other vehicle
+        var otherVelocity = other.Velocity;
+        var relVelocity = otherVelocity - Velocity;
+        var relSpeed = relVelocity.magnitude;
 
-		// for parallel paths, the vehicles will always be at the same distance,
-		// so return 0 (aka "now") since "there is no time like the present"
-		if (relSpeed == 0) return 0;
+        // for parallel paths, the vehicles will always be at the same distance,
+        // so return 0 (aka "now") since "there is no time like the present"
+        if (Mathf.Approximately(relSpeed, 0))
+        {
+            return 0;
+        }
 
-		// Now consider the path of the other vehicle in this relative
-		// space, a line defined by the relative position and velocity.
-		// The distance from the origin (our vehicle) to that line is
-		// the nearest approach.
+        // Now consider the path of the other vehicle in this relative
+        // space, a line defined by the relative position and velocity.
+        // The distance from the origin (our vehicle) to that line is
+        // the nearest approach.
 
-		// Take the unit tangent along the other vehicle's path
-		Vector3 relTangent = relVelocity / relSpeed;
+        // Take the unit tangent along the other vehicle's path
+        var relTangent = relVelocity / relSpeed;
 
-		// find distance from its path to origin (compute offset from
-		// other to us, find length of projection onto path)
-		Vector3 relPosition = Position - other.Position;
-		float projection = Vector3.Dot(relTangent, relPosition);
+        // find distance from its path to origin (compute offset from
+        // other to us, find length of projection onto path)
+        var relPosition = Position - other.Position;
+        var projection = Vector3.Dot(relTangent, relPosition);
 
-		return projection / relSpeed;
-	}
-	
-	
+        return projection / relSpeed;
+    }
+
+
 	/// <summary>
 	/// Given the time until nearest approach (predictNearestApproachTime)
 	/// determine position of each vehicle at that time, and the distance
@@ -541,12 +551,13 @@ public abstract class Vehicle : DetectableObject
 	/// <param name='hisPosition'>
 	/// The other vehicle's position.
 	/// </param>
+	/// <param name="ourSpeed">Our speed to use for the calculations</param>
 	/// <param name='ourForward'>
 	/// Forward vector to use instead of the vehicle's.
 	/// </param>
 	public float ComputeNearestApproachPositions(Vehicle other, float time, 
-												  ref Vector3 ourPosition, 
-												  ref Vector3 hisPosition,
+												 ref Vector3 ourPosition, 
+												 ref Vector3 hisPosition,
 	                                             float ourSpeed,
 	                                             Vector3 ourForward)
 	{

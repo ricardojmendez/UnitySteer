@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnitySteer;
-using UnitySteer.Helpers;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
@@ -25,7 +23,7 @@ public class SteerForCharacterEvasion : Steering
 	/// </summary>
 	public float PredictionTime {
 		get {
-			return this._predictionTime;
+			return _predictionTime;
 		}
 		set {
 			_predictionTime = value;
@@ -37,7 +35,7 @@ public class SteerForCharacterEvasion : Steering
 	/// </summary>
 	public CharacterController Menace {
 		get {
-			return this._menace;
+			return _menace;
 		}
 		set {
 			_menace = value;

@@ -1,10 +1,8 @@
 #define ANNOTATE_AVOIDOBSTACLES
 using UnityEngine;
-using UnitySteer;
-using UnitySteer.Helpers;
 using System.Linq;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
@@ -86,7 +84,7 @@ public class SteerForSphericalObstacles : Steering
 	/// </summary>
 	public float EstimationTime {
 		get {
-			return this._estimationTime;
+			return _estimationTime;
 		}
 		set {
 			_estimationTime = value;

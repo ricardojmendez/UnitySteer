@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnitySteer.Helpers;
-using TickedPriorityQueue;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
@@ -32,8 +30,16 @@ public abstract class Steering : MonoBehaviour {
 	
 	#region Public properties
 	/// <summary>
-	/// The force vector calculated by this steering behavior
+	/// Calculates the force provided by this steering behavior and raises any
+    /// arrival/start events.
 	/// </summary>
+    /// <remarks>
+    /// Besides calculating the desired force, it will also notify the vehicle
+    /// of when it started/stopped providing force, via the OnArrival and
+    /// OnStartMoving events.  If an OnArrival even is raised, the receiving
+    /// object can set the ShouldRetryForce property to TRUE to force the vehicle
+    /// recalculating the force once.
+    /// </remarks>
 	public Vector3 Force
 	{
 		get
@@ -89,9 +95,19 @@ public abstract class Steering : MonoBehaviour {
 	public System.Action<Steering> OnStartMoving { get; set; }
 
 	/// <summary>
-	/// Gets or sets a value indicating whether this <see cref="UnitySteer.Base.Steering"/> should recalculate its force.
+	/// Gets or sets a value indicating whether this Steering should recalculate 
+    /// its force.
 	/// </summary>
 	/// <value><c>true</c> if recalculate force; otherwise, <c>false</c>.</value>
+    /// <remarks>>
+    /// This property is checked once after the steering behavior has raised an
+    /// OnArrival event, and if it is true, the force is then recalculated. This
+    /// is useful in cases of vehicles which do not recalculate their forces
+    /// even frame, since we may want to provide some continuity of movement in
+    /// some cases (for instance, when moving from one waypoint to another) 
+    /// instead of having the vehicle stop at a point until the next time that
+    /// the Force is explicitly queried.
+    /// </remarks>
 	public bool ShouldRetryForce { get; set; }
 	
 	/// <summary>
@@ -110,35 +126,36 @@ public abstract class Steering : MonoBehaviour {
 	/// </summary>
 	public Vector3 WeighedForce
 	{
-		get {
-			return Force * _weight;
-		}
+		get { return Force * _weight; }
 	}
 	
 	/// <summary>
 	/// Vehicle that this behavior will influence
 	/// </summary>
-	public Vehicle Vehicle {
+	public Vehicle Vehicle 
+    {
 		get { return _vehicle; }
 	}
 	
 	/// <summary>
 	/// Weight assigned to this steering behavior
 	/// </summary>
-	public float Weight {
-		get {
-			return this._weight;
-		}
-		set {
-			_weight = value;
-		}
+    /// <remarks>
+    /// The weight is used by WeighedForce to return a modified force value to
+    /// the vehicle, which will then blend all weighed forces from its steerings
+    /// to calculate the desired force.
+    /// </remarks>
+	public float Weight 
+    {
+		get { return _weight; }
+		set { _weight = value; }
 	}
 	#endregion
 	
 	#region Methods
 	protected virtual void Awake()
 	{
-		_vehicle = this.GetComponent<Vehicle>();
+		_vehicle = GetComponent<Vehicle>();
 		ReportedArrival = true; // Default to true to avoid unnecessary notifications
 	}
 	
@@ -147,10 +164,10 @@ public abstract class Steering : MonoBehaviour {
 	}
 	
 	/// <summary>
-	/// Calculates the force desired by this behavior
+	/// Calculates the force supplied by this behavior
 	/// </summary>
 	/// <returns>
-	/// A vector with the desired force <see cref="Vector3"/>
+	/// A vector with the supplied force <see cref="Vector3"/>
 	/// </returns>
 	protected abstract Vector3 CalculateForce();
 	

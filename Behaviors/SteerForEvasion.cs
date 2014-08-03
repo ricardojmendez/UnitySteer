@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnitySteer;
-using UnitySteer.Helpers;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
@@ -11,7 +9,7 @@ namespace UnitySteer.Base
 [AddComponentMenu("UnitySteer/Steer/... for Evasion")]
 public class SteerForEvasion : Steering
 {
-    float _sqrSafetyDistance = 0;
+    float _sqrSafetyDistance;
     
 	#region Private fields
 	[SerializeField]
@@ -38,7 +36,7 @@ public class SteerForEvasion : Steering
 	/// </summary>
 	public float PredictionTime {
 		get {
-			return this._predictionTime;
+			return _predictionTime;
 		}
 		set {
 			_predictionTime = value;
@@ -50,7 +48,7 @@ public class SteerForEvasion : Steering
 	/// </summary>
 	public Vehicle Menace {
 		get {
-			return this._menace;
+			return _menace;
 		}
 		set {
 			_menace = value;
@@ -80,18 +78,18 @@ public class SteerForEvasion : Steering
         }
 		// offset from this to menace, that distance, unit vector toward menace
 		var position = Vehicle.PredictFutureDesiredPosition(_predictionTime);
-		Vector3 offset = _menace.Position - position;
-		float distance = offset.magnitude;
+		var offset = _menace.Position - position;
+		var distance = offset.magnitude;
 
-		float roughTime = distance / _menace.Speed;
-		float predictionTime = ((roughTime > _predictionTime) ?
+		var roughTime = distance / _menace.Speed;
+		var predictionTime = ((roughTime > _predictionTime) ?
 									  _predictionTime :
 									  roughTime);
 
-		Vector3 target = _menace.PredictFuturePosition(predictionTime);
+		var target = _menace.PredictFuturePosition(predictionTime);
 
 		// This was the totality of SteerToFlee
-		Vector3 desiredVelocity = position - target;
+		var desiredVelocity = position - target;
 		return desiredVelocity - Vehicle.DesiredVelocity;		
 	}
 }

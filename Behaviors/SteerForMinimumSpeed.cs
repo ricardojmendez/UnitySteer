@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using UnitySteer.Helpers;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>

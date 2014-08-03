@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using UnitySteer.Attributes;
 
 [CustomPropertyDrawer(typeof(Vector3ToggleAttribute))]
 public class Vector3TogglePropertyDrawer : PropertyDrawer 

@@ -1,8 +1,6 @@
-using System.Collections;
 using UnityEngine;
-using UnitySteer;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
@@ -40,13 +38,10 @@ public class SteerForPathSimplified : Steering
 	/// <summary>
 	/// How far ahead to estimate our position
 	/// </summary>
-	public float PredictionTime {
-		get {
-			return this._predictionTime;
-		}
-		set {
-			_predictionTime = value;
-		}
+	public float PredictionTime 
+    {
+		get { return _predictionTime; }
+        set { _predictionTime = Mathf.Max(value, 0); }
 	}
 
 	/// <summary>
@@ -62,7 +57,7 @@ public class SteerForPathSimplified : Steering
 	/// <value>The last path percentage evaluated.</value>
 	public float PathPercentTraversed 
 	{ 
-		get { return (Path != null) ? DistanceAlongPath / Path.TotalPathLength : 0; }
+		get { return (Path != null && Path.TotalPathLength > 0) ? DistanceAlongPath / Path.TotalPathLength : 0; }
 	}
 	
 	/// <summary>
@@ -72,7 +67,7 @@ public class SteerForPathSimplified : Steering
 	/// </summary>
 	public float MinSpeedToConsider {
 		get {
-			return this._minSpeedToConsider;
+			return _minSpeedToConsider;
 		}
 		set {
 			_minSpeedToConsider = value;
@@ -99,7 +94,7 @@ public class SteerForPathSimplified : Steering
 	/// <returns>
 	/// A <see cref="Vector3"/>
 	/// </returns>
-	protected override Vector3 CalculateForce ()
+	protected override Vector3 CalculateForce()
 	{
 		if (Path == null || Path.SegmentCount < 2) 
 		{
@@ -110,13 +105,13 @@ public class SteerForPathSimplified : Steering
 		// calculation. Otherwise the vehicle will remain where it is if he
 		// starts within the path, because its current position matches its
 		// future path position
-		float speed = Mathf.Max(Vehicle.Speed, _minSpeedToConsider);
+		var speed = Mathf.Max(Vehicle.Speed, _minSpeedToConsider);
 
 		// our goal will be offset from our path distance by this amount
-		float pathDistanceOffset = _predictionTime * speed;
+		var pathDistanceOffset = _predictionTime * speed;
 		
 		// measure distance along path of our current and predicted positions
-		DistanceAlongPath = Path.MapPointToPathDistance (Vehicle.Position);
+		DistanceAlongPath = Path.MapPointToPathDistance(Vehicle.Position);
 		
 		/*
 		 * Otherwise we need to steer towards a target point obtained
@@ -135,8 +130,8 @@ public class SteerForPathSimplified : Steering
 		 * bends and turns and is not a straight vector projected away
 		 * from our position.
 		 */
-		float targetPathDistance = DistanceAlongPath + pathDistanceOffset;
-		var target = Path.MapPathDistanceToPoint (targetPathDistance);
+		var targetPathDistance = DistanceAlongPath + pathDistanceOffset;
+		var target = Path.MapPathDistanceToPoint(targetPathDistance);
 		
 		/*
 		 * Return steering to seek target on path.
@@ -145,7 +140,6 @@ public class SteerForPathSimplified : Steering
 		 * down at each target to try to ease its arrival, which will 
 		 * likely cause it to come to a stand still at low prediction
 		 * times.
-		 *
 		 */
 		var seek = Vehicle.GetSeekVector(target, false);
 		
@@ -159,16 +153,12 @@ public class SteerForPathSimplified : Steering
 			 * point just around the bend is still within the vehicle's arrival
 			 * radius.  In that case, aim a bit further beyond the vehicle's 
 			 * arrival radius so that it can continue moving.
-			 * 
-			 * TODO: Consider simply adding the arrivalradius displacement to
-			 * where we're aiming to from the get go. Might leave as is, considering
-			 * that this is supposed to be just a sample behavior.
 			 */
 			target = Path.MapPathDistanceToPoint(targetPathDistance + 1.5f * Vehicle.ArrivalRadius);
 			seek = Vehicle.GetSeekVector(target, false);
 		}
-		
-		return seek;
+
+        return seek;
 	}
 	
 	protected void OnDrawGizmosSelected()

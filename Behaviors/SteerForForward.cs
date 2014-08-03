@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnitySteer.Helpers;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
@@ -12,7 +11,7 @@ public class SteerForForward : Steering
 {
 	Vector3 _desiredForward = Vector3.zero;
 
-	bool _overrideForward = false;
+	bool _overrideForward;
 
 	/// <summary>
 	/// Desired forward vector. If set to Vector3.zero we will steer toward the transform's forward

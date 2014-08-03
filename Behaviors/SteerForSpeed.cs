@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
@@ -21,7 +21,7 @@ public class SteerForSpeed : Steering {
 	{
 		get 
 		{
-			return this._targetSpeed;
+			return _targetSpeed;
 		}
 		set 
 		{

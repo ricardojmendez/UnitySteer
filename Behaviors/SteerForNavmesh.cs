@@ -1,9 +1,7 @@
 #define ANNOTATE_NAVMESH
 using UnityEngine;
-using UnitySteer;
-using UnitySteer.Helpers;
 
-namespace UnitySteer.Base
+namespace UnitySteer.Behaviors
 {
 
 /// <summary>
@@ -40,7 +38,7 @@ public class SteerForNavmesh : Steering {
 	/// force.</remarks>
 	public float AvoidanceForceFactor {
 		get {
-			return this._avoidanceForceFactor;
+			return _avoidanceForceFactor;
 		}
 		set {
 			_avoidanceForceFactor = value;
@@ -52,7 +50,7 @@ public class SteerForNavmesh : Steering {
 	/// </summary>
 	public float MinTimeToCollision {
 		get {
-			return this._minTimeToCollision;
+			return _minTimeToCollision;
 		}
 		set {
 			_minTimeToCollision = value;
@@ -82,7 +80,7 @@ public class SteerForNavmesh : Steering {
 	/// </remarks>
 	public Vector3 ProbePositionOffset {
 		get { 
-			return this._probePositionOffset;
+			return _probePositionOffset;
 		}
 		set {
 			_probePositionOffset = value;
@@ -98,7 +96,7 @@ public class SteerForNavmesh : Steering {
 	/// </remarks>
 	public float ProbeRadius {
 		get {
-			return this._probeRadius;
+			return _probeRadius;
 		}
 		set {
 			_probeRadius = value;
@@ -139,15 +137,15 @@ public class SteerForNavmesh : Steering {
 		 * and save ourselves the substraction, this allows other vehicles to
 		 * override PredictFuturePosition for their own ends.
 		 */
-		Vector3 futurePosition = Vehicle.PredictFuturePosition(_minTimeToCollision);
-		Vector3 movement = futurePosition - Vehicle.Position;
+		var futurePosition = Vehicle.PredictFuturePosition(_minTimeToCollision);
+		var movement = futurePosition - Vehicle.Position;
 		
 		#if ANNOTATE_NAVMESH
 		Debug.DrawRay(Vehicle.Position, movement, Color.cyan);
 		#endif
 		
 		if (_offMeshCheckingEnabled) {
-			Vector3 probePosition = Vehicle.Position + _probePositionOffset;
+			var probePosition = Vehicle.Position + _probePositionOffset;
 			
 			Profiler.BeginSample("Off-mesh checking");
 			NavMesh.SamplePosition(probePosition, out hit, _probeRadius, _navMeshLayerMask);
@@ -164,13 +162,12 @@ public class SteerForNavmesh : Steering {
 					#endif
 					
 					return (hit.position - probePosition).normalized * Vehicle.MaxForce;
-				} else {			// no closest edge - too far off the mesh
-					#if ANNOTATE_NAVMESH
-					Debug.DrawLine(probePosition, probePosition + Vector3.up * 3, Color.red);
-					#endif
+				} // no closest edge - too far off the mesh
+#if ANNOTATE_NAVMESH
+			    Debug.DrawLine(probePosition, probePosition + Vector3.up * 3, Color.red);
+#endif
 					
-					return Vector3.zero;
-				}
+			    return Vector3.zero;
 			}
 		}
 		
@@ -182,10 +179,9 @@ public class SteerForNavmesh : Steering {
 		if (!hit.hit)
 			return Vector3.zero;
 		
-		Vector3 avoidance = Vector3.zero;
 		Profiler.BeginSample("Calculate NavMesh avoidance");
-		Vector3 moveDirection = Vehicle.Velocity.normalized;
-		avoidance =	 OpenSteerUtility.perpendicularComponent(hit.normal, moveDirection);
+		var moveDirection = Vehicle.Velocity.normalized;
+		var avoidance =	 OpenSteerUtility.PerpendicularComponent(hit.normal, moveDirection);
 
 		avoidance.Normalize();
 
