@@ -1,6 +1,6 @@
 # UnitySteer changelog
 
-## v3.0 (alpha)
+## v3.0 (beta 1)
 
 BREAKING CHANGES FROM UNITYSTEER 2.x: 
 
