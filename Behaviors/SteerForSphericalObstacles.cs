@@ -96,7 +96,7 @@ public class SteerForSphericalObstacles : Steering
 	/// Calculates the force necessary to avoid the closest spherical obstacle
 	/// </summary>
 	/// <returns>
-	/// Force necessary to avoid an obstacle, or Vector3.zero
+	/// Force necessary to avoid detected obstacles, or Vector3.zero
 	/// </returns>
 	/// <remarks>
 	/// This method will iterate through all detected spherical obstacles that 
@@ -122,24 +122,31 @@ public class SteerForSphericalObstacles : Steering
 		Debug.DrawLine(Vehicle.Position, futurePosition, Color.cyan);
 		#endif
 		
-		// test all obstacles for intersection with my forward axis,
-		// select the one whose point of intersection is nearest
+        /*
+         * Test all obstacles for intersection with the vehicle's future position.
+         * If we find that we are going to intersect them, use their position
+         * and distance to affect the avoidance - the further away the intersection
+         * is, the less weight they'll carry.
+         */
 		Profiler.BeginSample("Accumulate spherical obstacle influences");
 		for (int i = 0; i < Vehicle.Radar.Obstacles.Count; i++)
 		{
 			var sphere = Vehicle.Radar.Obstacles[i];
 			if (sphere == null || sphere.Equals(null)) continue; // In case the object was destroyed since we cached it
-			PathIntersection next = FindNextIntersectionWithSphere(Vehicle, futurePosition, sphere);
+			var next = FindNextIntersectionWithSphere(Vehicle, futurePosition, sphere);
 			float avoidanceMultiplier = 1;
-			if (next.Intersect) {
+			if (next.Intersect) 
+            {
 				#if ANNOTATE_AVOIDOBSTACLES
 				Debug.DrawRay(Vehicle.Position, Vehicle.DesiredVelocity.normalized * next.Distance, Color.yellow);
 				#endif
+                // TODO: Review if we should keep this multiplier. Test variants.
 				avoidanceMultiplier = Vehicle.Radar.Obstacles.Count;
 			}
 
 			var distanceCurrent = Vehicle.Position - sphere.Position;
 			var distanceFuture = futurePosition - sphere.Position;
+            // TODO: Reconsider usage of sqrMagnitude, we may want to have a min collision distance setting which tempers it
 			avoidance += avoidanceMultiplier * distanceCurrent / distanceFuture.sqrMagnitude;
 		}
 		Profiler.EndSample();
@@ -173,7 +180,7 @@ public class SteerForSphericalObstacles : Steering
 	/// <returns>
 	/// A PathIntersection with the intersection details <see cref="PathIntersection"/>
 	/// </returns>
-	/// <remarks>>We could probably spin out this function to an independent tool class</remarks>
+	/// <remarks>We could probably spin out this function to an independent tool class</remarks>
 	public static PathIntersection FindNextIntersectionWithSphere(Vehicle vehicle, Vector3 futureVehiclePosition, DetectableObject obstacle) {
 		// this mainly follows http://www.lighthouse3d.com/tutorials/maths/ray-sphere-intersection/
 		
