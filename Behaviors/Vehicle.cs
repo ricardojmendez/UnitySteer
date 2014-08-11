@@ -397,7 +397,12 @@ public abstract class Vehicle : DetectableObject
 	/// <returns>
 	/// Seek vector <see cref="Vector3"/>
 	/// </returns>
-	public Vector3 GetSeekVector(Vector3 target, bool considerVelocity = true)
+	/// <remarks>
+	/// If a steering behavior depends on GetSeekVector, passing considerVelocity 
+	/// as  true can make the agent wobble as it approaches a target unless its 
+	/// force is calculated every frame.
+	/// </remarks>
+	public Vector3 GetSeekVector(Vector3 target, bool considerVelocity = false)
 	{
 		/*
 		 * First off, we calculate how far we are from the target, If this

@@ -141,7 +141,7 @@ public class SteerForPathSimplified : Steering
 		 * likely cause it to come to a stand still at low prediction
 		 * times.
 		 */
-		var seek = Vehicle.GetSeekVector(target, false);
+		var seek = Vehicle.GetSeekVector(target);
 		
 		if (seek == Vector3.zero && targetPathDistance <= Path.TotalPathLength)
 		{
@@ -155,7 +155,7 @@ public class SteerForPathSimplified : Steering
 			 * arrival radius so that it can continue moving.
 			 */
 			target = Path.MapPathDistanceToPoint(targetPathDistance + 1.5f * Vehicle.ArrivalRadius);
-			seek = Vehicle.GetSeekVector(target, false);
+			seek = Vehicle.GetSeekVector(target);
 		}
 
         return seek;
