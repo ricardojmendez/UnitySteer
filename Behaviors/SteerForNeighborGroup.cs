@@ -1,5 +1,3 @@
-// #define DEBUG_DRAWNEIGHBORS
-
 using System.Collections.Generic;
 using UnityEngine;
 using UnitySteer.Attributes;
@@ -41,6 +39,9 @@ public class SteerForNeighborGroup : Steering
 	float _minRadius = 3f;
 	[SerializeField]
 	float _maxRadius = 7.5f;
+
+	[SerializeField]
+	bool _drawNeighbors = false;
 
 	/// <summary>
 	/// Angle cosine for detected vehicle heading comparison
@@ -191,9 +192,10 @@ public class SteerForNeighborGroup : Steering
 			var other  = _neighbors[i];
 			if (!other.GameObject.Equals(null)) // Could be if the object was destroyed
 			{
-				#if DEBUG_DRAWNEIGHBORS
-				Debug.DrawLine(Vehicle.Position, other.Position, Color.magenta);
-				#endif
+				if (_drawNeighbors)
+				{
+					Debug.DrawLine(Vehicle.Position, other.Position, Color.magenta);
+				}				
 				Profiler.BeginSample("SteerForNeighborGroup.Adding");
 				for (var bi = 0; bi < _behaviors.Length; bi++)
 				{

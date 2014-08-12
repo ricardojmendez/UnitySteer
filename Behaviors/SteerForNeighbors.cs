@@ -1,4 +1,3 @@
-//#define DEBUG_DRAWNEIGHBORS
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
