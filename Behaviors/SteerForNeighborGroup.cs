@@ -1,4 +1,4 @@
-//#define DEBUG_DRAWNEIGHBORS
+// #define DEBUG_DRAWNEIGHBORS
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -145,6 +145,8 @@ public class SteerForNeighborGroup : Steering
 		{
 			// Ensure UnitySteer does not call them
 			b.enabled = false;
+			// ... and since Unity may not call them either, initialize them ourselves.
+			b.Initialize();
 		}
 		Vehicle.Radar.OnDetected += HandleDetection;
 	}
