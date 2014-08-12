@@ -86,8 +86,7 @@ public class SteerForSeparation : SteerForNeighbors
 		// add in steering contribution
 		// (opposite of the offset direction, divided once by distance
 		// to normalize, divided another time to get 1/d falloff)
-		Vector3 offset = other.Position - Vehicle.Position;
-
+		var offset = other.Position - Vehicle.Position;
 		var offsetSqrMag = offset.sqrMagnitude;
 		if (offsetSqrMag <= _maximumSeparationSquared)
 		{
@@ -99,7 +98,7 @@ public class SteerForSeparation : SteerForNeighbors
 
 			if (_vehicleRadiusImpact > 0)
 			{
-				steering *= other.ScaledRadius * Vehicle.ScaledRadius * _vehicleRadiusImpact;
+				steering *= (other.ScaledRadius + Vehicle.ScaledRadius) * _vehicleRadiusImpact;
 			}
 
 		}
