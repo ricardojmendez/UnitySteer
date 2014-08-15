@@ -65,13 +65,10 @@ public class SteerForPathSimplified : Steering
 	/// vehicle's speed is under this value, estimates will instead be done
 	/// at this value plus the prediction time.
 	/// </summary>
-	public float MinSpeedToConsider {
-		get {
-			return _minSpeedToConsider;
-		}
-		set {
-			_minSpeedToConsider = value;
-		}
+	public float MinSpeedToConsider 
+	{
+		get { return _minSpeedToConsider; }
+		set { _minSpeedToConsider = value; }
 	}
 
 	/// <summary>
@@ -154,7 +151,7 @@ public class SteerForPathSimplified : Steering
 			 * radius.  In that case, aim a bit further beyond the vehicle's 
 			 * arrival radius so that it can continue moving.
 			 */
-			target = Path.MapPathDistanceToPoint(targetPathDistance + 1.5f * Vehicle.ArrivalRadius);
+			target = Path.MapPathDistanceToPoint(targetPathDistance + 2f * Vehicle.ArrivalRadius);
 			seek = Vehicle.GetSeekVector(target);
 		}
 

@@ -76,7 +76,7 @@ public abstract class Vehicle : DetectableObject
 	/// second one is a value used to determine if a vehicle is close enough
 	/// to a desired target.  Unlike the radius, it is not scaled with the vehicle.</remarks>
 	[SerializeField]
-	float _arrivalRadius = 1;	
+	float _arrivalRadius = 0.25f;	
 	
 	
 	[SerializeField]
