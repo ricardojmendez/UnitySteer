@@ -6,12 +6,15 @@ namespace UnitySteer.Behaviors
 /// <summary>
 /// Steers a vehicle to avoid another one
 /// </summary>
+/// <remarks>
+/// This could easily be turned into a post-processing behavior, but leaving as-is for now
+/// </remarks>
 [AddComponentMenu("UnitySteer/Steer/... for Evasion")]
 public class SteerForEvasion : Steering
 {
-    float _sqrSafetyDistance;
-    
 	#region Private fields
+	float _sqrSafetyDistance;
+    
 	[SerializeField]
 	Vehicle _menace;
 
@@ -32,48 +35,42 @@ public class SteerForEvasion : Steering
 	}
 
 	/// <summary>
-	/// How many seconds to look ahead for position prediction
+	/// How many seconds to look ahead for menace position prediction
 	/// </summary>
 	public float PredictionTime {
-		get {
-			return _predictionTime;
-		}
-		set {
-			_predictionTime = value;
-		}
+		get { return _predictionTime; }
+		set { _predictionTime = value; }
 	}
 	
 	/// <summary>
-	/// Vehicle menace
+	/// Vehicle to avoid
 	/// </summary>
-	public Vehicle Menace {
-		get {
-			return _menace;
-		}
-		set {
-			_menace = value;
-		}
+	public Vehicle Menace 
+	{
+		get { return _menace; }
+		set { _menace = value; }
 	}
 
     public float SafetyDistance {
-        get {
-            return this._safetyDistance;
-        }
-        set {
+        get { return _safetyDistance; }
+        set 
+		{
             _safetyDistance = value;
             _sqrSafetyDistance = _safetyDistance * _safetyDistance;
         }
     }
 	#endregion
     
-    protected override void Start() {
+    protected override void Start() 
+	{
         base.Start();
         _sqrSafetyDistance = _safetyDistance * _safetyDistance;
     }
 	
 	protected override Vector3 CalculateForce()
 	{
-        if (_menace == null || (Vehicle.Position - _menace.Position).sqrMagnitude > _sqrSafetyDistance) {
+        if (_menace == null || (Vehicle.Position - _menace.Position).sqrMagnitude > _sqrSafetyDistance) 
+		{
             return Vector3.zero;
         }
 		// offset from this to menace, that distance, unit vector toward menace
