@@ -4,8 +4,13 @@ namespace UnitySteer.Behaviors
 {
 
 [AddComponentMenu("UnitySteer/Steer/... for Target")]
-public class SteerForTarget : Steering {
-	
+public class SteerForTarget : Steering 
+{
+
+	[SerializeField]
+	bool _slowDownOnApproach = false;
+
+
 	/// <summary>
 	/// Target the behavior will aim for
 	/// </summary>
@@ -31,7 +36,7 @@ public class SteerForTarget : Steering {
 	/// </returns>
 	protected override Vector3 CalculateForce()
 	{
-		return Vehicle.GetSeekVector(Target.position);
+		return Vehicle.GetSeekVector(Target.position, _slowDownOnApproach);
 	}
 }
 

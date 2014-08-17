@@ -1,4 +1,3 @@
-//#define DEBUG_DRAWNEIGHBORS
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
@@ -25,8 +24,19 @@ public abstract class SteerForNeighbors : Steering
 		throw new System.NotImplementedException("SteerForNeighbors.CalculateForce should never be called directly.  " +
 			"Did you enable a SteerForNeighbors subclass manually? They are disabled by SteerForNeighborGroup on Start.");
 	}
-	
+
 	public abstract Vector3 CalculateNeighborContribution(Vehicle other);
+
+	/// <summary>
+	/// Initialize this instance.
+	/// </summary>
+	/// <remarks>Used since SteerForNeighborGroup disables the behaviors, so
+	/// Unity may end up not calling their Awake and Start methods.</remarks>
+	public void Initialize()
+	{
+		Awake();
+		Start();
+	}
 	#endregion	
 }
 

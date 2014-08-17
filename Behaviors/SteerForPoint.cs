@@ -21,7 +21,8 @@ public class SteerForPoint : Steering
 	/// Should the vehicle's velocity be considered in the seek calculations?
 	/// </summary>
 	/// <remarks>
-	/// If true, the vehicle will slow down as it approaches its target
+	/// If true, the vehicle will slow down as it approaches its target. See
+	/// the remarks on GetSeekVector.
 	/// </remarks>
 	[SerializeField]
 	bool _considerVelocity;

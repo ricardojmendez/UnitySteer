@@ -65,13 +65,10 @@ public class SteerForPathSimplified : Steering
 	/// vehicle's speed is under this value, estimates will instead be done
 	/// at this value plus the prediction time.
 	/// </summary>
-	public float MinSpeedToConsider {
-		get {
-			return _minSpeedToConsider;
-		}
-		set {
-			_minSpeedToConsider = value;
-		}
+	public float MinSpeedToConsider 
+	{
+		get { return _minSpeedToConsider; }
+		set { _minSpeedToConsider = value; }
 	}
 
 	/// <summary>
@@ -141,7 +138,7 @@ public class SteerForPathSimplified : Steering
 		 * likely cause it to come to a stand still at low prediction
 		 * times.
 		 */
-		var seek = Vehicle.GetSeekVector(target, false);
+		var seek = Vehicle.GetSeekVector(target);
 		
 		if (seek == Vector3.zero && targetPathDistance <= Path.TotalPathLength)
 		{
@@ -154,8 +151,8 @@ public class SteerForPathSimplified : Steering
 			 * radius.  In that case, aim a bit further beyond the vehicle's 
 			 * arrival radius so that it can continue moving.
 			 */
-			target = Path.MapPathDistanceToPoint(targetPathDistance + 1.5f * Vehicle.ArrivalRadius);
-			seek = Vehicle.GetSeekVector(target, false);
+			target = Path.MapPathDistanceToPoint(targetPathDistance + 2f * Vehicle.ArrivalRadius);
+			seek = Vehicle.GetSeekVector(target);
 		}
 
         return seek;
