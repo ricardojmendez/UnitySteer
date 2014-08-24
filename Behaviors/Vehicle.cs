@@ -283,24 +283,6 @@ public abstract class Vehicle : DetectableObject
 	
 	#region Methods	
 	/// <summary>
-	/// Adjust the steering force passed to ApplySteeringForce.
-	/// </summary>
-	/// <param name="force">
-	/// A force to be applied to the vehicle<see cref="Vector3"/>
-	/// </param>
-	/// <returns>
-	/// Adjusted force vector <see cref="Vector3"/>
-	/// </returns>
-	/// <remarks>
-	/// Allows a specific vehicle class to redefine this adjustment.
-	/// The default will return the value unmodified.
-	/// </remarks>
-	protected virtual Vector3 AdjustRawSteeringForce(Vector3 force)
-	{
-		return force;
-	}
-
-	/// <summary>
 	/// Recalculates the vehicle's scaled radius and center
 	/// </summary>
 	protected override void RecalculateScaledValues() 
