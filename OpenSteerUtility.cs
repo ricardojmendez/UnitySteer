@@ -90,7 +90,7 @@ namespace UnitySteer
         {
             return source - ParallelComponent(source, unitBasis);
         }
-        
+
         public static Vector3 SphericalWrapAround(Vector3 source, Vector3 center, float radius)
         {
             var offset = source - center;

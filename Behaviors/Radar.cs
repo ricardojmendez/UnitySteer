@@ -274,7 +274,7 @@ public class Radar: MonoBehaviour {
         
 
 		Profiler.BeginSample("Initial detection");
-		for (int i = 0; i < _detectedColliders.Length; i++)
+		for (var i = 0; i < _detectedColliders.Length; i++)
 		{
 			var x = _detectedColliders[i].GetInstanceID();
             if (!_cachedDetectableObjects.ContainsKey(x)) 
@@ -296,7 +296,7 @@ public class Radar: MonoBehaviour {
 		Profiler.EndSample();
         
 		Profiler.BeginSample("Filtering out vehicles");
-        for (int i = 0; i < _detectedObjects.Count; i++) 
+        for (var i = 0; i < _detectedObjects.Count; i++) 
 		{
             var d = _detectedObjects[i];
             var v = d as Vehicle;

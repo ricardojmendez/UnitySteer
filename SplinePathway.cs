@@ -23,6 +23,7 @@
 //
 //
 // ----------------------------------------------------------------------------
+
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -43,18 +44,18 @@ namespace UnitySteer
     /// </remarks>
     public class SplinePathway : Vector3Pathway
     {
-        Vector3[] _splineNodes;
+        private Vector3[] _splineNodes;
 
         /// <summary>
         /// Number of segments to use when drawing the spline
         /// </summary>
         [SerializeField] private int _pathDrawResolution = 50;
-        
-        public SplinePathway(): base()
+
+        public SplinePathway()
         {
         }
-        
-        
+
+
         /// <summary>
         /// Constructs a Vector3Pathway given an array of points and a path radius
         /// </summary>
@@ -67,10 +68,10 @@ namespace UnitySteer
         /// <remarks>The current implementation assumes that all pathways will 
         /// have the same radius.
         /// </remarks>
-        public SplinePathway (IList<Vector3> path, float radius):base(path, radius)
+        public SplinePathway(IList<Vector3> path, float radius) : base(path, radius)
         {
         }
-        
+
         protected override void PrecalculatePathData()
         {
             base.PrecalculatePathData();
@@ -80,11 +81,11 @@ namespace UnitySteer
             _splineNodes[0] = Path[0] - Normals[1] * 2;
             for (var i = 0; i < Path.Count; i++)
             {
-                _splineNodes[i+1] = Path[i];
+                _splineNodes[i + 1] = Path[i];
             }
             _splineNodes[splineNodeLength - 1] = Path.Last() + Normals.Last() * 4;
         }
-        
+
         /// <summary>
         /// Given an arbitrary point ("A"), returns the nearest point ("P") on
         /// this path.  Also returns, via output arguments, the path Tangent at
@@ -98,10 +99,10 @@ namespace UnitySteer
         {
             // Approximate the closest path point on a linear path
             var onPath = base.MapPointToPath(point, ref pathRelative);
-            
+
             var distance = MapPointToPathDistance(onPath) / TotalPathLength;
             var splinePoint = CalculateCatmullRomPoint(1, distance);
-            
+
             // return point on path
             return splinePoint;
         }
@@ -147,19 +148,18 @@ namespace UnitySteer
         /// <param name="percentComplete">Percent complete for this segment.</param>
         private Vector3 CalculateCatmullRomPoint(int currentNode, float percentComplete)
         {
-
             var percentCompleteSquared = percentComplete * percentComplete;
             var percentCompleteCubed = percentCompleteSquared * percentComplete;
 
             var start = _splineNodes[currentNode];
-            var end = _splineNodes[currentNode+1];
-            var previous = _splineNodes[currentNode-1];
-            var next = _splineNodes[currentNode+2];
-            
-            return previous * (-0.5f*percentCompleteCubed + percentCompleteSquared - 0.5f*percentComplete) +
-                    start * (1.5f*percentCompleteCubed -2.5f*percentCompleteSquared + 1.0f) +
-                    end * (-1.5f*percentCompleteCubed + 2.0f*percentCompleteSquared + 0.5f*percentComplete) +
-                    next * (0.5f*percentCompleteCubed - 0.5f*percentCompleteSquared);
+            var end = _splineNodes[currentNode + 1];
+            var previous = _splineNodes[currentNode - 1];
+            var next = _splineNodes[currentNode + 2];
+
+            return previous * (-0.5f * percentCompleteCubed + percentCompleteSquared - 0.5f * percentComplete) +
+                   start * (1.5f * percentCompleteCubed - 2.5f * percentCompleteSquared + 1.0f) +
+                   end * (-1.5f * percentCompleteCubed + 2.0f * percentCompleteSquared + 0.5f * percentComplete) +
+                   next * (0.5f * percentCompleteCubed - 0.5f * percentCompleteSquared);
         }
 
         public override void DrawGizmos()
@@ -170,7 +170,7 @@ namespace UnitySteer
             {
                 for (var segment = 0; segment < _pathDrawResolution; segment++)
                 {
-                    var nextPosition = CalculateCatmullRomPoint(i+1, segment / (float) _pathDrawResolution);
+                    var nextPosition = CalculateCatmullRomPoint(i + 1, segment / (float) _pathDrawResolution);
                     Debug.DrawLine(lastPosition, nextPosition, Color.green);
                     lastPosition = nextPosition;
                 }

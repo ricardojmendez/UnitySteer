@@ -27,7 +27,6 @@ public abstract class Steering : MonoBehaviour {
 	
 	#endregion
 	
-	
 	#region Public properties
 	/// <summary>
 	/// Calculates the force provided by this steering behavior and raises any
