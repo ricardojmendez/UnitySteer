@@ -252,7 +252,7 @@ public abstract class Vehicle : DetectableObject
 	/// The delta time used by this vehicle.
 	/// </summary>
 	/// <value>The delta time.</value>
-	/// <remarks>>
+	/// <remarks>
 	/// Vehicles aren't necessarily ticked every frame, so we keep a
 	/// DeltaTime property that steering behaviors can access when
 	/// their CalculateForce is called.

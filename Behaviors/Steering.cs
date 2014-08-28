@@ -98,7 +98,7 @@ public abstract class Steering : MonoBehaviour {
     /// its force.
 	/// </summary>
 	/// <value><c>true</c> if recalculate force; otherwise, <c>false</c>.</value>
-    /// <remarks>>
+    /// <remarks>
     /// This property is checked once after the steering behavior has raised an
     /// OnArrival event, and if it is true, the force is then recalculated. This
     /// is useful in cases of vehicles which do not recalculate their forces
