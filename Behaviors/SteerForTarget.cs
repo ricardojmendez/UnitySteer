@@ -1,9 +1,10 @@
+using System;
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
 {
 
-[AddComponentMenu("UnitySteer/Steer/... for Target")]
+[Obsolete("To be removed, used SteerForPoint instead", false)]
 public class SteerForTarget : Steering 
 {
 
