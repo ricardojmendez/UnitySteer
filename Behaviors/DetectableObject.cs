@@ -38,15 +38,21 @@ public class DetectableObject : MonoBehaviour
 	/// </summary>
 	[SerializeField, HideInInspector]
 	float _radius = 1;
-	
 
+
+    /// <summary>
+    /// Collider attached to this object. The GameObject that the DetectableObject
+    /// is attached to is expected to have at most one collider.
+    /// </summary>
+    public Collider Collider { get; private set; }
 	
 	/// <summary>
 	/// Vehicle's position
 	/// </summary>
 	/// <remarks>The vehicle's position is the transform's position displaced 
 	/// by the vehicle center</remarks>
-	public Vector3 Position {
+	public Vector3 Position 
+    {
 	    get { return Transform.position + _scaledCenter; }
 	}
 	
@@ -116,14 +122,25 @@ public class DetectableObject : MonoBehaviour
 	#region Methods
 	protected virtual void Awake()
 	{
-		if (collider && Transform.parent != null)
-		{
-			Debug.LogWarning(string.Format("DetectableObject should be on the transform root. Unparenting {0}", this));
-			Transform.parent = null;
-		}
-
+	    Collider = GetComponent<Collider>();
 		RecalculateScaledValues();
 	}
+
+    protected virtual void OnEnable()
+    {
+        if (Collider)
+        {
+            Radar.AddDetectableObject(this);
+        }
+    }
+
+    protected virtual void OnDisable()
+    {
+        if (Collider)
+        {
+            Radar.RemoveDetectableObject(this);
+        }
+    }
 	
 	/// <summary>
 	/// Predicts where the vehicle will be at a point in the future

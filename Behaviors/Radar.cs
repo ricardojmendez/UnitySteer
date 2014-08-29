@@ -18,10 +18,14 @@ namespace UnitySteer.Behaviors
 /// DetectableObject on its root.
 /// </remarks>
 [AddComponentMenu("UnitySteer/Radar/Radar")]
-public class Radar: MonoBehaviour {
-	#region Private properties
-    
-	static IDictionary<int, DetectableObject> _cachedDetectableObjects = new SortedDictionary<int, DetectableObject>();
+public class Radar: MonoBehaviour
+{
+
+    #region Private static properties
+    private static IDictionary<int, DetectableObject> _knownDetectableObjects = new SortedDictionary<int, DetectableObject>();
+    #endregion
+
+    #region Private properties
 	
 	Transform _transform;
 	TickedObject _tickedObject;
@@ -71,9 +75,7 @@ public class Radar: MonoBehaviour {
     List<DetectableObject> _obstacles;
 	IList<DetectableObject> _ignoredObjects = new List<DetectableObject>(10);
 	
-	#endregion
-	
-    
+	#endregion	
 	
 	#region Public properties
 	/// <summary>
@@ -168,9 +170,31 @@ public class Radar: MonoBehaviour {
 		}
 	}
 	#endregion
-	
-	#region Methods
-	protected virtual void Awake() 
+
+    #region Static methods
+
+    /// <summary>
+    /// Must be called when a detectable object is enabled so they can be easily identified
+    /// </summary>
+    /// <param name="obj">Detectable object</param>
+    public static void AddDetectableObject(DetectableObject obj)
+    {
+        _knownDetectableObjects[obj.Collider.GetInstanceID()] = obj;
+    }
+
+    /// <summary>
+    /// Must be called when a detectable object is disabled to remove it from the list of known objects
+    /// </summary>
+    /// <param name="obj">Detectable object</param>
+    /// <returns>True if the call to Remove succeeded</returns>
+    public static bool RemoveDetectableObject(DetectableObject obj)
+    {
+        return _knownDetectableObjects.Remove(obj.Collider.GetInstanceID());
+    }
+    #endregion
+
+    #region Methods
+    protected virtual void Awake() 
 	{
 		Vehicle = GetComponent<Vehicle>();	
 		_transform = transform;
@@ -182,14 +206,13 @@ public class Radar: MonoBehaviour {
 	
     void OnLevelWasLoaded(int level) 
 	{
-        _cachedDetectableObjects.Clear();
+        _knownDetectableObjects.Clear();
     }
     
 	void OnEnable()
 	{
-		_tickedObject = new TickedObject(OnUpdateRadar);
-		_tickedObject.TickLength = _tickLength;
-		_steeringQueue = UnityTickedQueue.GetInstance(_queueName);
+		_tickedObject = new TickedObject(OnUpdateRadar) {TickLength = _tickLength};
+	    _steeringQueue = UnityTickedQueue.GetInstance(_queueName);
 		_steeringQueue.Add(_tickedObject);
 		_steeringQueue.MaxProcessedPerUpdate = _maxQueueProcessedPerUpdate;
 	}
@@ -276,12 +299,9 @@ public class Radar: MonoBehaviour {
 		Profiler.BeginSample("Initial detection");
 		for (var i = 0; i < _detectedColliders.Length; i++)
 		{
-			var x = _detectedColliders[i].GetInstanceID();
-            if (!_cachedDetectableObjects.ContainsKey(x)) 
-			{
-                _cachedDetectableObjects[x] = _detectedColliders[i].GetComponent<DetectableObject>();
-            }
-            var detectable = _cachedDetectableObjects[x];
+			var id = _detectedColliders[i].GetInstanceID();
+		    if (!_knownDetectableObjects.ContainsKey(id)) continue; // Ignore anything that hadn't previously registered as a detectable object
+            var detectable = _knownDetectableObjects[id];
             // It's possible that d != null but that d.Equals(null) if the
             // game object has been marked as destroyed by Unity between
             // detection and filtering.
@@ -300,10 +320,12 @@ public class Radar: MonoBehaviour {
 		{
             var d = _detectedObjects[i];
             var v = d as Vehicle;
-            if (v != null && (v.enabled || _detectDisabledVehicles)) {
+            if (v != null && (v.enabled || _detectDisabledVehicles)) 
+            {
                 _vehicles.Add(v);
             }
-            else {
+            else 
+            {
                 _obstacles.Add(d);
             }
         }

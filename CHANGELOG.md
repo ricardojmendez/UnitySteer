@@ -1,6 +1,6 @@
 # UnitySteer changelog
 
-## v3.0 (beta 2)
+## v3.0 (beta 3)
 
 BREAKING CHANGES FROM UNITYSTEER 2.x: 
 
@@ -17,8 +17,9 @@ BREAKING CHANGES FROM UNITYSTEER 2.x:
 * Removed redundant Pathway. There were some vestigial methods there that are better done on Vector3Pathway.
 * SteerForTarget is now obsolete. Use SteerForPoint instead.
 
-Also:
+Other changes and improvements:
 
+* DetectableObjects now register themselves with Radar on enable. They no longer need to be on the root.
 * New SplinePathway.  Takes a list of Vector3s and uses them to create a spline for a path. Chances are this is not what you want to use to create a pathway for bipeds dealing with spatial constraints (say, following a navmesh).  I'm using it to get smoother turning on a group of flying agents.
 * Removed vestigial SphericalObstacleData. See DetectableObject.
 * Added namespaces to the behaviors.  Decided against adding indentation to minimize the number of lines changed in case someone's doing a diff and forgets to exclude whitespace differences.
