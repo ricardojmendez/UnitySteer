@@ -19,7 +19,7 @@ public class AutonomousVehicle : TickedVehicle
 	/// <summary>
 	/// Acceleration in units per second
 	/// </summary>
-	/// <remarks>>
+	/// <remarks>
 	/// We could replace this with a curve in the future.  Then again, if you want
 	/// that sort of acceleration control you can probably write a post-processing
 	/// behavior to handle it.
@@ -30,7 +30,7 @@ public class AutonomousVehicle : TickedVehicle
 	/// <summary>
 	/// Deceleration in units per second
 	/// </summary>
-	/// <remarks>>
+	/// <remarks>
 	/// We could replace this with a curve in the future.
 	/// </remarks>
 	[SerializeField]

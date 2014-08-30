@@ -105,8 +105,9 @@ public abstract class TickedVehicle : Vehicle
 	}
 
 	
-	protected virtual void OnEnable()
+	protected override void OnEnable()
 	{
+        base.OnEnable();
 		TickedObject = new TickedObject(OnUpdateSteering);
 		TickedObject.TickLength = _tickLength;
 		_steeringQueue = UnityTickedQueue.GetInstance(QueueName);
@@ -114,9 +115,10 @@ public abstract class TickedVehicle : Vehicle
         _steeringQueue.MaxProcessedPerUpdate = _maxQueueProcessedPerUpdate;
 	}
 	
-	protected virtual void OnDisable()
+	protected override void OnDisable()
 	{
 		DeQueue();
+        base.OnDisable();
 	}
 	#endregion
 	

@@ -37,6 +37,7 @@ namespace UnitySteer
     public class Vector3Pathway : IPathway
     {
         #region Properties
+
         /// <summary>
         /// List of segment lengths
         /// </summary>
@@ -47,19 +48,19 @@ namespace UnitySteer
         /// List of calculated normals between points.
         /// </summary>
         protected IList<Vector3> Normals { get; private set; }
-        
+
         public IList<Vector3> Path { get; protected set; }
-        
+
         public Vector3 FirstPoint
         {
             get { return Path.FirstOrDefault(); }
         }
-        
+
         public Vector3 LastPoint
         {
             get { return Path.LastOrDefault(); }
         }
-        
+
         public float TotalPathLength { get; protected set; }
 
         public int SegmentCount
@@ -68,8 +69,8 @@ namespace UnitySteer
         }
 
         public float Radius { get; set; }
-        #endregion
 
+        #endregion
 
         public Vector3Pathway()
         {
@@ -122,21 +123,21 @@ namespace UnitySteer
             // set data members, allocate arrays
             var pointCount = Path.Count;
             TotalPathLength = 0;
-            
+
             Lengths = new List<float>(pointCount);
             Normals = new List<Vector3>(pointCount);
 
             Lengths.Add(0);
             Normals.Add(Vector3.zero);
-            
+
             // loop over all points
             for (var i = 1; i < pointCount; i++)
             {
                 // compute the segment length
-                var normal = Path[i] - Path[i-1];
+                var normal = Path[i] - Path[i - 1];
                 var length = normal.magnitude;
                 Lengths.Add(length);
-                Normals.Add(normal/length);
+                Normals.Add(normal / length);
                 TotalPathLength += length;
             }
         }
@@ -165,13 +166,11 @@ namespace UnitySteer
                 var d = OpenSteerUtility.PointToSegmentDistance(point, Path[i - 1], Path[i],
                     segmentNormal, segmentLength,
                     ref chosenPoint);
-                if (d < minDistance)
-                {
-                    minDistance = d;
-                    onPath = chosenPoint;
-                    pathRelative.Tangent = segmentNormal;
-                    pathRelative.SegmentIndex = i;
-                }
+                if (!(d < minDistance)) continue;
+                minDistance = d;
+                onPath = chosenPoint;
+                pathRelative.Tangent = segmentNormal;
+                pathRelative.SegmentIndex = i;
             }
 
             // measure how far original point is Outside the Pathway's "tube"
@@ -204,12 +203,10 @@ namespace UnitySteer
                 var d = OpenSteerUtility.PointToSegmentDistance(point, Path[i - 1], Path[i],
                     segmentNormal, segmentLength,
                     ref segmentProjection);
-                if (d < minDistance)
-                {
-                    minDistance = d;
-                    pathDistance = segmentLengthTotal + segmentProjection;
-                }
                 segmentLengthTotal += segmentLength;
+                if (!(d < minDistance)) continue;
+                minDistance = d;
+                pathDistance = segmentLengthTotal + segmentProjection;
             }
 
             // return distance along path of onPath point
@@ -244,7 +241,7 @@ namespace UnitySteer
                 }
                 else
                 {
-                    var ratio = remaining/segmentLength;
+                    var ratio = remaining / segmentLength;
                     result = Vector3.Lerp(Path[i - 1], Path[i], ratio);
                     break;
                 }

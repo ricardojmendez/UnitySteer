@@ -114,7 +114,7 @@ public class UnityTickedQueue : MonoBehaviour
 	/// <param name="ticked">
 	/// A <see cref="ITicked"/> reference, which will be ticked periodically based on its properties.
 	/// </param>
-	/// <returns>>True if the item was successfully removed, false if otherwise</returns>
+	/// <returns>True if the item was successfully removed, false if otherwise</returns>
 	public bool  Remove(ITicked ticked)
 	{
 		return _queue.Remove(ticked);

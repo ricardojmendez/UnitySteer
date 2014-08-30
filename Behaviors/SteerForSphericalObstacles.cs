@@ -246,19 +246,14 @@ public class SteerForSphericalObstacles : Steering
 	#if ANNOTATE_AVOIDOBSTACLES
 	void OnDrawGizmos()
 	{
-		if (Vehicle != null)
-		{
-			foreach (var o in Vehicle.Radar.Obstacles)
-			{
-				if (o)
-				{
-					Gizmos.color = Color.red;
-					Gizmos.DrawWireSphere(o.Position, o.ScaledRadius);
-				}
-			}
-		}
+	    if (Vehicle == null) return;
+	    foreach (var o in Vehicle.Radar.Obstacles.Where(x => x != null))
+	    {
+	        Gizmos.color = Color.red;
+	        Gizmos.DrawWireSphere(o.Position, o.ScaledRadius);
+	    }
 	}
-	#endif
+    #endif
 }
 
 }

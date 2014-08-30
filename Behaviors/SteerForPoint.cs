@@ -42,6 +42,7 @@ public class SteerForPoint : Steering
 		get { return _targetPoint; }
 		set
 		{
+		    if (_targetPoint == value) return;
 			_targetPoint = value;
 			ReportedArrival = false;
 		}

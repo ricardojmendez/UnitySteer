@@ -118,7 +118,6 @@ public abstract class Vehicle : DetectableObject
     public GameObject GameObject { get; private set; }
 	
 
-
 	/// <summary>
 	/// Mass for the vehicle
 	/// </summary>
@@ -145,7 +144,16 @@ public abstract class Vehicle : DetectableObject
 		set { _maxSpeed = Mathf.Clamp(value, 0, float.MaxValue); }
 	}
 	
-    /// <summary>
+	/// <summary>
+	/// Minimum speed necessary for ths vehicle to apply a turn
+	/// </summary>
+	public float MinSpeedForTurning
+	{
+		get { return _minSpeedForTurning; }
+	}
+	
+	
+	/// <summary>
     /// The vehicle movement priority.
     /// </summary>
     /// <remarks>Used only by some behaviors to determine if a vehicle should
@@ -156,12 +164,6 @@ public abstract class Vehicle : DetectableObject
 		get { return _movementPriority; }
 	}
 	
-	public float MinSpeedForTurning
-	{
-		get { return _minSpeedForTurning; }
-	}
-
-
 	/// <summary>
 	/// Radar assigned to this vehicle
 	/// </summary>
@@ -250,7 +252,7 @@ public abstract class Vehicle : DetectableObject
 	/// The delta time used by this vehicle.
 	/// </summary>
 	/// <value>The delta time.</value>
-	/// <remarks>>
+	/// <remarks>
 	/// Vehicles aren't necessarily ticked every frame, so we keep a
 	/// DeltaTime property that steering behaviors can access when
 	/// their CalculateForce is called.
@@ -280,24 +282,6 @@ public abstract class Vehicle : DetectableObject
 	
 	
 	#region Methods	
-	/// <summary>
-	/// Adjust the steering force passed to ApplySteeringForce.
-	/// </summary>
-	/// <param name="force">
-	/// A force to be applied to the vehicle<see cref="Vector3"/>
-	/// </param>
-	/// <returns>
-	/// Adjusted force vector <see cref="Vector3"/>
-	/// </returns>
-	/// <remarks>
-	/// Allows a specific vehicle class to redefine this adjustment.
-	/// The default will return the value unmodified.
-	/// </remarks>
-	protected virtual Vector3 AdjustRawSteeringForce(Vector3 force)
-	{
-		return force;
-	}
-
 	/// <summary>
 	/// Recalculates the vehicle's scaled radius and center
 	/// </summary>
@@ -353,7 +337,7 @@ public abstract class Vehicle : DetectableObject
 	/// Cosine of the maximum angle between vehicles (for performance)<see cref="System.Single"/>
 	/// </param>
 	/// <returns>
-	/// True if within the neighborhood, or false if otherwise<see cref="System.Boolean"/>
+	/// True if the other vehicle can be considered to our neighbor, or false if otherwise<see cref="System.Boolean"/>
 	/// </returns>
 	/// <remarks>Originally SteerLibrary.inBoidNeighborhood</remarks>
 	public bool IsInNeighborhood (Vehicle other, float minDistance, float maxDistance, float cosMaxAngle)
@@ -438,7 +422,8 @@ public abstract class Vehicle : DetectableObject
 	/// <param name='targetSpeed'>
 	/// Target speed to aim for.
 	/// </param>
-	public Vector3 GetTargetSpeedVector(float targetSpeed) {
+	public Vector3 GetTargetSpeedVector(float targetSpeed) 
+	{
 		 float mf = MaxForce;
 		 float speedError = targetSpeed - Speed;
 		 return Transform.forward * Mathf.Clamp (speedError, -mf, +mf);		
@@ -446,7 +431,7 @@ public abstract class Vehicle : DetectableObject
 	
 	
 	/// <summary>
-	/// Returns the distance from the this vehicle to another
+	/// Returns the distance from this vehicle to another
 	/// </summary>
 	/// <returns>
 	/// The distance between both vehicles' positions. If negative, they are overlapping.
@@ -454,7 +439,8 @@ public abstract class Vehicle : DetectableObject
 	/// <param name='other'>
 	/// Vehicle to compare against.
 	/// </param>
-	public float DistanceFromPerimeter(Vehicle other) {
+	public float DistanceFromPerimeter(Vehicle other) 
+	{
 		var diff  = Position - other.Position;
 		return diff.magnitude - ScaledRadius - other.ScaledRadius;
 	}
