@@ -15,7 +15,7 @@ BREAKING CHANGES FROM UNITYSTEER 2.x:
 * Removed obsolete SteerForSphericalObstacleAvoidance.  SteerForSphericalObstacleRepulsion is now simply called SteerForSphericalObstacles.
 * Pruned cyclic Vector3Pathways. It was never properly implemented, and they're just as doable by having an event handler for the arrival even of the path steering behavior.
 * Removed redundant Pathway. There were some vestigial methods there that are better done on Vector3Pathway.
-* SteerForTarget is now obsolete. Use SteerForPoint instead.
+* I have removed SteerForTarget. Use SteerForPoint instead.
 
 Other changes and improvements:
 
