@@ -116,7 +116,14 @@ public class DetectableObject : MonoBehaviour
     /// </summary>
     public Transform Transform
     {
-        get { return _transform ?? (_transform = transform); }
+        get 
+		{ 
+			if (_transform == null)
+			{
+				_transform = transform;
+			}
+			return _transform; 
+		}
     }
 	
 	#region Methods
