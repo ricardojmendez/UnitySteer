@@ -14,8 +14,9 @@ namespace UnitySteer.Behaviors
 /// different radars can implement their own detection styles (if for instance
 /// they wish to handle a proximity quadtre/octree themselves).
 /// 
-/// It expects that every object to be added to the radar will have a 
-/// DetectableObject on its root.
+/// It expects that every object to be detected by the radar will report  via
+/// AddDetectableObject on enable, and remove itself via RemoveDetectableObject
+/// on disable.
 /// </remarks>
 [AddComponentMenu("UnitySteer/Radar/Radar")]
 public class Radar: MonoBehaviour
