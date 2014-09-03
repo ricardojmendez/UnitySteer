@@ -203,12 +203,7 @@ public class Radar: MonoBehaviour
         _detectedObjects = new List<DetectableObject>(_preAllocateSize * 3);
 	}
 	
-	
-    void OnLevelWasLoaded(int level) 
-	{
-        _knownDetectableObjects.Clear();
-    }
-    
+
 	void OnEnable()
 	{
 		_tickedObject = new TickedObject(OnUpdateRadar) {TickLength = _tickLength};
