@@ -133,25 +133,22 @@ namespace UnitySteer.Behaviors
                 if (sphere == null || sphere.Equals(null))
                     continue; // In case the object was destroyed since we cached it
                 var next = FindNextIntersectionWithSphere(Vehicle, futurePosition, sphere);
-                float avoidanceMultiplier = 1;
+                var avoidanceMultiplier = 0.1f;
                 if (next.Intersect)
                 {
 #if ANNOTATE_AVOIDOBSTACLES
                     Debug.DrawRay(Vehicle.Position, Vehicle.DesiredVelocity.normalized * next.Distance, Color.yellow);
 #endif
-                    // TODO: Review if we should keep this multiplier. Test variants.
-                    avoidanceMultiplier = Vehicle.Radar.Obstacles.Count;
+                    var timeToObstacle = next.Distance / Vehicle.Speed;
+                    avoidanceMultiplier = 2 * (_estimationTime / timeToObstacle);
                 }
 
-                var distanceCurrent = Vehicle.Position - sphere.Position;
-                var distanceFuture = futurePosition - sphere.Position;
-                // TODO: Reconsider usage of sqrMagnitude, we may want to have a min collision distance setting which tempers it
-                avoidance += avoidanceMultiplier * distanceCurrent / distanceFuture.sqrMagnitude;
+                var oppositeDirection = Vehicle.Position - sphere.Position;
+                avoidance += avoidanceMultiplier * oppositeDirection;
             }
             Profiler.EndSample();
 
             avoidance /= Vehicle.Radar.Obstacles.Count;
-
 
             var newDesired = Vector3.Reflect(Vehicle.DesiredVelocity, avoidance);
 
