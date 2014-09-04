@@ -118,6 +118,8 @@ public class DetectableObject : MonoBehaviour
     {
         get 
 		{ 
+            // While this could be done using a ?? operator, that assignment/return
+            // fails on Unity 4.3.4
 			if (_transform == null)
 			{
 				_transform = transform;
