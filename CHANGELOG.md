@@ -5,6 +5,8 @@
 BREAKING CHANGES FROM UNITYSTEER 2.x: 
 
 * Namespace reorganization.
+* Radar no longer has an IgnoreObjects option. See [commit afb7e14](https://github.com/ricardojmendez/UnitySteer/commit/afb7e1459f0f63f559652c1fdc6fab22272f7e5d) for the rationale.
+* Removed scaled values from DetectableObject. *You will need to modify your vehicle prefabs if you're scaling them*. See [commit 969d817](https://github.com/ricardojmendez/UnitySteer/commit/969d817dbb2d651664a7a9bc815675d151929b47) for the rationale.
 * GetSeekVector will not consider the velocity by default, since that can produce inconsistent behaviour on an agent that does not update its forces every frame for performance reasons.
 * Removed TickedVehicle._accelerationSmoothRate.  This affects both Bipeds and AutonomousVehicles.
 * New properties on AutonomousVehicle to control the acceleration and deceleration rates.
