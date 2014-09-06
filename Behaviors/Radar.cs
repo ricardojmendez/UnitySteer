@@ -68,7 +68,6 @@ namespace UnitySteer.Behaviors
         private List<DetectableObject> _detectedObjects;
         private List<Vehicle> _vehicles;
         private List<DetectableObject> _obstacles;
-        private IList<DetectableObject> _ignoredObjects = new List<DetectableObject>(10);
 
         #endregion
 
@@ -285,8 +284,7 @@ namespace UnitySteer.Behaviors
                 // detection and filtering.
                 if (detectable != null &&
                     detectable != Vehicle &&
-                    !detectable.Equals(null) &&
-                    !_ignoredObjects.Contains(detectable))
+                    !detectable.Equals(null))
                 {
                     _detectedObjects.Add(detectable);
                 }
@@ -310,39 +308,6 @@ namespace UnitySteer.Behaviors
             Profiler.EndSample();
             Profiler.EndSample();
         }
-
-        /// <summary>
-        /// Tells the radar to ignore the detectable object when filtering the vehicles or objects detected
-        /// </summary>
-        /// <param name="o">
-        /// An object to be ignored<see cref="DetectableObject"/>
-        /// </param>
-        /// <returns>The radar</returns>
-        public Radar Ignore(DetectableObject o)
-        {
-            if (o != null)
-            {
-                _ignoredObjects.Add(o);
-            }
-            return this;
-        }
-
-        /// <summary>
-        /// Tells the radar to no longer ignore the detectable object when filtering the vehicles or objects detected
-        /// </summary>
-        /// <param name="o">
-        /// An object to remove from the ignore list<see cref="DetectableObject"/>
-        /// </param>
-        /// <returns>The radar</returns>
-        public Radar DontIgnore(DetectableObject o)
-        {
-            if (_ignoredObjects.Contains(o))
-            {
-                _ignoredObjects.Remove(o);
-            }
-            return this;
-        }
-
         #endregion
 
         #region Unity methods
