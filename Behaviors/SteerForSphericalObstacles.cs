@@ -184,7 +184,7 @@ namespace UnitySteer.Behaviors
 
             var intersection = new PathIntersection(obstacle);
 
-            var combinedRadius = vehicle.ScaledRadius + obstacle.ScaledRadius;
+            var combinedRadius = vehicle.Radius + obstacle.Radius;
             var movement = futureVehiclePosition - vehicle.Position;
             var direction = movement.normalized;
 
@@ -251,7 +251,7 @@ namespace UnitySteer.Behaviors
             foreach (var o in Vehicle.Radar.Obstacles.Where(x => x != null))
             {
                 Gizmos.color = Color.red;
-                Gizmos.DrawWireSphere(o.Position, o.ScaledRadius);
+                Gizmos.DrawWireSphere(o.Position, o.Radius);
             }
         }
 #endif

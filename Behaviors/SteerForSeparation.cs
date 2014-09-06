@@ -98,7 +98,7 @@ public class SteerForSeparation : SteerForNeighbors
 
 			if (_vehicleRadiusImpact > 0)
 			{
-				steering *= (other.ScaledRadius + Vehicle.ScaledRadius) * _vehicleRadiusImpact;
+				steering *= (other.Radius + Vehicle.Radius) * _vehicleRadiusImpact;
 			}
 
 		}
