@@ -1,24 +1,27 @@
-using UnityEngine;
 using UnityEditor;
-using System.Collections;
+using UnityEngine;
 
+namespace UnitySteer.Editor
+{
+    /// <summary>
+    /// Displays an editor field which takes degrees from the user and returns a cosine of the angle
+    /// </summary>
+    public class DegreeEditor
+    {
+        private string _label = "";
 
-/// <summary>
-/// Displays an editing field which takes degrees from the user and returns a cosine of the angle
-/// </summary>
-public class DegreeEditor {
-	string _label = "";
+        public DegreeEditor(string label)
+        {
+            _label = label;
+        }
 
-	public DegreeEditor(string label)
-	{
-		_label = label;
-	}
-
-	public float DrawEditor (float  angle) {
-		EditorGUILayout.BeginVertical();
-		var newAngle = EditorGUILayout.FloatField(_label, angle);
-		newAngle = Mathf.Clamp(newAngle, -360, 360);
-		EditorGUILayout.EndVertical();
-		return newAngle;
-	}
+        public float DrawEditor(float angle)
+        {
+            EditorGUILayout.BeginVertical();
+            var newAngle = EditorGUILayout.FloatField(_label, angle);
+            newAngle = Mathf.Clamp(newAngle, -360, 360);
+            EditorGUILayout.EndVertical();
+            return newAngle;
+        }
+    }
 }
