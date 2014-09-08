@@ -1,36 +1,37 @@
 # UnitySteer changelog
 
-## v3.0 (beta 3)
+## v3.0 (beta 4)
 
-BREAKING CHANGES FROM UNITYSTEER 2.x: 
+Breaking changes from UnitySteer 2.x: 
 
 * Namespace reorganization.
-* Radar no longer has an IgnoreObjects option. See [commit afb7e14](https://github.com/ricardojmendez/UnitySteer/commit/afb7e1459f0f63f559652c1fdc6fab22272f7e5d) for the rationale.
-* Removed scaled values from DetectableObject. *You will need to modify your vehicle prefabs if you're scaling them*. See [commit 969d817](https://github.com/ricardojmendez/UnitySteer/commit/969d817dbb2d651664a7a9bc815675d151929b47) for the rationale.
-* GetSeekVector will not consider the velocity by default, since that can produce inconsistent behaviour on an agent that does not update its forces every frame for performance reasons.
+* Radar no longer has an API to ignore specific objects. See [commit afb7e14](https://github.com/ricardojmendez/UnitySteer/commit/afb7e1459f0f63f559652c1fdc6fab22272f7e5d) for the rationale.
+* Removed scaled values from DetectableObject. *You will need to modify your vehicle and obstacle prefabs if you're scaling them*. See [commit 969d817](https://github.com/ricardojmendez/UnitySteer/commit/969d817dbb2d651664a7a9bc815675d151929b47) for the rationale.
+* GetSeekVector will not consider the velocity by default, since that can produce inconsistent behavior on an agent that for performance reasons does not update its forces every frame.
 * Removed TickedVehicle._accelerationSmoothRate.  This affects both Bipeds and AutonomousVehicles.
 * New properties on AutonomousVehicle to control the acceleration and deceleration rates.
-* Using the AutonomousVehicle's TargetSpeed to indicate the speed we're aiming for, and Speed the one we're actually moving at.  Speed will gradually aim for TargetSpeed at its acceleration/deceleration rates.
-* SteerForWander.SmoothRate is now an amount per second. This causes it to no longer be framerate-dependent.
+* Using the AutonomousVehicle's TargetSpeed to indicate the speed we're aiming for, and Speed the one we're actually moving at.  Speed will gradually aim for TargetSpeed at its vehicle’s acceleration/deceleration rates.
+* SteerForWander.SmoothRate is now an amount per second. It is now frame-rate independent.
 * [You can read more about the acceleration smoothing chances here](http://arges-systems.com/blog/2014/01/30/unitysteer-acceleration-smoothing-changes/).
 * Replaced IsPlanar with AllowedMovementAxes. We can now limit movement on any arbitrary axis, not only the Y.
 * Removed obsolete SteerForSphericalObstacleAvoidance.  SteerForSphericalObstacleRepulsion is now simply called SteerForSphericalObstacles.
-* Pruned cyclic Vector3Pathways. It was never properly implemented, and they're just as doable by having an event handler for the arrival even of the path steering behavior.
+* Pruned cyclic Vector3Pathways. It was never properly implemented, and they're just as doable by having an event handler for the arrival event of the path steering behavior.
 * Removed redundant Pathway. There were some vestigial methods there that are better done on Vector3Pathway.
 * I have removed SteerForTarget. Use SteerForPoint instead.
 
 Other changes and improvements:
 
+* Improved spherical obstacle avoidance to consider the distance from the collision with each obstacle when deciding its avoidance vector.
 * DetectableObjects now register themselves with Radar on enable. They no longer need to be on the root.
 * New SplinePathway.  Takes a list of Vector3s and uses them to create a spline for a path. Chances are this is not what you want to use to create a pathway for bipeds dealing with spatial constraints (say, following a navmesh).  I'm using it to get smoother turning on a group of flying agents.
 * Removed vestigial SphericalObstacleData. See DetectableObject.
 * Added namespaces to the behaviors.  Decided against adding indentation to minimize the number of lines changed in case someone's doing a diff and forgets to exclude whitespace differences.
 * Removed SteeringEvent. The class was unnecessary, we can just do everything with standard actions.
-* New property Steering.ShouldRetryForce, so that behaviors handling the OnArrival even can indicate to the steering if they should retry the force calculation before giving up (in case any parameters changed).  The previous implementation was somewhat hacky.
-* SteerForTether is now a post-processing behavior. It now will also average between the impulse pulling it back and the desired velocity * I like that behavior better.
+* New property Steering.ShouldRetryForce, so that behaviors handling the OnArrival even can indicate to the steering if they should retry the force calculation before giving up (in case any parameters changed).
+* SteerForTether is now a post-processing behavior. It now will also average between the impulse pulling it back and the desired velocity.  I like that behavior better.
 * SteerForEvasion is now a post-processing behavior.  This helps overlay it with other behaviors in a more natural fashion, since we can steer the vehicle while still keeping away from a target.
 * SteerForPursuit has a new parameter to indicate if it should consider the vehicle's velocity on approach. It's false by default.
-* Vehicle.Speed no longer has a setter to avoid confusion. In most cases chances are users want to adjust the maximum speed, and the only vehicle which currently lets you set the speed is AutonomousVehicle, where it would be promptly overwritten by the velocity calculations.
+* Vehicle.Speed no longer has a setter to avoid confusion. In most cases what users mean to do is adjust the maximum speed, and the only vehicle which currently lets you set the speed is AutonomousVehicle, where it would be promptly overwritten by the velocity calculations.
 * The setter for Vehicle.Velocity is now protected. See the case for Vehicle.Speed.
 * Updated TickedPriorityQueue.dll with bugfixes and new features.
 * Sealing SteerForNeighbors.CalculateForce to make it absolutely clear subclasses should not override it.
@@ -39,7 +40,7 @@ Other changes and improvements:
 * Improvements and new properties on SteerForCohesion and SteerForSeparation.
 * New Vehicle.DeltaTime property.
 * Removed old, unsupported sample path steering behaviors to avoid confusion. You can find them as gists here: [SteerForPathTrivial](https://gist.github.com/ricardojmendez/88488a8550ea62bfa119), [SteerForPathPredictiveTrivial](https://gist.github.com/ricardojmendez/f4fff18b34faa0ce17bd).
-* (Possibly breaking change). Removed redundant BlendIntoAccumulator methods from OpenSteerUtility - they were doing nothing but wrap Lerp variants. No need to have an extra call with parameters in a non-standard order.
+* (Potentially breaking change). Removed redundant BlendIntoAccumulator methods from OpenSteerUtility - they were doing nothing but wrap Lerp variants. No need to have an extra call with parameters in a non-standard order.
 * Removed VehicleLookAtOverride behavior. It was unused ever since I separated vehicles into Biped and AutonomousVehicle.
 
 ## v2.7
@@ -140,10 +141,10 @@ Radar ones.
 
 * Added DetectableObject as a Vehicle base class.  This will allow us to make some static targets in scenes approachable with the same routines as we would approach a vehicle, without the need to have the Vehicle overhead.
 * Removed outdated AngryAntPathway.  This was meant to be used with Path 1, which does not work with Unity 3.  For a draft Path 2 seeker, see https://gist.github.com/841909
-* Allowing 'speed' and 'forward' override on to Vehicle.ComputeNearestApproachPositions.  This override, as well as the previous one, will allow us to use this method to estimate the likelyhood of crashing into a vehicle at a future orientation and speed, which are not necessarily the same as the ones that our current vehicle has. This is something I am using on my RVO implementation.
+* Allowing 'speed' and 'forward' override on to Vehicle.ComputeNearestApproachPositions.  This override, as well as the previous one, will allow us to use this method to estimate the likelihood of crashing into a vehicle at a future orientation and speed, which are not necessarily the same as the ones that our current vehicle has. This is something I am using on my RVO implementation.
 * SphericalObstacleData now expressed in terms of DetectableObject.
 * VehicleEditor now relies on DetectableObjectEditor.
-* SteerForPathSimplified bugfix. There was an issue when the character's path began on its position (ie, the character was already on the path) but the character's    speed was 0. In this case, the future path position estimated was the same as the current position, which caused the steering behavior to believe it had already arrived.
+* SteerForPathSimplified bugfix. There was an issue when the character's path began on its position (i.e., the character was already on the path) but the character's    speed was 0. In this case, the future path position estimated was the same as the current position, which caused the steering behavior to believe it had already arrived.
 * SteerForPathSimplified bugfix.  On very slow agents with a twisting path and a close prediction time, it's possible that the future predicted point will still be within the vehicle's radius, which caused it to believe it had arrived.
 * Setting cached transform on Position getter if necessary.
 * Radar will now disregard disabled vehicles by default. You can change this behavior by setting its DetectDisabledVehicles property to true.
@@ -173,7 +174,6 @@ When introducing a new configurable value, I've aimed to keep the same behavior 
   http://www.arges-systems.com/articles/213/unitysteer-upcoming-path-following-changes/
 * Any receiver of an OnArrival call can now tell the vehicle to retry once by setting the SteeringEvent's Action property to 'retry'.   This is useful if you don't want the steering behavior to skip a beat when it has arrived at the designated spot and needs to await instructions from the receiver (as otherwise the value returned might get cached for a few frames).
 * Expanded comments
-
 
 BREAKING CHANGE:
 
