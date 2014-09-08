@@ -14,8 +14,7 @@ public class SteerForPoint : Steering
 	/// Declared as a separate value so that we can inspect it on Unity in 
 	/// debug mode.
 	/// </remarks>
-	[SerializeField]
-	Vector3 _targetPoint = Vector3.zero;
+	[SerializeField] private Vector3 _targetPoint = Vector3.zero;
 
 	/// <summary>
 	/// Should the vehicle's velocity be considered in the seek calculations?
@@ -24,14 +23,12 @@ public class SteerForPoint : Steering
 	/// If true, the vehicle will slow down as it approaches its target. See
 	/// the remarks on GetSeekVector.
 	/// </remarks>
-	[SerializeField]
-	bool _considerVelocity;
+	[SerializeField] private bool _considerVelocity;
 
 	/// <summary>
 	/// Should the target default to the vehicle current position if it's set to Vector3.zero?
 	/// </summary>
-	[SerializeField]
-	bool _defaultToCurrentPosition = true;
+	[SerializeField] private bool _defaultToCurrentPosition = true;
 	
 	
 	/// <summary>
@@ -60,10 +57,8 @@ public class SteerForPoint : Steering
 		get { return _considerVelocity; }
 		set { _considerVelocity = value; }
 	}
-
 	
-	
-	public new void Start()
+	protected override void Start()
 	{
 		base.Start();
 		

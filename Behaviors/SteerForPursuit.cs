@@ -79,7 +79,7 @@ public class SteerForPursuit : Steering
         var force = Vector3.zero;
         var offset = _quarry.Position - Vehicle.Position;
         var distance = offset.magnitude;
-        var radius = Vehicle.ScaledRadius + _quarry.ScaledRadius + _acceptableDistance;
+        var radius = Vehicle.Radius + _quarry.Radius + _acceptableDistance;
 
         if (!(distance > radius)) return force;
 
