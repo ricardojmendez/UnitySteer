@@ -190,6 +190,11 @@ public class SteerForNeighborGroup : Steering
         // I'd prefer an iterator, but trying to cut down on allocations
 		for (var i = 0; i < _neighbors.Count; i++) {
 			var other  = _neighbors[i];
+            if (other == null || other.Equals(null))
+            {
+                // Disregard destroyed neighbors we haven't cleared yet
+                continue;
+            }
 			if (!other.GameObject.Equals(null)) // Could be if the object was destroyed
 			{
 				if (_drawNeighbors)
