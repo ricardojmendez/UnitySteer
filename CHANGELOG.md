@@ -7,12 +7,13 @@ Breaking changes from UnitySteer 2.x:
 * Namespace reorganization.
 * Radar no longer has an API to ignore specific objects. See [commit afb7e14](https://github.com/ricardojmendez/UnitySteer/commit/afb7e1459f0f63f559652c1fdc6fab22272f7e5d) for the rationale.
 * Removed scaled values from DetectableObject. *You will need to modify your vehicle and obstacle prefabs if you're scaling them*. See [commit 969d817](https://github.com/ricardojmendez/UnitySteer/commit/969d817dbb2d651664a7a9bc815675d151929b47) for the rationale.
+* New Min/Max distance parameters for SteerForNeighbors. Removed redundant parameters from subclasses. *You will need to modify your prefabs that use SteerForSeparation/Cohesion/Alignment*. See [commit 7eb5b3b](https://github.com/ricardojmendez/UnitySteer/commit/7eb5b3b090c01ba5b8074e589b73f3955b8eae61) for details.
 * GetSeekVector will not consider the velocity by default, since that can produce inconsistent behavior on an agent that for performance reasons does not update its forces every frame.
 * Removed TickedVehicle._accelerationSmoothRate.  This affects both Bipeds and AutonomousVehicles.
 * New properties on AutonomousVehicle to control the acceleration and deceleration rates.
 * Using the AutonomousVehicle's TargetSpeed to indicate the speed we're aiming for, and Speed the one we're actually moving at.  Speed will gradually aim for TargetSpeed at its vehicle’s acceleration/deceleration rates.
-* SteerForWander.SmoothRate is now an amount per second. It is now frame-rate independent.
-* [You can read more about the acceleration smoothing chances here](http://arges-systems.com/blog/2014/01/30/unitysteer-acceleration-smoothing-changes/).
+* SteerForWander.SmoothRate is now an amount per second. This helps make it frame-rate independent.
+* [You can read more about the acceleration smoothing changes here](http://arges-systems.com/blog/2014/01/30/unitysteer-acceleration-smoothing-changes/).
 * Replaced IsPlanar with AllowedMovementAxes. We can now limit movement on any arbitrary axis, not only the Y.
 * Removed obsolete SteerForSphericalObstacleAvoidance.  SteerForSphericalObstacleRepulsion is now simply called SteerForSphericalObstacles.
 * Pruned cyclic Vector3Pathways. It was never properly implemented, and they're just as doable by having an event handler for the arrival event of the path steering behavior.
