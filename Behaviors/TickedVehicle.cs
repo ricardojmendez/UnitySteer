@@ -271,13 +271,13 @@ public abstract class TickedVehicle : Vehicle
 		 */
  		if (TargetSpeed > MinSpeedForTurning && Velocity != Vector3.zero)
 		{
-			var newForward = Vector3.Scale(OrientationVelocity, AllowedMovementAxes);
-
+			var newForward = Vector3.Scale(OrientationVelocity, AllowedMovementAxes).normalized;
 			if (TurnTime > 0)
 			{
 				newForward = Vector3.Slerp(Transform.forward, newForward, deltaTime / TurnTime);
 			}
-			Transform.forward = newForward;
+
+			Transform.forward = newForward;			
 		}
 	}
 

@@ -69,7 +69,7 @@ public class AutonomousVehicle : TickedVehicle
 	protected override void UpdateOrientationVelocity(Vector3 velocity)
 	{
 		TargetSpeed = velocity.magnitude;
-		OrientationVelocity = Mathf.Approximately(_speed, 0) ? Transform.forward : velocity / _speed;
+		OrientationVelocity = Mathf.Approximately(_speed, 0) ? Transform.forward : velocity / TargetSpeed;
 	}
 
     /// <summary>
