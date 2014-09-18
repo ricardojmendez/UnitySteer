@@ -34,33 +34,15 @@ namespace UnitySteer.Behaviors
         /// </summary>
         public struct PathIntersection
         {
-            private bool _intersect;
-            private float _distance;
-            private DetectableObject _obstacle;
-
-            public bool Intersect
-            {
-                get { return _intersect; }
-                set { _intersect = value; }
-            }
-
-            public float Distance
-            {
-                get { return _distance; }
-                set { _distance = value; }
-            }
-
-            public DetectableObject Obstacle
-            {
-                get { return _obstacle; }
-                set { _obstacle = value; }
-            }
+			public bool Intersect { get; set; }
+			public float Distance { get; set; }
+			public DetectableObject Obstacle { get; set; }
 
             public PathIntersection(DetectableObject obstacle)
             {
-                _obstacle = obstacle;
-                _intersect = false;
-                _distance = float.MaxValue;
+                Obstacle = obstacle;
+                Intersect = false;
+                Distance = float.MaxValue;
             }
         };
 
