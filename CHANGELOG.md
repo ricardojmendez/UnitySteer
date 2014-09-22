@@ -1,6 +1,6 @@
 # UnitySteer changelog
 
-## v3.0 (beta 4)
+## v3.0 (beta 5)
 
 Breaking changes from UnitySteer 2.x: 
 
@@ -43,6 +43,7 @@ Other changes and improvements:
 * Removed old, unsupported sample path steering behaviors to avoid confusion. You can find them as gists here: [SteerForPathTrivial](https://gist.github.com/ricardojmendez/88488a8550ea62bfa119), [SteerForPathPredictiveTrivial](https://gist.github.com/ricardojmendez/f4fff18b34faa0ce17bd).
 * (Potentially breaking change). Removed redundant BlendIntoAccumulator methods from OpenSteerUtility - they were doing nothing but wrap Lerp variants. No need to have an extra call with parameters in a non-standard order.
 * Removed VehicleLookAtOverride behavior. It was unused ever since I separated vehicles into Biped and AutonomousVehicle.
+
 
 ## v2.7
 
