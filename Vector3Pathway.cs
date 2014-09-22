@@ -106,9 +106,8 @@ namespace UnitySteer
         /// <param name="radius">
         /// Radius to use for the connections<see cref="System.Single" />
         /// </param>
-        public virtual void Initialize(IList<Vector3> path, float radius)
+        public void Initialize(IList<Vector3> path, float radius)
         {
-            // TODO: Decide if I want to keep this virtual, PrecalculatePathData could be enough
             Path = new List<Vector3>(path);
             Radius = radius;
 
