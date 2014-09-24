@@ -45,15 +45,11 @@ namespace UnitySteer.Behaviors
             var distance = offset.magnitude;
 
             var roughTime = distance / _menace.velocity.magnitude;
-            var predictionTime = ((roughTime > _predictionTime)
-                ? _predictionTime
-                : roughTime);
-
-            var target = _menace.transform.position + (_menace.velocity * predictionTime);
+			var predictionTimeUsed = Mathf.Min(_predictionTime, roughTime);
+            var target = _menace.transform.position + (_menace.velocity * predictionTimeUsed);
 
             // This was the totality of SteerToFlee
-            var desiredVelocity = Vehicle.Position - target;
-            return desiredVelocity - Vehicle.Velocity;
+			return Vehicle.Position - target;
         }
     }
 }
