@@ -227,7 +227,7 @@ namespace UnitySteer.Behaviors
             }
 
             // Update vehicle velocity
-            UpdateOrientationVelocity(newVelocity);
+            SetCalculatedVelocity(newVelocity);
             Profiler.EndSample();
         }
 
@@ -288,7 +288,7 @@ namespace UnitySteer.Behaviors
         /// manner that is specific to each subclass. 
         /// </summary>
         /// <param name="velocity">Newly calculated velocity</param>
-        protected abstract void UpdateOrientationVelocity(Vector3 velocity);
+        protected abstract void SetCalculatedVelocity(Vector3 velocity);
 
         /// <summary>
         /// Calculates how much the agent's position should change in a manner that

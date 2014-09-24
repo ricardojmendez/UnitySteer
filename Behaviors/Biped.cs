@@ -64,7 +64,7 @@ namespace UnitySteer.Behaviors
         /// Assigns a new velocity vector to the biped.
         /// </summary>
         /// <param name="velocity">Newly calculated velocity</param>
-        protected override void UpdateOrientationVelocity(Vector3 velocity)
+        protected override void SetCalculatedVelocity(Vector3 velocity)
         {
             Velocity = velocity;
         }

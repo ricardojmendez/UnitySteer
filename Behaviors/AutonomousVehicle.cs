@@ -59,7 +59,7 @@ namespace UnitySteer.Behaviors
         /// orientation velocity.
         /// </summary>
         /// <param name="velocity">Newly calculated velocity</param>
-        protected override void UpdateOrientationVelocity(Vector3 velocity)
+        protected override void SetCalculatedVelocity(Vector3 velocity)
         {
             TargetSpeed = velocity.magnitude;
             OrientationVelocity = Mathf.Approximately(_speed, 0) ? Transform.forward : velocity / TargetSpeed;
