@@ -1,11 +1,11 @@
-#define TRACE_ADJUSTMENTS
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
 {
     /// <summary>
     /// Vehicle subclass oriented towards autonomous bipeds, which have a movement
-    /// vector which can be separate from their forward vector.   
+    /// vector which can be separate from their forward vector (can side-step or
+	/// walk backwards).
     /// </summary>
     [AddComponentMenu("UnitySteer/Vehicle/Biped")]
     public class Biped : TickedVehicle
