@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnitySteer.Attributes;
 
-namespace UnitySteer.Behaviors
+namespace UnitySteer.Tools
 {
 
 	/// <summary>

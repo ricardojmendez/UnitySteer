@@ -63,11 +63,9 @@ namespace UnitySteer.Behaviors
         /// </returns>
         protected override Vector3 CalculateForce()
         {
-            if (Target == null) return Vector3.zero;
-
-            var difference = Target.forward;
-            difference.Scale(_distance);
-            return Vehicle.GetSeekVector(Target.position - difference, _considerVelocity);
+            return (Target == null)
+                ? Vector3.zero
+                : Vehicle.GetSeekVector(Target.TransformPoint(_distance), _considerVelocity);
         }
     }
 }
