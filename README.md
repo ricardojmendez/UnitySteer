@@ -1,4 +1,4 @@
-# UnitySteer 3.0 beta
+# UnitySteer 3.0 (RC1)
 
 
 ## General notes
@@ -6,8 +6,6 @@
 UnitySteer is a toolkit to help build steering behaviors for autonomous agents in Unity.  Initially based on OpenSteer, UnitySteer has been significantly reworked since it was first translated - the concepts and some of the code remain the same, but it follows a more Unity-like component-oriented philosophy. 
 
 Please read License.txt before using in your projects.  It's short, sweet and to the point.
-
-You are currently looking at UnitySteer 3.0 beta 5.  This will likely be the last beta release before moving on to RC1. I don’t expect there are any new breaking changes that will make it into the codebase.
 
 
 ## Main repository
@@ -24,13 +22,11 @@ UnitySteer uses [TickedPriorityQueue](https://github.com/Garufortho/TickedPriori
 
 ## Stable and beta versions
 
-While the current development branch is still a beta, it contains a significant number of improvements and fixes over 2.7, so I strongly suggest you start any new developments using the latest beta.
-
-There are several breaking changes in properties and behavior from UnitySteer 2.x, so make sure you catch up with [the latest UnitySteer blogposts](http://arges-systems.com/blog/category/unitysteer/), as well as reading the [changelog](CHANGELOG.md), to be aware of what these are.
+The current stable release is UnitySteer 3.0 RC1.  It contains a significant number of improvements and fixes over 2.7, but it also introduced several breaking changes, so make sure you catch up with [the latest UnitySteer blogposts](http://arges-systems.com/blog/category/unitysteer/), as well as reading the [changelog](CHANGELOG.md).
 
 I develop UnitySteer following git-flow, so if you're looking for a specific version, you can look at the project tags:
 
-* [UnitySteer 3.0 beta 4](https://github.com/ricardojmendez/UnitySteer/tree/v3.0.0-beta-4)
+* [UnitySteer 3.0 RC 1](https://github.com/ricardojmendez/UnitySteer/tree/v3.0.0-RC1)
 * [UnitySteer 2.7](https://github.com/ricardojmendez/UnitySteer/tree/v2.7)
 
 
