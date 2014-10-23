@@ -202,10 +202,12 @@ namespace UnitySteer
                 var d = OpenSteerUtility.PointToSegmentDistance(point, Path[i - 1], Path[i],
                     segmentNormal, segmentLength,
                     ref segmentProjection);
+                if (d < minDistance)
+                {
+                    minDistance = d;
+                    pathDistance = segmentLengthTotal + segmentProjection;                    
+                }
                 segmentLengthTotal += segmentLength;
-                if (!(d < minDistance)) continue;
-                minDistance = d;
-                pathDistance = segmentLengthTotal + segmentProjection;
             }
 
             // return distance along path of onPath point
