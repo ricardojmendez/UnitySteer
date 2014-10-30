@@ -1,6 +1,6 @@
 # UnitySteer changelog
 
-## v3.0 (RC1)
+## v3.0 (RC2)
 
 Breaking changes from UnitySteer 2.x: 
 

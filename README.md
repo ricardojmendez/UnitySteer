@@ -1,4 +1,4 @@
-# UnitySteer 3.0 (RC1)
+# UnitySteer 3.0 (RC2)
 
 
 ## General notes
@@ -22,10 +22,11 @@ UnitySteer uses [TickedPriorityQueue](https://github.com/Garufortho/TickedPriori
 
 ## Stable and beta versions
 
-The current stable release is UnitySteer 3.0 RC1.  It contains a significant number of improvements and fixes over 2.7, but it also introduced several breaking changes, so make sure you catch up with [the latest UnitySteer blogposts](http://arges-systems.com/blog/category/unitysteer/), as well as reading the [changelog](CHANGELOG.md).
+The current stable release is UnitySteer 3.0 RC2.  It contains a significant number of improvements and fixes over 2.7, but it also introduced several breaking changes, so make sure you catch up with [the latest UnitySteer blogposts](http://arges-systems.com/blog/category/unitysteer/), as well as reading the [changelog](CHANGELOG.md).
 
 I develop UnitySteer following git-flow, so if you're looking for a specific version, you can look at the project tags:
 
+* [UnitySteer 3.0 RC 2](https://github.com/ricardojmendez/UnitySteer/tree/v3.0.0-RC2)
 * [UnitySteer 3.0 RC 1](https://github.com/ricardojmendez/UnitySteer/tree/v3.0.0-RC1)
 * [UnitySteer 2.7](https://github.com/ricardojmendez/UnitySteer/tree/v2.7)
 
