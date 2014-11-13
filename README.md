@@ -1,4 +1,4 @@
-# UnitySteer 3.0 (RC2)
+# UnitySteer 3.0 (RC3)
 
 
 ## General notes
