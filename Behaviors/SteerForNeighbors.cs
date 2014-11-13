@@ -87,7 +87,7 @@ namespace UnitySteer.Behaviors
         {
             base.Awake();
             MaxDistanceSquared = _maxDistance * _maxDistance;
-            MinDistance = _minDistance * _minDistance;
+			MinDistanceSquared = _minDistance * _minDistance;
         }
 
         /// <summary>
