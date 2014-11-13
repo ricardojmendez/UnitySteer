@@ -274,12 +274,15 @@ namespace UnitySteer.Behaviors
             if (TargetSpeed > MinSpeedForTurning && Velocity != Vector3.zero)
             {
                 var newForward = Vector3.Scale(OrientationVelocity, AllowedMovementAxes).normalized;
+                Quaternion rot = Quaternion.LookRotation( newForward, UpVector);
+                rot = new Quaternion( rot.x * AllowedRotationAxes.x, 
+                    rot.y * AllowedRotationAxes.y, rot.z * AllowedRotationAxes.z, rot.w);
                 if (TurnTime > 0)
                 {
-                    newForward = Vector3.Slerp(Transform.forward, newForward, deltaTime / TurnTime);
+                    rot = Quaternion.Slerp(Transform.rotation, rot, deltaTime / TurnTime);
                 }
 
-                Transform.forward = newForward;
+                Transform.rotation = rot;
             }
         }
 
