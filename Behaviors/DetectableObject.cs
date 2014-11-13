@@ -23,6 +23,15 @@ namespace UnitySteer.Behaviors
         /// </summary>
         [SerializeField] private float _radius = 1;
 
+        /// <summary>
+        /// Custom forward vector, allows custom orientation of objects. Default Vector3.forward
+        /// </summary>
+        [SerializeField] private Vector3 _forwardVector = Vector3.forward;
+
+        /// <summary>
+        /// Custom up vector, allows custom orientation of objects. Default Vector3.up
+        /// </summary>
+        [SerializeField] private Vector3 _upVector = Vector3.up;
 
         /// <summary>
         /// Collider attached to this object. The GameObject that the DetectableObject
@@ -92,6 +101,30 @@ namespace UnitySteer.Behaviors
             }
         }
 
+        /// <summary>
+        /// Custom forward vector, allows custom orientation of objects. Default Vector3.forward
+        /// </summary>
+		public Vector3 ForwardVector
+        {
+            get { return _forwardVector; }
+        }
+
+		/// <summary>
+        /// Custom up vector, allows custom orientation of objects. Default Vector3.up
+        /// </summary>
+        public Vector3 UpVector
+        {
+            get { return _upVector; }
+        }
+		
+        /// <summary>
+        /// ForwardVector rotated by Transform current rotation
+        /// </summary>
+		public Vector3 Forward
+        {
+            get { return Transform.rotation * ForwardVector; }
+        }
+		
         #region Methods
 
         protected virtual void Awake()
@@ -152,5 +185,6 @@ namespace UnitySteer.Behaviors
         }
 
         #endregion
+
     }
 }
