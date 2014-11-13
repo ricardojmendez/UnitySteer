@@ -13,7 +13,7 @@ namespace UnitySteer.Behaviors
         public override Vector3 CalculateNeighborContribution(Vehicle other)
         {
             // accumulate sum of neighbor's heading
-            return other.Transform.forward;
+            return other.Forward;
         }
     }
 }

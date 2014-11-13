@@ -48,7 +48,7 @@ namespace UnitySteer.Behaviors
         /// </summary>
         public override Vector3 Velocity
         {
-            get { return Transform.forward * _speed; }
+            get { return Forward * _speed; }
             protected set { throw new NotSupportedException("Cannot set the velocity directly on PassiveCehicle"); }
         }
 

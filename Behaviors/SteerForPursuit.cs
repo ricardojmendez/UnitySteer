@@ -87,11 +87,11 @@ namespace UnitySteer.Behaviors
 
             // how parallel are the paths of "this" and the quarry
             // (1 means parallel, 0 is pependicular, -1 is anti-parallel)
-            var parallelness = Vector3.Dot(transform.forward, _quarry.transform.forward);
+            var parallelness = Vector3.Dot(Vehicle.Forward, _quarry.Forward);
 
             // how "forward" is the direction to the quarry
             // (1 means dead ahead, 0 is directly to the side, -1 is straight back)
-            var forwardness = Vector3.Dot(transform.forward, unitOffset);
+            var forwardness = Vector3.Dot(Vehicle.Forward, unitOffset);
 
             var directTravelTime = distance / Vehicle.Speed;
             // While we could parametrize this value, if we care about forward/backwards
