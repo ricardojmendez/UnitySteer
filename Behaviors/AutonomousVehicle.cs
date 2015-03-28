@@ -48,7 +48,7 @@ namespace UnitySteer.Behaviors
         /// </summary>
         public override Vector3 Velocity
         {
-            get { return Transform.forward * Speed; }
+            get { return Forward * Speed; }
             protected set { throw new NotSupportedException("Cannot set the velocity directly on AutonomousVehicle"); }
         }
 
@@ -62,7 +62,7 @@ namespace UnitySteer.Behaviors
         protected override void SetCalculatedVelocity(Vector3 velocity)
         {
             TargetSpeed = velocity.magnitude;
-            OrientationVelocity = Mathf.Approximately(_speed, 0) ? Transform.forward : velocity / TargetSpeed;
+            OrientationVelocity = Mathf.Approximately(_speed, 0) ? Forward : velocity / TargetSpeed;
         }
 
         /// <summary>

@@ -17,7 +17,7 @@ namespace UnitySteer.Behaviors
         /// </summary>
         public Vector3 DesiredForward
         {
-            get { return _overrideForward ? _desiredForward : Vehicle.Transform.forward; }
+            get { return _overrideForward ? _desiredForward : Vehicle.Forward; }
             set
             {
                 _desiredForward = value;
@@ -33,7 +33,7 @@ namespace UnitySteer.Behaviors
         /// </returns>
         protected override Vector3 CalculateForce()
         {
-            return _overrideForward ? DesiredForward : Vehicle.Transform.forward;
+            return _overrideForward ? DesiredForward : Vehicle.Forward;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace UnitySteer.Behaviors
 {
@@ -40,7 +40,7 @@ namespace UnitySteer.Behaviors
             var result = Vehicle.DesiredVelocity;
             if (_moveForwardWhenZero && Mathf.Approximately(Vehicle.TargetSpeed, 0))
             {
-                result = Vehicle.Transform.forward * _minimumSpeed;
+                result = Vehicle.Forward * _minimumSpeed;
             }
             else if (Vehicle.TargetSpeed < _minimumSpeed)
             {

@@ -59,6 +59,16 @@ namespace UnitySteer.Behaviors
         /// </remarks>
         [SerializeField, Vector3Toggle] private Vector3 _allowedMovementAxes = Vector3.one;
 
+		/// <summary>
+        /// Indicates which axes a vehicle is allowed to rotate around
+        /// </summary>
+        /// <remarks>
+        /// A 0 on the X/Y/Z value means the vehicle is not allowed to rotate on that
+        /// axis, a 1 indicates it can.  We use Vector3Toggle to set it on the 
+        /// editor as a helper.
+        /// </remarks>
+        [SerializeField, Vector3Toggle] private Vector3 _allowedRotationAxes = Vector3.one;
+
         /// <summary>
         /// The vehicle's arrival radius.
         /// </summary>
@@ -85,6 +95,11 @@ namespace UnitySteer.Behaviors
         public Vector3 AllowedMovementAxes
         {
             get { return _allowedMovementAxes; }
+        }
+
+        public Vector3 AllowedRotationAxes
+        {
+            get { return _allowedRotationAxes; }
         }
 
         /// <summary>
@@ -343,7 +358,7 @@ namespace UnitySteer.Behaviors
                     {
                         // otherwise, test angular offset from forward axis
                         var unitOffset = offset / Mathf.Sqrt(distanceSquared);
-                        var forwardness = Vector3.Dot(Transform.forward, unitOffset);
+                        var forwardness = Vector3.Dot(Forward, unitOffset);
                         result = forwardness > cosMaxAngle;
                     }
                 }
@@ -409,7 +424,7 @@ namespace UnitySteer.Behaviors
         {
             var mf = MaxForce;
             var speedError = targetSpeed - Speed;
-            return Transform.forward * Mathf.Clamp(speedError, -mf, +mf);
+            return Forward * Mathf.Clamp(speedError, -mf, +mf);
         }
 
 
@@ -433,8 +448,8 @@ namespace UnitySteer.Behaviors
         /// </summary>
         public void ResetOrientation()
         {
-            Transform.up = Vector3.up;
-            Transform.forward = Vector3.forward;
+            Transform.up = UpVector;
+            Transform.forward = ForwardVector;
         }
 
         /// <summary>
@@ -503,7 +518,7 @@ namespace UnitySteer.Behaviors
             ref Vector3 hisPosition)
         {
             return ComputeNearestApproachPositions(other, time, ref ourPosition, ref hisPosition, Speed,
-                Transform.forward);
+                Forward );
         }
 
         /// <summary>
@@ -537,7 +552,7 @@ namespace UnitySteer.Behaviors
             Vector3 ourForward)
         {
             var myTravel = ourForward * ourSpeed * time;
-            var otherTravel = other.Transform.forward * other.Speed * time;
+            var otherTravel = other.Forward * other.Speed * time;
 
             ourPosition = Position + myTravel;
             hisPosition = other.Position + otherTravel;
