@@ -1,4 +1,4 @@
-# UnitySteer 3.0 (RC3)
+# UnitySteer 3.0
 
 
 ## General notes
@@ -26,8 +26,7 @@ The current stable release is UnitySteer 3.0 RC2.  It contains a significant num
 
 I develop UnitySteer following git-flow, so if you're looking for a specific version, you can look at the project tags:
 
-* [UnitySteer 3.0 RC 2](https://github.com/ricardojmendez/UnitySteer/tree/v3.0.0-RC2)
-* [UnitySteer 3.0 RC 1](https://github.com/ricardojmendez/UnitySteer/tree/v3.0.0-RC1)
+* [UnitySteer 3.0 RC 3](https://github.com/ricardojmendez/UnitySteer/tree/v3.0.0-RC3)
 * [UnitySteer 2.7](https://github.com/ricardojmendez/UnitySteer/tree/v2.7)
 
 

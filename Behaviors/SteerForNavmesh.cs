@@ -93,7 +93,11 @@ namespace UnitySteer.Behaviors
         protected override void Start()
         {
             base.Start();
+#if UNITY_5
+            _navMeshLayerMask = 1 << NavMesh.GetAreaFromName("Default");
+#else
             _navMeshLayerMask = 1 << NavMesh.GetNavMeshLayerFromName("Default");
+#endif
         }
 
 
