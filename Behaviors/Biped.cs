@@ -20,7 +20,7 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// The biped's current velocity vector
         /// </summary>
-        private Vector3 _velocity;
+        private Vector2 _velocity;
 
         #endregion
 
@@ -39,7 +39,7 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Current vehicle velocity
         /// </summary>
-        public override Vector3 Velocity
+        public override Vector2 Velocity
         {
             get { return _velocity; }
             protected set
@@ -47,7 +47,7 @@ namespace UnitySteer.Behaviors
                 _velocity = Vector3.ClampMagnitude(value, MaxSpeed);
                 _speed = _velocity.magnitude;
                 TargetSpeed = _speed;
-                OrientationVelocity = !Mathf.Approximately(_speed, 0) ? _velocity / _speed : Vector3.zero;
+                OrientationVelocity = !Mathf.Approximately(_speed, 0) ? _velocity / _speed : Vector2.zero;
             }
         }
 
@@ -74,7 +74,7 @@ namespace UnitySteer.Behaviors
         /// is specific to the vehicle's implementation.
         /// </summary>
         /// <param name="deltaTime">Time delta to use in position calculations</param>
-        protected override Vector3 CalculatePositionDelta(float deltaTime)
+        protected override Vector2 CalculatePositionDelta(float deltaTime)
         {
             return Velocity * deltaTime;
         }

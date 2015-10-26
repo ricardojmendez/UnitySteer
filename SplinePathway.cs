@@ -95,7 +95,7 @@ namespace UnitySteer
         /// <param name="point">Reference point.</param>
         /// <param name="pathRelative">Structure indicating the relative path position.</param>
         /// <returns>The closest point to the received reference point.</returns>
-        public override Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative)
+        public override Vector2 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative)
         {
             // Approximate the closest path point on a linear path
             var onPath = base.MapPointToPath(point, ref pathRelative);
@@ -107,7 +107,7 @@ namespace UnitySteer
             return splinePoint;
         }
 
-        public override Vector3 MapPathDistanceToPoint(float pathDistance)
+        public override Vector2 MapPathDistanceToPoint(float pathDistance)
         {
             if (_splineNodes.Length < 5)
             {
@@ -146,7 +146,7 @@ namespace UnitySteer
         /// <returns>The catmull rom point.</returns>
         /// <param name="currentNode">Current node. Index 0 is the initial control point, index 1 the first actual path node.</param>
         /// <param name="percentComplete">Percent complete for this segment.</param>
-        private Vector3 CalculateCatmullRomPoint(int currentNode, float percentComplete)
+        private Vector2 CalculateCatmullRomPoint(int currentNode, float percentComplete)
         {
             var percentCompleteSquared = percentComplete * percentComplete;
             var percentCompleteCubed = percentCompleteSquared * percentComplete;

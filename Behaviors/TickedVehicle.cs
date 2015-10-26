@@ -42,7 +42,7 @@ namespace UnitySteer.Behaviors
 
         #endregion
 
-        public CharacterController CharacterController { get; private set; }
+        public CharacterController CharacterController { get; private set; } //TODO not needed for 2d, maybe deal with this later
 
         /// <summary>
         /// Last time the vehicle's tick was completed.
@@ -72,7 +72,7 @@ namespace UnitySteer.Behaviors
         /// <remarks>
         /// This is expected to be set by the subclasses.
         /// </remarks>
-        public Vector3 OrientationVelocity { get; protected set; }
+        public Vector2 OrientationVelocity { get; protected set; }
 
         public string QueueName
         {
@@ -99,7 +99,7 @@ namespace UnitySteer.Behaviors
 
         private void Start()
         {
-            CharacterController = GetComponent<CharacterController>();
+            //CharacterController = GetComponent<CharacterController>(); useless check for 2d
             PreviousTickTime = Time.time;
         }
 
@@ -250,7 +250,7 @@ namespace UnitySteer.Behaviors
             }
             else if (Rigidbody == null || Rigidbody.isKinematic)
             {
-                Transform.position += acceleration;
+                Transform.position += (Vector3)acceleration;
             }
             else
             {
@@ -271,15 +271,15 @@ namespace UnitySteer.Behaviors
 		 * disregard very small velocities, to avoid jittery movement on
 		 * rounding errors.
 		 */
-            if (TargetSpeed > MinSpeedForTurning && Velocity != Vector3.zero)
+            if (TargetSpeed > MinSpeedForTurning && Velocity != Vector2.zero)
             {
-                var newForward = Vector3.Scale(OrientationVelocity, AllowedMovementAxes).normalized;
+                var newForward = Vector3.Scale(OrientationVelocity, AllowedMovementAxes).normalized; //TODO need to check how this does in 2d, may need to change to quaternion
                 if (TurnTime > 0)
                 {
-                    newForward = Vector3.Slerp(Transform.forward, newForward, deltaTime / TurnTime);
+                    newForward = Vector3.Slerp(Transform.up, newForward, deltaTime / TurnTime);
                 }
 
-                Transform.forward = newForward;
+                Transform.up = newForward;
             }
         }
 
@@ -295,7 +295,7 @@ namespace UnitySteer.Behaviors
         /// is specific to the vehicle's implementation.
         /// </summary>
         /// <param name="deltaTime">Time delta to use in position calculations</param>
-        protected abstract Vector3 CalculatePositionDelta(float deltaTime);
+        protected abstract Vector2 CalculatePositionDelta(float deltaTime);
 
         /// <summary>
         /// Zeros this vehicle's velocity.

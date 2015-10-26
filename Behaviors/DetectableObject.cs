@@ -16,7 +16,7 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// The vehicle's center in the transform
         /// </summary>
-        [SerializeField] private Vector3 _center;
+        [SerializeField] private Vector2 _center;
 
         /// <summary>
         /// The vehicle's radius.
@@ -28,16 +28,16 @@ namespace UnitySteer.Behaviors
         /// Collider attached to this object. The GameObject that the DetectableObject
         /// is attached to is expected to have at most one collider.
         /// </summary>
-        public Collider Collider { get; private set; }
+        public Collider2D Collider { get; private set; }
 
         /// <summary>
         /// Vehicle's position
         /// </summary>
         /// <remarks>The vehicle's position is the transform's position displaced 
         /// by the vehicle center</remarks>
-        public Vector3 Position
+        public Vector2 Position
         {
-            get { return Transform.position + _center; }
+            get { return (Vector2)Transform.position + _center; }
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace UnitySteer.Behaviors
         /// This property's setter recalculates a temporary value, so it's
         /// advised you don't re-scale the vehicle's transform after it has been set
         /// </remarks>
-        public Vector3 Center
+        public Vector2 Center
         {
             get { return _center; }
             set { _center = value; }
@@ -96,7 +96,7 @@ namespace UnitySteer.Behaviors
 
         protected virtual void Awake()
         {
-            Collider = GetComponent<Collider>();
+            Collider = GetComponent<Collider2D>();
             SquaredRadius = _radius * _radius;
         }
 
@@ -124,9 +124,9 @@ namespace UnitySteer.Behaviors
         /// Disregarded on the base function since obstacles do not move.
         /// </param>
         /// <returns>
-        /// Object position<see cref="Vector3"/>
+        /// Object position<see cref="Vector2"/>
         /// </returns>
-        public virtual Vector3 PredictFuturePosition(float predictionTime)
+        public virtual Vector2 PredictFuturePosition(float predictionTime)
         {
             return Transform.position;
         }

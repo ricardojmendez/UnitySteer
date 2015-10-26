@@ -5,15 +5,15 @@ namespace UnitySteer
     public struct PathRelativePosition
     {
         public float Outside;
-        public Vector3 Tangent;
+        public Vector2 Tangent;
         public int SegmentIndex;
     }
 
     public interface IPathway
     {
         float TotalPathLength { get; }
-        Vector3 FirstPoint { get; }
-        Vector3 LastPoint { get; }
+        Vector2 FirstPoint { get; }
+        Vector2 LastPoint { get; }
         int SegmentCount { get; }
         float Radius { get; set; }
 
@@ -26,14 +26,14 @@ namespace UnitySteer
         /// <param name="point">Reference point.</param>
         /// <param name="pathRelative">Structure indicating the relative path position.</param>
         /// <returns>The closest point to the received reference point.</returns>
-        Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative);
+        Vector2 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative);
 
         /// <summary>
         /// Given a distance along the path, convert it to a specific point on the path.
         /// </summary>
         /// <param name="pathDistance">Path distance to calculate corresponding point for.</param>
         /// <returns>The corresponding path point to the path distance.</returns>
-        Vector3 MapPathDistanceToPoint(float pathDistance);
+        Vector2 MapPathDistanceToPoint(float pathDistance);
 
         /// <summary>
         /// Maps the reference point to a distance along the path.

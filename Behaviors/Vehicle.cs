@@ -20,7 +20,8 @@ namespace UnitySteer.Behaviors
     [AddComponentMenu("UnitySteer/Vehicle/Vehicle")]
     public abstract class Vehicle : DetectableObject
     {
-        [SerializeField] private float _minSpeedForTurning = 0.1f;
+        [SerializeField]
+        private float _minSpeedForTurning = 0.1f;
 
         /// <summary>
         /// The vehicle movement priority.
@@ -28,7 +29,8 @@ namespace UnitySteer.Behaviors
         /// <remarks>Used only by some behaviors to determine if a vehicle should
         /// be given priority before another one. You may disregard if you aren't
         /// using any behavior like that.</remarks>
-        [SerializeField] private int _movementPriority;
+        [SerializeField]
+        private int _movementPriority;
 
         #region Private fields
         /// <summary>
@@ -38,7 +40,8 @@ namespace UnitySteer.Behaviors
         /// ForwardSmoothing would be a better name, but changing it now would mean
         /// anyone with a vehicle prefab would lose their current settings.
         /// </remarks>
-        [SerializeField] private float _turnTime = 0.25f;
+        [SerializeField]
+        private float _turnTime = 0.25f;
 
         /// <summary>
         /// Vehicle's mass
@@ -47,7 +50,8 @@ namespace UnitySteer.Behaviors
         /// The total force from the steering behaviors will be divided by the 
         /// vehicle mass before applying.
         /// </remarks>
-        [SerializeField] private float _mass = 1;
+        [SerializeField]
+        private float _mass = 1;
 
         /// <summary>
         /// Indicates which axes a vehicle is allowed to move on
@@ -57,7 +61,8 @@ namespace UnitySteer.Behaviors
         /// axis, a 1 indicates it can.  We use Vector3Toggle to set it on the 
         /// editor as a helper.
         /// </remarks>
-        [SerializeField, Vector3Toggle] private Vector3 _allowedMovementAxes = Vector3.one;
+        [SerializeField, Vector3Toggle]
+        private Vector3 _allowedMovementAxes = Vector3.one;
 
         /// <summary>
         /// The vehicle's arrival radius.
@@ -66,23 +71,27 @@ namespace UnitySteer.Behaviors
         /// the first is used to determine the area the vehicle covers, whereas the
         /// second one is a value used to determine if a vehicle is close enough
         /// to a desired target.  Unlike the radius, it is not scaled with the vehicle.</remarks>
-        [SerializeField] private float _arrivalRadius = 0.25f;
+        [SerializeField]
+        private float _arrivalRadius = 0.25f;
 
 
-        [SerializeField] private float _maxSpeed = 1;
+        [SerializeField]
+        private float _maxSpeed = 1;
 
-        [SerializeField] private float _maxForce = 10;
+        [SerializeField]
+        private float _maxForce = 10;
 
         /// <summary>
         /// Indicates if the behavior should move or not
         /// </summary>
-        [SerializeField] private bool _canMove = true;
+        [SerializeField]
+        private bool _canMove = true;
 
         #endregion
 
         #region Public properties
 
-        public Vector3 AllowedMovementAxes
+        public Vector2 AllowedMovementAxes
         {
             get { return _allowedMovementAxes; }
         }
@@ -100,7 +109,7 @@ namespace UnitySteer.Behaviors
         /// The velocity desired by this vehicle, likely calculated by means 
         /// similar to what AutonomousVehicle does
         /// </summary>
-        public Vector3 DesiredVelocity { get; protected set; }
+        public Vector2 DesiredVelocity { get; protected set; }
 
         public GameObject GameObject { get; private set; }
 
@@ -158,7 +167,7 @@ namespace UnitySteer.Behaviors
         /// </summary>
         public Radar Radar { get; private set; }
 
-        public Rigidbody Rigidbody { get; private set; }
+        public Rigidbody2D Rigidbody { get; private set; }
 
         /// <summary>
         /// Speedometer attached to the same object as this vehicle, if any
@@ -188,7 +197,7 @@ namespace UnitySteer.Behaviors
         /// Last raw force applied to the vehicle. It is expected to be set 
         /// by the subclases.
         /// </summary>
-        public Vector3 LastRawForce { get; protected set; }
+        public Vector2 LastRawForce { get; protected set; }
 
         /// <summary>
         /// Current vehicle speed
@@ -221,7 +230,7 @@ namespace UnitySteer.Behaviors
         /// Current vehicle velocity. Subclasses are likely to only actually
         /// implement one of the two methods.
         /// </summary>
-        public abstract Vector3 Velocity { get; protected set; }
+        public abstract Vector2 Velocity { get; protected set; }
 
         /// <summary>
         /// Current magnitude for the vehicle's velocity.
@@ -257,11 +266,10 @@ namespace UnitySteer.Behaviors
         {
             base.Awake();
             GameObject = gameObject;
-            Rigidbody = GetComponent<Rigidbody>();
+            Rigidbody = GetComponent<Rigidbody2D>();
             var allSteerings = GetComponents<Steering>();
             Steerings = allSteerings.Where(x => !x.IsPostProcess).ToArray();
             SteeringPostprocessors = allSteerings.Where(x => x.IsPostProcess).ToArray();
-            
 
             if (_movementPriority == 0)
             {
@@ -284,9 +292,9 @@ namespace UnitySteer.Behaviors
         /// <returns>
         /// Vehicle position<see cref="Vector3"/>
         /// </returns>
-        public override Vector3 PredictFuturePosition(float predictionTime)
+        public override Vector2 PredictFuturePosition(float predictionTime)
         {
-            return Transform.position + (Velocity * predictionTime);
+            return (Vector2)Transform.position + (Velocity * predictionTime);
         }
 
         /// <summary>
@@ -298,11 +306,10 @@ namespace UnitySteer.Behaviors
         /// <returns>
         /// Vehicle position<see cref="Vector3"/>
         /// </returns>
-        public Vector3 PredictFutureDesiredPosition(float predictionTime)
+        public Vector2 PredictFutureDesiredPosition(float predictionTime)
         {
-            return Transform.position + (DesiredVelocity * predictionTime);
+            return (Vector2)Transform.position + (DesiredVelocity * predictionTime);
         }
-
 
         /// <summary>
         /// Calculates if a vehicle is in the neighborhood of another
@@ -343,7 +350,7 @@ namespace UnitySteer.Behaviors
                     {
                         // otherwise, test angular offset from forward axis
                         var unitOffset = offset / Mathf.Sqrt(distanceSquared);
-                        var forwardness = Vector3.Dot(Transform.forward, unitOffset);
+                        var forwardness = Vector3.Dot(Transform.up, unitOffset);
                         result = forwardness > cosMaxAngle;
                     }
                 }
@@ -369,7 +376,7 @@ namespace UnitySteer.Behaviors
         /// as  true can make the agent wobble as it approaches a target unless its 
         /// force is calculated every frame.
         /// </remarks>
-        public Vector3 GetSeekVector(Vector3 target, bool considerVelocity = false)
+        public Vector2 GetSeekVector(Vector3 target, bool considerVelocity = false)
         {
             /*
 		 * First off, we calculate how far we are from the target, If this
@@ -378,7 +385,7 @@ namespace UnitySteer.Behaviors
 		 */
             var force = Vector3.zero;
 
-            var difference = target - Position;
+            var difference = (Vector2)target - Position;
             var d = difference.sqrMagnitude;
             if (d > SquaredArrivalRadius)
             {
@@ -405,13 +412,12 @@ namespace UnitySteer.Behaviors
         /// <param name='targetSpeed'>
         /// Target speed to aim for.
         /// </param>
-        public Vector3 GetTargetSpeedVector(float targetSpeed)
+        public Vector2 GetTargetSpeedVector(float targetSpeed)
         {
             var mf = MaxForce;
             var speedError = targetSpeed - Speed;
-            return Transform.forward * Mathf.Clamp(speedError, -mf, +mf);
+            return Transform.up * Mathf.Clamp(speedError, -mf, +mf);
         }
-
 
         /// <summary>
         /// Returns the distance from this vehicle to another
@@ -503,7 +509,7 @@ namespace UnitySteer.Behaviors
             ref Vector3 hisPosition)
         {
             return ComputeNearestApproachPositions(other, time, ref ourPosition, ref hisPosition, Speed,
-                Transform.forward);
+                Transform.up);
         }
 
         /// <summary>
@@ -537,10 +543,10 @@ namespace UnitySteer.Behaviors
             Vector3 ourForward)
         {
             var myTravel = ourForward * ourSpeed * time;
-            var otherTravel = other.Transform.forward * other.Speed * time;
+            var otherTravel = other.Transform.up * other.Speed * time;
 
-            ourPosition = Position + myTravel;
-            hisPosition = other.Position + otherTravel;
+            ourPosition = Position + (Vector2)myTravel;
+            hisPosition = other.Position + (Vector2)otherTravel;
 
             return Vector3.Distance(ourPosition, hisPosition);
         }

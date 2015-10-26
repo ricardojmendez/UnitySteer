@@ -51,12 +51,12 @@ namespace UnitySteer
 
         public IList<Vector3> Path { get; protected set; }
 
-        public Vector3 FirstPoint
+        public Vector2 FirstPoint
         {
             get { return Path.FirstOrDefault(); }
         }
 
-        public Vector3 LastPoint
+        public Vector2 LastPoint
         {
             get { return Path.LastOrDefault(); }
         }
@@ -150,7 +150,7 @@ namespace UnitySteer
         /// <param name="point">Reference point.</param>
         /// <param name="pathRelative">Structure indicating the relative path position.</param>
         /// <returns>The closest point to the received reference point.</returns>
-        public virtual Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative)
+        public virtual Vector2 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative)
         {
             var minDistance = float.MaxValue;
             var onPath = Vector3.zero;
@@ -220,7 +220,7 @@ namespace UnitySteer
         /// </summary>
         /// <param name="pathDistance">Path distance to calculate corresponding point for.</param>
         /// <returns>The corresponding path point to the path distance.</returns>
-        public virtual Vector3 MapPathDistanceToPoint(float pathDistance)
+        public virtual Vector2 MapPathDistanceToPoint(float pathDistance)
         {
             // clip or wrap given path distance according to cyclic flag
             var remaining = pathDistance;

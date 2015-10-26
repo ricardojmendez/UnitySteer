@@ -46,9 +46,9 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Current vehicle velocity
         /// </summary>
-        public override Vector3 Velocity
+        public override Vector2 Velocity
         {
-            get { return Transform.forward * Speed; }
+            get { return Transform.up * Speed; }
             protected set { throw new NotSupportedException("Cannot set the velocity directly on AutonomousVehicle"); }
         }
 
@@ -62,7 +62,7 @@ namespace UnitySteer.Behaviors
         protected override void SetCalculatedVelocity(Vector3 velocity)
         {
             TargetSpeed = velocity.magnitude;
-            OrientationVelocity = Mathf.Approximately(_speed, 0) ? Transform.forward : velocity / TargetSpeed;
+            OrientationVelocity = Mathf.Approximately(_speed, 0) ? Transform.up : velocity / TargetSpeed;
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace UnitySteer.Behaviors
         /// is specific to the vehicle's implementation.
         /// </summary>
         /// <param name="deltaTime">Time delta to use in position calculations</param>
-        protected override Vector3 CalculatePositionDelta(float deltaTime)
+        protected override Vector2 CalculatePositionDelta(float deltaTime)
         {
             /*
 		 * Notice that we clamp the target speed and not the speed itself, 

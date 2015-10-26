@@ -10,7 +10,7 @@ namespace UnitySteer
         /// Returns a random unit-length vector on the X/Z plane.
         /// </summary>
         /// <returns>The unit vector on XZ plane.</returns>
-        public static Vector3 RandomUnitVectorOnXZPlane()
+        public static Vector2 RandomUnitVectorOnXZPlane()
         {
             var tVector = Random.insideUnitSphere;
             tVector.y = 0;
@@ -18,7 +18,7 @@ namespace UnitySteer
             return tVector;
         }
 
-        public static Vector3 LimitMaxDeviationAngle(Vector3 source, float cosineOfConeAngle, Vector3 basis)
+        public static Vector2 LimitMaxDeviationAngle(Vector3 source, float cosineOfConeAngle, Vector3 basis)
         {
             return VecLimitDeviationAngleUtility(true, // force source INSIDE cone
                 source,
@@ -26,7 +26,7 @@ namespace UnitySteer
                 basis);
         }
 
-        public static Vector3 VecLimitDeviationAngleUtility(bool insideOrOutside, Vector3 source,
+        public static Vector2 VecLimitDeviationAngleUtility(bool insideOrOutside, Vector3 source,
             float cosineOfConeAngle, Vector3 basis)
         {
             // immediately return zero length input vectors
@@ -64,7 +64,7 @@ namespace UnitySteer
             var perpDist = (float) Math.Sqrt(1 - (cosineOfConeAngle * cosineOfConeAngle));
             var c0 = basis * cosineOfConeAngle;
             var c1 = perp.normalized * perpDist;
-            return (c0 + c1) * sourceLength;
+            return ((Vector2)c0 + c1) * sourceLength;
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace UnitySteer
         /// <returns>The parallel component.</returns>
         /// <param name="source">Source.</param>
         /// <param name="unitBasis">Unit basis vector.</param>
-        public static Vector3 ParallelComponent(Vector3 source, Vector3 unitBasis)
+        public static Vector2 ParallelComponent(Vector3 source, Vector3 unitBasis)
         {
             var projection = Vector3.Dot(source, unitBasis);
             return unitBasis * projection;
@@ -86,12 +86,12 @@ namespace UnitySteer
         /// <returns>The component.</returns>
         /// <param name="source">Source vector.</param>
         /// <param name="unitBasis">Basis. Should be a unit vector.</param>
-        public static Vector3 PerpendicularComponent(Vector3 source, Vector3 unitBasis)
+        public static Vector2 PerpendicularComponent(Vector3 source, Vector3 unitBasis)
         {
-            return source - ParallelComponent(source, unitBasis);
+            return (Vector2)source - ParallelComponent(source, unitBasis);
         }
 
-        public static Vector3 SphericalWrapAround(Vector3 source, Vector3 center, float radius)
+        public static Vector2 SphericalWrapAround(Vector3 source, Vector3 center, float radius)
         {
             var offset = source - center;
             var r = offset.magnitude;

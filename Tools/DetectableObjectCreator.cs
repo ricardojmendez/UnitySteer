@@ -21,7 +21,7 @@ namespace UnitySteer.Tools
 		{
 			var radius = 0.0f;
 
-			var colliders = gameObject.GetComponentsInChildren<Collider>();
+			var colliders = gameObject.GetComponentsInChildren<Collider2D>();
 			if (colliders == null)
 			{
 				Debug.LogError(string.Format("Obstacle {0} has no colliders", gameObject.name));

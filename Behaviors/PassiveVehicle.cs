@@ -27,7 +27,7 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// The biped's current velocity vector
         /// </summary>
-        private Vector3 _velocity;
+        private Vector2 _velocity;
 
         #endregion
 
@@ -46,10 +46,10 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Current vehicle velocity
         /// </summary>
-        public override Vector3 Velocity
+        public override Vector2 Velocity
         {
-            get { return Transform.forward * _speed; }
-            protected set { throw new NotSupportedException("Cannot set the velocity directly on PassiveCehicle"); }
+            get { return Transform.up * _speed; }
+            protected set { throw new NotSupportedException("Cannot set the velocity directly on PassiveVehicle"); }
         }
 
         private void Update()
