@@ -52,7 +52,9 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Target being pursued
         /// </summary>
-        /// <remarks>When set, it will clear the flag that indicates we've already reported that we arrived</remarks>
+        /// <remarks>
+        /// When set, it will clear the flag that indicates we've already reported that we arrived
+        /// </remarks>
         public DetectableObject Quarry
         {
             get { return _quarry; }
@@ -68,15 +70,15 @@ namespace UnitySteer.Behaviors
 
         #endregion
 
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
             if (_quarry == null)
             {
                 enabled = false;
-                return Vector3.zero;
+                return Vector2.zero;
             }
 
-            var force = Vector3.zero;
+            var force = Vector2.zero;
             var offset = _quarry.Position - Vehicle.Position;
             var distance = offset.magnitude;
             var radius = Vehicle.Radius + _quarry.Radius + _acceptableDistance;
@@ -87,11 +89,11 @@ namespace UnitySteer.Behaviors
 
             // how parallel are the paths of "this" and the quarry
             // (1 means parallel, 0 is pependicular, -1 is anti-parallel)
-            var parallelness = Vector3.Dot(transform.forward, _quarry.transform.forward);
+            var parallelness = Vector2.Dot(transform.up, _quarry.transform.up);
 
             // how "forward" is the direction to the quarry
             // (1 means dead ahead, 0 is directly to the side, -1 is straight back)
-            var forwardness = Vector3.Dot(transform.forward, unitOffset);
+            var forwardness = Vector2.Dot(transform.up, unitOffset);
 
             var directTravelTime = distance / Vehicle.Speed;
             // While we could parametrize this value, if we care about forward/backwards
@@ -162,7 +164,7 @@ namespace UnitySteer.Behaviors
 #if ANNOTATE_PURSUIT
             Debug.DrawRay(Vehicle.Position, force, Color.blue);
             Debug.DrawLine(Quarry.Position, target, Color.cyan);
-            Debug.DrawRay(target, Vector3.up * 4, Color.cyan);
+            Debug.DrawRay(target, Vector2.up * 4, Color.cyan);
 #endif
 
             return force;

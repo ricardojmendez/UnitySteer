@@ -33,9 +33,9 @@ namespace UnitySteer.Behaviors
         /// Calculates the force to apply to the vehicle to reach a point
         /// </summary>
         /// <returns>
-        /// A <see cref="Vector3"/>
+        /// A <see cref="Vector2"/>
         /// </returns>
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
             var result = Vehicle.DesiredVelocity;
             if (_moveForwardWhenZero && Mathf.Approximately(Vehicle.TargetSpeed, 0))

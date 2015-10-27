@@ -15,7 +15,7 @@ namespace UnitySteer.Behaviors
     [RequireComponent(typeof (SteerForNeighborGroup))]
     public class SteerForMatchingVelocity : SteerForNeighbors
     {
-        public override Vector3 CalculateNeighborContribution(Vehicle other)
+        public override Vector2 CalculateNeighborContribution(Vehicle other)
         {
             // accumulate sum of neighbors' velocities
             return other.Velocity;

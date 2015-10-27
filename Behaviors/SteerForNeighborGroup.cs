@@ -128,7 +128,7 @@ namespace UnitySteer.Behaviors
             {
                 // Ensure UnitySteer does not call them
                 b.enabled = false;
-                // ... and since Unity may not call them either, initialize them ourselves.
+                // ... and since Unity may not initialize them either, initialize them ourselves.
                 b.Initialize();
             }
             Vehicle.Radar.OnDetected += HandleDetection;
@@ -136,7 +136,7 @@ namespace UnitySteer.Behaviors
 
         private void HandleDetection(Radar radar)
         {
-            /*
+         /*
 		 * Neighbors are cached on radar detection.
 		 * 
 		 * This means that IsInNeighborhood is evaluated when 
@@ -164,10 +164,10 @@ namespace UnitySteer.Behaviors
             }
         }
 
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
             // steering accumulator and count of neighbors, both initially zero
-            var steering = Vector3.zero;
+            var steering = Vector2.zero;
             Profiler.BeginSample("SteerForNeighborGroup.Looping over neighbors");
             // I'd prefer an iterator, but trying to cut down on allocations
             for (var i = 0; i < _neighbors.Count; i++)

@@ -89,13 +89,13 @@ namespace UnitySteer.Behaviors
         /// Should the force be calculated?
         /// </summary>
         /// <returns>
-        /// A <see cref="Vector3"/>
+        /// A <see cref="Vector2"/>
         /// </returns>
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
             if (Path == null || Path.SegmentCount < 2)
             {
-                return Vector3.zero;
+                return Vector2.zero;
             }
 
             // If the vehicle's speed is 0, use a low speed for future position
@@ -140,7 +140,7 @@ namespace UnitySteer.Behaviors
 		 */
             var seek = Vehicle.GetSeekVector(target);
 
-            if (seek == Vector3.zero && targetPathDistance <= Path.TotalPathLength)
+            if (seek == Vector2.zero && targetPathDistance <= Path.TotalPathLength)
             {
                 /*
 			 * If we should not displace but still have some distance to go,

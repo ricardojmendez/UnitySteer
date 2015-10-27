@@ -1,3 +1,5 @@
+//TODO There is no 2D navmesh in unity afaik so this is most likely not needed. Maybe comment out the whole file just to be sure?
+
 #define ANNOTATE_NAVMESH
 using UnityEngine;
 
@@ -117,7 +119,7 @@ namespace UnitySteer.Behaviors
         /// This won't lead back to the navmesh, but there's no way to determine
         /// a way back onto it.
         /// </remarks>
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
             NavMeshHit hit;
 
@@ -135,7 +137,7 @@ namespace UnitySteer.Behaviors
 
             if (_offMeshCheckingEnabled)
             {
-                var probePosition = Vehicle.Position + _probePositionOffset;
+                var probePosition = Vehicle.Position + (Vector2)_probePositionOffset;
 
                 Profiler.BeginSample("Off-mesh checking");
                 NavMesh.SamplePosition(probePosition, out hit, _probeRadius, _navMeshLayerMask);
@@ -155,10 +157,10 @@ namespace UnitySteer.Behaviors
                         Debug.DrawLine(probePosition, hit.position, Color.red);
 #endif
 
-                        return (hit.position - probePosition).normalized * Vehicle.MaxForce;
+                        return ((Vector2)hit.position - probePosition).normalized * Vehicle.MaxForce;
                     } // no closest edge - too far off the mesh
 #if ANNOTATE_NAVMESH
-                    Debug.DrawLine(probePosition, probePosition + Vector3.up * 3, Color.red);
+                    Debug.DrawLine(probePosition, probePosition + Vector2.up * 3, Color.red);
 #endif
 
                     return Vector3.zero;

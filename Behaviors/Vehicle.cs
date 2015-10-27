@@ -383,7 +383,7 @@ namespace UnitySteer.Behaviors
 		 * distance is smaller than the configured vehicle radius, we tell
 		 * the vehicle to stop.
 		 */
-            var force = Vector3.zero;
+            var force = Vector2.zero;
 
             var difference = (Vector2)target - Position;
             var d = difference.sqrMagnitude;
@@ -404,7 +404,7 @@ namespace UnitySteer.Behaviors
 
         /// <summary>
         /// Returns a returns a maxForce-clipped steering force along the 
-        /// forward vector that can be used to try to maintain a target speed
+        /// up vector that can be used to try to maintain a target speed
         /// </summary>
         /// <returns>
         /// The target speed vector.

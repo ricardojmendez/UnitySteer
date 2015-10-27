@@ -11,7 +11,7 @@ namespace UnitySteer.Behaviors
         #region Private properties
 
         [SerializeField] private float _maximumDistance = 30f;
-        [SerializeField] private Vector3 _tetherPosition;
+        [SerializeField] private Vector2 _tetherPosition;
 
         #endregion
 
@@ -28,7 +28,7 @@ namespace UnitySteer.Behaviors
             set { _maximumDistance = Mathf.Clamp(value, 0, float.MaxValue); }
         }
 
-        public Vector3 TetherPosition
+        public Vector2 TetherPosition
         {
             get { return _tetherPosition; }
             set { _tetherPosition = value; }
@@ -36,9 +36,9 @@ namespace UnitySteer.Behaviors
 
         #endregion
 
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
-            var steering = Vector3.zero;
+            var steering = Vector2.zero;
 
             var difference = TetherPosition - Vehicle.Position;
             var distance = difference.magnitude;

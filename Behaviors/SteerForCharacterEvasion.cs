@@ -1,3 +1,5 @@
+// TODO CharacterController is useless for 2D, could be turned into a rigidbody or a detectableobject (mines?) since we already have a vehicle evasion.
+
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
@@ -38,10 +40,10 @@ namespace UnitySteer.Behaviors
 
         #endregion
 
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
             // offset from this to menace, that distance, unit vector toward menace
-            var offset = _menace.transform.position - Vehicle.Position;
+            var offset = (Vector2)_menace.transform.position - Vehicle.Position;
             var distance = offset.magnitude;
 
             var roughTime = distance / _menace.velocity.magnitude;
@@ -49,7 +51,7 @@ namespace UnitySteer.Behaviors
             var target = _menace.transform.position + (_menace.velocity * predictionTimeUsed);
 
             // This was the totality of SteerToFlee
-			return Vehicle.Position - target;
+			return Vehicle.Position - (Vector2)target;
         }
     }
 }

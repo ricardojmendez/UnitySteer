@@ -11,7 +11,7 @@ namespace UnitySteer.Behaviors
     [RequireComponent(typeof (SteerForNeighborGroup))]
     public class SteerForCohesion : SteerForNeighbors
     {
-        public override Vector3 CalculateNeighborContribution(Vehicle other)
+        public override Vector2 CalculateNeighborContribution(Vehicle other)
         {
             // accumulate sum of forces leading us towards neighbor's positions
             var distance = other.Position - Vehicle.Position;

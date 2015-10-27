@@ -17,7 +17,7 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Last force calculated
         /// </summary>
-        private Vector3 _force = Vector3.zero;
+        private Vector2 _force = Vector2.zero;
 
         /// <summary>
         /// Cached vehicle
@@ -37,16 +37,16 @@ namespace UnitySteer.Behaviors
         /// <remarks>
         /// Besides calculating the desired force, it will also notify the vehicle
         /// of when it started/stopped providing force, via the OnArrival and
-        /// OnStartMoving events.  If an OnArrival even is raised, the receiving
+        /// OnStartMoving events.  If an OnArrival event is raised, the receiving
         /// object can set the ShouldRetryForce property to TRUE to force the vehicle
         /// recalculating the force once.
         /// </remarks>
-        public Vector3 Force
+        public Vector2 Force
         {
             get
             {
                 _force = CalculateForce();
-                if (_force != Vector3.zero)
+                if (_force != Vector2.zero)
                 {
                     if (!ReportedMove && OnStartMoving != null)
                     {
@@ -68,7 +68,7 @@ namespace UnitySteer.Behaviors
                             ShouldRetryForce = false;
                         }
                     }
-                    if (_force == Vector3.zero)
+                    if (_force == Vector2.zero) //double check needed?
                     {
                         ReportedArrival = true;
                         ReportedMove = false;
@@ -124,7 +124,7 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Force vector modified by the assigned weight 
         /// </summary>
-        public Vector3 WeighedForce
+        public Vector2 WeighedForce
         {
             get { return Force * _weight; }
         }
@@ -171,7 +171,7 @@ namespace UnitySteer.Behaviors
         /// <returns>
         /// A vector with the supplied force <see cref="Vector3"/>
         /// </returns>
-        protected abstract Vector3 CalculateForce();
+        protected abstract Vector2 CalculateForce();
 
         #endregion
     }

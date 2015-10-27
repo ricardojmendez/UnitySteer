@@ -76,16 +76,16 @@ namespace UnitySteer.Behaviors
         /// Calculates the force necessary to avoid the detected spherical obstacles
         /// </summary>
         /// <returns>
-        /// Force necessary to avoid detected obstacles, or Vector3.zero
+        /// Force necessary to avoid detected obstacles, or Vector2.zero
         /// </returns>
         /// <remarks>
         /// This method will iterate through all detected spherical obstacles that 
         /// are within MinTimeToCollision, and calculate a repulsion vector based
         /// on them.
         /// </remarks>
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
-            var avoidance = Vector3.zero;
+            var avoidance = Vector2.zero;
             if (Vehicle.Radar.Obstacles == null || !Vehicle.Radar.Obstacles.Any())
             {
                 return avoidance;
@@ -135,9 +135,9 @@ namespace UnitySteer.Behaviors
             var newDesired = Vector3.Reflect(Vehicle.DesiredVelocity, avoidance);
 
 #if ANNOTATE_AVOIDOBSTACLES
-            Debug.DrawLine(Vehicle.Position, Vehicle.Position + avoidance, Color.green);
+            Debug.DrawLine(Vehicle.Position, Vehicle.Position + (Vector2)avoidance, Color.green);
             Debug.DrawLine(Vehicle.Position, futurePosition, Color.blue);
-            Debug.DrawLine(Vehicle.Position, Vehicle.Position + newDesired, Color.white);
+            Debug.DrawLine(Vehicle.Position, Vehicle.Position + (Vector2)newDesired, Color.white);
 #endif
 
             return newDesired;
@@ -167,7 +167,7 @@ namespace UnitySteer.Behaviors
             var intersection = new PathIntersection(obstacle);
 
             var combinedRadius = vehicle.Radius + obstacle.Radius;
-            var movement = futureVehiclePosition - vehicle.Position;
+            var movement = (Vector2)futureVehiclePosition - vehicle.Position;
             var direction = movement.normalized;
 
             var vehicleToObstacle = obstacle.Position - vehicle.Position;

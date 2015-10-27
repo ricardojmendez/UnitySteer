@@ -9,7 +9,7 @@ namespace UnitySteer.Tools
 	/// </summary>
 	public class RandomizeStartPosition: MonoBehaviour
 	{
-		public Vector2 Radius = Vector3.one;
+		public Vector2 Radius = Vector2.one;
 
 
 		public bool RandomizeRotation = true;
@@ -26,7 +26,7 @@ namespace UnitySteer.Tools
 		void Start()
 		{
 			var pos = Vector3.Scale(Random.insideUnitSphere, Radius);
-			pos = (Vector2)Vector3.Scale(pos, AllowedAxes);
+			pos = (Vector2)Vector3.Scale(pos, AllowedAxes); //
 			transform.position += pos;
 
 			if (RandomizeRotation) 

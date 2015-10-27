@@ -26,7 +26,7 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// How far behind we should follow the target
         /// </summary>
-        [SerializeField] private Vector3 _distance;
+        [SerializeField] private Vector2 _distance;
 
 
         /// <summary>
@@ -59,12 +59,12 @@ namespace UnitySteer.Behaviors
         /// Calculates the force to apply to the vehicle to reach a point
         /// </summary>
         /// <returns>
-        /// A <see cref="Vector3"/>
+        /// A <see cref="Vector2"/>
         /// </returns>
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
             return (Target == null)
-                ? Vector3.zero
+                ? Vector2.zero
                 : Vehicle.GetSeekVector(Target.TransformPoint(_distance), _considerVelocity);
         }
     }

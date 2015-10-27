@@ -64,7 +64,7 @@ namespace UnitySteer.Behaviors
         [SerializeField] private int _preAllocateSize = 30;
 
 
-        private Collider[] _detectedColliders;
+        private Collider2D[] _detectedColliders;
         private List<DetectableObject> _detectedObjects;
         private List<Vehicle> _vehicles;
         private List<DetectableObject> _obstacles;
@@ -76,7 +76,7 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// List of currently detected neighbors
         /// </summary>
-        public IEnumerable<Collider> Detected
+        public IEnumerable<Collider2D> Detected
         {
             get { return _detectedColliders; }
         }
@@ -120,9 +120,9 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Returns the radars position
         /// </summary>
-        public Vector3 Position
+        public Vector2 Position
         {
-            get { return (Vehicle != null) ? Vehicle.Position : _transform.position; }
+            get { return (Vehicle != null) ? Vehicle.Position : (Vector2)_transform.position; }
         }
 
         public Action<Radar> OnDetected = delegate { };
@@ -246,9 +246,9 @@ namespace UnitySteer.Behaviors
         }
 
 
-        protected virtual Collider[] Detect()
+        protected virtual Collider2D[] Detect()
         {
-            return Physics.OverlapSphere(Position, DetectionRadius, LayersChecked);
+            return Physics2D.OverlapCircleAll(Position, DetectionRadius, LayersChecked);
         }
 
         protected virtual void FilterDetected()
@@ -316,7 +316,7 @@ namespace UnitySteer.Behaviors
         {
             if (_drawGizmos)
             {
-                var pos = (Vehicle == null) ? transform.position : Vehicle.Position;
+                var pos = (Vehicle == null) ? (Vector2)transform.position : Vehicle.Position;
 
                 Gizmos.color = Color.cyan;
                 Gizmos.DrawWireSphere(pos, DetectionRadius);

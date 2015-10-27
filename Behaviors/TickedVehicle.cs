@@ -171,7 +171,7 @@ namespace UnitySteer.Behaviors
             }
             Profiler.BeginSample("Calculating vehicle forces");
 
-            var force = Vector3.zero;
+            var force = Vector2.zero;
 
             Profiler.BeginSample("Adding up basic steerings");
             for (var i = 0; i < Steerings.Length; i++)
@@ -205,7 +205,7 @@ namespace UnitySteer.Behaviors
             // blending the new velocity into an accumulator. We *could* do that,
             // but things are working just fine for now, and it seems like
             // overkill. 
-            var adjustedVelocity = Vector3.zero;
+            var adjustedVelocity = Vector2.zero;
             Profiler.BeginSample("Adding up post-processing steerings");
             for (var i = 0; i < SteeringPostprocessors.Length; i++)
             {
@@ -218,7 +218,7 @@ namespace UnitySteer.Behaviors
             Profiler.EndSample();
 
 
-            if (adjustedVelocity != Vector3.zero)
+            if (adjustedVelocity != Vector2.zero)
             {
                 adjustedVelocity = Vector3.ClampMagnitude(adjustedVelocity, MaxSpeed);
                 TraceDisplacement(adjustedVelocity, Color.cyan);

@@ -24,9 +24,9 @@ namespace UnitySteer.Behaviors
         /// Calculates the force to apply to a vehicle to reach a target transform
         /// </summary>
         /// <returns>
-        /// Force to apply <see cref="Vector3"/>
+        /// Force to apply <see cref="Vector2"/>
         /// </returns>
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
             return Vehicle.GetTargetSpeedVector(TargetSpeed);
         }

@@ -1,3 +1,5 @@
+// TODO does this need to be changed?
+
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
@@ -8,20 +10,20 @@ namespace UnitySteer.Behaviors
     [AddComponentMenu("UnitySteer/Steer/... for Forward")]
     public class SteerForForward : Steering
     {
-        private Vector3 _desiredForward = Vector3.zero;
+        private Vector2 _desiredForward = Vector2.zero;
 
         private bool _overrideForward;
 
         /// <summary>
         /// Desired forward vector. If set to Vector3.zero we will steer toward the transform's forward
         /// </summary>
-        public Vector3 DesiredForward
+        public Vector2 DesiredForward
         {
-            get { return _overrideForward ? _desiredForward : Vehicle.Transform.forward; }
+            get { return _overrideForward ? _desiredForward : (Vector2)Vehicle.Transform.up; }
             set
             {
                 _desiredForward = value;
-                _overrideForward = value != Vector3.zero;
+                _overrideForward = value != Vector2.zero;
             }
         }
 
@@ -29,11 +31,11 @@ namespace UnitySteer.Behaviors
         /// Calculates the force to apply to the vehicle to reach a point
         /// </summary>
         /// <returns>
-        /// A <see cref="Vector3"/>
+        /// A <see cref="Vector2"/>
         /// </returns>
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
-            return _overrideForward ? DesiredForward : Vehicle.Transform.forward;
+            return _overrideForward ? DesiredForward : (Vector2)Vehicle.Transform.up;
         }
     }
 }

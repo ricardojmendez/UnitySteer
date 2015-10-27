@@ -69,7 +69,7 @@ namespace UnitySteer.Behaviors
             _sqrSafetyDistance = _safetyDistance * _safetyDistance;
         }
 
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
             if (_menace == null || (Vehicle.Position - _menace.Position).sqrMagnitude > _sqrSafetyDistance)
             {

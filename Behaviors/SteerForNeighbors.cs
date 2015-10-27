@@ -68,7 +68,7 @@ namespace UnitySteer.Behaviors
 
         #region Methods
 
-        protected override sealed Vector3 CalculateForce()
+        protected override sealed Vector2 CalculateForce()
         {
             /*
          * You should never override this method nor change its behavior unless
@@ -81,7 +81,7 @@ namespace UnitySteer.Behaviors
                                               "Did you enable a SteerForNeighbors subclass manually? They are disabled by SteerForNeighborGroup on Start.");
         }
 
-        public abstract Vector3 CalculateNeighborContribution(Vehicle other);
+        public abstract Vector2 CalculateNeighborContribution(Vehicle other);
 
         protected override void Awake()
         {

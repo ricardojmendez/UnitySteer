@@ -12,7 +12,7 @@ namespace UnitySteer.Behaviors
         /// Declared as a separate value so that we can inspect it on Unity in 
         /// debug mode.
         /// </remarks>
-        [SerializeField] private Vector3 _targetPoint = Vector3.zero;
+        [SerializeField] private Vector2 _targetPoint = Vector2.zero;
 
         /// <summary>
         /// Should the vehicle's velocity be considered in the seek calculations?
@@ -32,7 +32,7 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// The target point.
         /// </summary>
-        public Vector3 TargetPoint
+        public Vector2 TargetPoint
         {
             get { return _targetPoint; }
             set
@@ -60,7 +60,7 @@ namespace UnitySteer.Behaviors
         {
             base.Start();
 
-            if (_defaultToCurrentPosition && TargetPoint == Vector3.zero)
+            if (_defaultToCurrentPosition && TargetPoint == Vector2.zero)
             {
                 enabled = false;
             }
@@ -70,9 +70,9 @@ namespace UnitySteer.Behaviors
         /// Calculates the force to apply to the vehicle to reach a point
         /// </summary>
         /// <returns>
-        /// A <see cref="Vector3"/>
+        /// A <see cref="Vector2"/>
         /// </returns>
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
             return Vehicle.GetSeekVector(TargetPoint, _considerVelocity);
         }

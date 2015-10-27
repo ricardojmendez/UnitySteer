@@ -23,7 +23,7 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Where were the repulsive events located
         /// </summary>
-        private Vector3[] _eventLocations;
+        private Vector2[] _eventLocations;
 
         /// <summary>
         /// Time that the repulsive events took place
@@ -58,19 +58,18 @@ namespace UnitySteer.Behaviors
         {
             base.Start();
 
-            _eventLocations = new Vector3[_maxEvents];
+            _eventLocations = new Vector2[_maxEvents];
             _eventTimes = new float[_maxEvents];
             _minDistanceForFearSqr = _minDistanceForFear * _minDistanceForFear;
         }
 
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
             Profiler.BeginSample("Accumulating repulsion");
-            var accumulator = Vector3.zero;
+            var accumulator = Vector2.zero;
             var totalCount = 0;
             var now = Time.time;
             var futurePosition = Vehicle.PredictFutureDesiredPosition(_estimationTime);
-
 
             for (var i = 0; i < _maxEvents; i++)
             {

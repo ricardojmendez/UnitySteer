@@ -47,7 +47,7 @@ namespace UnitySteer.Behaviors
 
         #endregion
 
-        protected override Vector3 CalculateForce()
+        protected override Vector2 CalculateForce()
         {
             var speed = Vehicle.MaxSpeed;
 
@@ -57,8 +57,8 @@ namespace UnitySteer.Behaviors
             _wanderSide = Mathf.Lerp(_wanderSide, randomSide, _smoothRate * Vehicle.DeltaTime);
             _wanderUp = Mathf.Lerp(_wanderUp, randomUp, _smoothRate * Vehicle.DeltaTime);
 
-            var result = (Vehicle.Transform.right * _wanderSide) + (Vehicle.Transform.up * _wanderUp) +
-                         Vehicle.Transform.forward;
+            var result = (Vehicle.Transform.right * _wanderSide) + (Vehicle.Transform.up * _wanderUp);
+
             return result;
         }
     }

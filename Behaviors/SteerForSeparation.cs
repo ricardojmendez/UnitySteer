@@ -53,9 +53,9 @@ namespace UnitySteer.Behaviors
 
         #region Methods
 
-        public override Vector3 CalculateNeighborContribution(Vehicle other)
+        public override Vector2 CalculateNeighborContribution(Vehicle other)
         {
-            var steering = Vector3.zero;
+            var steering = Vector2.zero;
 
             // add in steering contribution
             // (opposite of the offset direction, divided once by distance
