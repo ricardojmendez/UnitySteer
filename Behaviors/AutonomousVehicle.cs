@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using System;
 using UnityEngine;
 
@@ -46,11 +48,19 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Current vehicle velocity
         /// </summary>
+#if SUPPORT_2D
         public override Vector2 Velocity
         {
-            get { return Transform.up * Speed; }
+            get { return Forward * Speed; }
             protected set { throw new NotSupportedException("Cannot set the velocity directly on AutonomousVehicle"); }
         }
+#else
+        public override Vector3 Velocity
+        {
+            get { return Forward * Speed; }
+            protected set { throw new NotSupportedException("Cannot set the velocity directly on AutonomousVehicle"); }
+        }
+#endif
 
         #region Speed-related methods
 
@@ -62,7 +72,8 @@ namespace UnitySteer.Behaviors
         protected override void SetCalculatedVelocity(Vector3 velocity)
         {
             TargetSpeed = velocity.magnitude;
-            OrientationVelocity = Mathf.Approximately(_speed, 0) ? Transform.up : velocity / TargetSpeed;
+            //More casts to make sure the if statement goes nicely
+            OrientationVelocity = Mathf.Approximately(_speed, 0) ? (Vector3)Forward : (Vector3)velocity / TargetSpeed;
         }
 
         /// <summary>
@@ -70,6 +81,7 @@ namespace UnitySteer.Behaviors
         /// is specific to the vehicle's implementation.
         /// </summary>
         /// <param name="deltaTime">Time delta to use in position calculations</param>
+#if SUPPORT_2D
         protected override Vector2 CalculatePositionDelta(float deltaTime)
         {
             /*
@@ -90,6 +102,28 @@ namespace UnitySteer.Behaviors
 
             return Velocity * deltaTime;
         }
+#else
+        protected override Vector3 CalculatePositionDelta(float deltaTime)
+        {
+            /*
+		 * Notice that we clamp the target speed and not the speed itself, 
+		 * because the vehicle's maximum speed might just have been lowered
+		 * and we don't want its actual speed to suddenly drop.
+		 */
+            var targetSpeed = Mathf.Clamp(TargetSpeed, 0, MaxSpeed);
+            if (Mathf.Approximately(_speed, targetSpeed))
+            {
+                _speed = targetSpeed;
+            }
+            else
+            {
+                var rate = TargetSpeed > _speed ? _accelerationRate : _decelerationRate;
+                _speed = Mathf.Lerp(_speed, targetSpeed, deltaTime * rate);
+            }
+
+            return Velocity * deltaTime;
+        }
+#endif
 
         /// <summary>
         /// Zeros this vehicle's target speed, which results on its desired velocity
@@ -100,6 +134,6 @@ namespace UnitySteer.Behaviors
             TargetSpeed = 0;
         }
 
-        #endregion
+#endregion
     }
 }

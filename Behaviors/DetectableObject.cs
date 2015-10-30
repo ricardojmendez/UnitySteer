@@ -1,3 +1,5 @@
+#define SUPPORT_2D //allows switching between 2D and 3D. No idea how to make this switchable in a more accessible way though. When needed, casts are done to Vector3 to make sure there is no data loss.
+
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
@@ -16,7 +18,11 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// The vehicle's center in the transform
         /// </summary>
+#if SUPPORT_2D
         [SerializeField] private Vector2 _center;
+#else
+        [SerializeField] private Vector3 _center;
+#endif
 
         /// <summary>
         /// The vehicle's radius.
@@ -28,17 +34,28 @@ namespace UnitySteer.Behaviors
         /// Collider attached to this object. The GameObject that the DetectableObject
         /// is attached to is expected to have at most one collider.
         /// </summary>
+#if SUPPORT_2D
         public Collider2D Collider { get; private set; }
+#else
+        public Collider Collider { get; private set; }
+#endif
 
         /// <summary>
         /// Vehicle's position
         /// </summary>
         /// <remarks>The vehicle's position is the transform's position displaced 
         /// by the vehicle center</remarks>
+#if SUPPORT_2D
         public Vector2 Position
         {
             get { return (Vector2)Transform.position + _center; }
         }
+#else
+        public Vector3 Position
+        {
+            get { return Transform.position + _center; }
+        }
+#endif
 
         /// <summary>
         /// Vehicle center on the transform
@@ -47,11 +64,19 @@ namespace UnitySteer.Behaviors
         /// This property's setter recalculates a temporary value, so it's
         /// advised you don't re-scale the vehicle's transform after it has been set
         /// </remarks>
+#if SUPPORT_2D
         public Vector2 Center
         {
             get { return _center; }
             set { _center = value; }
         }
+#else
+        public Vector3 Center
+        {
+            get { return _center; }
+            set { _center = value; }
+        }
+#endif
 
         /// <summary>
         /// Vehicle radius
@@ -92,11 +117,15 @@ namespace UnitySteer.Behaviors
             }
         }
 
-        #region Methods
+#region Methods
 
         protected virtual void Awake()
         {
+#if SUPPORT_2D
             Collider = GetComponent<Collider2D>();
+#else
+            Collider = GetComponent<Collider>();
+#endif
             SquaredRadius = _radius * _radius;
         }
 
@@ -126,11 +155,17 @@ namespace UnitySteer.Behaviors
         /// <returns>
         /// Object position<see cref="Vector2"/>
         /// </returns>
+#if SUPPORT_2D
         public virtual Vector2 PredictFuturePosition(float predictionTime)
         {
             return Transform.position;
         }
-
+#else
+        public virtual Vector3 PredictFuturePosition(float predictionTime)
+        {
+            return Transform.position;
+        }
+#endif
 
         /// <summary>
         /// Recalculates the object's radius based on the transform's scale,
@@ -151,6 +186,6 @@ namespace UnitySteer.Behaviors
             Gizmos.DrawWireSphere(Position, Radius);
         }
 
-        #endregion
+#endregion
     }
 }

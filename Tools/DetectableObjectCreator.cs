@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using UnityEngine;
 using UnitySteer.Behaviors;
 
@@ -21,8 +23,12 @@ namespace UnitySteer.Tools
 		{
 			var radius = 0.0f;
 
-			var colliders = gameObject.GetComponentsInChildren<Collider2D>();
-			if (colliders == null)
+#if SUPPORT_2D
+            var colliders = gameObject.GetComponentsInChildren<Collider2D>();
+#else
+            var colliders = gameObject.GetComponentsInChildren<Collider>();
+#endif
+            if (colliders == null)
 			{
 				Debug.LogError(string.Format("Obstacle {0} has no colliders", gameObject.name));
 				return;

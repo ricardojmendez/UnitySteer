@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using System.Linq;
 using UnityEngine;
 using UnitySteer.Attributes;
@@ -87,11 +89,22 @@ namespace UnitySteer.Behaviors
         [SerializeField]
         private bool _canMove = true;
 
+#if SUPPORT_2D
+        /// <summary>
+        /// Custom forward vector for 2D.
+        /// </summary>
+        /// <remarks>
+        /// Should be set via the editor using an enum.
+        /// </remarks>
+        [SerializeField]
+        private SpriteForwardDirection _forward;
+#endif
+
         #endregion
 
         #region Public properties
 
-        public Vector2 AllowedMovementAxes
+        public Vector3 AllowedMovementAxes
         {
             get { return _allowedMovementAxes; }
         }
@@ -109,7 +122,11 @@ namespace UnitySteer.Behaviors
         /// The velocity desired by this vehicle, likely calculated by means 
         /// similar to what AutonomousVehicle does
         /// </summary>
+#if SUPPORT_2D
         public Vector2 DesiredVelocity { get; protected set; }
+#else
+        public Vector3 DesiredVelocity { get; protected set; }
+#endif
 
         public GameObject GameObject { get; private set; }
 
@@ -167,7 +184,11 @@ namespace UnitySteer.Behaviors
         /// </summary>
         public Radar Radar { get; private set; }
 
+#if SUPPORT_2D
         public Rigidbody2D Rigidbody { get; private set; }
+#else
+        public Rigidbody Rigidbody { get; private set; }
+#endif
 
         /// <summary>
         /// Speedometer attached to the same object as this vehicle, if any
@@ -197,7 +218,11 @@ namespace UnitySteer.Behaviors
         /// Last raw force applied to the vehicle. It is expected to be set 
         /// by the subclases.
         /// </summary>
+#if SUPPORT_2D
         public Vector2 LastRawForce { get; protected set; }
+#else
+        public Vector3 LastRawForce { get; protected set; }
+#endif
 
         /// <summary>
         /// Current vehicle speed
@@ -230,7 +255,11 @@ namespace UnitySteer.Behaviors
         /// Current vehicle velocity. Subclasses are likely to only actually
         /// implement one of the two methods.
         /// </summary>
+#if SUPPORT_2D
         public abstract Vector2 Velocity { get; protected set; }
+#else
+        public abstract Vector3 Velocity { get; protected set; }
+#endif
 
         /// <summary>
         /// Current magnitude for the vehicle's velocity.
@@ -258,6 +287,63 @@ namespace UnitySteer.Behaviors
             get { return Time.deltaTime; }
         }
 
+        /// <summary>
+        /// Interface between editor and steering's direction. (2D)
+        /// Simple forward vector. (3D)
+        /// </summary>
+#if SUPPORT_2D
+        public Vector2 Forward
+        {
+            get
+            {
+                switch (_forward)
+                {
+                    case SpriteForwardDirection.Up:
+                        return transform.up;
+
+                    case SpriteForwardDirection.Down:
+                        return -(transform.up);
+
+                    case SpriteForwardDirection.Right:
+                        return transform.right;
+
+                    case SpriteForwardDirection.Left:
+                        return -(transform.right);
+
+                    default:
+                        throw new System.Exception("Somehow no direction was chosen.");
+                }
+            }
+
+            protected set
+            {
+                switch (_forward)
+                {
+                    case SpriteForwardDirection.Up:
+                        transform.up = value;
+                        break;
+
+                    case SpriteForwardDirection.Down:
+                        transform.up = -value;
+                        break;
+
+                    case SpriteForwardDirection.Right:
+                        transform.right = value;
+                        break;
+
+                    case SpriteForwardDirection.Left:
+                        transform.right = -value;
+                        break;
+
+                    default:
+                        throw new System.Exception("Somehow no direction was chosen.");
+                }
+            }
+        }
+#else
+        public Vector3 Forward { get { return transform.forward;} protected set { transform.forward = value;} }
+#endif
+
         #endregion
 
         #region Unity methods
@@ -266,7 +352,11 @@ namespace UnitySteer.Behaviors
         {
             base.Awake();
             GameObject = gameObject;
+#if SUPPORT_2D
             Rigidbody = GetComponent<Rigidbody2D>();
+#else
+            Rigidbody = GetComponent<Rigidbody>();
+#endif
             var allSteerings = GetComponents<Steering>();
             Steerings = allSteerings.Where(x => !x.IsPostProcess).ToArray();
             SteeringPostprocessors = allSteerings.Where(x => x.IsPostProcess).ToArray();
@@ -290,12 +380,19 @@ namespace UnitySteer.Behaviors
         /// A time in seconds for the prediction <see cref="System.Single"/>
         /// </param>
         /// <returns>
-        /// Vehicle position<see cref="Vector3"/>
+        /// Vehicle position<see cref="Vector2"/>
         /// </returns>
+#if SUPPORT_2D
         public override Vector2 PredictFuturePosition(float predictionTime)
         {
             return (Vector2)Transform.position + (Velocity * predictionTime);
         }
+#else
+        public override Vector3 PredictFuturePosition(float predictionTime)
+        {
+            return Transform.position + (Velocity * predictionTime);
+        }
+#endif
 
         /// <summary>
         /// Predicts where the vehicle wants to be at a point in the future
@@ -304,12 +401,19 @@ namespace UnitySteer.Behaviors
         /// A time in seconds for the prediction <see cref="System.Single"/>
         /// </param>
         /// <returns>
-        /// Vehicle position<see cref="Vector3"/>
+        /// Vehicle position<see cref="Vector2"/>
         /// </returns>
+#if SUPPORT_2D
         public Vector2 PredictFutureDesiredPosition(float predictionTime)
         {
             return (Vector2)Transform.position + (DesiredVelocity * predictionTime);
         }
+#else
+        public Vector3 PredictFutureDesiredPosition(float predictionTime)
+        {
+            return Transform.position + (DesiredVelocity * predictionTime);
+        }
+#endif
 
         /// <summary>
         /// Calculates if a vehicle is in the neighborhood of another
@@ -350,7 +454,7 @@ namespace UnitySteer.Behaviors
                     {
                         // otherwise, test angular offset from forward axis
                         var unitOffset = offset / Mathf.Sqrt(distanceSquared);
-                        var forwardness = Vector3.Dot(Transform.up, unitOffset);
+                        var forwardness = Vector3.Dot(Forward, unitOffset);
                         result = forwardness > cosMaxAngle;
                     }
                 }
@@ -376,6 +480,7 @@ namespace UnitySteer.Behaviors
         /// as  true can make the agent wobble as it approaches a target unless its 
         /// force is calculated every frame.
         /// </remarks>
+#if SUPPORT_2D
         public Vector2 GetSeekVector(Vector3 target, bool considerVelocity = false)
         {
             /*
@@ -401,6 +506,34 @@ namespace UnitySteer.Behaviors
             }
             return force;
         }
+#else
+        public Vector3 GetSeekVector(Vector3 target, bool considerVelocity = false)
+        {
+            /*
+		 * First off, we calculate how far we are from the target, If this
+		 * distance is smaller than the configured vehicle radius, we tell
+		 * the vehicle to stop.
+		 */
+            var force = Vector3.zero;
+
+            //The casts are to make sure everything's on the same page when switching between 2D and 3D
+            var difference = (Vector3)target - (Vector3)Position;
+            var d = difference.sqrMagnitude;
+            if (d > SquaredArrivalRadius)
+            {
+                /*
+			 * But suppose we still have some distance to go. The first step
+			 * then would be calculating the steering force necessary to orient
+			 * ourselves to and walk to that point.
+			 * 
+			 * It doesn't apply the steering itself, simply returns the value so
+			 * we can continue operating on it.
+			 */
+                force = considerVelocity ? difference - Velocity : difference;
+            }
+            return force;
+        }
+#endif
 
         /// <summary>
         /// Returns a returns a maxForce-clipped steering force along the 
@@ -412,12 +545,21 @@ namespace UnitySteer.Behaviors
         /// <param name='targetSpeed'>
         /// Target speed to aim for.
         /// </param>
+#if SUPPORT_2D
         public Vector2 GetTargetSpeedVector(float targetSpeed)
         {
             var mf = MaxForce;
             var speedError = targetSpeed - Speed;
-            return Transform.up * Mathf.Clamp(speedError, -mf, +mf);
+            return Forward * Mathf.Clamp(speedError, -mf, +mf);
         }
+#else
+        public Vector3 GetTargetSpeedVector(float targetSpeed)
+        {
+            var mf = MaxForce;
+            var speedError = targetSpeed - Speed;
+            return Forward * Mathf.Clamp(speedError, -mf, +mf);
+        }
+#endif
 
         /// <summary>
         /// Returns the distance from this vehicle to another
@@ -509,7 +651,7 @@ namespace UnitySteer.Behaviors
             ref Vector3 hisPosition)
         {
             return ComputeNearestApproachPositions(other, time, ref ourPosition, ref hisPosition, Speed,
-                Transform.up);
+                Forward);
         }
 
         /// <summary>
@@ -543,10 +685,11 @@ namespace UnitySteer.Behaviors
             Vector3 ourForward)
         {
             var myTravel = ourForward * ourSpeed * time;
-            var otherTravel = other.Transform.up * other.Speed * time;
+            var otherTravel = other.Forward * other.Speed * time;
 
-            ourPosition = Position + (Vector2)myTravel;
-            hisPosition = other.Position + (Vector2)otherTravel;
+            //The casts are to make sure they are both the same even when changing from 2D to 3D.
+            ourPosition = (Vector3)Position + (Vector3)myTravel;
+            hisPosition = (Vector3)other.Position + (Vector3)otherTravel;
 
             return Vector3.Distance(ourPosition, hisPosition);
         }
@@ -562,6 +705,20 @@ namespace UnitySteer.Behaviors
             }
         }
 
-        #endregion
+#endregion
     }
+
+#if SUPPORT_2D
+    /// <summary>
+    /// Allows the user to setup a custom default sprite direction
+    /// </summary>
+    public enum SpriteForwardDirection
+    {
+        Up,
+        Down,
+        Right,
+        Left
+    }
+#endif
+
 }

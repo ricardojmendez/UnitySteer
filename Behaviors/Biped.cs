@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
@@ -20,7 +22,11 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// The biped's current velocity vector
         /// </summary>
+#if SUPPORT_2D
         private Vector2 _velocity;
+#else
+        private Vector3 _velocity;
+#endif
 
         #endregion
 
@@ -39,6 +45,7 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Current vehicle velocity
         /// </summary>
+#if SUPPORT_2D
         public override Vector2 Velocity
         {
             get { return _velocity; }
@@ -50,6 +57,19 @@ namespace UnitySteer.Behaviors
                 OrientationVelocity = !Mathf.Approximately(_speed, 0) ? _velocity / _speed : Vector2.zero;
             }
         }
+#else
+        public override Vector3 Velocity
+        {
+            get { return _velocity; }
+            protected set
+            {
+                _velocity = Vector3.ClampMagnitude(value, MaxSpeed);
+                _speed = _velocity.magnitude;
+                TargetSpeed = _speed;
+                OrientationVelocity = !Mathf.Approximately(_speed, 0) ? _velocity / _speed : Vector3.zero;
+            }
+        }
+#endif
 
         #region Methods
 
@@ -74,10 +94,17 @@ namespace UnitySteer.Behaviors
         /// is specific to the vehicle's implementation.
         /// </summary>
         /// <param name="deltaTime">Time delta to use in position calculations</param>
+#if SUPPORT_2D
         protected override Vector2 CalculatePositionDelta(float deltaTime)
         {
             return Velocity * deltaTime;
         }
+#else
+        protected override Vector3 CalculatePositionDelta(float deltaTime)
+        {
+            return Velocity * deltaTime;
+        }
+#endif
 
         /// <summary>
         /// Zeros this vehicle's velocity vector.
@@ -87,6 +114,6 @@ namespace UnitySteer.Behaviors
             Velocity = Vector3.zero;
         }
 
-        #endregion
+#endregion
     }
 }

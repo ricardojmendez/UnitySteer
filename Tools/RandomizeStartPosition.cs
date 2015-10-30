@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using UnityEngine;
 using UnitySteer.Attributes;
 
@@ -9,10 +11,13 @@ namespace UnitySteer.Tools
 	/// </summary>
 	public class RandomizeStartPosition: MonoBehaviour
 	{
-		public Vector2 Radius = Vector2.one;
+#if SUPPORT_2D
+        public Vector2 Radius = Vector2.one;
+#else
+        public Vector3 Radius = Vector3.one;
+#endif
 
-
-		public bool RandomizeRotation = true;
+        public bool RandomizeRotation = true;
 
 		/// <summary>
 		/// Allowed axes for translation/rotation
@@ -26,17 +31,23 @@ namespace UnitySteer.Tools
 		void Start()
 		{
 			var pos = Vector3.Scale(Random.insideUnitSphere, Radius);
-			pos = (Vector2)Vector3.Scale(pos, AllowedAxes); //
-			transform.position += pos;
+#if SUPPORT_2D
+            pos = (Vector2)Vector3.Scale(pos, AllowedAxes);
+#else
+            pos = Vector3.Scale(pos, AllowedAxes);
+#endif
+            transform.position += pos;
 
 			if (RandomizeRotation) 
 			{
 				var rot = Random.insideUnitSphere;
 
+#if SUPPORT_2D
                 AllowedAxes.x = 0;
                 AllowedAxes.y = 0;
+#endif
 
-				if (AllowedAxes.y == 0)
+                if (AllowedAxes.y == 0)
 				{
 					rot.x = 0;
 					rot.z = 0;

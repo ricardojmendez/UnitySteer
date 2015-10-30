@@ -25,6 +25,9 @@
 //
 // ----------------------------------------------------------------------------
 
+
+#define SUPPORT_2D //A Vector2Pathway COULD be made but it's much easier just to switch like the behaviours.
+
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -47,9 +50,10 @@ namespace UnitySteer
         /// <summary>
         /// List of calculated normals between points.
         /// </summary>
-        protected IList<Vector3> Normals { get; private set; }
+#if SUPPORT_2D
+        protected IList<Vector2> Normals { get; private set; }
 
-        public IList<Vector3> Path { get; protected set; }
+        public IList<Vector2> Path { get; protected set; }
 
         public Vector2 FirstPoint
         {
@@ -60,6 +64,21 @@ namespace UnitySteer
         {
             get { return Path.LastOrDefault(); }
         }
+#else
+        protected IList<Vector3> Normals { get; private set; }
+
+        public IList<Vector3> Path { get; protected set; }
+
+        public Vector3 FirstPoint
+        {
+            get { return Path.FirstOrDefault(); }
+        }
+
+        public Vector3 LastPoint
+        {
+            get { return Path.LastOrDefault(); }
+        }
+#endif
 
         public float TotalPathLength { get; protected set; }
 
@@ -70,7 +89,7 @@ namespace UnitySteer
 
         public float Radius { get; set; }
 
-        #endregion
+#endregion
 
         public Vector3Pathway()
         {
@@ -92,10 +111,17 @@ namespace UnitySteer
         /// The current implementation assumes that all pathways will
         /// have the same radius.
         /// </remarks>
+#if SUPPORT_2D
+        public Vector3Pathway(IList<Vector2> path, float radius)
+        {
+            Initialize(path, radius);
+        }
+#else
         public Vector3Pathway(IList<Vector3> path, float radius)
         {
             Initialize(path, radius);
         }
+#endif
 
         /// <summary>
         /// Constructs the Pathway from a list of Vector3
@@ -106,6 +132,15 @@ namespace UnitySteer
         /// <param name="radius">
         /// Radius to use for the connections<see cref="System.Single" />
         /// </param>
+#if SUPPORT_2D
+        public void Initialize(IList<Vector2> path, float radius)
+        {
+            Path = new List<Vector2>(path);
+            Radius = radius;
+
+            PrecalculatePathData();
+        }
+#else
         public void Initialize(IList<Vector3> path, float radius)
         {
             Path = new List<Vector3>(path);
@@ -113,6 +148,7 @@ namespace UnitySteer
 
             PrecalculatePathData();
         }
+#endif
 
         /// <summary>
         /// Precalculates any necessary path data, such as segment normals.
@@ -124,7 +160,11 @@ namespace UnitySteer
             TotalPathLength = 0;
 
             Lengths = new List<float>(pointCount);
+#if SUPPORT_2D
+            Normals = new List<Vector2>(pointCount);
+#else
             Normals = new List<Vector3>(pointCount);
+#endif
 
             Lengths.Add(0);
             Normals.Add(Vector3.zero);
@@ -150,6 +190,7 @@ namespace UnitySteer
         /// <param name="point">Reference point.</param>
         /// <param name="pathRelative">Structure indicating the relative path position.</param>
         /// <returns>The closest point to the received reference point.</returns>
+#if SUPPORT_2D
         public virtual Vector2 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative)
         {
             var minDistance = float.MaxValue;
@@ -178,6 +219,36 @@ namespace UnitySteer
             // return point on path
             return onPath;
         }
+#else
+        public virtual Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative)
+        {
+            var minDistance = float.MaxValue;
+            var onPath = Vector3.zero;
+
+            pathRelative.SegmentIndex = -1;
+            // loop over all segments, find the one nearest to the given point
+            for (var i = 1; i < Path.Count; i++)
+            {
+                var segmentLength = Lengths[i];
+                var segmentNormal = Normals[i];
+                var chosenPoint = Vector3.zero;
+                var d = OpenSteerUtility.PointToSegmentDistance(point, Path[i - 1], Path[i],
+                    segmentNormal, segmentLength,
+                    ref chosenPoint);
+                if (!(d < minDistance)) continue;
+                minDistance = d;
+                onPath = chosenPoint;
+                pathRelative.Tangent = segmentNormal;
+                pathRelative.SegmentIndex = i;
+            }
+
+            // measure how far original point is Outside the Pathway's "tube"
+            pathRelative.Outside = (onPath - point).magnitude - Radius;
+
+            // return point on path
+            return onPath;
+        }
+#endif
 
 
         /// <summary>
@@ -220,6 +291,7 @@ namespace UnitySteer
         /// </summary>
         /// <param name="pathDistance">Path distance to calculate corresponding point for.</param>
         /// <returns>The corresponding path point to the path distance.</returns>
+#if SUPPORT_2D
         public virtual Vector2 MapPathDistanceToPoint(float pathDistance)
         {
             // clip or wrap given path distance according to cyclic flag
@@ -249,6 +321,37 @@ namespace UnitySteer
             }
             return result;
         }
+#else
+        public virtual Vector3 MapPathDistanceToPoint(float pathDistance)
+        {
+            // clip or wrap given path distance according to cyclic flag
+            var remaining = pathDistance;
+            if (pathDistance < 0)
+                return Path.First();
+            if (pathDistance >= TotalPathLength)
+                return Path.Last();
+
+            // step through segments, subtracting off segment lengths until
+            // locating the segment that contains the original pathDistance.
+            // Interpolate along that segment to find 3d point value to return.
+            var result = Vector3.zero;
+            for (var i = 1; i < Path.Count; i++)
+            {
+                var segmentLength = Lengths[i];
+                if (segmentLength < remaining)
+                {
+                    remaining -= segmentLength;
+                }
+                else
+                {
+                    var ratio = remaining / segmentLength;
+                    result = Vector3.Lerp(Path[i - 1], Path[i], ratio);
+                    break;
+                }
+            }
+            return result;
+        }
+#endif
 
         /// <summary>
         /// Determines whether the received point is inside the path.

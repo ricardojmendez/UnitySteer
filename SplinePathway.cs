@@ -24,6 +24,8 @@
 //
 // ----------------------------------------------------------------------------
 
+#define SUPPORT_2D
+
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -44,12 +46,17 @@ namespace UnitySteer
     /// </remarks>
     public class SplinePathway : Vector3Pathway
     {
+#if SUPPORT_2D
+        private Vector2[] _splineNodes;
+#else
         private Vector3[] _splineNodes;
+#endif
 
         /// <summary>
         /// Number of segments to use when drawing the spline
         /// </summary>
-        [SerializeField] private int _pathDrawResolution = 50;
+        [SerializeField]
+        private int _pathDrawResolution = 50;
 
         public SplinePathway()
         {
@@ -68,16 +75,26 @@ namespace UnitySteer
         /// <remarks>The current implementation assumes that all pathways will 
         /// have the same radius.
         /// </remarks>
+#if SUPPORT_2D //the switch here is because IList<Vector2> and Vector3 don't play along 
+        public SplinePathway(IList<Vector2> path, float radius) : base(path, radius)
+        {
+        }
+#else
         public SplinePathway(IList<Vector3> path, float radius) : base(path, radius)
         {
         }
+#endif
 
         protected override void PrecalculatePathData()
         {
             base.PrecalculatePathData();
             // Place the two control nodes
             var splineNodeLength = Path.Count + 2;
+#if SUPPORT_2D
+            _splineNodes = new Vector2[splineNodeLength];
+#else
             _splineNodes = new Vector3[splineNodeLength];
+#endif
             _splineNodes[0] = Path[0] - Normals[1] * 2;
             for (var i = 0; i < Path.Count; i++)
             {
@@ -95,6 +112,7 @@ namespace UnitySteer
         /// <param name="point">Reference point.</param>
         /// <param name="pathRelative">Structure indicating the relative path position.</param>
         /// <returns>The closest point to the received reference point.</returns>
+#if SUPPORT_2D
         public override Vector2 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative)
         {
             // Approximate the closest path point on a linear path
@@ -138,6 +156,51 @@ namespace UnitySteer
 
             return CalculateCatmullRomPoint(nodeForDistance, pctComplete);
         }
+#else
+        public override Vector3 MapPointToPath(Vector3 point, ref PathRelativePosition pathRelative)
+        {
+            // Approximate the closest path point on a linear path
+            var onPath = base.MapPointToPath(point, ref pathRelative);
+
+            var distance = MapPointToPathDistance(onPath) / TotalPathLength;
+            var splinePoint = CalculateCatmullRomPoint(1, distance);
+
+            // return point on path
+            return splinePoint;
+        }
+
+        public override Vector3 MapPathDistanceToPoint(float pathDistance)
+        {
+            if (_splineNodes.Length < 5)
+            {
+                return base.MapPathDistanceToPoint(pathDistance);
+            }
+
+            pathDistance = Mathf.Min(TotalPathLength, pathDistance);
+
+            var nodeForDistance = 0;
+            var lastTotal = 0f;
+            var totalLength = 0f;
+            // We skip the first node because its length will always be zero,
+            // and besides weĺl pass this to GetPathPoint which has one extra
+            // node
+            for (var i = 1; i < Lengths.Count && nodeForDistance == 0; i++)
+            {
+                lastTotal = totalLength;
+                totalLength += Lengths[i];
+                if (totalLength >= pathDistance)
+                {
+                    nodeForDistance = i;
+                }
+            }
+
+            var segmentLength = Lengths[nodeForDistance];
+            var remainingLength = pathDistance - lastTotal;
+            var pctComplete = Mathf.Approximately(segmentLength, 0) ? 1 : (remainingLength / segmentLength);
+
+            return CalculateCatmullRomPoint(nodeForDistance, pctComplete);
+        }
+#endif
 
         /// <summary>
         /// Calculates a catmull-rom point for a spline defined by a set of spline nodes,
@@ -146,6 +209,7 @@ namespace UnitySteer
         /// <returns>The catmull rom point.</returns>
         /// <param name="currentNode">Current node. Index 0 is the initial control point, index 1 the first actual path node.</param>
         /// <param name="percentComplete">Percent complete for this segment.</param>
+#if SUPPORT_2D
         private Vector2 CalculateCatmullRomPoint(int currentNode, float percentComplete)
         {
             var percentCompleteSquared = percentComplete * percentComplete;
@@ -161,6 +225,23 @@ namespace UnitySteer
                    end * (-1.5f * percentCompleteCubed + 2.0f * percentCompleteSquared + 0.5f * percentComplete) +
                    next * (0.5f * percentCompleteCubed - 0.5f * percentCompleteSquared);
         }
+#else
+        private Vector3 CalculateCatmullRomPoint(int currentNode, float percentComplete)
+        {
+            var percentCompleteSquared = percentComplete * percentComplete;
+            var percentCompleteCubed = percentCompleteSquared * percentComplete;
+
+            var start = _splineNodes[currentNode];
+            var end = _splineNodes[currentNode + 1];
+            var previous = _splineNodes[currentNode - 1];
+            var next = _splineNodes[currentNode + 2];
+
+            return previous * (-0.5f * percentCompleteCubed + percentCompleteSquared - 0.5f * percentComplete) +
+                   start * (1.5f * percentCompleteCubed - 2.5f * percentCompleteSquared + 1.0f) +
+                   end * (-1.5f * percentCompleteCubed + 2.0f * percentCompleteSquared + 0.5f * percentComplete) +
+                   next * (0.5f * percentCompleteCubed - 0.5f * percentCompleteSquared);
+        }
+#endif
 
         public override void DrawGizmos()
         {

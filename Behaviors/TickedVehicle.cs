@@ -1,4 +1,6 @@
 #define TRACE_ADJUSTMENTS
+#define SUPPORT_2D
+
 using System.Diagnostics;
 using TickedPriorityQueue;
 using UnityEngine;
@@ -42,7 +44,9 @@ namespace UnitySteer.Behaviors
 
         #endregion
 
-        public CharacterController CharacterController { get; private set; } //TODO not needed for 2d, maybe deal with this later
+#if !SUPPORT_2D
+        public CharacterController CharacterController { get; private set; }
+#endif
 
         /// <summary>
         /// Last time the vehicle's tick was completed.
@@ -72,7 +76,11 @@ namespace UnitySteer.Behaviors
         /// <remarks>
         /// This is expected to be set by the subclasses.
         /// </remarks>
+#if SUPPORT_2D
         public Vector2 OrientationVelocity { get; protected set; }
+#else
+        public Vector3 OrientationVelocity { get; protected set; }
+#endif
 
         public string QueueName
         {
@@ -95,11 +103,13 @@ namespace UnitySteer.Behaviors
         /// </summary>
         public TickedObject TickedObject { get; private set; }
 
-        #region Unity events
+#region Unity events
 
         private void Start()
         {
-            //CharacterController = GetComponent<CharacterController>(); useless check for 2d
+#if !SUPPORT_2D
+            CharacterController = GetComponent<CharacterController>();
+#endif
             PreviousTickTime = Time.time;
         }
 
@@ -120,9 +130,9 @@ namespace UnitySteer.Behaviors
             base.OnDisable();
         }
 
-        #endregion
+#endregion
 
-        #region Velocity / Speed methods
+#region Velocity / Speed methods
 
         private void DeQueue()
         {
@@ -171,7 +181,7 @@ namespace UnitySteer.Behaviors
             }
             Profiler.BeginSample("Calculating vehicle forces");
 
-            var force = Vector2.zero;
+            var force = Vector3.zero;
 
             Profiler.BeginSample("Adding up basic steerings");
             for (var i = 0; i < Steerings.Length; i++)
@@ -179,7 +189,8 @@ namespace UnitySteer.Behaviors
                 var s = Steerings[i];
                 if (s.enabled)
                 {
-                    force += s.WeighedForce;
+                    //Cast to make sure everything fits nicely
+                    force += (Vector3)s.WeighedForce;
                 }
             }
             Profiler.EndSample();
@@ -205,20 +216,21 @@ namespace UnitySteer.Behaviors
             // blending the new velocity into an accumulator. We *could* do that,
             // but things are working just fine for now, and it seems like
             // overkill. 
-            var adjustedVelocity = Vector2.zero;
+            var adjustedVelocity = Vector3.zero;
             Profiler.BeginSample("Adding up post-processing steerings");
             for (var i = 0; i < SteeringPostprocessors.Length; i++)
             {
                 var s = SteeringPostprocessors[i];
                 if (s.enabled)
                 {
-                    adjustedVelocity += s.WeighedForce;
+                    //Cast to make sure everyone works together
+                    adjustedVelocity += (Vector3)s.WeighedForce;
                 }
             }
             Profiler.EndSample();
 
 
-            if (adjustedVelocity != Vector2.zero)
+            if (adjustedVelocity != Vector3.zero)
             {
                 adjustedVelocity = Vector3.ClampMagnitude(adjustedVelocity, MaxSpeed);
                 TraceDisplacement(adjustedVelocity, Color.cyan);
@@ -244,6 +256,7 @@ namespace UnitySteer.Behaviors
             var acceleration = CalculatePositionDelta(elapsedTime);
             acceleration = Vector3.Scale(acceleration, AllowedMovementAxes);
 
+#if !SUPPORT_2D
             if (CharacterController != null)
             {
                 CharacterController.Move(acceleration);
@@ -252,9 +265,16 @@ namespace UnitySteer.Behaviors
             {
                 Transform.position += (Vector3)acceleration;
             }
+#else
+            if (Rigidbody == null || Rigidbody.isKinematic)
+            {
+                Transform.position += (Vector3)acceleration;
+            }
+#endif
             else
             {
-                Rigidbody.MovePosition(Rigidbody.position + acceleration);
+                //Cast to make sure the rigidbody doesn't die on switch
+                Rigidbody.MovePosition((Vector3)Rigidbody.position + (Vector3)acceleration);
             }
         }
 
@@ -279,7 +299,7 @@ namespace UnitySteer.Behaviors
                     newForward = Vector3.Slerp(Transform.up, newForward, deltaTime / TurnTime);
                 }
 
-                Transform.up = newForward;
+                Forward = newForward;
             }
         }
 
@@ -295,7 +315,11 @@ namespace UnitySteer.Behaviors
         /// is specific to the vehicle's implementation.
         /// </summary>
         /// <param name="deltaTime">Time delta to use in position calculations</param>
+#if SUPPORT_2D
         protected abstract Vector2 CalculatePositionDelta(float deltaTime);
+#else
+        protected abstract Vector3 CalculatePositionDelta(float deltaTime);
+#endif
 
         /// <summary>
         /// Zeros this vehicle's velocity.

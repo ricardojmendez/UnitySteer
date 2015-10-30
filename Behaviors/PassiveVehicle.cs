@@ -1,4 +1,6 @@
 #define TRACE_ADJUSTMENTS
+#define SUPPORT_2D
+
 using System;
 using UnityEngine;
 
@@ -27,7 +29,11 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// The biped's current velocity vector
         /// </summary>
+#if SUPPORT_2D
         private Vector2 _velocity;
+#else
+        private Vector3 _velocity;
+#endif
 
         #endregion
 
@@ -46,11 +52,19 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Current vehicle velocity
         /// </summary>
+#if SUPPORT_2D
         public override Vector2 Velocity
         {
-            get { return Transform.up * _speed; }
+            get { return Forward * _speed; }
             protected set { throw new NotSupportedException("Cannot set the velocity directly on PassiveVehicle"); }
         }
+#else
+        public override Vector2 Velocity
+        {
+            get { return Forward * _speed; }
+            protected set { throw new NotSupportedException("Cannot set the velocity directly on PassiveVehicle"); }
+        }
+#endif
 
         private void Update()
         {
