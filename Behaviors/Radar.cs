@@ -1,4 +1,5 @@
 //#define TRACEDETECTED
+#define SUPPORT_2D
 
 using System;
 using System.Collections.Generic;
@@ -63,8 +64,12 @@ namespace UnitySteer.Behaviors
 
         [SerializeField] private int _preAllocateSize = 30;
 
-
+#if SUPPORT_2D
         private Collider2D[] _detectedColliders;
+#else
+        private Collider[] _detectedColliders;
+#endif
+
         private List<DetectableObject> _detectedObjects;
         private List<Vehicle> _vehicles;
         private List<DetectableObject> _obstacles;
@@ -76,10 +81,17 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// List of currently detected neighbors
         /// </summary>
+#if SUPPORT_2D
         public IEnumerable<Collider2D> Detected
         {
             get { return _detectedColliders; }
         }
+#else
+        public IEnumerable<Collider> Detected
+        {
+            get { return _detectedColliders; }
+        }
+#endif
 
         /// <summary>
         /// Radar ping detection radius
@@ -120,10 +132,17 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Returns the radars position
         /// </summary>
+#if SUPPORT_2D
         public Vector2 Position
         {
             get { return (Vehicle != null) ? Vehicle.Position : (Vector2)_transform.position; }
         }
+#else
+        public Vector3 Position
+        {
+            get { return (Vehicle != null) ? (Vector3)Vehicle.Position : _transform.position; } //Again, just in case
+        }
+#endif
 
         public Action<Radar> OnDetected = delegate { };
 
@@ -149,9 +168,9 @@ namespace UnitySteer.Behaviors
             set { _layersChecked = value; }
         }
 
-        #endregion
+#endregion
 
-        #region Static methods
+#region Static methods
 
         /// <summary>
         /// Must be called when a detectable object is enabled so they can be easily identified
@@ -172,9 +191,9 @@ namespace UnitySteer.Behaviors
             return _knownDetectableObjects.Remove(obj.Collider.GetInstanceID());
         }
 
-        #endregion
+#endregion
 
-        #region Methods
+#region Methods
 
         protected virtual void Awake()
         {
@@ -245,11 +264,17 @@ namespace UnitySteer.Behaviors
             OnUpdateRadar(null);
         }
 
-
+#if SUPPORT_2D
         protected virtual Collider2D[] Detect()
         {
             return Physics2D.OverlapCircleAll(Position, DetectionRadius, LayersChecked);
         }
+#else
+        protected virtual Collider[] Detect()
+        {
+            return Physics.OverlapSphere(Position, DetectionRadius, LayersChecked);
+        }
+#endif
 
         protected virtual void FilterDetected()
         {
@@ -308,15 +333,15 @@ namespace UnitySteer.Behaviors
             Profiler.EndSample();
             Profiler.EndSample();
         }
-        #endregion
+#endregion
 
-        #region Unity methods
+#region Unity methods
 
         private void OnDrawGizmos()
         {
             if (_drawGizmos)
             {
-                var pos = (Vehicle == null) ? (Vector2)transform.position : Vehicle.Position;
+                var pos = (Vehicle == null) ? transform.position : (Vector3)Vehicle.Position; //Cast just in case
 
                 Gizmos.color = Color.cyan;
                 Gizmos.DrawWireSphere(pos, DetectionRadius);
@@ -331,6 +356,6 @@ namespace UnitySteer.Behaviors
             }
         }
 
-        #endregion
+#endregion
     }
 }

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#define SUPPORT_2D
+
+using UnityEngine;
 
 namespace UnitySteer.Behaviors
 {
@@ -15,10 +17,18 @@ namespace UnitySteer.Behaviors
     [RequireComponent(typeof (SteerForNeighborGroup))]
     public class SteerForMatchingVelocity : SteerForNeighbors
     {
+#if SUPPORT_2D
         public override Vector2 CalculateNeighborContribution(Vehicle other)
         {
             // accumulate sum of neighbors' velocities
             return other.Velocity;
         }
+#else
+        public override Vector3 CalculateNeighborContribution(Vehicle other)
+        {
+            // accumulate sum of neighbors' velocities
+            return other.Velocity;
+        }
+#endif
     }
 }

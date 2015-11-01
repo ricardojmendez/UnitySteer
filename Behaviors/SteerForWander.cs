@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
@@ -47,7 +49,11 @@ namespace UnitySteer.Behaviors
 
         #endregion
 
+#if SUPPORT_2D
         protected override Vector2 CalculateForce()
+#else
+        protected override Vector3 CalculateForce()
+#endif
         {
             var speed = Vehicle.MaxSpeed;
 
@@ -57,7 +63,11 @@ namespace UnitySteer.Behaviors
             _wanderSide = Mathf.Lerp(_wanderSide, randomSide, _smoothRate * Vehicle.DeltaTime);
             _wanderUp = Mathf.Lerp(_wanderUp, randomUp, _smoothRate * Vehicle.DeltaTime);
 
-            var result = (Vehicle.Transform.right * _wanderSide) + (Vehicle.Transform.up * _wanderUp);
+            var sideVector = Quaternion.Euler(0, 0, 90) * Vehicle.Forward * _wanderSide; //this vector is to the right of whatever direction is chosen for Forward.
+
+            var upVector = Vehicle.Forward * _wanderUp;
+
+            var result = (Vector3)sideVector + (Vector3)upVector;
 
             return result;
         }

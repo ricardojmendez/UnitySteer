@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
@@ -26,7 +28,12 @@ namespace UnitySteer.Behaviors
         /// <returns>
         /// Force to apply <see cref="Vector2"/>
         /// </returns>
+#if SUPPORT_2D
         protected override Vector2 CalculateForce()
+#else
+        protected override Vector3 CalculateForce()
+#endif
+
         {
             return Vehicle.GetTargetSpeedVector(TargetSpeed);
         }

@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using System;
 using UnityEngine;
 
@@ -17,7 +19,11 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Last force calculated
         /// </summary>
+#if SUPPORT_2D
         private Vector2 _force = Vector2.zero;
+#else
+        private Vector3 _force = Vector3.zero;
+#endif
 
         /// <summary>
         /// Cached vehicle
@@ -41,12 +47,21 @@ namespace UnitySteer.Behaviors
         /// object can set the ShouldRetryForce property to TRUE to force the vehicle
         /// recalculating the force once.
         /// </remarks>
+#if SUPPORT_2D
         public Vector2 Force
         {
             get
             {
                 _force = CalculateForce();
                 if (_force != Vector2.zero)
+#else
+        public Vector3 Force
+        {
+            get
+            {
+                _force = CalculateForce();
+                if (_force != Vector3.zero)
+#endif
                 {
                     if (!ReportedMove && OnStartMoving != null)
                     {
@@ -68,7 +83,11 @@ namespace UnitySteer.Behaviors
                             ShouldRetryForce = false;
                         }
                     }
+#if SUPPORT_2D
                     if (_force == Vector2.zero) //double check needed?
+#else
+                    if (_force == Vector3.zero)
+#endif
                     {
                         ReportedArrival = true;
                         ReportedMove = false;
@@ -124,7 +143,11 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Force vector modified by the assigned weight 
         /// </summary>
+#if SUPPORT_2D
         public Vector2 WeighedForce
+#else
+        public Vector3 WeighedForce
+#endif
         {
             get { return Force * _weight; }
         }
@@ -171,7 +194,11 @@ namespace UnitySteer.Behaviors
         /// <returns>
         /// A vector with the supplied force <see cref="Vector3"/>
         /// </returns>
+#if SUPPORT_2D
         protected abstract Vector2 CalculateForce();
+#else
+        protected abstract Vector3 CalculateForce();
+#endif
 
         #endregion
     }

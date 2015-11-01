@@ -1,4 +1,7 @@
 #define ANNOTATE_AVOIDOBSTACLES
+#define SUPPORT_2D
+
+
 using System.Linq;
 using UnityEngine;
 
@@ -26,7 +29,7 @@ namespace UnitySteer.Behaviors
     [AddComponentMenu("UnitySteer/Steer/... for SphericalObstacles")]
     public class SteerForSphericalObstacles : Steering
     {
-        #region Structs
+#region Structs
 
         /// <summary>
         /// Struct used to store the next likely intersection with an obstacle
@@ -46,20 +49,20 @@ namespace UnitySteer.Behaviors
             }
         };
 
-        #endregion
+#endregion
 
-        #region Private fields
+#region Private fields
 
         [SerializeField] private float _estimationTime = 2;
 
-        #endregion
+#endregion
 
         public override bool IsPostProcess
         {
             get { return true; }
         }
 
-        #region Public properties
+#region Public properties
 
         /// <summary>
         /// How far in the future to estimate the vehicle position
@@ -70,22 +73,28 @@ namespace UnitySteer.Behaviors
             set { _estimationTime = value; }
         }
 
-        #endregion
+#endregion
 
-        /// <summary>
-        /// Calculates the force necessary to avoid the detected spherical obstacles
-        /// </summary>
-        /// <returns>
-        /// Force necessary to avoid detected obstacles, or Vector2.zero
-        /// </returns>
-        /// <remarks>
-        /// This method will iterate through all detected spherical obstacles that 
-        /// are within MinTimeToCollision, and calculate a repulsion vector based
-        /// on them.
-        /// </remarks>
+/// <summary>
+/// Calculates the force necessary to avoid the detected spherical obstacles
+/// </summary>
+/// <returns>
+/// Force necessary to avoid detected obstacles, or Vector2.zero
+/// </returns>
+/// <remarks>
+/// This method will iterate through all detected spherical obstacles that 
+/// are within MinTimeToCollision, and calculate a repulsion vector based
+/// on them.
+/// </remarks>
+#if SUPPORT_2D
         protected override Vector2 CalculateForce()
         {
             var avoidance = Vector2.zero;
+#else
+        protected override Vector3 CalculateForce()
+        {
+            var avoidance = Vector3.zero;
+#endif
             if (Vehicle.Radar.Obstacles == null || !Vehicle.Radar.Obstacles.Any())
             {
                 return avoidance;
@@ -135,9 +144,9 @@ namespace UnitySteer.Behaviors
             var newDesired = Vector3.Reflect(Vehicle.DesiredVelocity, avoidance);
 
 #if ANNOTATE_AVOIDOBSTACLES
-            Debug.DrawLine(Vehicle.Position, Vehicle.Position + (Vector2)avoidance, Color.green);
+            Debug.DrawLine(Vehicle.Position, (Vector3)Vehicle.Position + (Vector3)avoidance, Color.green);
             Debug.DrawLine(Vehicle.Position, futurePosition, Color.blue);
-            Debug.DrawLine(Vehicle.Position, Vehicle.Position + (Vector2)newDesired, Color.white);
+            Debug.DrawLine(Vehicle.Position, (Vector3)Vehicle.Position + newDesired, Color.white);
 #endif
 
             return newDesired;
@@ -167,7 +176,7 @@ namespace UnitySteer.Behaviors
             var intersection = new PathIntersection(obstacle);
 
             var combinedRadius = vehicle.Radius + obstacle.Radius;
-            var movement = (Vector2)futureVehiclePosition - vehicle.Position;
+            var movement = futureVehiclePosition - (Vector3)vehicle.Position;
             var direction = movement.normalized;
 
             var vehicleToObstacle = obstacle.Position - vehicle.Position;
@@ -183,10 +192,10 @@ namespace UnitySteer.Behaviors
             }
 
             // the foot of the perpendicular
-            var projectedObstacleCenter = vehicle.Position + projectionLength * direction;
+            var projectedObstacleCenter = (Vector3)vehicle.Position + projectionLength * direction;
 
             // distance of the obstacle to the pathe the vehicle is going to take
-            var obstacleDistanceToPath = (obstacle.Position - projectedObstacleCenter).magnitude;
+            var obstacleDistanceToPath = ((Vector3)obstacle.Position - projectedObstacleCenter).magnitude;
             //print("obstacleDistanceToPath: " + obstacleDistanceToPath);
 
             // if the obstacle is further away from the movement, than both radius, there's no collision
@@ -208,7 +217,7 @@ namespace UnitySteer.Behaviors
 
                 var intersectionPoint = projectedObstacleCenter - direction * halfChord;
                 intersection.Intersect = true;
-                intersection.Distance = (intersectionPoint - vehicle.Position).magnitude;
+                intersection.Distance = (intersectionPoint - (Vector3)vehicle.Position).magnitude;
                 return intersection;
             }
 
@@ -217,8 +226,8 @@ namespace UnitySteer.Behaviors
             var intersectionPoint2 = projectedObstacleCenter + direction * halfChord;
 
             // pick the closest one
-            var intersectionPoint1Distance = (intersectionPoint1 - vehicle.Position).magnitude;
-            var intersectionPoint2Distance = (intersectionPoint2 - vehicle.Position).magnitude;
+            var intersectionPoint1Distance = (intersectionPoint1 - (Vector3)vehicle.Position).magnitude;
+            var intersectionPoint2Distance = (intersectionPoint2 - (Vector3)vehicle.Position).magnitude;
 
             intersection.Intersect = true;
             intersection.Distance = Mathf.Min(intersectionPoint1Distance, intersectionPoint2Distance);

@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using System;
 using UnityEngine;
 
@@ -10,7 +12,7 @@ namespace UnitySteer.Behaviors
     /// </summary>
     public abstract class SteerForNeighbors : Steering
     {
-        #region Private serialized fields
+#region Private serialized fields
 
         /// <summary>
         /// Minimum distance from the vehicle to a neighbor for the behavior to apply, otherwise it is skipped
@@ -22,9 +24,9 @@ namespace UnitySteer.Behaviors
         /// </summary>
         [SerializeField] private float _maxDistance = 10;
 
-        #endregion
+#endregion
 
-        #region Public properties
+#region Public properties
 
         /// <summary>
         /// Minimum distance from the vehicle to a neighbor for the behavior to apply, otherwise it is skipped
@@ -68,6 +70,7 @@ namespace UnitySteer.Behaviors
 
         #region Methods
 
+#if SUPPORT_2D
         protected override sealed Vector2 CalculateForce()
         {
             /*
@@ -82,6 +85,22 @@ namespace UnitySteer.Behaviors
         }
 
         public abstract Vector2 CalculateNeighborContribution(Vehicle other);
+#else
+        protected override sealed Vector3 CalculateForce()
+        {
+            /*
+         * You should never override this method nor change its behavior unless
+         * youre 100% sure what you're doing.   See SteerForNeighborGroup.
+         * 
+         * Raise an exception if called. Everything will be calculated by
+         * by SteerForNeighborGroup.
+         */
+            throw new NotImplementedException("SteerForNeighbors.CalculateForce should never be called directly.  " +
+                                              "Did you enable a SteerForNeighbors subclass manually? They are disabled by SteerForNeighborGroup on Start.");
+        }
+
+        public abstract Vector3 CalculateNeighborContribution(Vehicle other);
+#endif
 
         protected override void Awake()
         {
@@ -113,6 +132,6 @@ namespace UnitySteer.Behaviors
                 0;
         }
 
-        #endregion
+#endregion
     }
 }

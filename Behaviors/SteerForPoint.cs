@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
@@ -12,7 +14,11 @@ namespace UnitySteer.Behaviors
         /// Declared as a separate value so that we can inspect it on Unity in 
         /// debug mode.
         /// </remarks>
+#if SUPPORT_2D
         [SerializeField] private Vector2 _targetPoint = Vector2.zero;
+#else
+        [SerializeField] private Vector3 _targetPoint = Vector3.zero;
+#endif
 
         /// <summary>
         /// Should the vehicle's velocity be considered in the seek calculations?
@@ -32,7 +38,11 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// The target point.
         /// </summary>
+#if SUPPORT_2D
         public Vector2 TargetPoint
+#else
+        public Vector3 TargetPoint
+#endif
         {
             get { return _targetPoint; }
             set
@@ -42,7 +52,6 @@ namespace UnitySteer.Behaviors
                 ReportedArrival = false;
             }
         }
-
 
         /// <summary>
         /// Should the vehicle's velocity be considered in the seek calculations?
@@ -60,7 +69,11 @@ namespace UnitySteer.Behaviors
         {
             base.Start();
 
+#if SUPPORT_2D
             if (_defaultToCurrentPosition && TargetPoint == Vector2.zero)
+#else
+            if (_defaultToCurrentPosition && TargetPoint == Vector3.zero)
+#endif
             {
                 enabled = false;
             }
@@ -72,7 +85,11 @@ namespace UnitySteer.Behaviors
         /// <returns>
         /// A <see cref="Vector2"/>
         /// </returns>
+#if SUPPORT_2D
         protected override Vector2 CalculateForce()
+#else
+        protected override Vector3 CalculateForce()
+#endif
         {
             return Vehicle.GetSeekVector(TargetPoint, _considerVelocity);
         }

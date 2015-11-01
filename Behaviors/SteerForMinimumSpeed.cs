@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#define SUPPORT_2D
+
+using UnityEngine;
 
 namespace UnitySteer.Behaviors
 {
@@ -35,6 +37,7 @@ namespace UnitySteer.Behaviors
         /// <returns>
         /// A <see cref="Vector2"/>
         /// </returns>
+#if SUPPORT_2D
         protected override Vector2 CalculateForce()
         {
             var result = Vehicle.DesiredVelocity;
@@ -48,5 +51,20 @@ namespace UnitySteer.Behaviors
             }
             return result;
         }
+#else
+        protected override Vector3 CalculateForce()
+        {
+            var result = Vehicle.DesiredVelocity;
+            if (_moveForwardWhenZero && Mathf.Approximately(Vehicle.TargetSpeed, 0))
+            {
+                result = Vehicle.Transform.forward * _minimumSpeed;
+            }
+            else if (Vehicle.TargetSpeed < _minimumSpeed)
+            {
+                result = Vehicle.DesiredVelocity.normalized * _minimumSpeed;
+            }
+            return result;
+        }
+#endif
     }
 }

@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
@@ -53,9 +55,15 @@ namespace UnitySteer.Behaviors
 
         #region Methods
 
+#if SUPPORT_2D
         public override Vector2 CalculateNeighborContribution(Vehicle other)
         {
             var steering = Vector2.zero;
+#else
+        public override Vector3 CalculateNeighborContribution(Vehicle other)
+        {
+            var steering = Vector3.zero;
+#endif
 
             // add in steering contribution
             // (opposite of the offset direction, divided once by distance
@@ -77,6 +85,6 @@ namespace UnitySteer.Behaviors
             return steering;
         }
 
-        #endregion
+#endregion
     }
 }

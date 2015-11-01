@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
@@ -11,7 +13,7 @@ namespace UnitySteer.Behaviors
     [AddComponentMenu("UnitySteer/Steer/... for Evasion")]
     public class SteerForEvasion : Steering
     {
-        #region Private fields
+#region Private fields
 
         private float _sqrSafetyDistance;
 
@@ -24,9 +26,9 @@ namespace UnitySteer.Behaviors
         /// </summary>
         [SerializeField] private float _safetyDistance = 2f;
 
-        #endregion
+#endregion
 
-        #region Public properties
+#region Public properties
 
         public override bool IsPostProcess
         {
@@ -61,7 +63,7 @@ namespace UnitySteer.Behaviors
             }
         }
 
-        #endregion
+#endregion
 
         protected override void Start()
         {
@@ -69,6 +71,7 @@ namespace UnitySteer.Behaviors
             _sqrSafetyDistance = _safetyDistance * _safetyDistance;
         }
 
+#if SUPPORT_2D
         protected override Vector2 CalculateForce()
         {
             if (_menace == null || (Vehicle.Position - _menace.Position).sqrMagnitude > _sqrSafetyDistance)
@@ -91,5 +94,29 @@ namespace UnitySteer.Behaviors
             var desiredVelocity = position - target;
             return desiredVelocity - Vehicle.DesiredVelocity;
         }
+#else
+        protected override Vector3 CalculateForce()
+        {
+            if (_menace == null || (Vehicle.Position - _menace.Position).sqrMagnitude > _sqrSafetyDistance)
+            {
+                return Vector3.zero;
+            }
+            // offset from this to menace, that distance, unit vector toward menace
+            var position = Vehicle.PredictFutureDesiredPosition(_predictionTime);
+            var offset = _menace.Position - position;
+            var distance = offset.magnitude;
+
+            var roughTime = distance / _menace.Speed;
+            var predictionTime = ((roughTime > _predictionTime)
+                ? _predictionTime
+                : roughTime);
+
+            var target = _menace.PredictFuturePosition(predictionTime);
+
+            // This was the totality of SteerToFlee
+            var desiredVelocity = position - target;
+            return desiredVelocity - Vehicle.DesiredVelocity;
+        }
+#endif
     }
 }

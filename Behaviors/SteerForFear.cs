@@ -1,4 +1,5 @@
 //#define ANNOTATE_REPULSION
+#define SUPPORT_2D
 
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace UnitySteer.Behaviors
     [AddComponentMenu("UnitySteer/Steer/... for Fear")]
     public class SteerForFear : Steering
     {
-        #region Private fields
+#region Private fields
 
         private int _currentEventIndex;
 
@@ -23,7 +24,11 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// Where were the repulsive events located
         /// </summary>
+#if SUPPORT_2D
         private Vector2[] _eventLocations;
+#else
+        private Vector3[] _eventLocations;
+#endif
 
         /// <summary>
         /// Time that the repulsive events took place
@@ -46,7 +51,7 @@ namespace UnitySteer.Behaviors
 
         [SerializeField] private float _estimationTime = 1;
 
-        #endregion
+#endregion
 
         public override bool IsPostProcess
         {
@@ -58,11 +63,17 @@ namespace UnitySteer.Behaviors
         {
             base.Start();
 
+#if SUPPORT_2D
             _eventLocations = new Vector2[_maxEvents];
+#else
+            _eventLocations = new Vector3[_maxEvents];
+#endif
+
             _eventTimes = new float[_maxEvents];
             _minDistanceForFearSqr = _minDistanceForFear * _minDistanceForFear;
         }
 
+#if SUPPORT_2D
         protected override Vector2 CalculateForce()
         {
             Profiler.BeginSample("Accumulating repulsion");
@@ -81,9 +92,9 @@ namespace UnitySteer.Behaviors
                     {
                         totalCount++;
                         accumulator += posDelta / (timeDelta * _timeDeltaWeight);
-#if ANNOTATE_REPULSION		
+#if ANNOTATE_REPULSION
 				Debug.DrawLine(futurePosition, _eventLocations[i], Color.red / (timeDelta * _timeDeltaWeight));
-				#endif
+#endif
                     }
                 }
             }
@@ -97,11 +108,52 @@ namespace UnitySteer.Behaviors
 	Debug.DrawLine(position, position + accumulator, Color.yellow);
 	Debug.DrawLine(position, futurePosition, Color.blue);
 	Debug.DrawLine(position + accumulator, futurePosition, Color.magenta);
-	#endif
+#endif
             Profiler.EndSample();
 
             return accumulator;
         }
+#else
+        protected override Vector3 CalculateForce()
+        {
+            Profiler.BeginSample("Accumulating repulsion");
+            var accumulator = Vector3.zero;
+            var totalCount = 0;
+            var now = Time.time;
+            var futurePosition = Vehicle.PredictFutureDesiredPosition(_estimationTime);
+
+            for (var i = 0; i < _maxEvents; i++)
+            {
+                var timeDelta = now - _eventTimes[i];
+                if (timeDelta > 0)
+                {
+                    var posDelta = futurePosition - _eventLocations[i];
+                    if (posDelta.sqrMagnitude < _minDistanceForFearSqr)
+                    {
+                        totalCount++;
+                        accumulator += posDelta / (timeDelta * _timeDeltaWeight);
+#if ANNOTATE_REPULSION
+				Debug.DrawLine(futurePosition, _eventLocations[i], Color.red / (timeDelta * _timeDeltaWeight));
+#endif
+                    }
+                }
+            }
+
+            if (totalCount > 0)
+            {
+                accumulator.Normalize();
+            }
+
+#if ANNOTATE_REPULSION
+	Debug.DrawLine(position, position + accumulator, Color.yellow);
+	Debug.DrawLine(position, futurePosition, Color.blue);
+	Debug.DrawLine(position + accumulator, futurePosition, Color.magenta);
+#endif
+            Profiler.EndSample();
+
+            return accumulator;
+        }
+#endif
 
         public void AddEvent(Vector3 location)
         {

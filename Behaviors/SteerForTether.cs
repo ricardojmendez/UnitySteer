@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
@@ -11,7 +13,12 @@ namespace UnitySteer.Behaviors
         #region Private properties
 
         [SerializeField] private float _maximumDistance = 30f;
+
+#if SUPPORT_2D
         [SerializeField] private Vector2 _tetherPosition;
+#else
+        [SerializeField] private Vector3 _tetherPosition;
+#endif
 
         #endregion
 
@@ -28,7 +35,11 @@ namespace UnitySteer.Behaviors
             set { _maximumDistance = Mathf.Clamp(value, 0, float.MaxValue); }
         }
 
+#if SUPPORT_2D
         public Vector2 TetherPosition
+#else
+        public Vector3 TetherPosition
+#endif
         {
             get { return _tetherPosition; }
             set { _tetherPosition = value; }
@@ -36,9 +47,15 @@ namespace UnitySteer.Behaviors
 
         #endregion
 
+#if SUPPORT_2D
         protected override Vector2 CalculateForce()
         {
             var steering = Vector2.zero;
+#else
+        protected override Vector3 CalculateForce()
+        {
+            var steering = Vector3.zero;
+#endif
 
             var difference = TetherPosition - Vehicle.Position;
             var distance = difference.magnitude;

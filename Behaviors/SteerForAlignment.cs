@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
@@ -10,10 +12,18 @@ namespace UnitySteer.Behaviors
     [RequireComponent(typeof (SteerForNeighborGroup))]
     public class SteerForAlignment : SteerForNeighbors
     {
+#if SUPPORT_2D
         public override Vector2 CalculateNeighborContribution(Vehicle other)
         {
             // accumulate sum of neighbor's heading
-            return other.Transform.up;
+            return other.Forward;
         }
+#else
+        public override Vector3 CalculateNeighborContribution(Vehicle other)
+        {
+            // accumulate sum of neighbor's heading
+            return other.Forward;
+        }
+#endif
     }
 }

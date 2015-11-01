@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnitySteer.Attributes;
@@ -164,6 +166,7 @@ namespace UnitySteer.Behaviors
             }
         }
 
+#if SUPPORT_2D
         protected override Vector2 CalculateForce()
         {
             // steering accumulator and count of neighbors, both initially zero
@@ -207,6 +210,51 @@ namespace UnitySteer.Behaviors
 
             return steering;
         }
+#else
+        protected override Vector3 CalculateForce()
+        {
+            // steering accumulator and count of neighbors, both initially zero
+            var steering = Vector3.zero;
+            Profiler.BeginSample("SteerForNeighborGroup.Looping over neighbors");
+            // I'd prefer an iterator, but trying to cut down on allocations
+            for (var i = 0; i < _neighbors.Count; i++)
+            {
+                var other = _neighbors[i];
+                if (other == null || other.Equals(null))
+                {
+                    // Disregard destroyed neighbors we haven't cleared yet
+                    continue;
+                }
+                var direction = other.Position - Vehicle.Position;
+                if (!other.GameObject.Equals(null)) // Could be if the object was destroyed
+                {
+                    if (_drawNeighbors)
+                    {
+                        Debug.DrawLine(Vehicle.Position, other.Position, Color.magenta);
+                    }
+                    Profiler.BeginSample("SteerForNeighborGroup.Adding");
+                    for (var bi = 0; bi < _behaviors.Length; bi++)
+                    {
+                        var behavior = _behaviors[bi];
+                        if (behavior.IsDirectionInRange(direction))
+                        {
+                            steering += behavior.CalculateNeighborContribution(other) * behavior.Weight;
+                        }
+                    }
+                    Profiler.EndSample();
+                }
+            }
+            ;
+            Profiler.EndSample();
+
+            Profiler.BeginSample("Normalizing");
+            // Normalize for pure direction
+            steering.Normalize();
+            Profiler.EndSample();
+
+            return steering;
+        }
+#endif
 
         #endregion
     }

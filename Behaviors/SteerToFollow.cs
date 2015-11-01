@@ -1,3 +1,5 @@
+#define SUPPORT_2D
+
 using UnityEngine;
 
 namespace UnitySteer.Behaviors
@@ -26,8 +28,11 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// How far behind we should follow the target
         /// </summary>
+#if SUPPORT_2D
         [SerializeField] private Vector2 _distance;
-
+#else
+        [SerializeField] private Vector3 _distance;
+#endif
 
         /// <summary>
         /// The target.
@@ -61,10 +66,17 @@ namespace UnitySteer.Behaviors
         /// <returns>
         /// A <see cref="Vector2"/>
         /// </returns>
+#if SUPPORT_2D
         protected override Vector2 CalculateForce()
         {
             return (Target == null)
                 ? Vector2.zero
+#else
+        protected override Vector3 CalculateForce()
+        {
+            return (Target == null)
+                ? Vector3.zero
+#endif
                 : Vehicle.GetSeekVector(Target.TransformPoint(_distance), _considerVelocity);
         }
     }
