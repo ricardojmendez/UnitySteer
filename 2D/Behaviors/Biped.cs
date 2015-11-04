@@ -7,7 +7,7 @@ namespace UnitySteer2D.Behaviors
     /// vector which can be separate from their forward vector (can side-step or
 	/// walk backwards).
     /// </summary>
-    [AddComponentMenu("UnitySteer2D/Vehicle/Biped")]
+    [AddComponentMenu("UnitySteer2D/Objects/Biped Vehicle")]
     public class Biped : TickedVehicle
     {
         #region Internal state values

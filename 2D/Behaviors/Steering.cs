@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnitySteer.Attributes;
 
 namespace UnitySteer2D.Behaviors
 {
@@ -13,6 +14,10 @@ namespace UnitySteer2D.Behaviors
     public abstract class Steering : MonoBehaviour
     {
         #region Private fields
+
+        [SerializeField]
+        [Behaviour2D]
+        protected string _2DBehaviour = "This behaviour is to be used with 2D Tools and Objects only.";
 
         /// <summary>
         /// Last force calculated

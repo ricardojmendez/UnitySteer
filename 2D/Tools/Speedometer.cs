@@ -1,11 +1,16 @@
 using TickedPriorityQueue;
 using UnityEngine;
+using UnitySteer.Attributes;
 
 namespace UnitySteer2D.Tools
 {
-    [AddComponentMenu("UnitySteer2D/Vehicle/Speedometer")]
+    [AddComponentMenu("UnitySteer2D/Tools/Speedometer")]
     public class Speedometer : MonoBehaviour
     {
+        [SerializeField]
+        [Behaviour2D]
+        protected string _2DTool = "This tool is to be used with 2D Behaviours and Objects only.";
+
         private Vector2 _lastRecordedPosition;
 
         /// <summary>

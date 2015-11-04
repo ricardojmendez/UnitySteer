@@ -11,7 +11,7 @@ namespace UnitySteer2D.Behaviors
     /// position.  Steering to match the neighbors velocity is more consistent with the others.
     /// </remarks>
     /// <seealso cref="SteerForAlignment"/>
-    [AddComponentMenu("UnitySteer2D/Steer/... for Matching Velocity")]
+    [AddComponentMenu("UnitySteer2D/Steer/... for Matching Velocity (Neighbour)")]
     [RequireComponent(typeof (SteerForNeighborGroup))]
     public class SteerForMatchingVelocity : SteerForNeighbors
     {

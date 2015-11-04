@@ -8,7 +8,7 @@ namespace UnitySteer2D.Behaviors
     /// <remarks>
     /// This could easily be turned into a post-processing behavior, but leaving as-is for now
     /// </remarks>
-    [AddComponentMenu("UnitySteer2D/Steer/... for Evasion")]
+    [AddComponentMenu("UnitySteer2D/Steer/... for Evasion (Post-Process)")]
     public class SteerForEvasion : Steering
     {
 #region Private fields

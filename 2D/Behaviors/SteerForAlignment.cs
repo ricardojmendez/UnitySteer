@@ -6,7 +6,7 @@ namespace UnitySteer2D.Behaviors
     /// Steers a vehicle in alignment with detected neighbors
     /// </summary>
     /// <seealso cref="SteerForMatchingVelocity"/>
-    [AddComponentMenu("UnitySteer2D/Steer/... for Alignment")]
+    [AddComponentMenu("UnitySteer2D/Steer/... for Alignment (Neighbour)")]
     [RequireComponent(typeof (SteerForNeighborGroup))]
     public class SteerForAlignment : SteerForNeighbors
     {

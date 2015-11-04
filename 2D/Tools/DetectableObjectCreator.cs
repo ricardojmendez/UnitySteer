@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnitySteer2D.Behaviors;
+using UnitySteer.Attributes;
 
 namespace UnitySteer2D.Tools
 {
@@ -7,10 +8,14 @@ namespace UnitySteer2D.Tools
 	/// Configures a detectable on the game object it is attached to, based
 	/// on the boundaries of its child colliders, and then destroys itself.
 	/// </summary>
-	[AddComponentMenu("UnitySteer2D/Detectables/DetectableObjectCreator")]
+	[AddComponentMenu("UnitySteer2D/Tools/Detectable Object Creator")]
 	public class DetectableObjectCreator : MonoBehaviour
 	{
-		void Awake()
+        [SerializeField]
+        [Behaviour2D]
+        protected string _2DTool = "This tool is to be used with 2D Behaviours and Objects only.";
+
+        void Awake()
 		{
 			CreateDetectableObject();
 			Destroy(this);

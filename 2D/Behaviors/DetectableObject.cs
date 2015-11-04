@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnitySteer.Attributes;
 
 namespace UnitySteer2D.Behaviors
 {
@@ -6,9 +7,13 @@ namespace UnitySteer2D.Behaviors
     /// Parent class for objects that vehicles can aim for, be it other vehicles or
     /// static objects.
     /// </summary>
-    [AddComponentMenu("UnitySteer2D/Detectables/DetectableObject")]
+    [AddComponentMenu("UnitySteer2D/Objects/Detectable Object")]
     public class DetectableObject : MonoBehaviour
     {
+        [SerializeField]
+        [Behaviour2D]
+        protected string _2DObject = "This object is to be used with 2D Behaviours and Tools only.";
+
         private Transform _transform;
 
         [SerializeField] protected bool _drawGizmos = false;

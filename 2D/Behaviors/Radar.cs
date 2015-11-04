@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using TickedPriorityQueue;
 using UnityEngine;
+using UnitySteer.Attributes;
 
 namespace UnitySteer2D.Behaviors
 {
@@ -19,7 +20,7 @@ namespace UnitySteer2D.Behaviors
     /// AddDetectableObject on enable, and remove itself via RemoveDetectableObject
     /// on disable.
     /// </remarks>
-    [AddComponentMenu("UnitySteer2D/Radar/Radar")]
+    [AddComponentMenu("UnitySteer2D/Tools/Radar")]
     public class Radar : MonoBehaviour
     {
         #region Private static properties
@@ -30,6 +31,10 @@ namespace UnitySteer2D.Behaviors
         #endregion
 
         #region Private properties
+
+        [SerializeField]
+        [Behaviour2D]
+        protected string _2DTool = "This tool is to be used with 2D Behaviours and Objects only.";
 
         private Transform _transform;
         private TickedObject _tickedObject;

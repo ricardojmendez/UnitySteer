@@ -6,9 +6,13 @@ namespace UnitySteer2D.Tools
     /// <summary>
     /// Randomizes a transform's position (and possibly rotation) on start, then self-destructs.
     /// </summary>
-    [AddComponentMenu("UnitySteer2D/Tools/RandomizeStartPosition")]
+    [AddComponentMenu("UnitySteer2D/Tools/Randomize Start Position ")]
     public class RandomizeStartPosition : MonoBehaviour
 	{
+        [SerializeField]
+        [Behaviour2D]
+        protected string _2DTool = "This tool is to be used with 2D Behaviours and Objects only.";
+
         public Vector2 Radius = Vector2.one;
 
         public bool RandomizeRotation = true;

@@ -17,7 +17,7 @@ namespace UnitySteer2D.Behaviors
     /// vehicles, at least for purposes of estimation, avoidance, pursuit, etc.
     /// In this case, the base Vehicle class can be used to provide an interface
     /// to whatever is doing the moving, like a CharacterMotor.</remarks>
-    [AddComponentMenu("UnitySteer2D/Vehicle/Vehicle")]
+    //[AddComponentMenu("UnitySteer2D/Vehicle/Vehicle")]  // TODO why have this in a menu? the subclasses provide all the functionality.
     public abstract class Vehicle : DetectableObject
     {
         [SerializeField]
