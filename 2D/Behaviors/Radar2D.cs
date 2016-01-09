@@ -32,10 +32,6 @@ namespace UnitySteer2D.Behaviors
 
         #region Private properties
 
-        [SerializeField]
-        [Behaviour2D]
-        protected string _2DTool = "This tool is to be used with 2D Behaviours and Objects only.";
-
         private Transform _transform;
         private TickedObject _tickedObject;
         private UnityTickedQueue _steeringQueue;

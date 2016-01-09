@@ -10,10 +10,6 @@ namespace UnitySteer2D.Behaviors
     [AddComponentMenu("UnitySteer2D/Objects/Detectable Object")]
     public class DetectableObject2D : MonoBehaviour
     {
-        [SerializeField]
-        [Behaviour2D]
-        protected string _2DObject = "This object is to be used with 2D Behaviours and Tools only.";
-
         private Transform _transform;
 
         [SerializeField] protected bool _drawGizmos = false;

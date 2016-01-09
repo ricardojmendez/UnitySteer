@@ -11,10 +11,6 @@ namespace UnitySteer2D.Tools
 	[AddComponentMenu("UnitySteer2D/Tools/Detectable Object Creator")]
 	public class DetectableObjectCreator2D : MonoBehaviour
 	{
-        [SerializeField]
-        [Behaviour2D]
-        protected string _2DTool = "This tool is to be used with 2D Behaviours and Objects only.";
-
         void Awake()
 		{
 			CreateDetectableObject();

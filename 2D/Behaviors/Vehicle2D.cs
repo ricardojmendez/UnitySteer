@@ -57,12 +57,12 @@ namespace UnitySteer2D.Behaviors
         /// Indicates which axes a vehicle is allowed to move on
         /// </summary>
         /// <remarks>
-        /// A 0 on the X/Y/Z value means the vehicle is not allowed to move on that
-        /// axis, a 1 indicates it can.  We use Vector3Toggle to set it on the 
+        /// A 0 on the X/Y value means the vehicle is not allowed to move on that
+        /// axis, a 1 indicates it can.  We use Vector2Toggle to set it on the 
         /// editor as a helper.
         /// </remarks>
-        [SerializeField, Vector3Toggle]
-        private Vector3 _allowedMovementAxes = Vector3.one;
+        [SerializeField, Vector2Toggle]
+        private Vector2 _allowedMovementAxes = Vector2.one;
 
         /// <summary>
         /// The vehicle's arrival radius.
@@ -99,7 +99,7 @@ namespace UnitySteer2D.Behaviors
 
         #region Public properties
 
-        public Vector3 AllowedMovementAxes
+        public Vector2 AllowedMovementAxes
         {
             get { return _allowedMovementAxes; }
         }

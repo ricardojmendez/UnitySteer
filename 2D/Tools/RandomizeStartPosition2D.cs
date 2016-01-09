@@ -9,10 +9,6 @@ namespace UnitySteer2D.Tools
     [AddComponentMenu("UnitySteer2D/Tools/Randomize Start Position ")]
     public class RandomizeStartPosition2D : MonoBehaviour
 	{
-        [SerializeField]
-        [Behaviour2D]
-        protected string _2DTool = "This tool is to be used with 2D Behaviours and Objects only.";
-
         public Vector2 Radius = Vector2.one;
 
         public bool RandomizeRotation = true;
@@ -24,7 +20,7 @@ namespace UnitySteer2D.Tools
 		/// one of the radius values if we dont want to change its position along that axis - that
 		/// does not solve the issue of the rotation, where we may also want to limit the
 		/// axes changed. </remarks>
-		[Vector3Toggle] public Vector3 AllowedAxes = Vector3.one;
+		[Vector2Toggle] public Vector2 AllowedAxes = Vector2.one;
 
 		void Start()
 		{
@@ -48,11 +44,6 @@ namespace UnitySteer2D.Tools
 				{
 					rot.y = 0;
 					rot.z = 0;
-				}
-				if (AllowedAxes.z == 0)
-				{
-					rot.x = 0;
-					rot.y = 0;
 				}
 
 				transform.rotation = Quaternion.Euler(rot * 360);	

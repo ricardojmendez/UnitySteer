@@ -15,10 +15,6 @@ namespace UnitySteer2D.Behaviors
     {
         #region Private fields
 
-        [SerializeField]
-        [Behaviour2D]
-        protected string _2DBehaviour = "This behaviour is to be used with 2D Tools and Objects only.";
-
         /// <summary>
         /// Last force calculated
         /// </summary>
