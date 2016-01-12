@@ -1,5 +1,4 @@
-# UnitySteer 3.0
-
+# UnitySteer 3.1
 
 ## General notes
 
@@ -20,13 +19,15 @@ Looking for a UnitySteer tutorial?  The [UnitySteer Examples](https://github.com
 
 UnitySteer uses [TickedPriorityQueue](https://github.com/Garufortho/TickedPriorityQueue). The latest library is now included on this repository.
 
+UnitySteer 3.1 requires Unity 5.x for 2D support. The last version to support Unity 4.x was [UnitySteer 3.0](https://github.com/ricardojmendez/UnitySteer/tree/v3.0.0).
+
 ## Stable and beta versions
 
 The current stable release is UnitySteer 3.0 RC2.  It contains a significant number of improvements and fixes over 2.7, but it also introduced several breaking changes, so make sure you catch up with [the latest UnitySteer blogposts](http://arges-systems.com/blog/category/unitysteer/), as well as reading the [changelog](CHANGELOG.md).
 
 I develop UnitySteer following git-flow, so if you're looking for a specific version, you can look at the project tags:
 
-* [UnitySteer 3.0 RC 3](https://github.com/ricardojmendez/UnitySteer/tree/v3.0.0-RC3)
+* [UnitySteer 3.0](https://github.com/ricardojmendez/UnitySteer/tree/v3.0.0)
 * [UnitySteer 2.7](https://github.com/ricardojmendez/UnitySteer/tree/v2.7)
 
 

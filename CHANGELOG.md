@@ -1,5 +1,11 @@
 # UnitySteer changelog
 
+## v3.1
+
+* 2D support thanks to @GandaG and @pjohalloran. 
+* 3D behaviors remain the same, but are not in a specific folder.
+* UnitySteer now requires Unity 5.x
+
 ## v3.0
 
 Breaking changes from UnitySteer 2.x: 
@@ -13,7 +19,7 @@ Breaking changes from UnitySteer 2.x:
 * New properties on AutonomousVehicle to control the acceleration and deceleration rates.
 * Using the AutonomousVehicle's TargetSpeed to indicate the speed we're aiming for, and Speed the one we're actually moving at.  Speed will gradually aim for TargetSpeed at its vehicle’s acceleration/deceleration rates.
 * SteerForWander.SmoothRate is now an amount per second. This helps make it frame-rate independent.
-* [You can read more about the acceleration smoothing changes here](http://arges-systems.com/blog/2014/01/30/unitysteer-acceleration-smoothing-changes/).
+* [You can read more about the acceleration smoothing changes here](http://numergent.com/2014-01/UnitySteer-acceleration-smoothing-changes.html).
 * Replaced IsPlanar with AllowedMovementAxes. We can now limit movement on any arbitrary axis, not only the Y.
 * Removed obsolete SteerForSphericalObstacleAvoidance.  SteerForSphericalObstacleRepulsion is now simply called SteerForSphericalObstacles.
 * Pruned cyclic Vector3Pathways. It was never properly implemented, and they're just as doable by having an event handler for the arrival event of the path steering behavior.
