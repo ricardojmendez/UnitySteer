@@ -4,3 +4,4 @@ import ConfigParser, os
 
 def parse_asset():
     return None
+
