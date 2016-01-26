@@ -1,0 +1,7 @@
+language: objective-c
+
+install:
+  - sh ./.travis/py_set_up.sh
+
+script:
+  - python ./.travis/main_parser.py
