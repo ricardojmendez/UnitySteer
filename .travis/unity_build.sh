@@ -45,14 +45,26 @@ printf '%s\n' ------------------------------------------------------------------
 echo "Moving files into temporary project; -----------------------------------------------------------------------------------"
 printf '%s\n' ------------------------------------------------------------------------------------------------------------------------
 mkdir -p ./Project/Assets/"$project"
-find ./* \
- ! -path '*/\.*' \
- ! -path "./Project/*" \
- ! -name "Project" \
- ! -path "./.travis/*" \
- ! -name ".travis" \
- ! -name ".gitignore" \
- -exec cp -v {} ./Project/Assets/"$project"/ \;
+if [ "$verbose" == "True" ];
+then
+    find ./* \
+     ! -path '*/\.*' \
+     ! -path "./Project/*" \
+     ! -name "Project" \
+     ! -path "./.travis/*" \
+     ! -name ".travis" \
+     ! -name ".gitignore" \
+     -exec rsync -Rv {} ./Project/Assets/"$project"/ \;
+else
+    find ./* \
+     ! -path '*/\.*' \
+     ! -path "./Project/*" \
+     ! -name "Project" \
+     ! -path "./.travis/*" \
+     ! -name ".travis" \
+     ! -name ".gitignore" \
+     -exec rsync -R {} ./Project/Assets/"$project"/ \;
+fi
 
 printf '%s\n' ------------------------------------------------------------------------------------------------------------------------
 echo "Attempting to package $project;"
