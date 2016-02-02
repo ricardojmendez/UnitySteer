@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/GandaG/UnitySteer.svg?branch=feature%2Ftravis_integration)](https://travis-ci.org/GandaG/UnitySteer)
-
-# UnitySteer 3.1
+# UnitySteer 3.1  [![Build Status](https://travis-ci.org/GandaG/UnitySteer.svg?branch=feature%2Ftravis_integration)](https://travis-ci.org/GandaG/UnitySteer)
 
 ## General notes
 
