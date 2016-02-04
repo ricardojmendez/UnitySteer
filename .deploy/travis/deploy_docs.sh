@@ -69,24 +69,59 @@ echo "--------------------------------------------------------------------------
 echo "------------------------------------------------------------------------------------------------------------------------"
 echo "Pushing docs to Github Pages; ------------------------------------------------------------------------------------------"
 echo "------------------------------------------------------------------------------------------------------------------------"
-# go to the out directory and create a *new* Git repo
-cd .deploy/docs/output/html || exit 1
-git init
 
-# inside this git repo we'll pretend to be a new user
-git config user.name "Travis-CI Doxygen Deployment"
-git config user.email "doxygen@deployment_to.github.pages"
+#check if gh-pages already exists, if it doesn't, force it through.
+if git ls-remote --exit-code "https://github.com/${TRAVIS_REPO_SLUG}.git" gh-pages = 0; then
+    
+    #make a new directory to hold the temp repo
+    mkdir .deploy/docs/output/temp_git/
+    cd .deploy/docs/output/temp_git/ || exit 1
+    git init
+    
+    #random user and email, this is no big deal.
+    git config user.name "Travis-CI Doxygen Deployment"
+    git config user.email "doxygen@deployment_to.github.pages"
+    
+    #since we already tested it exists, pull from the gh pages branch and silence it.
+    git pull --quiet "https://${GH_TOKEN}@${GH_REF}" gh-pages &> /dev/null
+    
+    echo "------------------------------------------------------------------------------------------------------------------------"
+    echo "Kill everything; -------------------------------------------------------------------------------------------------------"
+    echo "------------------------------------------------------------------------------------------------------------------------"
+    echo "$PWD"
+    #kill everything inside except the .git folder.
+    find . ! -name "." ! -name ".git" ! -path "./.git/*" -exec rm -r -v {} \;
+    cd ../html || exit 1
+    
+    echo "------------------------------------------------------------------------------------------------------------------------"
+    echo "Moving to proper directory; --------------------------------------------------------------------------------------------"
+    echo "------------------------------------------------------------------------------------------------------------------------"
+    echo "$PWD"
+    #copy everything from the doxygen output to the repo.
+    find ./* -exec rsync -R -r -v {} ../temp_git/ \;
+    cd ../temp_git/ || exit 1
+    
+    #add everything that changed and commit. -A is used instead of "." for compatibility.
+    git add -A
+    git commit -m "Deploying to GitHub Pages"
+    
+    git push --quiet "https://${GH_TOKEN}@${GH_REF}" HEAD:gh-pages &> /dev/null
+    
+else
+    # go to the out directory and create a *new* Git repo
+    cd .deploy/docs/output/html || exit 1
+    git init
 
-# The first and only commit to this new Git repo contains all the
-# files present with the commit message "Deploying to GitHub Pages"
-git add .
-git commit -m "Deploying to GitHub Pages"
+    # inside this git repo we'll pretend to be a new user
+    git config user.name "Travis-CI Doxygen Deployment"
+    git config user.email "doxygen@deployment_to.github.pages"
 
-# Force push from the current repo's master branch to the remote
-# repo's gh-pages branch. (All previous history on the gh-pages branch
-# will be lost, since we are overwriting it.) We redirect any output to
-# /dev/null to hide any sensitive credential data that might otherwise be exposed.
-git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages > /dev/null 2>&1
+    git add -A
+    git commit -m "Deploying to GitHub Pages"
+.
+    git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages &> /dev/null
+
+fi
 
 #just in case travis doesn't know what to do
 cd ../../../.. || exit 1
