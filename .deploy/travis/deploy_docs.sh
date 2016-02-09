@@ -118,7 +118,7 @@ else
 
     git add -A
     git commit -m "$docs_commit_description"
-.
+
     git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages &> /dev/null
 
 fi
