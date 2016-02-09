@@ -1,9 +1,12 @@
-.. image:: https://travis-ci.org/GandaG/unity-deploy-tools.svg?branch=master
+.. |travisbadge| image:: https://travis-ci.org/GandaG/unity-deploy-tools.svg?branch=master
     :target: https://travis-ci.org/GandaG/unity-deploy-tools
 
-#######################
-Unity Deployment Tools
-#######################
+.. |nbsp| unicode:: 0xA0 
+   :trim:
+
+####################################################################################
+Unity Deployment Tools |nbsp| |nbsp| |nbsp| |travisbadge|
+####################################################################################
 *Continuous deployment tools for open-source* `Unity3D <https://unity3d.com/>`_ *packages and assets.*
 
 This repository offers a quick way to setup open source unity packages. It features:
@@ -81,6 +84,8 @@ section as per your preferences. That's it, really.
 Code Documentation
 """"""""""""""""""
 Documentation for all your code is generated with `Doxygen <http://www.stack.nl/~dimitri/doxygen/index.html/>`_.
+Example documentation is provided at the `Github Pages <https://gandag.github.io/unity-deploy-tools/>`_ of this repository, 
+example script taken from Microsoft's `XML Documentation Example <https://msdn.microsoft.com/en-us/library/aa288481(v=vs.71).aspx>`_.
 
 Basic Usage
 '''''''''''
@@ -103,9 +108,3 @@ Upcoming Features
 *****************
 - Automated package deployment to `Unity <https://unity3d.com/>`_'s Asset Store.
 - Automated compiling and distribution as a .dll file.
-
-*****************
-Contributors
-*****************
-This repository follows a `git-flow model <https://danielkummer.github.io/git-flow-cheatsheet/>`_. 
-If this is not familiar to you or you cannot adhere to it for any reason just be sure to direct any pull requests to the :code:`develop` branch.

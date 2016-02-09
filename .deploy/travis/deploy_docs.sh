@@ -90,7 +90,7 @@ if git ls-remote --exit-code "https://github.com/${TRAVIS_REPO_SLUG}.git" gh-pag
     echo "------------------------------------------------------------------------------------------------------------------------"
     echo "$PWD"
     #kill everything inside except the .git folder.
-    find . ! -name "." ! -name ".git" ! -path "./.git/*" -exec rm -r -v {} \;
+    find . ! -name "." ! -name ".git" ! -path "./.git/*" -exec rm -r {} \;
     cd ../html || exit 1
     
     echo "------------------------------------------------------------------------------------------------------------------------"
@@ -98,7 +98,7 @@ if git ls-remote --exit-code "https://github.com/${TRAVIS_REPO_SLUG}.git" gh-pag
     echo "------------------------------------------------------------------------------------------------------------------------"
     echo "$PWD"
     #copy everything from the doxygen output to the repo.
-    find ./* -exec rsync -R -r -v {} ../temp_git/ \;
+    find ./* -exec rsync -R -r {} ../temp_git/ \;
     cd ../temp_git/ || exit 1
     
     #add everything that changed and commit. -A is used instead of "." for compatibility.
@@ -113,11 +113,11 @@ else
     git init
 
     # inside this git repo we'll pretend to be a new user
-    git config user.name "Travis-CI Doxygen Deployment"
-    git config user.email "doxygen@deployment_to.github.pages"
+    git config user.name "$docs_username"
+    git config user.email "$docs_email"
 
     git add -A
-    git commit -m "Deploying to GitHub Pages"
+    git commit -m "$docs_commit_description"
 .
     git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages &> /dev/null
 

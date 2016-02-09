@@ -39,6 +39,7 @@ if (os.environ["TRAVIS_PULL_REQUEST"] == "false" and
     
     ini_docs = parse_docs()
     if ini_docs:
+        #deploy_yml["deploy"].append(ini_docs)  # waiting for travis to fix their custom script provider
         deploy_yml["after_success"] = ini_docs
         print '------------------------------------------------------------------------------------------------------------------------'
         print "Deployment to Github Pages accepted. -----------------------------------------------------------------------------------"

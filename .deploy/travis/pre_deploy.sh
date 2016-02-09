@@ -71,6 +71,15 @@ branch=master
 #if you want to name your project something other than the repo name, fill in:
 projectname=
 
+#if you want to have a custom username when pushing to gh-pages, fill in. If left blank, defaults to "Travis-CI Doxygen Deployment".
+username=
+
+#if you want to have a custom email when pushing to gh-pages, fill in. If left blank, defaults to "doxygen@deployment.to.github.pages".
+email=
+
+#if you want to have a custom message for the commit to gh-pages, fill in. If left blank, defaults to "Deploying to GitHub Pages".
+commit_description=
+
 #if you want the short description to be something other than your repo description, fill in:
 description=
 

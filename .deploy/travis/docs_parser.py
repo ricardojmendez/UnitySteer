@@ -14,7 +14,7 @@ def parse_docs():
     
     deploy_docs = {
         "provider": "script",
-        "script": "./.deploy/travis/deploy_docs.sh",
+        "script": "sh $TRAVIS_BUILD/.deploy/travis/deploy_docs.sh",
         "skip_cleanup": "true",
         "on": {}
     }
@@ -61,6 +61,9 @@ def parse_docs_options():
     projectname = config.get('Docs', 'projectname')
     description = config.get('Docs', 'description')
     logo = config.get('Docs', 'logo')
+    username = config.get('Docs', 'username')
+    email = config.get('Docs', 'email')
+    commit_description = config.get('Docs', 'commit_description')
     
     include_version = config.getboolean('Docs', 'include_version')
     include_non_documented = config.getboolean('Docs', 'include_non_documented')
@@ -83,6 +86,21 @@ def parse_docs_options():
         options.append("logo=\"%s\"" % logo)
     else:
         options.append("logo=") #I hope this doesn't throw an error.
+    
+    if username:
+        options.append("docs_username=\"%s\"" % username)
+    else:
+        options.append("docs_username=\"Travis-CI Doxygen Deployment\"")
+    
+    if email:
+        options.append("docs_email=\"%s\"" % email)
+    else:
+        options.append("docs_email=\"doxygen@deployment.to.github.pages\"")
+    
+    if commit_description:
+        options.append("docs_commit_description=\"%s\"" % commit_description)
+    else:
+        options.append("docs_commit_description=\"Deploying to GitHub Pages\"")
     
     if include_version:
         options.append("docs_version=%s" % os.environ["TRAVIS_TAG"])
