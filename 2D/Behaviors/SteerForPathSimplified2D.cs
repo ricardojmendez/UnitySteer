@@ -140,7 +140,7 @@ namespace UnitySteer2D.Behaviors
 		 */
             var seek = Vehicle.GetSeekVector(target);
 
-            if (seek == Vector2.zero && targetPathDistance <= Path.TotalPathLength)
+            while (seek == Vector2.zero && targetPathDistance <= Path.TotalPathLength)
             {
                 /*
 			 * If we should not displace but still have some distance to go,
@@ -151,7 +151,8 @@ namespace UnitySteer2D.Behaviors
 			 * radius.  In that case, aim a bit further beyond the vehicle's 
 			 * arrival radius so that it can continue moving.
 			 */
-                target = Path.MapPathDistanceToPoint(targetPathDistance + 2f * Vehicle.ArrivalRadius);
+                targetPathDistance += 2f * Vehicle.ArrivalRadius;
+                target = Path.MapPathDistanceToPoint(targetPathDistance);
                 seek = Vehicle.GetSeekVector(target);
             }
 
