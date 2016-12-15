@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnitySteer.Attributes;
 
 namespace UnitySteer2D.Behaviors
@@ -116,6 +118,12 @@ namespace UnitySteer2D.Behaviors
             get { return _neighbors; }
         }
 
+        /// <summary>
+        /// Delegate which is called when the detected neighbors list is changed
+        /// </summary>
+        public Action<SteerForNeighborGroup2D> OnNeighborsChanged = delegate { };
+
+
         #endregion
 
         #region Methods
@@ -162,6 +170,14 @@ namespace UnitySteer2D.Behaviors
                     _neighbors.Add(other);
                 }
             }
+
+            if (OnNeighborsChanged != null)
+            {
+                Profiler.BeginSample("Neighbor event handler");
+                OnNeighborsChanged(this);
+                Profiler.EndSample();
+            }
+
         }
 
         protected override Vector2 CalculateForce()
