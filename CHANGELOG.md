@@ -1,5 +1,9 @@
 # UnitySteer changelog
 
+## WIP
+
+* SteerForPathSimplified2D can now resolve longer loops instead of getting stuck
+
 ## v3.1
 
 * 2D support thanks to @GandaG and @pjohalloran. 
