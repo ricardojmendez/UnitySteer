@@ -1,5 +1,9 @@
 # UnitySteer changelog
 
+## WIP
+
+* Added SteerForDirectionFluctuation2D which adds a noise factor to direction
+
 ## v3.1
 
 * 2D support thanks to @GandaG and @pjohalloran. 
