@@ -1,5 +1,11 @@
 # UnitySteer changelog
 
+## WIP
+
+* SteerForCohesion2D now has min/max contribution properties; this can assist
+  flocking by preventing the cohesion factor from becoming too strong/weak with 
+  distance
+
 ## v3.1
 
 * 2D support thanks to @GandaG and @pjohalloran. 
