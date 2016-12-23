@@ -25,7 +25,7 @@ UnitySteer 3.1 requires Unity 5.x for 2D support. The last version to support Un
 
 ## Stable and beta versions
 
-The current stable release is UnitySteer 3.0 RC2.  It contains a significant number of improvements and fixes over 2.7, but it also introduced several breaking changes, so make sure you catch up with [the latest UnitySteer blogposts](http://arges-systems.com/blog/category/unitysteer/), as well as reading the [changelog](CHANGELOG.md).
+The current stable release is UnitySteer 3.0 RC2.  It contains a significant number of improvements and fixes over 2.7, but it also introduced several breaking changes, so make sure you catch up with [the latest UnitySteer blogposts](http://numergent.com/tags/unitysteer/), as well as reading the [changelog](CHANGELOG.md).
 
 I develop UnitySteer following git-flow, so if you're looking for a specific version, you can look at the project tags:
 
