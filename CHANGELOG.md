@@ -1,5 +1,9 @@
 # UnitySteer changelog
 
+## WIP
+
+* Added OnNeighborsChanged event to SteerForNeighbourGroup2D
+
 ## v3.1
 
 * 2D support thanks to @GandaG and @pjohalloran. 
