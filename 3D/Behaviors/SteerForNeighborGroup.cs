@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnitySteer.Attributes;
+using UnityEngine.Profiling;
 
 namespace UnitySteer.Behaviors
 {

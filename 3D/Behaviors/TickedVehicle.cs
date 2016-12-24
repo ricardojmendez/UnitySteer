@@ -2,12 +2,13 @@
 using System.Diagnostics;
 using TickedPriorityQueue;
 using UnityEngine;
+using UnityEngine.Profiling;
 using Debug = UnityEngine.Debug;
 
 namespace UnitySteer.Behaviors
 {
     /// <summary>
-    /// Vehicle subclass oriented towards autonomous bipeds and vehicles, which 
+    /// Vehicle subclass oriented towards autonomous bipeds and vehicles, which
     /// will be ticked automatically to calculate their direction.
     /// </summary>
     public abstract class TickedVehicle : Vehicle

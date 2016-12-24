@@ -1,6 +1,7 @@
 #define ANNOTATE_AVOIDOBSTACLES
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace UnitySteer.Behaviors
 {

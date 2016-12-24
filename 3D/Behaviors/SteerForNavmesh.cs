@@ -1,5 +1,7 @@
 #define ANNOTATE_NAVMESH
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.Profiling;
 
 namespace UnitySteer.Behaviors
 {

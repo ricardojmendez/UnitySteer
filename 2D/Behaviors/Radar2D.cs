@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using TickedPriorityQueue;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnitySteer.Attributes;
 
 namespace UnitySteer2D.Behaviors

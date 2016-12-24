@@ -1,5 +1,9 @@
 # UnitySteer changelog
 
+## WIP
+
+* Upgrade project to Unity 5.5
+
 ## v3.1
 
 * 2D support thanks to @GandaG and @pjohalloran. 

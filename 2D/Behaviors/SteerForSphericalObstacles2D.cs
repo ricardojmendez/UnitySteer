@@ -2,6 +2,7 @@
 
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace UnitySteer2D.Behaviors
 {
