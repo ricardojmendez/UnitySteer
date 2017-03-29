@@ -197,7 +197,7 @@ namespace UnitySteer.Behaviors
             }
 
             // use pythagorean theorem to calculate distance out of the sphere (if you do it 2D, the line through the circle would be a chord and we need half of its length)
-            var halfChord = Mathf.Sqrt(combinedRadius * combinedRadius + obstacleDistanceToPath * obstacleDistanceToPath);
+            var halfChord = Mathf.Sqrt(combinedRadius * combinedRadius - obstacleDistanceToPath * obstacleDistanceToPath);
 
             // if the projected obstacle center lies opposite to the movement direction (aka "behind")
             if (projectionLength < 0)
