@@ -5,7 +5,4 @@ install:
 
 script:
   - python ./.deploy/travis/main_parser.py
-  
-notifications:
-  slack: csapatnevteam:pOaxl7fQfoNZj97ERSgqZGL6
 
