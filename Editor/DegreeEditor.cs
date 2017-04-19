@@ -4,7 +4,7 @@ using UnityEngine;
 namespace UnitySteer.Editor
 {
     /// <summary>
-    /// Displays an editor field which takes degrees from the user and returns a cosine of the angle
+    /// Displays an editor field which takes degrees from the user and returns a cosine of the angle 
     /// </summary>
     public class DegreeEditor
     {

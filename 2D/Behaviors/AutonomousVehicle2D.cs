@@ -100,7 +100,6 @@ namespace UnitySteer2D.Behaviors
         {
             TargetSpeed = 0;
         }
-
 #endregion
     }
 }
