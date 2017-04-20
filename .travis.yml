@@ -11,9 +11,6 @@ addons:
     organization: "odmehb-github"
     token:
       secure: "aCpEzF7VFed9bhZ1Lb/Jm4t+zvR3o2R8RyjNfwoN776ODi8NzDqt/R9nuZmSA2zfT6XNL4AacFAmEgjt52v27wdLwDTSqUW1w3s+xcVOj7uNj/MMap0FhtilJNE7VTyPtkhH+bVGPrjZaLvRHlqt/tYPbK4Pz7Y8RCz4wZrowOvLbt87lJUJsVM2/VbMZjrRm9M2JHzdbn6afTlquCQsIvsTQCIttP3mRAYEEUMTkO4CfdlxThRUJTc+8QmGD/avA9M56+FyRjo+sTVIsK49NYykn2opkosRPHIlGJHP3XmVss0srCuK1oUq4T+ZMDe0EvyIIGQtT+P4msbZVVb1PnlyWwHtDncRZI/ge+SpZlqzhJkT+RGj7fEe66LVXy162DZdMEu3lgCpyci6+kqAvDwj/sLlSqvBiAwpIuAnyd38l1cQtIFr6L9a3/Tx5x+eLi/9SbRZEoaR6io367FEGQMT7pfnyya045flfBbxD2mdGgJkz9iQqSubM5Oj4A5PXtEn52COJzeCxCcH8VEVSW7JJ67LsjLqEyFvl0c3B8YVsSENm02pFXuUMjZOHu+hOq1b9v799C7LXys6Q2CrK4IS4yipHOAudxbACy6vrTNaiovN1FBqQvkafmTmEy8RN/C72NmmWsqMWtsB9tqbkuqmMmwbXdMtMu/YGvnxG5Y="
-      branches:
-      - master
-      - development
 
 script:
   # other script steps might be done before running the actual SonarQube analysis
