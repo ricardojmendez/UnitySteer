@@ -5,13 +5,19 @@ install:
 
 script:
 - python ./.deploy/travis/main_parser.py
-- sonar-scanner -X
 
 addons:
   sonarqube:
     organization: "odmehb-github"
     token:
-      secure: Hv/afJOXgKrOgOXk8FtVwUF8NPSu3PDKFqckNcmQpUk+ymlO+kkWUWrEhv0e+/ojui35GCtutQpRv2Zpa3v4IOjmuFoY3W6QGTAjQpGzs5da3MLDVgJP0UyZOQNnyigHpg8jUSpI88lNMRqrLrl+N2qlZAeMWvWGv4t1UZ1tnBWOMGReV1BWLMnr3Fc0Yu7NLPcfGLGZczNEBglt0mApNxnsDB/dphn2gT+oQmKiBGzJJQEFP3/Zhm6/WaU1eK0yRulA6Dc8BQwBiO7VVGcUmZWPFDB+oAlvpumcjhsatrKppjLKfs6zw3GTGSeX8bbRKdlTOHs9LIhOwNuHlA3LvfARNoHHy5sBeCLl3DJjq0rOkzd3D7IE+SzYK/oSTJ5pYc8w9l9Hx3rFdd/eUSU/UszuzdovK1jfy2t2lwbt7Z2wireTHpv1BvuTXIkN9fWYHlYhNNYr0r+7q1oZ8ncf0lnvzD8okiQyn4dajbpCmxiXfghBApAamr4SVxbU/pyA9e2aZSZccePGSMWFYiD820PYoMj/ShbEwuGw+6aQ7NB1sKI6qGs44T8j2ZXcl0Xv/MUuGjx+d3h6UwjyBwvtEqmnXzXC6KK66axRRLVhSlK+7Wr4bcJByNGvKkLODNTv+rlJD+2pEs77lPlvvoYXHY4d003x+klJkI6Rmybtmac=
-    branches:
+      secure: "aCpEzF7VFed9bhZ1Lb/Jm4t+zvR3o2R8RyjNfwoN776ODi8NzDqt/R9nuZmSA2zfT6XNL4AacFAmEgjt52v27wdLwDTSqUW1w3s+xcVOj7uNj/MMap0FhtilJNE7VTyPtkhH+bVGPrjZaLvRHlqt/tYPbK4Pz7Y8RCz4wZrowOvLbt87lJUJsVM2/VbMZjrRm9M2JHzdbn6afTlquCQsIvsTQCIttP3mRAYEEUMTkO4CfdlxThRUJTc+8QmGD/avA9M56+FyRjo+sTVIsK49NYykn2opkosRPHIlGJHP3XmVss0srCuK1oUq4T+ZMDe0EvyIIGQtT+P4msbZVVb1PnlyWwHtDncRZI/ge+SpZlqzhJkT+RGj7fEe66LVXy162DZdMEu3lgCpyci6+kqAvDwj/sLlSqvBiAwpIuAnyd38l1cQtIFr6L9a3/Tx5x+eLi/9SbRZEoaR6io367FEGQMT7pfnyya045flfBbxD2mdGgJkz9iQqSubM5Oj4A5PXtEn52COJzeCxCcH8VEVSW7JJ67LsjLqEyFvl0c3B8YVsSENm02pFXuUMjZOHu+hOq1b9v799C7LXys6Q2CrK4IS4yipHOAudxbACy6vrTNaiovN1FBqQvkafmTmEy8RN/C72NmmWsqMWtsB9tqbkuqmMmwbXdMtMu/YGvnxG5Y="
+      branches:
       - master
       - development
+      
+script:
+  # other script steps might be done before running the actual SonarQube analysis
+  - sonar-scanner
+
+notifications:
+  slack: csapatnevteam:pOaxl7fQfoNZj97ERSgqZGL6
