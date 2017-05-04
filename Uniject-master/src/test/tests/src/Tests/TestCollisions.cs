@@ -20,7 +20,7 @@ namespace Tests {
             BouncingLight light = kernel.Get<BouncingLight>();
             light.Obj.transform.Translate(new Vector3(0, BouncingLight.killThresholdY - 1, 0));
             step();
-            Assert.IsTrue(!light.Obj.destroyed);
+            Assert.IsTrue(light.Obj.destroyed);
         }
 
         [Test]

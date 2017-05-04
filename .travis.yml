@@ -3,6 +3,9 @@ language: objective-c
 install:
 - sh ./.deploy/travis/py_set_up.sh
 
+before_script:
+- sh ./Uniject-master/BUILD.sh
+
 script:
 - python ./.deploy/travis/main_parser.py
 
