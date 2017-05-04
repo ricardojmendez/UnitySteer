@@ -1,0 +1,1 @@
+xbuild ./Testity.sln /p:DebugSymbols=False

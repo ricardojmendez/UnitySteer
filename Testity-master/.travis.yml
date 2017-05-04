@@ -1,0 +1,21 @@
+language: csharp
+solution: ./Testity.sln
+sudo: required
+
+install:
+  - sudo apt-get install nunit-console
+  - nuget restore ./Testity.sln
+
+before_script:
+  - chmod +x ./lib/BuildDependencies.sh
+  - chmod +x ./tests/RunTests.sh
+  - chmod +x ./Build.sh
+
+script:
+  - cd "$TRAVIS_BUILD_DIR/lib"
+  - ./BuildDependencies.sh
+  - cd "$TRAVIS_BUILD_DIR"
+  - ./Build.sh
+  - cd "$TRAVIS_BUILD_DIR/tests"
+  - ./RunTests.sh
+  - cd "$TRAVIS_BUILD_DIR"

@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E9D0588E-FCB2-452E-8587-3FDC6DFB8669}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Testity.BuildProcess.Unity3D</RootNamespace>
+    <AssemblyName>Testity.BuildProcess.Unity3D</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Fasterflect, Version=2.1.3.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.1.1\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.1.1.1\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.1.1\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.1.1\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.1.1\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Net35Essentials">
+      <HintPath>..\..\lib\Dependency Builds\Net35Essentials\DLLs\Net35Essentials.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Collections.Immutable.1.1.37\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.AttributedModel, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.Convention, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Convention.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.Hosting, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Hosting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.Runtime, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.TypedParts, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Reflection.Metadata, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Reflection.Metadata.1.1.0\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Testity.Unity3D.Events">
+      <HintPath>..\..\lib\Dependency Builds\Testity.Unity3D.Events\DLLs\Testity.Unity3D.Events.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\Static Dependencies\UnityEngine\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BuildProcessImplementations\UnityInitializationMethodImplementationProvider.cs" />
+    <Compile Include="BuildProcessImplementations\UnitySerializedFieldImplementationProvider.cs" />
+    <Compile Include="BuildSteps\AddEngineInterfaceForwardedMethodStep.cs" />
+    <Compile Include="BuildSteps\AddMemberInitializationMethodStep.cs" />
+    <Compile Include="BuildSteps\AddTestityBehaviourBaseClassMemberStep.cs" />
+    <Compile Include="BuildSteps\AddSerializedMemberStep.cs" />
+    <Compile Include="BuildSteps\AddTestityEventSerializedDelegateStep.cs" />
+    <Compile Include="DataUnits\ClassFile.cs" />
+    <Compile Include="EntryPoint.cs" />
+    <Compile Include="DataUnits\InitializationExpressionData.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ChainInitializationExpressionBuilderProvider.cs" />
+    <Compile Include="Services\Exclusion\ActionDelegateTypeExclusion.cs" />
+    <Compile Include="Services\Exclusion\SerializedMemberStepTypeExclusionService.cs" />
+    <Compile Include="Services\Expressions\ComponentAdapterInitializationExpression.cs" />
+    <Compile Include="Services\Expressions\DefaultInitializationExpression.cs" />
+    <Compile Include="Services\Expressions\IInitializationExpression.cs" />
+    <Compile Include="Services\Expressions\IInitializationExpressionBuilder.cs" />
+    <Compile Include="Services\Expressions\SameTypeInitializationExpression.cs" />
+    <Compile Include="Services\ExpressionProviders\ComponentAdapterInitializationExpressionBuilderProvider.cs" />
+    <Compile Include="Services\ExpressionProviders\DefaultInitializationExpressionBuilderProvider.cs" />
+    <Compile Include="Services\ExpressionProviders\SameTypeInitializationExpressionBuilderProvider.cs" />
+    <Compile Include="Services\IInitializationExpressionBuilderProvider.cs" />
+    <Compile Include="Services\TestityGenericEventTracker.cs" />
+    <Compile Include="Services\UnityComponentAdapterParser.cs" />
+    <Compile Include="Services\Exclusion\ITypeExclusion.cs" />
+    <Compile Include="TypeMapping\TestityToUnity\ActionTypeRelationalMapper.cs" />
+    <Compile Include="TypeMapping\TestityToUnity\DefaultTypeRelationalMapper.cs" />
+    <Compile Include="Services\Exclusion\UnityPrimitiveTypeExclusion.cs" />
+    <Compile Include="TypeMapping\Shared\PrimitiveTypeRelationalMapper.cs" />
+    <Compile Include="TypeMapping\Shared\StringTypeRelationalMapper.cs" />
+    <Compile Include="TypeMapping\TestityToUnity\UnityBuildProcessTypeRelationalMapper.cs" />
+    <Compile Include="TypeMapping\TestityToUnity\EngineTypeRelationalMapper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Testity.BuildProcess\Testity.BuildProcess.csproj">
+      <Project>{b936525c-8aa6-4593-8544-3bf32fc0a026}</Project>
+      <Name>Testity.BuildProcess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Testity.Common.Unity3D\Testity.Common.Unity3D.csproj">
+      <Project>{4dfd0e70-dd23-46f0-9bfc-609a062b4a70}</Project>
+      <Name>Testity.Common.Unity3D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Testity.Common\Testity.Common.csproj">
+      <Project>{54d9c6dd-c72c-42f1-9bcf-579447b1f0a6}</Project>
+      <Name>Testity.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Testity.EngineComponents.Unity3D\Testity.EngineComponents.Unity3D.csproj">
+      <Project>{b90f2cfb-16bb-47ea-b9b2-ecc7148b4705}</Project>
+      <Name>Testity.EngineComponents.Unity3D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Testity.EngineComponents\Testity.EngineComponents.csproj">
+      <Project>{91dc280a-82bb-4c6c-8154-44b997123879}</Project>
+      <Name>Testity.EngineComponents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Testity.EngineMath\Testity.EngineMath.csproj">
+      <Project>{d1cb2af4-210c-48a6-ab75-491b824d25ef}</Project>
+      <Name>Testity.EngineMath</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ClassBuilders\" />
+    <Folder Include="TypeMapping\Shared\Exclusions\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

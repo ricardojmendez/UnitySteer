@@ -1,0 +1,6 @@
+[submodule "lib/Net35Essentials"]
+	path = lib/Net35Essentials
+	url = https://github.com/HelloKitty/.Net3.5Essentials.git
+[submodule "lib/Testity.Unity3D.Events"]
+	path = lib/Testity.Unity3D.Events
+	url = https://github.com/HelloKitty/Testity.Unity3D.Events.git
