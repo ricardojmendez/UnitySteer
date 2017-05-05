@@ -4,7 +4,7 @@ using System.Threading;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace UnityTest
+/*namespace UnityTest
 {
     [TestFixture]
     [Category("Sample Tests")]
@@ -70,12 +70,12 @@ namespace UnityTest
         {
         }
 
-        /*[Test]
-        [ExpectedException(typeof(ArgumentException), ExpectedMessage = "expected message")]
-        public void ExpectedExceptionTest()
-        {
-            throw new ArgumentException("expected message");
-        }*/
+        // [Test]
+        // [ExpectedException(typeof(ArgumentException), ExpectedMessage = "expected message")]
+        // public void ExpectedExceptionTest()
+        // {
+        //     throw new ArgumentException("expected message");
+        // }
 
         [Datapoint]
         public double zero = 0;
@@ -99,4 +99,4 @@ namespace UnityTest
             Assert.That(sqrt * sqrt, Is.EqualTo(num).Within(0.000001));
         }
     }
-}
+}*/
