@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6DFB24A3-F878-4818-89E7-F85584CADB91}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>test</RootNamespace>
+    <AssemblyName>test</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="src\" />
+    <Folder Include="src\Impl\" />
+    <Folder Include="src\module\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="src\Impl\framework\BaseInjectedTest.cs" />
+    <Compile Include="src\Impl\framework\TestHelper.cs" />
+    <Compile Include="src\Impl\framework\TestLogger.cs" />
+    <Compile Include="src\Impl\framework\TestUpdatableManager.cs" />
+    <Compile Include="src\Impl\mock\FakeAudioListener.cs" />
+    <Compile Include="src\Impl\mock\FakeAudioSource.cs" />
+    <Compile Include="src\Impl\mock\FakeGameObject.cs" />
+    <Compile Include="src\Impl\mock\FakeNavmeshAgent.cs" />
+    <Compile Include="src\Impl\mock\MockResourceLoader.cs" />
+    <Compile Include="src\Impl\mock\MockUtil.cs" />
+    <Compile Include="src\module\TestModule.cs" />
+    <Compile Include="src\Impl\mock\FakeComponent.cs" />
+    <Compile Include="src\Impl\mock\MockLayerMask.cs" />
+    <Compile Include="src\Impl\mock\MockTime.cs" />
+    <Compile Include="src\Tests\TestExampleGameObject.cs" />
+    <Compile Include="src\Tests\TestExamplePhysics.cs" />
+    <Compile Include="src\Tests\TestUniject.cs" />
+    <Compile Include="src\Impl\framework\FileVerifyingResourceProvider.cs" />
+    <Compile Include="src\Tests\TestCollisions.cs" />
+    <Compile Include="src\Impl\mock\MockProvider.cs" />
+    <Compile Include="src\Tests\TestTestableInput.cs" />
+    <Compile Include="src\Tests\TestUnijectConfig.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Assembly-CSharp-vs.csproj">
+      <Project>{4CFFDA30-0E63-039E-0DCA-DAC117CE2649}</Project>
+      <Name>Assembly-CSharp-vs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Assembly-CSharp-firstpass-vs.csproj">
+      <Project>{E53CDB40-1DF9-8A61-5878-81243AFDF805}</Project>
+      <Name>Assembly-CSharp-firstpass-vs</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\Assembly\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\Assembly\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject">
+      <HintPath>..\..\Assets\Plugins\Uniject\Assembly\Ninject.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <HintPath>..\..\Assets\Plugins\Uniject\Assembly\System.Xml.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+</Project>
