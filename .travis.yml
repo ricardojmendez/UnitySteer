@@ -5,8 +5,6 @@ install:
 
 script:
 - python ./.deploy/travis/main_parser.py
-
-after_script:
 - sh ./.deploy/travis/run_unit_tests.sh
 
 addons:

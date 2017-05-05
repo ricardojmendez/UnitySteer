@@ -4,7 +4,7 @@ echo "--------------------------------------------------------------------------
 echo "Starting Unit Tests; ---------------------------------------------------------------------------------------------"
 echo "------------------------------------------------------------------------------------------------------------------------"
 #sudo .deploy/Unity.pkg -runEditorTests -projectPath ./ 
-/Applications/Unity/Unity.app/Contents/MacOS/Unity \
+/Applications/Unity/Unity.app \
      -runEditorTests \
      -projectPath ./ 
 
