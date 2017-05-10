@@ -1,2 +1,5 @@
-.svn
-.git
+Temp/*
+Assembly*
+*.sln
+*.userprefs
+/Library
