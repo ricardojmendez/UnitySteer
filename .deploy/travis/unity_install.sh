@@ -14,3 +14,6 @@ then
 else
     sudo installer -package .deploy/Unity.pkg -target /
 fi
+
+echo "DEBUG ls -al /"
+ls -al /
