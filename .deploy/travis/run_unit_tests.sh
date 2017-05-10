@@ -20,8 +20,8 @@ echo "DEBUG ls -al ./"
 ls -al ./
 
 echo "------------------------------------------------------------------------------------------------------------------------"
-echo "DEBUG pvd"
-pvd
+echo "DEBUG ls -al ./.deploy"
+ls -al ./.deploy
 
 echo "------------------------------------------------------------------------------------------------------------------------"
 /Unity/Unity.app/Contents/MacOS/Unity -runEditorTests -projectPath ./ -editorTestsResultFile ./testresults.xml
