@@ -1,5 +1,2 @@
-Temp/*
-Assembly*
-*.sln
-*.userprefs
-/Library
+.svn
+.git
