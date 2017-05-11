@@ -73,24 +73,14 @@ else:
     print "Skipping deployment. ---------------------------------------------------------------------------------------------------"
     print '------------------------------------------------------------------------------------------------------------------------'
 
-print '------------------------------------------------------------------------------------------------------------------------'
-print "FORCE INSTALL AND BUILD ------------------------------------------------------------------------------------------------"
-print '------------------------------------------------------------------------------------------------------------------------'
-if (os.system("sh ./.deploy/travis/unity_install.sh") == 0 and
+#you only get here if there is no deployment since deploy_setup calls exit on success.
+if os.environ["always_run"] == "True": #move on to the build steps. This needs to be invoked like this to be able to pass the env vars created here.
+    if (os.system("sh ./.deploy/travis/unity_install.sh") == 0 and
         os.system("sh ./.deploy/travis/unity_build.sh") == 0):
         exit(0)
     else:
         exit(1)
-
-#you only get here if there is no deployment since deploy_setup calls exit on success.
-#if os.environ["always_run"] == "True": #move on to the build steps. This needs to be invoked like this to be able to pass the env vars created here.
-#    if (os.system("sh ./.deploy/travis/unity_install.sh") == 0 and
-#        os.system("sh ./.deploy/travis/unity_build.sh") == 0):
-#        exit(0)
-#    else:
-#        exit(1)
-#else:
-#    print '------------------------------------------------------------------------------------------------------------------------'
-#    print "Skipping build steps. ---------------------------------------------------------------------------------------------------"
-#    print '------------------------------------------------------------------------------------------------------------------------'
-
+else:
+    print '------------------------------------------------------------------------------------------------------------------------'
+    print "Skipping build steps. ---------------------------------------------------------------------------------------------------"
+    print '------------------------------------------------------------------------------------------------------------------------'
