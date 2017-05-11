@@ -24,6 +24,18 @@ echo "DEBUG ls -al ./.deploy"
 ls -al ./.deploy
 
 echo "------------------------------------------------------------------------------------------------------------------------"
+echo "DEBUG ls -al ./.deploy/travis"
+ls -al ./.deploy/travis
+
+echo "------------------------------------------------------------------------------------------------------------------------"
+echo "DEBUG ls -al ../"
+ls -al ../
+
+echo "------------------------------------------------------------------------------------------------------------------------"
+echo "DEBUG ls -al ../../"
+ls -al ../../
+
+echo "------------------------------------------------------------------------------------------------------------------------"
 /Unity/Unity.app/Contents/MacOS/Unity -runEditorTests -projectPath ./ -editorTestsResultFile ./testresults.xml
 
 #/Applications/Unity/Unity.app/Contents/MacOS/Unity -runEditorTests -projectPath ./ -editorTestsResultFile ./testresults.xml
