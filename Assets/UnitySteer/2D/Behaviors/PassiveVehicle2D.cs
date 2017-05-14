@@ -23,7 +23,7 @@ namespace UnitySteer2D.Behaviors
         /// <summary>
         /// The magnitude of the last velocity vector assigned to the vehicle 
         /// </summary>
-        private float _speed = 0;
+        private readonly float _speed = 0;
 
         /// <summary>
         /// The vehicle's current velocity vector
@@ -60,22 +60,6 @@ namespace UnitySteer2D.Behaviors
             get { return _isBiped ? _velocity : Forward * _speed; }
             protected set { throw new NotSupportedException("Cannot set the velocity directly on PassiveVehicle2D"); }
         }
-
-        private void Update()
-        {
-            if (!CanMove)
-            {
-                Velocity = Vector2.zero; //Doesn't this throw an exception constantly?
-            }
-            else if (Position != _lastPosition)
-            {
-                _velocity = Position - _lastPosition;
-                _lastPosition = Position;
-            }
-            else
-            {
-                _velocity = Vector2.zero;
-            }
-        }
+        
     }
 }

@@ -14,7 +14,6 @@ namespace UnitySteer.Behaviors
     {
         #region Internal state values
 
-        private TickedObject _tickedObject;
         private UnityTickedQueue _steeringQueue;
 
         /// <summary>
@@ -25,7 +24,7 @@ namespace UnitySteer.Behaviors
         /// <summary>
         /// How often will this Vehicle's steering calculations be ticked.
         /// </summary>
-        [SerializeField] private float _tickLength = 0.1f;
+        [SerializeField] private readonly float _tickLength = 0.1f;
 
         /// <summary>
         /// The maximum number of radar update calls processed on the queue per update
@@ -169,11 +168,11 @@ namespace UnitySteer.Behaviors
             {
                 return;
             }
-            UnityEngine.Profiling.Profiler.BeginSample("Calculating vehicle forces");
+            Profiler.BeginSample("Calculating vehicle forces");
 
             var force = Vector3.zero;
 
-            UnityEngine.Profiling.Profiler.BeginSample("Adding up basic steerings");
+            Profiler.BeginSample("Adding up basic steerings");
             for (var i = 0; i < Steerings.Length; i++)
             {
                 var s = Steerings[i];
@@ -182,7 +181,7 @@ namespace UnitySteer.Behaviors
                     force += s.WeighedForce;
                 }
             }
-            UnityEngine.Profiling.Profiler.EndSample();
+            Profiler.EndSample();
             LastRawForce = force;
 
             // Enforce speed limit.  Steering behaviors are expected to return a
@@ -206,7 +205,7 @@ namespace UnitySteer.Behaviors
             // but things are working just fine for now, and it seems like
             // overkill. 
             var adjustedVelocity = Vector3.zero;
-            UnityEngine.Profiling.Profiler.BeginSample("Adding up post-processing steerings");
+            Profiler.BeginSample("Adding up post-processing steerings");
             for (var i = 0; i < SteeringPostprocessors.Length; i++)
             {
                 var s = SteeringPostprocessors[i];
@@ -215,7 +214,7 @@ namespace UnitySteer.Behaviors
                     adjustedVelocity += s.WeighedForce;
                 }
             }
-            UnityEngine.Profiling.Profiler.EndSample();
+            Profiler.EndSample();
 
 
             if (adjustedVelocity != Vector3.zero)
@@ -228,7 +227,7 @@ namespace UnitySteer.Behaviors
 
             // Update vehicle velocity
             SetCalculatedVelocity(newVelocity);
-            UnityEngine.Profiling.Profiler.EndSample();
+            Profiler.EndSample();
         }
 
 
