@@ -168,7 +168,7 @@ namespace UnitySteer2D.Behaviors
         {
             // steering accumulator and count of neighbors, both initially zero
             var steering = Vector2.zero;
-            UnityEngine.Profiling.Profiler.BeginSample("SteerForNeighborGroup.Looping over neighbors");
+            Profiler.BeginSample("SteerForNeighborGroup.Looping over neighbors");
             // I'd prefer an iterator, but trying to cut down on allocations
             for (var i = 0; i < _neighbors.Count; i++)
             {
@@ -185,7 +185,7 @@ namespace UnitySteer2D.Behaviors
                     {
                         Debug.DrawLine(Vehicle.Position, other.Position, Color.magenta);
                     }
-                    UnityEngine.Profiling.Profiler.BeginSample("SteerForNeighborGroup.Adding");
+                    Profiler.BeginSample("SteerForNeighborGroup.Adding");
                     for (var bi = 0; bi < _behaviors.Length; bi++)
                     {
                         var behavior = _behaviors[bi];
@@ -194,16 +194,16 @@ namespace UnitySteer2D.Behaviors
                             steering += behavior.CalculateNeighborContribution(other) * behavior.Weight;
                         }
                     }
-                    UnityEngine.Profiling.Profiler.EndSample();
+                    Profiler.EndSample();
                 }
             }
             ;
-            UnityEngine.Profiling.Profiler.EndSample();
+            Profiler.EndSample();
 
-            UnityEngine.Profiling.Profiler.BeginSample("Normalizing");
+            Profiler.BeginSample("Normalizing");
             // Normalize for pure direction
             steering.Normalize();
-            UnityEngine.Profiling.Profiler.EndSample();
+            Profiler.EndSample();
 
             return steering;
         }

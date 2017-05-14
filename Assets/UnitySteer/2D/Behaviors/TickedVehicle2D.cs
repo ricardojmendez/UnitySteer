@@ -37,9 +37,9 @@ namespace UnitySteer2D.Behaviors
         /// the queue will win.  Make sure your settings are consistent for objects of
         /// the same queue.
         /// </remarks>
-        [SerializeField] private int _maxQueueProcessedPerUpdate = 20;
+        [SerializeField] private readonly int _maxQueueProcessedPerUpdate = 20;
 
-        [SerializeField] private bool _traceAdjustments = false;
+        [SerializeField] private readonly bool _traceAdjustments = false;
 
         #endregion
 
@@ -96,12 +96,6 @@ namespace UnitySteer2D.Behaviors
 
 #region Unity events
 
-        private void Start()
-        {
-            PreviousTickTime = Time.time;
-        }
-
-
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -153,7 +147,6 @@ namespace UnitySteer2D.Behaviors
 			 * easily handle these sort of issues without a performance hit.
 			 */
                 DeQueue();
-                // Debug.LogError(string.Format("{0} HOLD YOUR HORSES. Disabled {1} being ticked", Time.time, this));
             }
         }
 
@@ -167,11 +160,11 @@ namespace UnitySteer2D.Behaviors
             {
                 return;
             }
-            UnityEngine.Profiling.Profiler.BeginSample("Calculating vehicle forces");
+            Profiler.BeginSample("Calculating vehicle forces");
 
             var force = Vector2.zero;
 
-            UnityEngine.Profiling.Profiler.BeginSample("Adding up basic steerings");
+            Profiler.BeginSample("Adding up basic steerings");
             for (var i = 0; i < Steerings.Length; i++)
             {
                 var s = Steerings[i];
@@ -181,7 +174,7 @@ namespace UnitySteer2D.Behaviors
                     force += s.WeighedForce;
                 }
             }
-            UnityEngine.Profiling.Profiler.EndSample();
+            Profiler.EndSample();
             LastRawForce = force;
 
             // Enforce speed limit.  Steering behaviors are expected to return a
@@ -205,7 +198,7 @@ namespace UnitySteer2D.Behaviors
             // but things are working just fine for now, and it seems like
             // overkill. 
             var adjustedVelocity = Vector2.zero;
-            UnityEngine.Profiling.Profiler.BeginSample("Adding up post-processing steerings");
+            Profiler.BeginSample("Adding up post-processing steerings");
             for (var i = 0; i < SteeringPostprocessors.Length; i++)
             {
                 var s = SteeringPostprocessors[i];
@@ -215,7 +208,7 @@ namespace UnitySteer2D.Behaviors
                     adjustedVelocity += s.WeighedForce;
                 }
             }
-            UnityEngine.Profiling.Profiler.EndSample();
+            Profiler.EndSample();
 
 
             if (adjustedVelocity != Vector2.zero)
@@ -228,12 +221,12 @@ namespace UnitySteer2D.Behaviors
 
             // Update vehicle velocity
             SetCalculatedVelocity(newVelocity);
-            UnityEngine.Profiling.Profiler.EndSample();
+            Profiler.EndSample();
         }
 
 
         /// <summary>
-        /// Applies a steering force to this vehicle
+                /// Applies a steering force to this vehicle
         /// </summary>
         /// <param name="elapsedTime">
         /// How long has elapsed since the last update<see cref="System.Single"/>

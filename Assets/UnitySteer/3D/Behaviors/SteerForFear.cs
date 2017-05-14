@@ -65,7 +65,7 @@ namespace UnitySteer.Behaviors
 
         protected override Vector3 CalculateForce()
         {
-            UnityEngine.Profiling.Profiler.BeginSample("Accumulating repulsion");
+            Profiler.BeginSample("Accumulating repulsion");
             var accumulator = Vector3.zero;
             var totalCount = 0;
             var now = Time.time;
@@ -99,7 +99,7 @@ namespace UnitySteer.Behaviors
 	Debug.DrawLine(position, futurePosition, Color.blue);
 	Debug.DrawLine(position + accumulator, futurePosition, Color.magenta);
 	#endif
-            UnityEngine.Profiling.Profiler.EndSample();
+            Profiler.EndSample();
 
             return accumulator;
         }
