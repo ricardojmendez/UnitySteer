@@ -36,7 +36,7 @@ namespace UnitySteer2D.Behaviors
         private TickedObject _tickedObject;
         private UnityTickedQueue _steeringQueue;
 
-        [SerializeField] private string _queueName = "Radar2D";
+        [SerializeField] private readonly string _queueName = "Radar2D";
 
         /// <summary>
         /// The maximum number of radar update calls processed on the queue per update
@@ -47,7 +47,7 @@ namespace UnitySteer2D.Behaviors
         /// the queue will win.  Make sure your settings are consistent for objects of
         /// the same queue.
         /// </remarks>
-        [SerializeField] private int _maxQueueProcessedPerUpdate = 20;
+        [SerializeField] private readonly int _maxQueueProcessedPerUpdate = 20;
 
         /// <summary>
         /// How often is the radar updated
@@ -62,7 +62,7 @@ namespace UnitySteer2D.Behaviors
 
         [SerializeField] private bool _drawGizmos;
 
-        [SerializeField] private int _preAllocateSize = 30;
+        [SerializeField] private readonly int _preAllocateSize = 30;
 
         private Collider2D[] _detectedColliders;
         private List<DetectableObject2D> _detectedObjects;

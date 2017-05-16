@@ -24,7 +24,7 @@ namespace UnitySteer2D.Behaviors
         /// of 1 means that we interpolate across 1 second; a rate of 5 means
         /// we do it five times as fast.
         /// </summary>
-        [SerializeField] private float _accelerationRate = 5;
+        [SerializeField] private readonly float _accelerationRate = 5;
 
         /// <summary>
         /// Deceleration rate - it'll be used as a multiplier for the speed
@@ -32,7 +32,7 @@ namespace UnitySteer2D.Behaviors
         /// of 1 means that we interpolate across 1 second; a rate of 5 means
         /// we do it five times as fast.
         /// </summary>
-        [SerializeField] private float _decelerationRate = 8;
+        [SerializeField] private readonly float _decelerationRate = 8;
 
 
         /// <summary>
