@@ -109,7 +109,7 @@ namespace UnitySteer2D.Behaviors
              * and distance to affect the avoidance - the further away the intersection
              * is, the less weight they'll carry.
              */
-            Profiler.BeginSample("Accumulate spherical obstacle influences");
+            UnityEngine.Profiling.Profiler.BeginSample("Accumulate spherical obstacle influences");
             for (var i = 0; i < Vehicle.Radar.Obstacles.Count; i++)
             {
                 var sphere = Vehicle.Radar.Obstacles[i];
@@ -129,7 +129,7 @@ namespace UnitySteer2D.Behaviors
                 var oppositeDirection = Vehicle.Position - sphere.Position;
                 avoidance += avoidanceMultiplier * oppositeDirection;
             }
-            Profiler.EndSample();
+            UnityEngine.Profiling.Profiler.EndSample();
 
             avoidance /= Vehicle.Radar.Obstacles.Count;
 

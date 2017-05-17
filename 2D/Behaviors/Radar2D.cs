@@ -36,7 +36,7 @@ namespace UnitySteer2D.Behaviors
         private TickedObject _tickedObject;
         private UnityTickedQueue _steeringQueue;
 
-        [SerializeField] private string _queueName = "Radar2D";
+        [SerializeField] private readonly string _queueName = "Radar2D";
 
         /// <summary>
         /// The maximum number of radar update calls processed on the queue per update
@@ -47,7 +47,7 @@ namespace UnitySteer2D.Behaviors
         /// the queue will win.  Make sure your settings are consistent for objects of
         /// the same queue.
         /// </remarks>
-        [SerializeField] private int _maxQueueProcessedPerUpdate = 20;
+        [SerializeField] private readonly int _maxQueueProcessedPerUpdate = 20;
 
         /// <summary>
         /// How often is the radar updated
@@ -62,7 +62,7 @@ namespace UnitySteer2D.Behaviors
 
         [SerializeField] private bool _drawGizmos;
 
-        [SerializeField] private int _preAllocateSize = 30;
+        [SerializeField] private readonly int _preAllocateSize = 30;
 
         private Collider2D[] _detectedColliders;
         private List<DetectableObject2D> _detectedObjects;
@@ -206,14 +206,14 @@ namespace UnitySteer2D.Behaviors
 
         private void OnUpdateRadar(object obj)
         {
-            Profiler.BeginSample("OnUpdateRadar");
+            UnityEngine.Profiling.Profiler.BeginSample("OnUpdateRadar");
             _detectedColliders = Detect();
             FilterDetected();
             if (OnDetected != null)
             {
-                Profiler.BeginSample("Detection event handler");
+                UnityEngine.Profiling.Profiler.BeginSample("Detection event handler");
                 OnDetected(this);
-                Profiler.EndSample();
+                UnityEngine.Profiling.Profiler.EndSample();
             }
 #if TRACEDETECTED
 		if (DrawGizmos)
@@ -237,7 +237,7 @@ namespace UnitySteer2D.Behaviors
 			Debug.Log(sb.ToString());
 		}
 #endif
-            Profiler.EndSample();
+            UnityEngine.Profiling.Profiler.EndSample();
         }
 
         public void UpdateRadar()
@@ -264,14 +264,14 @@ namespace UnitySteer2D.Behaviors
 		 * took about 75% of the time used for the frame.
          * 
 		 */
-            Profiler.BeginSample("Base FilterDetected");
+            UnityEngine.Profiling.Profiler.BeginSample("Base FilterDetected");
 
             _vehicles.Clear();
             _obstacles.Clear();
             _detectedObjects.Clear();
 
 
-            Profiler.BeginSample("Initial detection");
+            UnityEngine.Profiling.Profiler.BeginSample("Initial detection");
             for (var i = 0; i < _detectedColliders.Length; i++)
             {
                 var id = _detectedColliders[i].GetInstanceID();
@@ -288,9 +288,9 @@ namespace UnitySteer2D.Behaviors
                     _detectedObjects.Add(detectable);
                 }
             }
-            Profiler.EndSample();
+            UnityEngine.Profiling.Profiler.EndSample();
 
-            Profiler.BeginSample("Filtering out vehicles");
+            UnityEngine.Profiling.Profiler.BeginSample("Filtering out vehicles");
             for (var i = 0; i < _detectedObjects.Count; i++)
             {
                 var d = _detectedObjects[i];
@@ -304,8 +304,8 @@ namespace UnitySteer2D.Behaviors
                     _obstacles.Add(d);
                 }
             }
-            Profiler.EndSample();
-            Profiler.EndSample();
+            UnityEngine.Profiling.Profiler.EndSample();
+            UnityEngine.Profiling.Profiler.EndSample();
         }
 #endregion
 

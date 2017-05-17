@@ -206,14 +206,14 @@ namespace UnitySteer.Behaviors
 
         private void OnUpdateRadar(object obj)
         {
-            Profiler.BeginSample("OnUpdateRadar");
+            UnityEngine.Profiling.Profiler.BeginSample("OnUpdateRadar");
             _detectedColliders = Detect();
             FilterDetected();
             if (OnDetected != null)
             {
-                Profiler.BeginSample("Detection event handler");
+                UnityEngine.Profiling.Profiler.BeginSample("Detection event handler");
                 OnDetected(this);
-                Profiler.EndSample();
+                UnityEngine.Profiling.Profiler.EndSample();
             }
 #if TRACEDETECTED
 		if (DrawGizmos)
@@ -237,7 +237,7 @@ namespace UnitySteer.Behaviors
 			Debug.Log(sb.ToString());
 		}
 #endif
-            Profiler.EndSample();
+            UnityEngine.Profiling.Profiler.EndSample();
         }
 
         public void UpdateRadar()
@@ -265,14 +265,14 @@ namespace UnitySteer.Behaviors
 		 * took about 75% of the time used for the frame.
          * 
 		 */
-            Profiler.BeginSample("Base FilterDetected");
+            UnityEngine.Profiling.Profiler.BeginSample("Base FilterDetected");
 
             _vehicles.Clear();
             _obstacles.Clear();
             _detectedObjects.Clear();
 
 
-            Profiler.BeginSample("Initial detection");
+            UnityEngine.Profiling.Profiler.BeginSample("Initial detection");
             for (var i = 0; i < _detectedColliders.Length; i++)
             {
                 var id = _detectedColliders[i].GetInstanceID();
@@ -289,9 +289,9 @@ namespace UnitySteer.Behaviors
                     _detectedObjects.Add(detectable);
                 }
             }
-            Profiler.EndSample();
+            UnityEngine.Profiling.Profiler.EndSample();
 
-            Profiler.BeginSample("Filtering out vehicles");
+            UnityEngine.Profiling.Profiler.BeginSample("Filtering out vehicles");
             for (var i = 0; i < _detectedObjects.Count; i++)
             {
                 var d = _detectedObjects[i];
@@ -305,8 +305,8 @@ namespace UnitySteer.Behaviors
                     _obstacles.Add(d);
                 }
             }
-            Profiler.EndSample();
-            Profiler.EndSample();
+            UnityEngine.Profiling.Profiler.EndSample();
+            UnityEngine.Profiling.Profiler.EndSample();
         }
         #endregion
 

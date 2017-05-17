@@ -167,11 +167,11 @@ namespace UnitySteer2D.Behaviors
             {
                 return;
             }
-            Profiler.BeginSample("Calculating vehicle forces");
+            UnityEngine.Profiling.Profiler.BeginSample("Calculating vehicle forces");
 
             var force = Vector2.zero;
 
-            Profiler.BeginSample("Adding up basic steerings");
+            UnityEngine.Profiling.Profiler.BeginSample("Adding up basic steerings");
             for (var i = 0; i < Steerings.Length; i++)
             {
                 var s = Steerings[i];
@@ -181,7 +181,7 @@ namespace UnitySteer2D.Behaviors
                     force += s.WeighedForce;
                 }
             }
-            Profiler.EndSample();
+            UnityEngine.Profiling.Profiler.EndSample();
             LastRawForce = force;
 
             // Enforce speed limit.  Steering behaviors are expected to return a
@@ -205,7 +205,7 @@ namespace UnitySteer2D.Behaviors
             // but things are working just fine for now, and it seems like
             // overkill. 
             var adjustedVelocity = Vector2.zero;
-            Profiler.BeginSample("Adding up post-processing steerings");
+            UnityEngine.Profiling.Profiler.BeginSample("Adding up post-processing steerings");
             for (var i = 0; i < SteeringPostprocessors.Length; i++)
             {
                 var s = SteeringPostprocessors[i];
@@ -215,7 +215,7 @@ namespace UnitySteer2D.Behaviors
                     adjustedVelocity += s.WeighedForce;
                 }
             }
-            Profiler.EndSample();
+            UnityEngine.Profiling.Profiler.EndSample();
 
 
             if (adjustedVelocity != Vector2.zero)
@@ -228,7 +228,7 @@ namespace UnitySteer2D.Behaviors
 
             // Update vehicle velocity
             SetCalculatedVelocity(newVelocity);
-            Profiler.EndSample();
+            UnityEngine.Profiling.Profiler.EndSample();
         }
 
 
