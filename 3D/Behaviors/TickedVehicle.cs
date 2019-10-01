@@ -40,6 +40,27 @@ namespace UnitySteer.Behaviors
 
         [SerializeField] private bool _traceAdjustments = false;
 
+		/// <summary>
+		/// For use with non-kinematic RigidBody components.
+		/// </summary>
+		/// <remarks>
+		/// Steering behaviours can conflict with movement of game objects containing a 
+		/// RigiBody which is not set as 'kinematic'. Enable this if you want RigidBody 
+		/// forces (inertia, collision, etc) combined with steering forces. 
+		/// See https://github.com/ricardojmendez/UnitySteer/issues/54
+		/// </remarks>
+		[SerializeField] private bool _combineRigidBodyForces = false;
+
+		/// <summary>
+		/// A multiplier for steering forces applied when using 'Combine Rigid Body Forces'.
+		/// </summary>
+		/// <remarks>
+		/// For ease of configuration, rather than adjusting the forces of various steering 
+		/// behaviours when switching over to blending RigdBody forces with steering forces, 
+		/// use this multiplier to balance the steering forces which are added to RigidBody.
+		/// </remarks>
+		[SerializeField] private float _rigidBodyPrescalar = 10f;
+
         #endregion
 
         public CharacterController CharacterController { get; private set; }
@@ -254,7 +275,14 @@ namespace UnitySteer.Behaviors
             }
             else
             {
-                Rigidbody.MovePosition(Rigidbody.position + acceleration);
+				if (_combineRigidBodyForces)
+				{
+					Rigidbody.AddForce(acceleration * _rigidBodyPrescalar);
+				}
+				else
+				{
+					Rigidbody.MovePosition(Rigidbody.position + acceleration);
+				}
             }
         }
 
